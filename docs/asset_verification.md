@@ -70,9 +70,17 @@ The `trace` check found 40 traces (bicycle, bus, car, foot, train, tram). The tr
 
 Thus the traces do not give a low-bandwidth condition. We add outages and lower the bandwidth for some clients. The paper identifies this condition as constructed.
 
-## Items to check on the server
+## Results on the server
 
-1. The GV100 runs a CUDA kernel with the locked torch build (`env.json`, `kernel_ok`).
-2. All seven checkpoints download (`models.json`).
-3. nano-jev and Laya run on the GPU, and the script records the time of one decision (`smoke.json`).
-4. All ElecVQA-Bench image paths exist in InsPLAD (`data.json`, `missing` is 0).
+Date: 2026-11-05. Server: student07, GPU: Quadro GV100 (34 GB, compute capability 7.0).
+
+| Check | Result |
+|---|---|
+| `env` | torch 2.14.1+cu126 runs a CUDA kernel on the GV100. bf16 is not available. |
+| `disk` | The project needs 82 GB. 194 GB are free. |
+| `models` | All seven checkpoints downloaded. |
+| `smoke` | nano-jev: 6.5 ms for one decision with 4 options. Laya: 23.9 ms for one decision. Both models are not fine-tuned. |
+| `data` | ElecVQA-Bench finds all images: T1 10,559, T2 9,997, T3 36,370. 0 images are missing. |
+| `trace` | 40 LTE traces. |
+
+Step 1 is complete.

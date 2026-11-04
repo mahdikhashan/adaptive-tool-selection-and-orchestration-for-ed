@@ -45,7 +45,8 @@ Optional: `export HF_HOME=/path/with/space/hf_cache` before downloading models (
 | Python `.venv` (torch + CUDA libraries), Kev repo env adds about the same again | 8–16 |
 | Experiment outputs (adapters, tool cache, logs) | ~20 |
 | **Total, everything** | **~85–95** |
-| Minimum to start (step 1 + step 2 without the large tier) | ~45 |
+| Minimum for step 1 only (no large models) | ~45 |
+| Minimum for steps 1–2 (adds Qwen3-VL-8B for the cloud tool) | ~63 |
 
 Sizes are from the Hugging Face file listings (2026-11-04), excluding ONNX/TF/GGUF exports, which the script
 skips. Check your server before downloading:

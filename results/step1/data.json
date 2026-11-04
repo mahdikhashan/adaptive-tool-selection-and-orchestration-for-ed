@@ -308,37 +308,19 @@
   "images": {
     "T1_grounding": {
       "images": 10559,
-      "missing": 10559,
-      "missing_examples": [
-        "InsPLAD-det/train/246-2_DJI_0457.jpg",
-        "InsPLAD-det/train/296-1_DJI_0059.jpg",
-        "InsPLAD-det/train/327-2_DJI_0050.jpg",
-        "InsPLAD-det/val/245-1_DJI_0706.jpg",
-        "InsPLAD-det/train/295-2_DJI_0129.jpg"
-      ]
+      "missing": 0,
+      "missing_examples": []
     },
     "T2_binary": {
       "images": 9997,
-      "missing": 9997,
-      "missing_examples": [
-        "unsupervised_anomaly_detection/polymer-insulator-lower-shackle/train/good/Fotos 17-11-2020_DJI_0013_manilha_isolador_inferior_932.jpg",
-        "unsupervised_anomaly_detection/glass-insulator/test/missingcap/Fotos 21-10-2020_DJI_0629_cadeia_isolador_vidro_1546.jpg",
-        "supervised_fault_classification/defect_supervised/polymer-insulator-upper-shackle/train/normal/Fotos 02-12-2020_DJI_0078_manilha_isolador_superior_234.jpg",
-        "unsupervised_anomaly_detection/yoke/train/good/Fotos 24-11-2020_DJI_0587_balancim_1356.jpg",
-        "supervised_fault_classification/defect_supervised/polymer-insulator-upper-shackle/train/corrosão/02-06-2021_DJI_0643_293_1.jpg"
-      ]
+      "missing": 0,
+      "missing_examples": []
     },
     "T3_multiclass": {
       "images": 36370,
-      "missing": 36370,
-      "missing_examples": [
-        "unsupervised_anomaly_detection/polymer-insulator/test/good/Fotos 23-10-2020_DJI_0070_cadeia_isolador_2507.jpg",
-        "unsupervised_anomaly_detection/polymer-insulator-lower-shackle/train/good/Fotos 14-12-2020_DJI_0029_manilha_isolador_inferior_726.jpg",
-        "supervised_fault_classification/defect_supervised/polymer-insulator-upper-shackle/train/corrosão/02-06-2021_DJI_0643_293_1.jpg",
-        "unsupervised_anomaly_detection/glass-insulator/test/good/Fotos 01-12-2020_DJI_0491_cadeia_isolador_vidro_92.jpg",
-        "unsupervised_anomaly_detection/yoke-suspension/train/good/Fotos 30-11-2020_DJI_0476_amarra_balancim_6373.jpg"
-      ]
+      "missing": 0,
+      "missing_examples": []
     }
   },
-  "seconds": 6.9
+  "seconds": 13.7
 }

@@ -61,7 +61,7 @@ Consequences for the design:
 - The prompts are in Chinese. Our tools use English. `src/fedorch/labels.py` changes each option to an English label. All labels change without errors.
 - The 42 towers have very different sizes. Rare defects occur only on some towers. Thus the towers give non-IID clients.
 - Client plan: the 28 train and val towers make 8 to 10 clients. Each client splits its items by `parent_id`. The 14 test towers are an unseen fleet for the global test and for the new-drone experiment (E6).
-- Torn-up (17 items) and peeling-paint (2 items) are too rare for training. We merge them into "other-defect" or remove them. The paper reports this decision.
+- Torn-up (17 items) and peeling-paint (2 items) are too rare for training. We merge them into "other-defect" or delete them from the training data. The paper reports this decision.
 - About 88% of the items are "good". We use a class-weighted loss and report the recall of each class.
 
 ### 4G/LTE traces

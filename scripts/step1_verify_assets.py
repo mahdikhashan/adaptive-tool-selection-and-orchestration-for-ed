@@ -46,6 +46,13 @@ MODELS = {
 }
 # Small/medium tiers are fetched with --download; large ones only with --download-large.
 DOWNLOAD_DEFAULT = ["sdmlai/nano-jev", "convaiinnovations/laya", "HuggingFaceTB/SmolVLM-256M-Instruct"]
+# Never downloaded by --download-large (dropped: non-standard licence; fallbacks only on demand).
+DOWNLOAD_SKIP_LARGE = {"LiquidAI/d1-3B"}
+# Skip export formats we never load (SmolVLM ships ~3 GB of ONNX, ModernBERT ~4.7 GB).
+IGNORE = ["*.onnx", "onnx/*", "*.onnx_data", "*.h5", "*.msgpack", "*.gguf", "*.tflite", "*.ot", "*.mlmodel", "coreml/*"]
+# Disk needed besides the models (GB): InsPLAD zip 6.4 + unzipped ~6.5, venv ~8, outputs ~20.
+OTHER_GB = {"InsPLAD (zip, delete after unzip)": 6.4, "InsPLAD unzipped": 6.5,
+            "Python .venv (torch + CUDA libs)": 8.0, "experiment outputs (adapters, caches, logs)": 20.0}
 
 ELECVQA_REPO = "https://github.com/GhostDino/elecvqa-bench.git"
 LTE_ZIP = "https://users.ugent.be/~jvdrhoof/dataset-4g/logs/logs_all.zip"
@@ -125,15 +132,48 @@ def check_models(download: bool, download_large: bool):
                            pipeline=info.pipeline_tag, gated=info.gated,
                            params=(info.safetensors.total if info.safetensors else None),
                            files=len(info.siblings or []))
-                want = (download and mid in DOWNLOAD_DEFAULT) or (download_large and tier != "fallback_backbones")
+                want = (download and mid in DOWNLOAD_DEFAULT) or (
+                    download_large and tier != "fallback_backbones" and mid not in DOWNLOAD_SKIP_LARGE)
                 if want:
-                    path = snapshot_download(mid, revision=info.sha)
+                    path = snapshot_download(mid, revision=info.sha, ignore_patterns=IGNORE)
                     size = sum(f.stat().st_size for f in Path(path).rglob("*") if f.is_file())
                     rec.update(downloaded=True, local_path=path, size_gb=round(size / 1e9, 2))
             except Exception as e:
                 rec.update(exists=False, error=f"{type(e).__name__}: {e}")
             out[mid] = rec
     return {"models": out}
+
+
+def _repo_gb(api, mid: str) -> float:
+    from fnmatch import fnmatch
+    files = api.list_repo_tree(mid, recursive=True)
+    size = sum(getattr(f, "size", 0) or 0 for f in files
+               if getattr(f, "size", None) is not None and not any(fnmatch(f.path, pat) for pat in IGNORE))
+    return round(size / 1e9, 2)
+
+
+@guarded
+def check_disk():
+    """Disk needed (models after IGNORE filtering + data + venv + outputs) vs free space."""
+    from huggingface_hub import HfApi, constants
+    api = HfApi()
+    plan = {"--download (small/medium + SmolVLM)": DOWNLOAD_DEFAULT,
+            "--download-large (adds)": [m for t, ids in MODELS.items() if t != "fallback_backbones"
+                                        for m in ids if m not in DOWNLOAD_DEFAULT and m not in DOWNLOAD_SKIP_LARGE],
+            "fallback backbones (only if needed)": MODELS["fallback_backbones"]}
+    models, totals = {}, {}
+    for group, ids in plan.items():
+        totals[group] = 0.0
+        for mid in ids:
+            models[mid] = _repo_gb(api, mid)
+            totals[group] += models[mid]
+        totals[group] = round(totals[group], 2)
+    need = round(sum(totals.values()) + sum(OTHER_GB.values()), 1)
+    hf_home = Path(constants.HF_HUB_CACHE)
+    probe = hf_home if hf_home.exists() else hf_home.parent if hf_home.parent.exists() else ROOT
+    return {"model_gb": models, "group_gb": totals, "other_gb": OTHER_GB, "total_needed_gb": need,
+            "hf_cache": str(hf_home), "free_gb_at_hf_cache": round(shutil.disk_usage(probe).free / 1e9, 1),
+            "free_gb_at_repo": round(shutil.disk_usage(ROOT).free / 1e9, 1)}
 
 
 def _timeit(fn, n=30):
@@ -249,7 +289,7 @@ def check_trace():
 
 def write_summary() -> None:
     lines = ["# Step 1 report", ""]
-    for name in ["env", "models", "smoke", "data", "trace"]:
+    for name in ["env", "disk", "models", "smoke", "data", "trace"]:
         p = OUT / f"{name}.json"
         if not p.exists():
             continue
@@ -259,6 +299,9 @@ def write_summary() -> None:
             lines.append(f"```\n{d.get('error')}\n```")
         elif name == "env":
             lines.append(", ".join(f"{k}={v}" for k, v in d.items() if k not in ("ok", "seconds")))
+        elif name == "disk":
+            lines.append(f"needed ~{d['total_needed_gb']} GB; free {d['free_gb_at_hf_cache']} GB at HF cache ({d['hf_cache']}), "
+                         f"{d['free_gb_at_repo']} GB at repo; groups {d['group_gb']}")
         elif name == "models":
             lines.append("| model | tier | exists | license | params | downloaded |\n|---|---|---|---|---|---|")
             for mid, r in d["models"].items():
@@ -280,6 +323,7 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--all", action="store_true", help="env + models(+download) + smoke + data + trace")
     ap.add_argument("--env", action="store_true")
+    ap.add_argument("--disk", action="store_true", help="disk needed vs free (no downloads)")
     ap.add_argument("--models", action="store_true")
     ap.add_argument("--download", action="store_true", help="download small/medium models + SmolVLM")
     ap.add_argument("--download-large", action="store_true", help="also download 3-9B models (~40 GB)")
@@ -290,11 +334,13 @@ def main() -> None:
                     help="folder containing InsPLAD-det/, supervised_fault_classification/, unsupervised_anomaly_detection/")
     a = ap.parse_args()
     if a.all:
-        a.env = a.models = a.download = a.smoke = a.data = a.trace = True
-    if not any([a.env, a.models, a.smoke, a.data, a.trace]):
+        a.env = a.disk = a.models = a.download = a.smoke = a.data = a.trace = True
+    if not any([a.env, a.disk, a.models, a.smoke, a.data, a.trace]):
         ap.error("choose at least one check, or --all")
     if a.env:
         check_env()
+    if a.disk:
+        check_disk()
     if a.models:
         check_models(a.download, a.download_large)
     if a.smoke:

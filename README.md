@@ -34,6 +34,32 @@ needs a driver that supports its CUDA runtime.
 
 Optional: `export HF_HOME=/path/with/space/hf_cache` before downloading models (the large tier is about 40 GB).
 
+## Disk space
+
+| What | GB |
+|---|---|
+| Small + medium decision models + SmolVLM (`--download`) | 3.0 |
+| Large tier + cloud VLM (`--download-large`: GLiNER2.5-Decide 1.95, Kev-4B adapter 0.16, Qwen3.5-4B-Base 9.3, pplx-decider-flash 9.1, Qwen3-VL-8B 17.6) | 38.1 |
+| Fallback backbones (only if a checkpoint fails) | 3.3 |
+| InsPLAD: 6.4 zip + ~6.5 unzipped (delete the zip afterwards) | 12.9 |
+| Python `.venv` (torch + CUDA libraries), Kev repo env adds about the same again | 8–16 |
+| Experiment outputs (adapters, tool cache, logs) | ~20 |
+| **Total, everything** | **~85–95** |
+| Minimum to start (step 1 + step 2 without the large tier) | ~45 |
+
+Sizes are from the Hugging Face file listings (2026-11-04), excluding ONNX/TF/GGUF exports, which the script
+skips. Check your server before downloading:
+
+```bash
+df -h .                                   # free space where the repo lives
+df -h ${HF_HOME:-~/.cache/huggingface}    # free space where models go (often a different disk)
+uv run --locked python scripts/step1_verify_assets.py --disk   # needed vs free, no downloads
+du -sh ${HF_HOME:-~/.cache/huggingface}/hub/* 2>/dev/null | sort -h   # what is already cached
+```
+
+If the home disk is small, put models on a larger disk: `export HF_HOME=/big/disk/hf_cache`, and keep InsPLAD
+there too (`--insplad-dir /big/disk/insplad`).
+
 ## Step 1: verify assets
 
 ### 1a. Download InsPLAD (manual, once)

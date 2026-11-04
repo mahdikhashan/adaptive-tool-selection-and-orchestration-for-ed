@@ -15,7 +15,7 @@ Related documents:
 4. You commit the small result files and push them.
 5. Claude pulls the results and analyses them.
 
-Large files never go into git. See "Transfer results".
+Files of 1 GB or larger never go into git. See "Transfer results".
 
 ## Server
 
@@ -97,7 +97,7 @@ To run only some checks, give their names: `... step1_verify_assets.py env smoke
 
 ## Transfer results
 
-Small files (JSON, CSV, Markdown, logs, less than 50 MB in total): commit and push them from the server.
+Commit and push all result files that are smaller than 1 GB:
 
 ```bash
 git add results/step1
@@ -107,12 +107,22 @@ git push origin step1-asset-verification
 
 Then tell Claude "pushed step 1".
 
-Large files (checkpoints, adapters, raw outputs): do not commit them. Copy them to the laptop with `rsync`:
+Git LFS stores these result types: `.safetensors`, `.pt`, `.bin`, `.npy`, `.parquet` (see `.gitattributes`). Git stores all other files (JSON, CSV, Markdown, logs).
+
+Before you commit, find files that are 1 GB or larger:
+
+```bash
+find results -size +1G
+```
+
+Do not commit these files. Copy them to the laptop with `rsync`:
 
 ```bash
 rsync -avz -e "ssh -p 5792" \
-  khashan@student07.ai-lab.jku.at:/system/user/studentwork/khashan/fedorch/results/<step>/large/ \
+  khashan@student07.ai-lab.jku.at:/system/user/studentwork/khashan/fedorch/results/<step>/ \
   ~/.local/share/openresearch/files/adaptive-tool-selection-and-orchestration-for-ed/<step>/
 ```
+
+GitHub limits LFS storage and LFS bandwidth for each account. Check the LFS usage in the GitHub settings ("Billing and licensing") before you push large adapters.
 
 Each step writes `env.json`. This file records the git commit, the GPU, and the package versions. Always commit it.

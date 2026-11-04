@@ -1,15 +1,8 @@
-# environments
 .venv/
 __pycache__/
 *.pyc
-
-# large inputs: never commit
-data/raw
-data/external
+data/
 models/
-hf_cache/
-
-# large outputs: keep out of git, transfer separately (see results/README.md)
 results/**/*.pt
 results/**/*.safetensors
 results/**/*.bin

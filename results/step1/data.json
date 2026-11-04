@@ -1,69 +1,8 @@
 {
+  "ok": true,
   "elecvqa_commit": "d9072b89e3fb7d7d10945257a09fce23094a2323",
-  "manifest": {
-    "name": "tower14",
-    "source_manifest": "work/splits/MANIFEST_L2.json",
-    "train_folds": [
-      0,
-      1,
-      3
-    ],
-    "val_fold": 2,
-    "test_fold": 4,
-    "train_towers": [
-      "241-1",
-      "248-1",
-      "250-1",
-      "260-1",
-      "263-1",
-      "271-1",
-      "271-2",
-      "291-2",
-      "292-1",
-      "292-2",
-      "296-2",
-      "297-1",
-      "298-1",
-      "302-1",
-      "305-2",
-      "306-2",
-      "332-1",
-      "332-2"
-    ],
-    "val_towers": [
-      "238-2",
-      "242-2",
-      "246-1",
-      "272-1",
-      "272-2",
-      "273-1",
-      "280-1",
-      "282-1",
-      "294-1",
-      "333-1"
-    ],
-    "test_towers": [
-      "245-1",
-      "245-2",
-      "256-1",
-      "259-2",
-      "264-1",
-      "274-2",
-      "277-2",
-      "289-2",
-      "293-1",
-      "293-2",
-      "293-3",
-      "304-1",
-      "304-2",
-      "309-1"
-    ],
-    "n_train": 25499,
-    "n_val": 6672,
-    "n_test": 7057,
-    "n_test_t3_only": 5536
-  },
-  "splits": {
+  "insplad_dir": "data/external/insplad",
+  "tower14": {
     "train": {
       "items": 25499,
       "towers": 18,
@@ -193,8 +132,7 @@
         "332-2": {
           "good": 34
         }
-      },
-      "images_found": "InsPLAD not found"
+      }
     },
     "val": {
       "items": 6672,
@@ -264,8 +202,7 @@
         "333-1": {
           "good": 221
         }
-      },
-      "images_found": "InsPLAD not found"
+      }
     },
     "test": {
       "items": 7057,
@@ -365,13 +302,43 @@
           "missing-cap": 11,
           "rust": 1
         }
-      },
-      "images_found": "InsPLAD not found"
+      }
     }
   },
-  "insplad_dir": "/Users/mahdikhashan/.local/share/openresearch/worktrees/52d4acb7-2ac1-4cf0-b07c-90e06fd8bf64/chat_0c54f2dd-99fd-4f70-ac4d-33e4913baec8/data/raw",
-  "insplad_present": false,
-  "missing_image_examples": [],
-  "ok": true,
-  "seconds": 0.3
+  "images": {
+    "T1_grounding": {
+      "images": 10559,
+      "missing": 10559,
+      "missing_examples": [
+        "InsPLAD-det/train/267-1_DJI_0456.jpg",
+        "InsPLAD-det/train/314-2_DJI_0223.jpg",
+        "InsPLAD-det/train/258-2_DJI_0341.jpg",
+        "InsPLAD-det/val/238-1_DJI_0394.jpg",
+        "InsPLAD-det/train/247-2_DJI_0275.jpg"
+      ]
+    },
+    "T2_binary": {
+      "images": 9997,
+      "missing": 9997,
+      "missing_examples": [
+        "supervised_fault_classification/defect_supervised/vari-grip/train/bird-nest/Fotos 25-11-2020_DJI_0588_vari_grip_847_4.jpg",
+        "supervised_fault_classification/defect_supervised/vari-grip/train/rust/02-06-2021_DJI_0359_261_0.jpg",
+        "supervised_fault_classification/defect_supervised/vari-grip/train/bird-nest/11-06-2021_DJI_0121_4_8.jpg",
+        "supervised_fault_classification/defect_supervised/vari-grip/train/bird-nest/Fotos 17-11-2020_DJI_0269_vari_grip_485_5.jpg",
+        "unsupervised_anomaly_detection/damper-preformed/test/good/Fotos 26-11-2020_DJI_0119_amortecedor_preformado_941.jpg"
+      ]
+    },
+    "T3_multiclass": {
+      "images": 36370,
+      "missing": 36370,
+      "missing_examples": [
+        "unsupervised_anomaly_detection/yoke-suspension/train/good/Fotos 17-12-2020_DJI_0362_amarra_balancim_3441.jpg",
+        "unsupervised_anomaly_detection/glass-insulator-tower-shackle/train/good/Fotos 30-11-2020_DJI_0159_manilha_isolador_vidro_torre_192.jpg",
+        "unsupervised_anomaly_detection/damper-stockbridge/test/good/Fotos 07-12-2020_DJI_0069_amortecedor_stockbridge_1454.jpg",
+        "unsupervised_anomaly_detection/polymer-insulator/test/good/Fotos 17-11-2020_DJI_0248_cadeia_isolador_1648.jpg",
+        "unsupervised_anomaly_detection/vari-grip/train/good/Fotos 27-11-2020_DJI_0421_vari_grip_934.jpg"
+      ]
+    }
+  },
+  "seconds": 0.9
 }

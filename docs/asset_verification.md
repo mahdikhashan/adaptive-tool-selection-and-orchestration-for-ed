@@ -1,41 +1,53 @@
-# Step 1: asset verification (2026-11-04)
+# Step 1: models and datasets
 
-What was verified from the laptop (Hugging Face API, PyPI, GitHub, dataset pages), and what the A10 run of
-`scripts/step1_verify_assets.py` still has to confirm.
+Date: 2026-11-04. Claude checked these facts on the laptop with the Hugging Face API, PyPI, GitHub and the dataset pages. The server run of `scripts/step1_verify_assets.py` must check the items in "Items to check on the server".
 
-## Decision models (controller candidates)
+## Controller models
 
-All confirmed to exist on Hugging Face with open licences. The table the user supplied (from ChatGPT) was mostly right.
-Corrections are noted.
+| Tier | Checkpoint | Size | Licence | Interface | Fine-tuning method |
+|---|---|---|---|---|---|
+| Small (main) | `sdmlai/nano-jev` v1.0 | 33.4M | MIT | MiniLM-L12 cross-encoder. It gives one score for each option. Input: `question: {q} option: {o}` and a context text. | `transformers` and PEFT LoRA |
+| Medium | `convaiinnovations/laya` | 421M | Apache-2.0 | ModernBERT-large and a decision head. The head has an act/escalate output. | Laya fine-tuning notebook and PEFT LoRA |
+| Large | `jaredpalmer/kev-4b` | 33.8M LoRA on `Qwen/Qwen3.5-4B-Base` | Apache-2.0 | A causal language model in prefill mode and a pointer head over the options | `kev.train --init_from jaredpalmer/kev-4b` from the Kev repository |
+| Multimodal (optional) | `perplexity-ai/pplx-decider-flash-v1.2` | 4.5B | Apache-2.0 | A Qwen3.5-4B decision model. It accepts images up to 1.6 MP. | LoRA with the source package in the model repository |
 
-| Tier | Checkpoint | Params (HF) | Licence | Architecture / interface | How we fine-tune it | Status |
-|---|---|---|---|---|---|---|
-| **Small (lead)** | [`sdmlai/nano-jev`](https://huggingface.co/sdmlai/nano-jev) v1.0 | 33,360,385 | MIT | MiniLM-L12-H384 cross-encoder + 1-logit head; **per-option scoring**: `"question: {q} option: {o}"` + context; per-decision temperature in `calibration.json` | Plain `transformers` `AutoModelForSequenceClassification` + PEFT LoRA | **Verified.** Not "C-Tianyu/NanoJev", which is a Qwen3-0.6B variant with no licence |
-| **Medium** | [`convaiinnovations/laya`](https://huggingface.co/convaiinnovations/laya) | 421,293,830 | Apache-2.0 | ModernBERT-large (395M) + decision head (2 transformer layers, option-marker scorer, **act/escalate head**); `pip install laya`; ~35–40 ms per question on a T4 (model card) | Official fine-tuning notebook (2×T4); we wrap it with PEFT LoRA | **Verified** |
-| Medium (alt.) | [`fastino/GLiNER2.5-Decide`](https://huggingface.co/fastino/GLiNER2.5-Decide) | 486,444,053 | Apache-2.0 | DeBERTa-based decision model | PEFT LoRA | Verified (table said 340M; HF says 486M) |
-| **Large** | [`jaredpalmer/kev-4b`](https://huggingface.co/jaredpalmer/kev-4b) | LoRA r16 (33.8M) on frozen `Qwen/Qwen3.5-4B-Base` | Apache-2.0 | Prefill-only causal LM + pointer head over options; one temperature (2.41) | **Already a LoRA adapter**: continue with `kev.train --init_from jaredpalmer/kev-4b` (Kev repo), federating the adapter | **Verified.** Serving needs the Kev repo (fused DeltaNet kernels, ~16 GB GPU) |
-| Large / **multimodal** (optional) | [`perplexity-ai/pplx-decider-flash-v1.2`](https://huggingface.co/perplexity-ai/pplx-decider-flash-v1.2) | 4,539,265,536 | Apache-2.0 | Qwen3.5-4B decision model; **accepts images** (up to 1.6 MP); joint option format; source package ships inside the HF repo (not on PyPI) | LoRA on the backbone, via its source package | Verified. Replaces d1 as the multimodal arm |
-| Optional | [`LiquidAI/d1-3B`](https://huggingface.co/LiquidAI/d1-3B) | 3,123,483,888 | **LFM 1.0 (other)** | VLM decision model | — | Licence is not Apache/MIT. Keep only if the terms allow research use |
-| Training-free baseline | AnyJev / SemIf | — | framework | Option-logit inference on a frozen LLM | none | AnyJev checkpoints exist only at 31B; SemIf only as MLX ports. **Replace with our own option-logit readout on Qwen3.5-4B-Base**, same idea |
+Fallback backbones: `microsoft/MiniLM-L12-H384-uncased`, `answerdotai/ModernBERT-large`, `fastino/GLiNER2.5-Decide` (486M, Apache-2.0). The script records their revisions but does not download them.
 
-Fallback backbones (exist, verified): `microsoft/MiniLM-L12-H384-uncased`, `answerdotai/ModernBERT-large`, `Qwen/Qwen3.5-4B-Base`.
+Corrections to the first model table:
+- The 33.4M "NanoJev" is `sdmlai/nano-jev`. `C-Tianyu/NanoJev` is a different Qwen3-0.6B model without a licence.
+- GLiNER2.5-Decide has 486M parameters, not 340M.
+- AnyJev has checkpoints only at 31B. SemIf has only MLX ports. The training-free baseline uses our own option-logit readout on `Qwen/Qwen3.5-4B-Base`.
+- `LiquidAI/d1-3B` uses the LFM 1.0 licence. We do not use it. `pplx-decider-flash` is the multimodal option.
 
-Perception tools (exist): `HuggingFaceTB/SmolVLM-256M-Instruct` (EVLM's onboard VLM), `Qwen/Qwen3-VL-8B-Instruct` (cloud tier).
+Facts from the model cards that change the design:
+- nano-jev: accuracy decreases by 15 to 20 points on new datasets, and the calibration does not transfer. We must fine-tune and calibrate on our decision traces.
+- Laya has an act/escalate head. We use this head for the accept or escalate decision.
+- Kev-4B: the option order can change an answer. We put the options in a random order during training and evaluation.
 
-Lessons from the model cards that change the design:
-- nano-jev: *"Accuracy drops by about 15–20 points on unseen datasets, and calibration does not transfer"*, and custom option sets are its weaker mode. **We must fine-tune and re-calibrate** on our decision traces; zero-shot numbers are only a baseline.
-- Laya already has an **act/escalate head**. Use it directly for accept / escalate.
-- Kev-4B notes *"Option order can change an answer"*. Randomise option order during training and evaluation.
+## Perception tools
 
-## Data
+- `HuggingFaceTB/SmolVLM-256M-Instruct`: the onboard VLM. EVLM uses this model.
+- `Qwen/Qwen3-VL-8B-Instruct`: the cloud VLM. It needs about 17.6 GB of GPU memory in fp16. It fits on the 32 GB GV100.
 
-| Asset | Location | Licence | Verified |
+## Datasets
+
+| Dataset | Source | Licence | Download |
 |---|---|---|---|
-| **ElecVQA-Bench** | <https://github.com/GhostDino/elecvqa-bench> (MIT code; derived metadata) | MIT + source terms | Cloned, statistics computed (below) |
-| **InsPLAD images** | Mendeley Data <https://data.mendeley.com/datasets/5n3fjgvfyz/1>; repo <https://github.com/andreluizbvs/InsPLAD> | "other" (see the repo) | **Manual download needed**; the A10 run checks every image path |
-| **4G/LTE traces** (van der Hooft et al.) | <https://users.ugent.be/~jvdrhoof/dataset-4g/logs/logs_all.zip> | public dataset | Downloaded, 40 traces parsed |
+| ElecVQA-Bench | `https://github.com/GhostDino/elecvqa-bench` | MIT for code. The metadata refers to InsPLAD. | The `data` check clones it |
+| InsPLAD | Mendeley Data `5n3fjgvfyz`, file `InsPLAD_Dataset.zip`, 6.4 GB, SHA-256 `effd039e...0f489139` | See the InsPLAD repository | `scripts/get_insplad.py` downloads it and extracts all three folders |
+| 4G/LTE traces (van der Hooft et al.) | `https://users.ugent.be/~jvdrhoof/dataset-4g/logs/logs_all.zip` | Public dataset | The `trace` check downloads it |
 
-### ElecVQA-Bench tower14 split (`results/step1/data.json`)
+### InsPLAD folders that ElecVQA-Bench uses
+
+| Task | InsPLAD folder | Images |
+|---|---|---|
+| T1 grounding | `InsPLAD-det/` (full-size photos) | 10,559 |
+| T2 binary | `supervised_fault_classification/`, `unsupervised_anomaly_detection/` | 9,997 |
+| T3 multiclass | `supervised_fault_classification/`, `unsupervised_anomaly_detection/` | 36,370 |
+
+All three folders are necessary. `get_insplad.py` extracts all three.
+
+### ElecVQA-Bench tower14 split
 
 | Split | Items | Towers | Items per tower (min / median / max) |
 |---|---|---|---|
@@ -43,23 +55,24 @@ Lessons from the model cards that change the design:
 | val | 6,672 | 10 | 13 / 221 / 3,191 |
 | test | 7,057 | 14 | 11 / 99 / 2,054 |
 
-Labels (train): good 22,377 · rust 1,009 · defect (binary items) 1,002 · corrosion 468 · missing-cap 351 · nest 273 · torn-up 17 · peeling-paint 2.
+Labels in the train split: good 22,377, rust 1,009, defect (binary items) 1,002, corrosion 468, missing-cap 351, nest 273, torn-up 17, peeling-paint 2.
 
-What this means for the design:
-- **Prompts are in Chinese.** Our tools are English-tuned, so we rebuild English prompts from the item metadata (asset, options, label) in `src/fedorch/labels.py`. The labels parse cleanly, with no unknowns.
-- **42 towers with very unequal sizes and rare defects on only some towers** (nest/missing-cap on 10 of 18 train towers): natural non-IID clients. Plan: **clients = groups of the 28 train+val towers** (about 8–10 clients, each split locally by `parent_id`); the **14 test towers are an unseen fleet** for global testing and the new-drone experiment (E6).
-- **torn-up (17) and peeling-paint (2) are too rare to learn.** Merge them into "other-defect" or exclude them, and report it.
-- About 88% of items are "good". Use class-weighted loss and report per-class recall (ElecVQA's warning about macro averages over long tails applies).
+Consequences for the design:
+- The prompts are in Chinese. Our tools use English. `src/fedorch/labels.py` changes each option to an English label. All labels change without errors.
+- The 42 towers have very different sizes. Rare defects occur only on some towers. Thus the towers give non-IID clients.
+- Client plan: the 28 train and val towers make 8 to 10 clients. Each client splits its items by `parent_id`. The 14 test towers are an unseen fleet for the global test and for the new-drone experiment (E6).
+- Torn-up (17 items) and peeling-paint (2 items) are too rare for training. We merge them into "other-defect" or remove them. The paper reports this decision.
+- About 88% of the items are "good". We use a class-weighted loss and report the recall of each class.
 
-### LTE traces (`results/step1/trace.json`)
+### 4G/LTE traces
 
-40 traces (bicycle, bus, car, foot, train, tram), ~5.0 h in total; mean throughput 31.4 Mbps (lowest trace mean 14.1 Mbps).
-Only about 1% of seconds fall below 2 Mbps (median trace). **The raw traces are too benign for the low-bandwidth
-regime**, so per-client regimes need **scaling and injected outages**. This is stated as a constructed condition in the paper.
+The `trace` check found 40 traces (bicycle, bus, car, foot, train, tram). The traces have a total duration of about 5 hours. The mean throughput is 31.4 Mbps. The lowest trace mean is 14.1 Mbps. In the median trace, only about 1% of the seconds are below 2 Mbps.
 
-## Still to confirm on the A10 (`--all`)
+Thus the traces do not give a low-bandwidth condition. We add outages and lower the bandwidth for some clients. The paper identifies this condition as constructed.
 
-1. GPU, CUDA and package versions (`env.json`).
-2. nano-jev and Laya load and run; latency of one decision on the A10 (`smoke.json`).
-3. Every ElecVQA image path resolves in the downloaded InsPLAD (`data.json`, `images_found`).
-4. Large-tier downloads succeed (`--download-large`), and the Kev repo serves Kev-4B (separate step).
+## Items to check on the server
+
+1. The GV100 runs a CUDA kernel with the locked torch build (`env.json`, `kernel_ok`).
+2. All seven checkpoints download (`models.json`).
+3. nano-jev and Laya run on the GPU, and the script records the time of one decision (`smoke.json`).
+4. All ElecVQA-Bench image paths exist in InsPLAD (`data.json`, `missing` is 0).

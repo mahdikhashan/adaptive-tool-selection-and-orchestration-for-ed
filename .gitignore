@@ -4,8 +4,8 @@ __pycache__/
 *.pyc
 
 # large inputs: never commit
-data/raw/
-data/external/
+data/raw
+data/external
 models/
 hf_cache/
 

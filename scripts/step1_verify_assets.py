@@ -33,7 +33,9 @@ sys.path.insert(0, str(ROOT / "src"))
 from fedorch.labels import item_image, item_label  # noqa: E402
 
 OUT = ROOT / "results" / "step1"
-EXT = ROOT / "data" / "external"
+# On the JKU servers scripts/server_env.sh sets FEDORCH_DATA / INSPLAD_DIR to studentwork paths.
+EXT = Path(os.environ["FEDORCH_DATA"]) / "external" if os.environ.get("FEDORCH_DATA") else ROOT / "data" / "external"
+INSPLAD_DEFAULT = Path(os.environ.get("INSPLAD_DIR", ROOT / "data" / "raw"))
 
 # Decision-model candidates (see docs/federated_learning_design.md §2.2).
 MODELS = {
@@ -101,10 +103,28 @@ def check_env():
         "cuda_available": torch.cuda.is_available(),
         "disk_free_gb": round(shutil.disk_usage(ROOT).free / 1e9, 1),
     }
+    env["cuda_visible_devices"] = os.environ.get("CUDA_VISIBLE_DEVICES", "<unset: all GPUs visible>")
+    env["hf_home"] = os.environ.get("HF_HOME", "<default ~/.cache/huggingface>")
     if torch.cuda.is_available():
-        p = torch.cuda.get_device_properties(0)
-        env.update(gpu=p.name, gpu_mem_gb=round(p.total_memory / 1e9, 1), cuda=torch.version.cuda,
-                   bf16=torch.cuda.is_bf16_supported())
+        env["torch_arch_list"] = torch.cuda.get_arch_list()
+        env["cuda"] = torch.version.cuda
+        gpus = []
+        for i in range(torch.cuda.device_count()):
+            p = torch.cuda.get_device_properties(i)
+            cc = f"{p.major}.{p.minor}"
+            rec = {"index": i, "name": p.name, "mem_gb": round(p.total_memory / 1e9, 1), "capability": cc,
+                   "free_gb": round(torch.cuda.mem_get_info(i)[0] / 1e9, 1)}
+            try:  # does this torch build actually run kernels on this GPU?
+                x = torch.ones(256, 256, device=f"cuda:{i}")
+                rec["kernel_ok"] = bool((x @ x).sum().item() == 256 ** 3)
+            except Exception as e:
+                rec["kernel_ok"] = False
+                rec["kernel_error"] = f"{type(e).__name__}: {e}"[:300]
+            rec["bf16"] = p.major >= 8  # Ampere+; V100 (7.0) and P40 (6.1) must use fp16/fp32
+            if p.major < 7:
+                rec["warning"] = "Pascal-class GPU: no bf16, slow fp16, may be unsupported by recent torch builds"
+            gpus.append(rec)
+        env["gpus"] = gpus
     for pkg in ["transformers", "peft", "flwr", "huggingface_hub", "laya", "nanojev"]:
         try:
             env[pkg] = __import__(pkg).__version__
@@ -298,7 +318,10 @@ def write_summary() -> None:
         if not d.get("ok"):
             lines.append(f"```\n{d.get('error')}\n```")
         elif name == "env":
-            lines.append(", ".join(f"{k}={v}" for k, v in d.items() if k not in ("ok", "seconds")))
+            lines.append(", ".join(f"{k}={v}" for k, v in d.items() if k not in ("ok", "seconds", "gpus", "torch_arch_list")))
+            for g in d.get("gpus", []):
+                lines.append(f"- GPU {g['index']}: {g['name']} {g['mem_gb']} GB (free {g['free_gb']}), cc {g['capability']}, "
+                             f"kernel_ok={g['kernel_ok']}, bf16={g['bf16']} {g.get('warning', '')}")
         elif name == "disk":
             lines.append(f"needed ~{d['total_needed_gb']} GB; free {d['free_gb_at_hf_cache']} GB at HF cache ({d['hf_cache']}), "
                          f"{d['free_gb_at_repo']} GB at repo; groups {d['group_gb']}")
@@ -330,7 +353,7 @@ def main() -> None:
     ap.add_argument("--smoke", action="store_true")
     ap.add_argument("--data", action="store_true")
     ap.add_argument("--trace", action="store_true")
-    ap.add_argument("--insplad-dir", type=Path, default=ROOT / "data" / "raw",
+    ap.add_argument("--insplad-dir", type=Path, default=INSPLAD_DEFAULT,
                     help="folder containing InsPLAD-det/, supervised_fault_classification/, unsupervised_anomaly_detection/")
     a = ap.parse_args()
     if a.all:

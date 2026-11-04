@@ -228,9 +228,12 @@ def run(name):
 
 def main():
     parser = argparse.ArgumentParser(description="Step 1: check the environment, models, data and network traces.")
-    parser.add_argument("checks", nargs="*", choices=list(CHECKS), default=list(CHECKS),
-                        help="checks to run (default: all)")
-    for name in parser.parse_args().checks:
+    parser.add_argument("checks", nargs="*", help=f"checks to run: {', '.join(CHECKS)} (default: all)")
+    checks = parser.parse_args().checks or list(CHECKS)
+    unknown = [name for name in checks if name not in CHECKS]
+    if unknown:
+        parser.error(f"unknown checks: {', '.join(unknown)}")
+    for name in checks:
         run(name)
 
 

@@ -1,0 +1,328 @@
+{
+  "n_traces": 40,
+  "traces": {
+    "report_bicycle_0001": {
+      "seconds": 531,
+      "mean_mbps": 31.57,
+      "p10_mbps": 14.21,
+      "min_mbps": 1.76,
+      "max_mbps": 59.88,
+      "frac_below_2mbps": 0.002
+    },
+    "report_bicycle_0002": {
+      "seconds": 658,
+      "mean_mbps": 25.44,
+      "p10_mbps": 5.34,
+      "min_mbps": 0.0,
+      "max_mbps": 70.9,
+      "frac_below_2mbps": 0.035
+    },
+    "report_bus_0001": {
+      "seconds": 607,
+      "mean_mbps": 27.6,
+      "p10_mbps": 13.93,
+      "min_mbps": 3.46,
+      "max_mbps": 55.99,
+      "frac_below_2mbps": 0.0
+    },
+    "report_bus_0002": {
+      "seconds": 546,
+      "mean_mbps": 30.73,
+      "p10_mbps": 11.42,
+      "min_mbps": 0.0,
+      "max_mbps": 65.54,
+      "frac_below_2mbps": 0.011
+    },
+    "report_bus_0003": {
+      "seconds": 758,
+      "mean_mbps": 19.69,
+      "p10_mbps": 5.94,
+      "min_mbps": 0.0,
+      "max_mbps": 64.14,
+      "frac_below_2mbps": 0.046
+    },
+    "report_bus_0004": {
+      "seconds": 281,
+      "mean_mbps": 59.52,
+      "p10_mbps": 29.14,
+      "min_mbps": 0.0,
+      "max_mbps": 110.97,
+      "frac_below_2mbps": 0.004
+    },
+    "report_bus_0005": {
+      "seconds": 338,
+      "mean_mbps": 40.47,
+      "p10_mbps": 18.98,
+      "min_mbps": 0.0,
+      "max_mbps": 66.84,
+      "frac_below_2mbps": 0.006
+    },
+    "report_bus_0006": {
+      "seconds": 516,
+      "mean_mbps": 32.47,
+      "p10_mbps": 18.03,
+      "min_mbps": 2.75,
+      "max_mbps": 69.37,
+      "frac_below_2mbps": 0.0
+    },
+    "report_bus_0007": {
+      "seconds": 483,
+      "mean_mbps": 34.67,
+      "p10_mbps": 16.48,
+      "min_mbps": 0.0,
+      "max_mbps": 66.16,
+      "frac_below_2mbps": 0.006
+    },
+    "report_bus_0008": {
+      "seconds": 346,
+      "mean_mbps": 25.58,
+      "p10_mbps": 8.5,
+      "min_mbps": 0.0,
+      "max_mbps": 65.54,
+      "frac_below_2mbps": 0.02
+    },
+    "report_bus_0009": {
+      "seconds": 544,
+      "mean_mbps": 30.83,
+      "p10_mbps": 12.2,
+      "min_mbps": 0.0,
+      "max_mbps": 92.67,
+      "frac_below_2mbps": 0.009
+    },
+    "report_bus_0010": {
+      "seconds": 442,
+      "mean_mbps": 37.85,
+      "p10_mbps": 19.37,
+      "min_mbps": 0.0,
+      "max_mbps": 71.36,
+      "frac_below_2mbps": 0.002
+    },
+    "report_bus_0011": {
+      "seconds": 232,
+      "mean_mbps": 32.7,
+      "p10_mbps": 18.04,
+      "min_mbps": 0.0,
+      "max_mbps": 63.08,
+      "frac_below_2mbps": 0.022
+    },
+    "report_car_0001": {
+      "seconds": 468,
+      "mean_mbps": 35.76,
+      "p10_mbps": 6.45,
+      "min_mbps": 0.0,
+      "max_mbps": 103.03,
+      "frac_below_2mbps": 0.043
+    },
+    "report_car_0002": {
+      "seconds": 566,
+      "mean_mbps": 29.62,
+      "p10_mbps": 12.55,
+      "min_mbps": 0.0,
+      "max_mbps": 61.98,
+      "frac_below_2mbps": 0.012
+    },
+    "report_car_0003": {
+      "seconds": 495,
+      "mean_mbps": 33.86,
+      "p10_mbps": 17.81,
+      "min_mbps": 0.0,
+      "max_mbps": 84.23,
+      "frac_below_2mbps": 0.008
+    },
+    "report_car_0004": {
+      "seconds": 581,
+      "mean_mbps": 28.84,
+      "p10_mbps": 12.29,
+      "min_mbps": 0.0,
+      "max_mbps": 61.44,
+      "frac_below_2mbps": 0.012
+    },
+    "report_car_0005": {
+      "seconds": 454,
+      "mean_mbps": 36.91,
+      "p10_mbps": 21.09,
+      "min_mbps": 4.9,
+      "max_mbps": 59.14,
+      "frac_below_2mbps": 0.0
+    },
+    "report_car_0006": {
+      "seconds": 419,
+      "mean_mbps": 40.01,
+      "p10_mbps": 23.1,
+      "min_mbps": 3.12,
+      "max_mbps": 67.4,
+      "frac_below_2mbps": 0.0
+    },
+    "report_car_0007": {
+      "seconds": 192,
+      "mean_mbps": 38.1,
+      "p10_mbps": 22.42,
+      "min_mbps": 0.24,
+      "max_mbps": 55.43,
+      "frac_below_2mbps": 0.005
+    },
+    "report_car_0008": {
+      "seconds": 170,
+      "mean_mbps": 32.09,
+      "p10_mbps": 11.69,
+      "min_mbps": 0.0,
+      "max_mbps": 63.7,
+      "frac_below_2mbps": 0.024
+    },
+    "report_foot_0001": {
+      "seconds": 403,
+      "mean_mbps": 41.56,
+      "p10_mbps": 24.81,
+      "min_mbps": 7.28,
+      "max_mbps": 73.74,
+      "frac_below_2mbps": 0.0
+    },
+    "report_foot_0002": {
+      "seconds": 619,
+      "mean_mbps": 17.54,
+      "p10_mbps": 3.91,
+      "min_mbps": 0.0,
+      "max_mbps": 65.85,
+      "frac_below_2mbps": 0.039
+    },
+    "report_foot_0003": {
+      "seconds": 529,
+      "mean_mbps": 31.67,
+      "p10_mbps": 12.9,
+      "min_mbps": 0.0,
+      "max_mbps": 71.36,
+      "frac_below_2mbps": 0.023
+    },
+    "report_foot_0004": {
+      "seconds": 223,
+      "mean_mbps": 17.81,
+      "p10_mbps": 11.4,
+      "min_mbps": 0.0,
+      "max_mbps": 33.23,
+      "frac_below_2mbps": 0.004
+    },
+    "report_foot_0005": {
+      "seconds": 176,
+      "mean_mbps": 29.98,
+      "p10_mbps": 19.34,
+      "min_mbps": 0.39,
+      "max_mbps": 55.76,
+      "frac_below_2mbps": 0.006
+    },
+    "report_foot_0006": {
+      "seconds": 585,
+      "mean_mbps": 22.1,
+      "p10_mbps": 4.55,
+      "min_mbps": 0.0,
+      "max_mbps": 88.59,
+      "frac_below_2mbps": 0.05
+    },
+    "report_foot_0007": {
+      "seconds": 422,
+      "mean_mbps": 39.75,
+      "p10_mbps": 24.59,
+      "min_mbps": 0.0,
+      "max_mbps": 61.37,
+      "frac_below_2mbps": 0.005
+    },
+    "report_foot_0008": {
+      "seconds": 462,
+      "mean_mbps": 36.31,
+      "p10_mbps": 17.71,
+      "min_mbps": 0.0,
+      "max_mbps": 61.88,
+      "frac_below_2mbps": 0.002
+    },
+    "report_train_0001": {
+      "seconds": 506,
+      "mean_mbps": 23.08,
+      "p10_mbps": 4.35,
+      "min_mbps": 0.0,
+      "max_mbps": 60.56,
+      "frac_below_2mbps": 0.065
+    },
+    "report_train_0002": {
+      "seconds": 496,
+      "mean_mbps": 24.01,
+      "p10_mbps": 6.48,
+      "min_mbps": 0.0,
+      "max_mbps": 65.91,
+      "frac_below_2mbps": 0.04
+    },
+    "report_train_0003": {
+      "seconds": 532,
+      "mean_mbps": 21.26,
+      "p10_mbps": 0.94,
+      "min_mbps": 0.0,
+      "max_mbps": 71.12,
+      "frac_below_2mbps": 0.115
+    },
+    "report_tram_0001": {
+      "seconds": 572,
+      "mean_mbps": 21.63,
+      "p10_mbps": 5.19,
+      "min_mbps": 0.17,
+      "max_mbps": 52.52,
+      "frac_below_2mbps": 0.016
+    },
+    "report_tram_0002": {
+      "seconds": 659,
+      "mean_mbps": 14.05,
+      "p10_mbps": 0.87,
+      "min_mbps": 0.0,
+      "max_mbps": 61.51,
+      "frac_below_2mbps": 0.118
+    },
+    "report_tram_0003": {
+      "seconds": 472,
+      "mean_mbps": 35.52,
+      "p10_mbps": 21.7,
+      "min_mbps": 0.0,
+      "max_mbps": 71.68,
+      "frac_below_2mbps": 0.011
+    },
+    "report_tram_0004": {
+      "seconds": 365,
+      "mean_mbps": 45.88,
+      "p10_mbps": 26.74,
+      "min_mbps": 0.0,
+      "max_mbps": 72.56,
+      "frac_below_2mbps": 0.003
+    },
+    "report_tram_0005": {
+      "seconds": 442,
+      "mean_mbps": 37.93,
+      "p10_mbps": 19.32,
+      "min_mbps": 0.0,
+      "max_mbps": 78.33,
+      "frac_below_2mbps": 0.009
+    },
+    "report_tram_0006": {
+      "seconds": 482,
+      "mean_mbps": 34.8,
+      "p10_mbps": 15.07,
+      "min_mbps": 0.0,
+      "max_mbps": 61.28,
+      "frac_below_2mbps": 0.008
+    },
+    "report_tram_0007": {
+      "seconds": 166,
+      "mean_mbps": 36.17,
+      "p10_mbps": 17.1,
+      "min_mbps": 0.0,
+      "max_mbps": 62.03,
+      "frac_below_2mbps": 0.012
+    },
+    "report_tram_0008": {
+      "seconds": 298,
+      "mean_mbps": 21.0,
+      "p10_mbps": 7.34,
+      "min_mbps": 0.0,
+      "max_mbps": 61.37,
+      "frac_below_2mbps": 0.044
+    }
+  },
+  "format": "ms_epoch, ms_since_start, lat, lon, bytes_since_last, ms_since_last",
+  "ok": true,
+  "seconds": 0.4
+}

@@ -45,7 +45,7 @@ Facts from the model cards that change the design:
 | T2 binary | `supervised_fault_classification/`, `unsupervised_anomaly_detection/` | 9,997 |
 | T3 multiclass | `supervised_fault_classification/`, `unsupervised_anomaly_detection/` | 36,370 |
 
-All three folders are necessary. `get_insplad.py` extracts all three.
+All three folders are necessary. `InsPLAD_Dataset.zip` contains three zip files, one for each folder: `InsPLAD-det.zip` (4.36 GB), `unsupervised_anomaly_detection.zip` (1.17 GB) and `supervised_fault_classification.zip` (0.87 GB). `get_insplad.py` extracts each inner zip into its folder. It deletes the outer zip only when all three folders contain files.
 
 ### ElecVQA-Bench tower14 split
 

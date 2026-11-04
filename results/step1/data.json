@@ -1,7 +1,7 @@
 {
   "ok": true,
   "elecvqa_commit": "d9072b89e3fb7d7d10945257a09fce23094a2323",
-  "insplad_dir": "data/external/insplad",
+  "insplad_dir": "/system/user/studentwork/khashan/data/insplad",
   "tower14": {
     "train": {
       "items": 25499,
@@ -310,35 +310,35 @@
       "images": 10559,
       "missing": 10559,
       "missing_examples": [
-        "InsPLAD-det/train/267-1_DJI_0456.jpg",
-        "InsPLAD-det/train/314-2_DJI_0223.jpg",
-        "InsPLAD-det/train/258-2_DJI_0341.jpg",
-        "InsPLAD-det/val/238-1_DJI_0394.jpg",
-        "InsPLAD-det/train/247-2_DJI_0275.jpg"
+        "InsPLAD-det/train/246-2_DJI_0457.jpg",
+        "InsPLAD-det/train/296-1_DJI_0059.jpg",
+        "InsPLAD-det/train/327-2_DJI_0050.jpg",
+        "InsPLAD-det/val/245-1_DJI_0706.jpg",
+        "InsPLAD-det/train/295-2_DJI_0129.jpg"
       ]
     },
     "T2_binary": {
       "images": 9997,
       "missing": 9997,
       "missing_examples": [
-        "supervised_fault_classification/defect_supervised/vari-grip/train/bird-nest/Fotos 25-11-2020_DJI_0588_vari_grip_847_4.jpg",
-        "supervised_fault_classification/defect_supervised/vari-grip/train/rust/02-06-2021_DJI_0359_261_0.jpg",
-        "supervised_fault_classification/defect_supervised/vari-grip/train/bird-nest/11-06-2021_DJI_0121_4_8.jpg",
-        "supervised_fault_classification/defect_supervised/vari-grip/train/bird-nest/Fotos 17-11-2020_DJI_0269_vari_grip_485_5.jpg",
-        "unsupervised_anomaly_detection/damper-preformed/test/good/Fotos 26-11-2020_DJI_0119_amortecedor_preformado_941.jpg"
+        "unsupervised_anomaly_detection/polymer-insulator-lower-shackle/train/good/Fotos 17-11-2020_DJI_0013_manilha_isolador_inferior_932.jpg",
+        "unsupervised_anomaly_detection/glass-insulator/test/missingcap/Fotos 21-10-2020_DJI_0629_cadeia_isolador_vidro_1546.jpg",
+        "supervised_fault_classification/defect_supervised/polymer-insulator-upper-shackle/train/normal/Fotos 02-12-2020_DJI_0078_manilha_isolador_superior_234.jpg",
+        "unsupervised_anomaly_detection/yoke/train/good/Fotos 24-11-2020_DJI_0587_balancim_1356.jpg",
+        "supervised_fault_classification/defect_supervised/polymer-insulator-upper-shackle/train/corrosão/02-06-2021_DJI_0643_293_1.jpg"
       ]
     },
     "T3_multiclass": {
       "images": 36370,
       "missing": 36370,
       "missing_examples": [
-        "unsupervised_anomaly_detection/yoke-suspension/train/good/Fotos 17-12-2020_DJI_0362_amarra_balancim_3441.jpg",
-        "unsupervised_anomaly_detection/glass-insulator-tower-shackle/train/good/Fotos 30-11-2020_DJI_0159_manilha_isolador_vidro_torre_192.jpg",
-        "unsupervised_anomaly_detection/damper-stockbridge/test/good/Fotos 07-12-2020_DJI_0069_amortecedor_stockbridge_1454.jpg",
-        "unsupervised_anomaly_detection/polymer-insulator/test/good/Fotos 17-11-2020_DJI_0248_cadeia_isolador_1648.jpg",
-        "unsupervised_anomaly_detection/vari-grip/train/good/Fotos 27-11-2020_DJI_0421_vari_grip_934.jpg"
+        "unsupervised_anomaly_detection/polymer-insulator/test/good/Fotos 23-10-2020_DJI_0070_cadeia_isolador_2507.jpg",
+        "unsupervised_anomaly_detection/polymer-insulator-lower-shackle/train/good/Fotos 14-12-2020_DJI_0029_manilha_isolador_inferior_726.jpg",
+        "supervised_fault_classification/defect_supervised/polymer-insulator-upper-shackle/train/corrosão/02-06-2021_DJI_0643_293_1.jpg",
+        "unsupervised_anomaly_detection/glass-insulator/test/good/Fotos 01-12-2020_DJI_0491_cadeia_isolador_vidro_92.jpg",
+        "unsupervised_anomaly_detection/yoke-suspension/train/good/Fotos 30-11-2020_DJI_0476_amarra_balancim_6373.jpg"
       ]
     }
   },
-  "seconds": 0.9
+  "seconds": 6.9
 }

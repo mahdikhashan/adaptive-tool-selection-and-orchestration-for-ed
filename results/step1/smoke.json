@@ -1,0 +1,33 @@
+{
+  "ok": true,
+  "device": "cuda",
+  "nano_jev": {
+    "probabilities": {
+      "accept_classifier": 0.11306671798229218,
+      "interpret_local": 0.14696916937828064,
+      "interpret_cloud": 0.3617061376571655,
+      "abstain": 0.3782579302787781
+    },
+    "median_ms": 6.53
+  },
+  "laya": {
+    "answer": {
+      "type": "choice",
+      "choice": "accept_classifier",
+      "probabilities": {
+        "accept_classifier": 0.7584,
+        "interpret_local": 0.0374,
+        "interpret_cloud": 0.0253,
+        "abstain": 0.1788
+      },
+      "confidence": 0.4708,
+      "answer_confidence": 0.7584,
+      "action": {
+        "act_probability": 1.0
+      }
+    },
+    "median_ms": 23.92
+  },
+  "note": "zero-shot, not fine-tuned",
+  "seconds": 38.7
+}

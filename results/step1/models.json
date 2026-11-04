@@ -1,0 +1,58 @@
+{
+  "ok": true,
+  "sdmlai/nano-jev": {
+    "role": "controller small",
+    "sha": "ffee345e97797bef0948561461ea54fe558588a0",
+    "license": "mit",
+    "path": "/system/user/studentwork/khashan/cache/huggingface/hub/models--sdmlai--nano-jev/snapshots/ffee345e97797bef0948561461ea54fe558588a0"
+  },
+  "convaiinnovations/laya": {
+    "role": "controller medium",
+    "sha": "7b928d828b7b0e022f929d9bd2e44165aa270148",
+    "license": "apache-2.0",
+    "path": "/system/user/studentwork/khashan/cache/huggingface/hub/models--convaiinnovations--laya/snapshots/7b928d828b7b0e022f929d9bd2e44165aa270148"
+  },
+  "jaredpalmer/kev-4b": {
+    "role": "controller large (adapter)",
+    "sha": "6cfce5c2fa4b4bd64026336ab649c5ca78857d52",
+    "license": "apache-2.0",
+    "path": "/system/user/studentwork/khashan/cache/huggingface/hub/models--jaredpalmer--kev-4b/snapshots/6cfce5c2fa4b4bd64026336ab649c5ca78857d52"
+  },
+  "Qwen/Qwen3.5-4B-Base": {
+    "role": "controller large (base)",
+    "sha": "1001bb4d826a52d1f399e183466143f4da7b741b",
+    "license": "apache-2.0",
+    "path": "/system/user/studentwork/khashan/cache/huggingface/hub/models--Qwen--Qwen3.5-4B-Base/snapshots/1001bb4d826a52d1f399e183466143f4da7b741b"
+  },
+  "perplexity-ai/pplx-decider-flash-v1.2": {
+    "role": "controller multimodal",
+    "sha": "9ff7cf9838e59df461c276b7699d56b244d2af58",
+    "license": "apache-2.0",
+    "path": "/system/user/studentwork/khashan/cache/huggingface/hub/models--perplexity-ai--pplx-decider-flash-v1.2/snapshots/9ff7cf9838e59df461c276b7699d56b244d2af58"
+  },
+  "HuggingFaceTB/SmolVLM-256M-Instruct": {
+    "role": "tool onboard VLM",
+    "sha": "7e3e67edbbed1bf9888184d9df282b700a323964",
+    "license": "apache-2.0",
+    "path": "/system/user/studentwork/khashan/cache/huggingface/hub/models--HuggingFaceTB--SmolVLM-256M-Instruct/snapshots/7e3e67edbbed1bf9888184d9df282b700a323964"
+  },
+  "Qwen/Qwen3-VL-8B-Instruct": {
+    "role": "tool cloud VLM",
+    "sha": "0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
+    "license": "apache-2.0",
+    "path": "/system/user/studentwork/khashan/cache/huggingface/hub/models--Qwen--Qwen3-VL-8B-Instruct/snapshots/0c351dd01ed87e9c1b53cbc748cba10e6187ff3b"
+  },
+  "microsoft/MiniLM-L12-H384-uncased": {
+    "role": "fallback",
+    "sha": "44acabbec0ef496f6dbc93adadea57f376b7c0ec"
+  },
+  "answerdotai/ModernBERT-large": {
+    "role": "fallback",
+    "sha": "45bb4654a4d5aaff24dd11d4781fa46d39bf8c13"
+  },
+  "fastino/GLiNER2.5-Decide": {
+    "role": "fallback",
+    "sha": "9d1bfb848cd16d93ee56ccbc59cd92bf0f284d90"
+  },
+  "seconds": 356.7
+}

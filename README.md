@@ -21,6 +21,7 @@ Files of 1 GB or larger never go into git. See "Transfer results".
 
 - Server: `student07`. GPU: the booked **GV100, 32 GB**.
 - The GV100 has compute capability 7.0. It supports fp16 and fp32. It does not support bf16.
+- On Linux, `uv.lock` installs torch 2.14.1 for CUDA 12.6. The torch 2.15 build for CUDA 13.2 has no kernels for compute capability 7.0.
 - SSH port: 5792. You need the VPN when you are not on campus.
 - Storage: put all files in `/system/user/studentwork/khashan`. The limit is 200 GB.
 - Do not put data in the home directory `/system/user/khashan`. The limit is 20 GB.

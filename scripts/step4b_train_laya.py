@@ -1,5 +1,6 @@
 import argparse
 import json
+import math
 import os
 
 os.environ.setdefault("USE_TF", "0")
@@ -10,7 +11,7 @@ from laya.train import TrainConfig, finetune
 
 from fedorch.cache import load_cache
 from fedorch.common import results_dir, runs_dir, write_json
-from fedorch.decision import ACTION_TEXT, ACTIONS, QUESTION, config_name, evidence_text, load_evidence, soft_target, training_items, write_p
+from fedorch.decision import ACTION_TEXT, ACTIONS, QUESTION, config_name, evidence_text, load_evidence, soft_target, subsample, training_items, write_p
 from fedorch.items import load_items
 
 QUESTIONS = {"action": {"type": "choice", "instructions": QUESTION, "criteria": dict(ACTION_TEXT)}}
@@ -29,18 +30,24 @@ def main():
     parser.add_argument("--epochs", type=int, default=2)
     parser.add_argument("--temperature", type=float, default=1.0, help="soft-target temperature")
     parser.add_argument("--oversample", type=int, default=1, help="copies of each informative training frame")
+    parser.add_argument("--fraction", type=float, default=1.0, help="share of the train-tower frames (plan A)")
+    parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument("--min-updates", type=int, default=300, help="minimum optimizer updates for small training sets")
+    parser.add_argument("--step", default="step4b", help="results folder")
     parser.add_argument("--limit", type=int, default=None, help="use only the first N items per split (for a quick test)")
     parser.add_argument("--dry-run", action="store_true", help="check the training rows without training")
     args = parser.parse_args()
 
     items, cache, evidence = load_items(), load_cache(), load_evidence()
     split = {s: [i for i in items if i["split"] == s][:args.limit] for s in ["train", "val", "test"]}
-    out = runs_dir("step4b")
-    name = config_name("laya", args.temperature, args.oversample)
-    write_rows(out / "laya_train.jsonl", training_items(split["train"], cache, args.oversample), cache, evidence, args.temperature)
+    out = runs_dir(args.step)
+    name = config_name("laya", args.temperature, args.oversample, args.fraction, args.seed)
+    train = training_items(subsample(split["train"], args.fraction, args.seed), cache, args.oversample)
+    write_rows(out / "laya_train.jsonl", train, cache, evidence, args.temperature)
     write_rows(out / "laya_val.jsonl", split["val"], cache, evidence, args.temperature)
     base = snapshot_download("convaiinnovations/laya")
-    config = TrainConfig(epochs=args.epochs, eval_data=str(out / "laya_val.jsonl"))
+    epochs = max(args.epochs, math.ceil(args.min_updates * 64 / len(train)))
+    config = TrainConfig(epochs=epochs, seed=args.seed, eval_data=str(out / "laya_val.jsonl"))
     if args.dry_run:
         from laya.train import dry_run
         print(dry_run(str(out / "laya_train.jsonl"), base, config))
@@ -53,8 +60,8 @@ def main():
         for item in split[s]:
             answer = agent.predict(evidence_text(item, cache[item["item_id"]]["classifier"], evidence[item["item_id"]]), QUESTIONS)
             p[item["item_id"]] = {a: float(answer["answers"]["action"]["probabilities"][a]) for a in ACTIONS}
-    write_p(name, p)
-    write_json(results_dir("step4b") / f"{name}_train.json", {"epochs": args.epochs, "summary": summary})
+    write_p(name, p, args.step)
+    write_json(results_dir(args.step) / f"{name}_train.json", {"epochs": epochs, "train_rows": len(train), "summary": summary})
 
 
 if __name__ == "__main__":

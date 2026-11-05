@@ -207,6 +207,30 @@ git push origin step1-asset-verification
 
 Push the evidence file first. Claude then trains the MLP on the laptop while the decision models train on the GPU.
 
+## Plan A: controllers with few labelled frames
+
+Plan A trains each controller on 1%, 5%, 20% and 100% of the train-tower frames, with 3 seeds. All controllers use the setting from step 4b (temperature 1, 5 copies of each informative frame). Claude trains the MLP on the laptop. The 100% run of nano-jev with seed 0 is the step 4b run.
+
+Run nano-jev and Laya on student07:
+
+```bash
+git pull
+for f in 0.01 0.05 0.2 1.0; do
+  for s in 0 1 2; do
+    [ "$f" = "1.0" ] && [ "$s" = "0" ] && continue
+    uv run --locked python scripts/step4b_train_nanojev.py --temperature 1.0 --oversample 5 --fraction $f --seed $s --step planA
+  done
+done
+for f in 0.05 0.2; do
+  uv run --locked python scripts/step4b_train_laya.py --temperature 1.0 --oversample 5 --fraction $f --seed 0 --step planA
+done
+git add results/planA
+git commit -m "plan A decision-model runs"
+git push origin step1-asset-verification
+```
+
+A small training set gets more epochs: nano-jev trains for at least 600 optimizer steps, and Laya for at least 300 optimizer updates. Claude then runs `scripts/planA_replay.py` on the laptop.
+
 ## Transfer results
 
 Commit and push all result files that are smaller than 1 GB:

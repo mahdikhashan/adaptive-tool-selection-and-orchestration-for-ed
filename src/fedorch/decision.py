@@ -1,5 +1,6 @@
 import json
 import math
+import random
 
 from fedorch.common import results_dir
 from fedorch.controller import expected_latency
@@ -70,12 +71,17 @@ def numeric_v2(item, row, ev, assets):
                ev["brightness"], ev["contrast"]])
 
 
-def config_name(model, temperature, oversample):
-    return f"{model}_T{temperature}_O{oversample}"
+def config_name(model, temperature, oversample, fraction=1.0, seed=0):
+    name = f"{model}_T{temperature}_O{oversample}"
+    return name if fraction == 1.0 and seed == 0 else f"{name}_f{fraction}_s{seed}"
 
 
-def write_p(name, p_by_item):
-    with (results_dir("step4b") / f"p_{name}.jsonl").open("w") as file:
+def subsample(items, fraction, seed):
+    return items if fraction >= 1 else random.Random(seed).sample(items, max(1, round(fraction * len(items))))
+
+
+def write_p(name, p_by_item, step="step4b"):
+    with (results_dir(step) / f"p_{name}.jsonl").open("w") as file:
         for item_id, p in p_by_item.items():
             file.write(json.dumps({"item_id": item_id, "p": p}) + "\n")
 

@@ -1,5 +1,7 @@
 import functools
 import random
+import statistics
+import time
 
 import torch
 from laya.vlm import collate_vlm, load_vlm
@@ -62,3 +64,36 @@ def predict(agent, items, batch_size=32, workers=4):
         p = torch.softmax(logits.float().masked_fill(~mask, -1e4), -1).cpu()
         probs += [row[: int(m.sum())].tolist() for row, m in zip(p, mask.cpu())]
     return probs
+
+
+def sync(device):
+    if device.type == "cuda":
+        torch.cuda.synchronize()
+
+
+def stats(values):
+    values = sorted(values)
+    pick = lambda q: values[min(len(values) - 1, int(q * len(values)))]
+    return {"mean": round(statistics.mean(values), 2), "median": round(pick(0.5), 2),
+            "p90": round(pick(0.9), 2), "p95": round(pick(0.95), 2), "max": round(values[-1], 2)}
+
+
+@torch.no_grad()
+def latency(agent, items, warmup=10):
+    pad = agent.processor.tokenizer.pad_token_id
+    prep, model, total = [], [], []
+    for n, item in enumerate(items):
+        start = time.perf_counter()
+        batch = collate_vlm([make_item(agent.processor, example(item), random.Random(0), shuffle=False)], pad)
+        b = _to(batch, agent.device, agent.model.encoder.dtype)
+        sync(agent.device)
+        ready = time.perf_counter()
+        _forward(agent.model, b)
+        sync(agent.device)
+        end = time.perf_counter()
+        if n >= warmup:
+            prep.append(1000 * (ready - start))
+            model.append(1000 * (end - ready))
+            total.append(1000 * (end - start))
+    return {"frames": len(total), "warmup": warmup, "batch_size": 1,
+            "preprocess_ms": stats(prep), "model_ms": stats(model), "total_ms": stats(total)}

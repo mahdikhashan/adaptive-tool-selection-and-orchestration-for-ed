@@ -28,6 +28,8 @@ def tool_summary(rows, items):
         "accuracy": rate(r["correct"] for _, r in pairs),
         "accuracy_by_task": {t: rate(r["correct"] for i, r in pairs if i["task"] == t) for t in ["T2", "T3"]},
         "accuracy_by_split": {s: rate(r["correct"] for i, r in pairs if i["split"] == s) for s in ["train", "val", "test"]},
+        "accuracy_by_tool_model": {m: rate(r["correct"] for _, r in pairs if r["tool_model"] == m)
+                                   for m in sorted({r["tool_model"] for _, r in pairs})},
         "recall_by_label": {label: rate(v) for label, v in sorted(by_label.items())},
         "abstention_rate": rate(r["abstained"] for _, r in pairs),
         "nonfinite": sum(not r["finite"] for _, r in pairs),

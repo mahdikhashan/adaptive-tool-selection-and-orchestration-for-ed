@@ -92,6 +92,7 @@ Planned fleet: **K ≈ 8–14 clients**, one per tower group, merging very small
 The controller isn't trained on raw images. It's trained on **decision traces** built from a cached tool benchmark:
 
 1. **Run every tool once on every item** (on the A10): classifier, SmolVLM-256M onboard-equivalent, SmolVLM split with INT8 tokens, a ~7B cloud VLM. Record for each (item, tool): correct or not (VLM text is mapped to ElecVQA's closed answer options; unparseable answers count as wrong), plus output, confidence and compute time.
+   The trained tools (classifier and SmolVLM LoRA) are **cross-fitted by tower**: 3 folds over the 28 train and val towers. The model for fold N trains on the other two folds and fills the rows of fold N. One model trained on all 28 towers fills the test-tower rows. Thus no row comes from a tool that trained on the same tower, and the controller does not learn tool accuracy that is too high.
 2. **Each client owns the rows of its own towers.** Nothing is pooled except in the centralized upper-bound baseline.
 3. **Training example** = (item features, tool option) → label "was this tool correct?". This is a per-option binary target, which is exactly what a per-option System One scorer trains on.
 

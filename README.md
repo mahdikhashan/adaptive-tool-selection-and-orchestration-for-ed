@@ -98,7 +98,18 @@ To run only some checks, give their names: `... step1_verify_assets.py env smoke
 
 ## Step 2: build the tool cache
 
-Step 2 trains two tools and runs five tools on all 39,228 tower14 items. Run the commands in this order:
+Step 2 trains two tools and runs five tools on all 39,228 tower14 items.
+
+The controller learns from the tool results on the train and val towers. A tool that trained on a tower gives results on that tower that are too good. Thus step 2 uses cross-fitting:
+
+1. `src/fedorch/folds.py` divides the 28 train and val towers into 3 folds. Each fold has approximately 10,700 items.
+2. Each training script trains 4 models: `fold0`, `fold1`, `fold2` and `full`.
+3. Model `foldN` trains on the towers of the other two folds. It gives the results for the towers of fold N.
+4. Model `full` trains on all 28 train and val towers. It gives the results for the 14 test towers.
+
+Thus no tool result comes from a model that trained on the same tower. The classifier selects its best epoch on a separate set of towers in its training data.
+
+Run the commands in this order:
 
 ```bash
 git pull
@@ -123,19 +134,19 @@ uv run --locked python scripts/step2_summarize.py
 
 | Tool | Model | Place | Precision |
 |---|---|---|---|
-| `classifier` | ResNet-50, trained on the train towers | drone | fp16 |
+| `classifier` | ResNet-50, cross-fitted (4 models) | drone | fp16 |
 | `smolvlm_base` | SmolVLM-256M, not fine-tuned | drone | fp32 |
-| `smolvlm_local` | SmolVLM-256M with the LoRA adapter (EVLM recipe) | drone | fp32 |
+| `smolvlm_local` | SmolVLM-256M with a LoRA adapter (EVLM recipe), cross-fitted (4 adapters) | drone | fp32 |
 | `smolvlm_split` | `smolvlm_local` with INT8 visual tokens | drone and cloud | fp32 |
 | `cloud` | Qwen3-VL-8B, not fine-tuned | cloud | fp16 |
 
 Each VLM reads the image at a maximum side of 512 px. Each VLM gives one probability for each answer letter in one forward pass. The tools do not generate text.
 
 Outputs:
-- `results/step2/tool_<tool>.jsonl`: one line for each item (prediction, correct, confidence, probabilities, compute time, payload).
-- `results/step2/classifier_train.json`, `smolvlm_train.json`: training curves and validation results.
+- `results/step2/tool_<tool>.jsonl`: one line for each item (model, prediction, correct, confidence, probabilities, compute time, payload).
+- `results/step2/classifier_train_<model>.json`, `smolvlm_train_<model>.json`: towers, training curves and validation results for each model.
 - `results/step2/summary.json`: accuracy, recall for each label, abstention rate, compute time and payload for each tool.
-- `$FEDORCH_WORK/runs/step2/`: the classifier weights and the LoRA adapter. These files stay on the server.
+- `$FEDORCH_WORK/runs/step2/`: the 4 classifier weight files and the 4 LoRA adapters. These files stay on the server.
 
 Commit `results/step2` when all five tools are complete.
 

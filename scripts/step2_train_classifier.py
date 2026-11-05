@@ -6,6 +6,7 @@ import torch
 
 from fedorch.classifier import new_classifier, to_tensor
 from fedorch.common import device, results_dir, runs_dir, write_env, write_json
+from fedorch.folds import MODELS, fit_and_cache, select_split
 from fedorch.items import CLASSES, image_path, load_items
 
 
@@ -22,8 +23,8 @@ class Crops(torch.utils.data.Dataset):
         return to_tensor(image_path(item), self.train), CLASSES.index(item["label"])
 
 
-def unique_t3(split, limit):
-    by_image = {item["image"]: item for item in load_items([split]) if item["task"] == "T3"}
+def unique_t3(items, limit):
+    by_image = {item["image"]: item for item in items if item["task"] == "T3"}
     return list(by_image.values())[:limit]
 
 
@@ -45,17 +46,10 @@ def evaluate(model, loader, run_on):
     return {"accuracy": float((predicted == actual).mean()), "macro_recall": float(np.mean(list(recall.values()))), "recall": recall}
 
 
-def main():
-    parser = argparse.ArgumentParser(description="Train the ResNet-50 defect classifier (tier-1 tool) on the tower14 train towers.")
-    parser.add_argument("--epochs", type=int, default=10)
-    parser.add_argument("--batch-size", type=int, default=64)
-    parser.add_argument("--lr", type=float, default=1e-4)
-    parser.add_argument("--workers", type=int, default=8)
-    parser.add_argument("--limit", type=int, default=None, help="use only the first N images per split (for a quick test)")
-    args = parser.parse_args()
-
-    run_on = device()
-    train, val = unique_t3("train", args.limit), unique_t3("val", args.limit)
+def train_one(model_name, all_items, args, run_on):
+    fit, _ = fit_and_cache(all_items, model_name)
+    train_items, select_items = select_split(fit)
+    train, val = unique_t3(train_items, args.limit), unique_t3(select_items, args.limit)
     loaders = {name: torch.utils.data.DataLoader(Crops(items, name == "train"), batch_size=args.batch_size,
                                                  shuffle=name == "train", num_workers=args.workers)
                for name, items in [("train", train), ("val", val)]}
@@ -78,13 +72,34 @@ def main():
             losses.append(loss.item())
         metrics = {"epoch": epoch, "train_loss": float(np.mean(losses)), **evaluate(model, loaders["val"], run_on)}
         history.append(metrics)
-        print(f"epoch {epoch}: loss {metrics['train_loss']:.3f}, val accuracy {metrics['accuracy']:.3f}, val macro recall {metrics['macro_recall']:.3f}")
+        print(f"{model_name} epoch {epoch}: loss {metrics['train_loss']:.3f}, val accuracy {metrics['accuracy']:.3f}, val macro recall {metrics['macro_recall']:.3f}")
         if metrics["macro_recall"] > best:
             best = metrics["macro_recall"]
-            torch.save(model.state_dict(), runs_dir("step2") / "classifier.pt")
+            torch.save(model.state_dict(), runs_dir("step2") / f"classifier_{model_name}.pt")
 
-    write_json(results_dir("step2") / "classifier_train.json",
-               {"train_images": len(train), "val_images": len(val), "best_val_macro_recall": best, "history": history})
+    write_json(results_dir("step2") / f"classifier_train_{model_name}.json", {
+        "model": model_name, "train_towers": sorted({i["tower"] for i in train_items}),
+        "select_towers": sorted({i["tower"] for i in select_items}),
+        "train_images": len(train), "val_images": len(val), "best_val_macro_recall": best, "history": history})
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Train one ResNet-50 defect classifier (tier-1 tool) per cross-fitting fold, plus one on all train and val towers for the test towers.")
+    parser.add_argument("models", nargs="*", help=f"any of: {', '.join(MODELS)} (default: all)")
+    parser.add_argument("--epochs", type=int, default=10)
+    parser.add_argument("--batch-size", type=int, default=64)
+    parser.add_argument("--lr", type=float, default=1e-4)
+    parser.add_argument("--workers", type=int, default=8)
+    parser.add_argument("--limit", type=int, default=None, help="use only the first N images per set (for a quick test)")
+    args = parser.parse_args()
+    unknown = [m for m in args.models if m not in MODELS]
+    if unknown:
+        parser.error(f"unknown model: {', '.join(unknown)}")
+
+    run_on = device()
+    all_items = load_items()
+    for model_name in args.models or MODELS:
+        train_one(model_name, all_items, args, run_on)
     write_env("step2")
 
 

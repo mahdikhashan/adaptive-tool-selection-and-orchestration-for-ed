@@ -1,6 +1,7 @@
 import argparse
 
 from fedorch.cache import load_cache
+from fedorch.calibration import calibrate, quality
 from fedorch.common import results_dir, write_json
 from fedorch.controller import LAMBDAS, risk_rule, true_q
 from fedorch.costs import COST
@@ -21,9 +22,15 @@ def main():
 
     items, cache, base = load_items(), load_cache(), lte_mbps()
     val, test = mission("val", items), mission("test", items)
-    estimators = {path.stem.removeprefix("q_"): read_q(path) for path in sorted(results_dir("step4").glob("q_*.jsonl"))}
+    val_ids, test_ids = [i["item_id"] for i in val], [i["item_id"] for i in test]
+    results = {"cost": COST, "risk_weights": RISK, "policies": {}, "tuning": {}, "quality_test": {}, "platt": {}}
+    estimators = {}
+    for path in sorted(results_dir("step4").glob("q_*.jsonl")):
+        name = path.stem.removeprefix("q_")
+        estimators[name], results["platt"][name] = calibrate(read_q(path), cache, val_ids)
+        results["quality_test"][name] = quality(estimators[name], cache, test_ids)
+        print(name, results["quality_test"][name])
     estimators["true (upper bound)"] = true_q(cache)
-    results = {"cost": COST, "risk_weights": RISK, "estimators": list(estimators), "policies": {}, "tuning": {}}
 
     for regime in REGIMES:
         traces = [trace_for(test, regime, seed, base) for seed in range(args.seeds)]

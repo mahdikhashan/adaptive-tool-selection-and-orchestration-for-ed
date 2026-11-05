@@ -455,6 +455,106 @@
         "p95_latency_s": 0.7931
       }
     },
+    "choice + nanojev_T0.25_O1": {
+      "good": {
+        "name": "choice + nanojev_T0.25_O1 δ=-0.1676",
+        "items": 7057,
+        "accuracy": 0.9677,
+        "defect_recall": 0.8764,
+        "miss_rate": 0.1161,
+        "false_alarm_rate": 0.016,
+        "abstain_rate": 0.0,
+        "late_rate": 0.0,
+        "risk_per_1000": 189.3156,
+        "escalation_rate": 0.2427,
+        "cloud_failures_per_1000": 0.0,
+        "uplink_mb_per_1000": 0.0,
+        "median_latency_s": 0.0656,
+        "p95_latency_s": 0.8047
+      },
+      "weak": {
+        "name": "choice + nanojev_T0.25_O1 δ=-0.1676",
+        "items": 7057,
+        "accuracy": 0.9677,
+        "defect_recall": 0.8764,
+        "miss_rate": 0.1161,
+        "false_alarm_rate": 0.016,
+        "abstain_rate": 0.0,
+        "late_rate": 0.0,
+        "risk_per_1000": 189.3156,
+        "escalation_rate": 0.2427,
+        "cloud_failures_per_1000": 0.0,
+        "uplink_mb_per_1000": 0.0,
+        "median_latency_s": 0.0656,
+        "p95_latency_s": 0.8047
+      },
+      "poor": {
+        "name": "choice + nanojev_T0.25_O1 δ=-0.1676",
+        "items": 7057,
+        "accuracy": 0.9677,
+        "defect_recall": 0.8764,
+        "miss_rate": 0.1161,
+        "false_alarm_rate": 0.016,
+        "abstain_rate": 0.0,
+        "late_rate": 0.0,
+        "risk_per_1000": 189.3156,
+        "escalation_rate": 0.2427,
+        "cloud_failures_per_1000": 0.0,
+        "uplink_mb_per_1000": 0.0,
+        "median_latency_s": 0.0656,
+        "p95_latency_s": 0.8047
+      }
+    },
+    "choice + nanojev_T0.25_O5": {
+      "good": {
+        "name": "choice + nanojev_T0.25_O5 δ=-0.2038",
+        "items": 7057,
+        "accuracy": 0.9701,
+        "defect_recall": 0.9064,
+        "miss_rate": 0.0852,
+        "false_alarm_rate": 0.0185,
+        "abstain_rate": 0.0,
+        "late_rate": 0.0,
+        "risk_per_1000": 144.679,
+        "escalation_rate": 0.2459,
+        "cloud_failures_per_1000": 0.0,
+        "uplink_mb_per_1000": 0.0,
+        "median_latency_s": 0.0656,
+        "p95_latency_s": 0.8063
+      },
+      "weak": {
+        "name": "choice + nanojev_T0.25_O5 δ=-0.2038",
+        "items": 7057,
+        "accuracy": 0.9701,
+        "defect_recall": 0.9064,
+        "miss_rate": 0.0852,
+        "false_alarm_rate": 0.0185,
+        "abstain_rate": 0.0,
+        "late_rate": 0.0,
+        "risk_per_1000": 144.679,
+        "escalation_rate": 0.2459,
+        "cloud_failures_per_1000": 0.0,
+        "uplink_mb_per_1000": 0.0,
+        "median_latency_s": 0.0656,
+        "p95_latency_s": 0.8063
+      },
+      "poor": {
+        "name": "choice + nanojev_T0.25_O5 δ=-0.2038",
+        "items": 7057,
+        "accuracy": 0.9701,
+        "defect_recall": 0.9064,
+        "miss_rate": 0.0852,
+        "false_alarm_rate": 0.0185,
+        "abstain_rate": 0.0,
+        "late_rate": 0.0,
+        "risk_per_1000": 144.679,
+        "escalation_rate": 0.2459,
+        "cloud_failures_per_1000": 0.0,
+        "uplink_mb_per_1000": 0.0,
+        "median_latency_s": 0.0656,
+        "p95_latency_s": 0.8063
+      }
+    },
     "choice + nanojev_T1.0_O1": {
       "good": {
         "name": "choice + nanojev_T1.0_O1 δ=-0.0342",
@@ -504,6 +604,56 @@
         "median_latency_s": 0.0656,
         "p95_latency_s": 0.8045
       }
+    },
+    "choice + nanojev_T1.0_O5": {
+      "good": {
+        "name": "choice + nanojev_T1.0_O5 δ=-0.0502",
+        "items": 7057,
+        "accuracy": 0.9663,
+        "defect_recall": 0.9213,
+        "miss_rate": 0.0684,
+        "false_alarm_rate": 0.0257,
+        "abstain_rate": 0.0,
+        "late_rate": 0.0,
+        "risk_per_1000": 125.2657,
+        "escalation_rate": 0.2991,
+        "cloud_failures_per_1000": 0.0,
+        "uplink_mb_per_1000": 0.0,
+        "median_latency_s": 0.0657,
+        "p95_latency_s": 0.8083
+      },
+      "weak": {
+        "name": "choice + nanojev_T1.0_O5 δ=-0.0502",
+        "items": 7057,
+        "accuracy": 0.9663,
+        "defect_recall": 0.9213,
+        "miss_rate": 0.0684,
+        "false_alarm_rate": 0.0257,
+        "abstain_rate": 0.0,
+        "late_rate": 0.0,
+        "risk_per_1000": 125.2657,
+        "escalation_rate": 0.2991,
+        "cloud_failures_per_1000": 0.0,
+        "uplink_mb_per_1000": 0.0,
+        "median_latency_s": 0.0657,
+        "p95_latency_s": 0.8083
+      },
+      "poor": {
+        "name": "choice + nanojev_T1.0_O5 δ=-0.0502",
+        "items": 7057,
+        "accuracy": 0.9663,
+        "defect_recall": 0.9213,
+        "miss_rate": 0.0684,
+        "false_alarm_rate": 0.0257,
+        "abstain_rate": 0.0,
+        "late_rate": 0.0,
+        "risk_per_1000": 125.2657,
+        "escalation_rate": 0.2991,
+        "cloud_failures_per_1000": 0.0,
+        "uplink_mb_per_1000": 0.0,
+        "median_latency_s": 0.0657,
+        "p95_latency_s": 0.8083
+      }
     }
   },
   "tuning": {
@@ -527,9 +677,21 @@
       "chosen": -0.01736980676651001,
       "val_risk": 145.45863309352518
     },
+    "good/nanojev_T0.25_O1": {
+      "chosen": -0.16762486100196838,
+      "val_risk": 201.13908872901678
+    },
+    "good/nanojev_T0.25_O5": {
+      "chosen": -0.20379826426506042,
+      "val_risk": 186.60071942446044
+    },
     "good/nanojev_T1.0_O1": {
       "chosen": -0.034240663051605225,
       "val_risk": 226.61870503597123
+    },
+    "good/nanojev_T1.0_O5": {
+      "chosen": -0.05019938945770264,
+      "val_risk": 144.48441247002398
     },
     "weak/laya_T1.0_O1": {
       "chosen": -0.028799999999999992,
@@ -551,9 +713,21 @@
       "chosen": -0.01736980676651001,
       "val_risk": 145.45863309352518
     },
+    "weak/nanojev_T0.25_O1": {
+      "chosen": -0.16762486100196838,
+      "val_risk": 201.13908872901678
+    },
+    "weak/nanojev_T0.25_O5": {
+      "chosen": -0.20379826426506042,
+      "val_risk": 186.60071942446044
+    },
     "weak/nanojev_T1.0_O1": {
       "chosen": -0.034240663051605225,
       "val_risk": 226.61870503597123
+    },
+    "weak/nanojev_T1.0_O5": {
+      "chosen": -0.05019938945770264,
+      "val_risk": 144.48441247002398
     },
     "poor/laya_T1.0_O1": {
       "chosen": -0.028799999999999992,
@@ -575,26 +749,38 @@
       "chosen": -0.01736980676651001,
       "val_risk": 148.98081534772183
     },
+    "poor/nanojev_T0.25_O1": {
+      "chosen": -0.16762486100196838,
+      "val_risk": 201.13908872901678
+    },
+    "poor/nanojev_T0.25_O5": {
+      "chosen": -0.20379826426506042,
+      "val_risk": 186.60071942446044
+    },
     "poor/nanojev_T1.0_O1": {
       "chosen": -0.034240663051605225,
       "val_risk": 226.61870503597123
+    },
+    "poor/nanojev_T1.0_O5": {
+      "chosen": -0.05019938945770264,
+      "val_risk": 144.48441247002398
     }
   },
   "selected_on_val": {
     "good": {
       "laya": "laya_T1.0_O1",
       "mlp": "mlp_T1.0_O5",
-      "nanojev": "nanojev_T1.0_O1"
+      "nanojev": "nanojev_T1.0_O5"
     },
     "weak": {
       "laya": "laya_T1.0_O1",
       "mlp": "mlp_T1.0_O5",
-      "nanojev": "nanojev_T1.0_O1"
+      "nanojev": "nanojev_T1.0_O5"
     },
     "poor": {
       "laya": "laya_T1.0_O1",
       "mlp": "mlp_T1.0_O5",
-      "nanojev": "nanojev_T1.0_O1"
+      "nanojev": "nanojev_T1.0_O5"
     }
   }
 }

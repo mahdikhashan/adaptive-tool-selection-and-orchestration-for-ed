@@ -277,6 +277,21 @@ git push origin vision-fl
 
 The model is in `$FEDORCH_WORK/models/vision/lastn_pc400` (about 800 MB). Do not commit it. The log is `logs/vision_finetune.log`. If the prediction part stops, run the script again: the training starts again, but the prediction continues from the last image. Claude then runs `scripts/vision_summarize.py lastn_pc400` on the laptop.
 
+## Laya-vision fine-tuning, round 2 (branch `vision-fl`)
+
+Round 2 uses more training images and trains 2 models: `good300_lastn` and `good300_full`. The design is in `docs/vision_finetune_round2.md`.
+
+```bash
+git pull
+uv sync --locked
+bash scripts/vision_finetune_round2.sh
+git add results/vision/good300_lastn results/vision/good300_full
+git commit -m "laya-vision fine-tune round 2"
+git push origin vision-fl
+```
+
+The script skips a model that has its `run.json`. The logs are `logs/vision_good300_lastn.log` and `logs/vision_good300_full.log`.
+
 ## Transfer results
 
 Commit and push all result files that are smaller than 1 GB:

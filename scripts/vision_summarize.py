@@ -169,6 +169,30 @@ def latency(run, predictions):
     return out
 
 
+def shares(rows, key, classes):
+    counts = {c: sum(x[key] == c for x in rows) + 1 for c in classes}
+    return {c: n / sum(counts.values()) for c, n in counts.items()}
+
+
+def reweight(probs, source, target):
+    w = {c: p * target[c] / source[c] for c, p in probs.items()}
+    return {c: v / sum(w.values()) for c, v in w.items()}
+
+
+def prior_corrected(rows, train_rows, val_rows):
+    keys = {"condition": list(vision.CONDITION.values()), "component": list(dict.fromkeys(vision.COMPONENT.values())),
+            "defect": [False, True]}
+    source = {k: shares(train_rows, k, c) for k, c in keys.items()}
+    target = {k: shares(val_rows, k, c) for k, c in keys.items()}
+    out = []
+    for x, p in rows:
+        q = dict(p, condition=reweight(p["condition"], source["condition"], target["condition"]),
+                 component=reweight(p["component"], source["component"], target["component"]))
+        q["defect"] = reweight({False: 1 - p["defect"], True: p["defect"]}, source["defect"], target["defect"])[True]
+        out.append((x, q))
+    return out
+
+
 def main():
     run = sys.argv[1] if len(sys.argv) > 1 else "zeroshot"
     truth = {x["image"]: x for x in vision.images(load_items())}
@@ -185,6 +209,17 @@ def main():
                **{s: evaluate(split[s], threshold) for s in ("val", "train") if split[s]},
                "all": evaluate(rows, threshold),
                "latency": latency(json.loads((out / "run.json").read_text()), predictions)}
+    trained = out / "train_images.txt"
+    if trained.exists():
+        train_rows = [truth[line] for line in trained.read_text().split("\n") if line]
+        fixed = prior_corrected(rows, train_rows, [x for x, _ in split["val"]])
+        fixed_split = {s: [row for row in fixed if row[0]["split"] == s] for s in ("val", "test")}
+        fixed_threshold = tune([p["defect"] for _, p in fixed_split["val"]], [x["defect"] for x, _ in fixed_split["val"]])
+        summary["prior_corrected"] = {"method": "p(c) * share_val(c) / share_train(c), renormalized; shares from labels, +1 smoothing",
+                                      "defect_threshold_from_val": r(fixed_threshold),
+                                      "test": evaluate(fixed_split["test"], fixed_threshold),
+                                      "test_bootstrap_95ci": bootstrap(fixed_split["test"], fixed_threshold),
+                                      "val": evaluate(fixed_split["val"], fixed_threshold)}
     write_json(out / "summary.json", summary)
     t = summary["test"]
     print(json.dumps({"component": {k: t["component"][k] for k in ("accuracy", "balanced_accuracy", "macro_f1", "majority")},

@@ -16,6 +16,7 @@ def arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument("--name", default="lastn_pc400")
     parser.add_argument("--per-class", type=int, default=400)
+    parser.add_argument("--good-per-component", type=int, default=0)
     parser.add_argument("--calib-images", type=int, default=100)
     parser.add_argument("--val-images", type=int, default=600)
     parser.add_argument("--freeze", default="last_n")
@@ -44,6 +45,18 @@ def sample(rows, per_class, rng):
     return out
 
 
+def defects_and_components(rows, per_component, rng):
+    defects = [r for r in rows if r["defect"]]
+    by_component = {}
+    for row in rows:
+        if not row["defect"]:
+            by_component.setdefault(row["component"], []).append(row)
+    good = [r for group in by_component.values() for r in rng.sample(group, min(per_component, len(group)))]
+    out = defects + good
+    rng.shuffle(out)
+    return out
+
+
 def write_split(folder, split, rows):
     with (folder / f"{split}.jsonl").open("w") as file:
         for row in rows:
@@ -60,7 +73,8 @@ def main():
     torch.manual_seed(args.seed)
     rows = vision.images(load_items())
     split = {s: [r for r in rows if r["split"] == s] for s in ("train", "val", "test")}
-    chosen = sample(split["train"], args.per_class, rng)
+    chosen = (defects_and_components(split["train"], args.good_per_component, rng) if args.good_per_component
+              else sample(split["train"], args.per_class, rng))
     calib, train_rows = chosen[: args.calib_images], chosen[args.calib_images:]
     val_rows = rng.sample(split["val"], min(args.val_images, len(split["val"])))
     if args.limit:

@@ -68,7 +68,8 @@ Date: 2026-11-05. This document builds on `docs/controller_evidence_options.md` 
 
 - Step 4b: complete. The MLP is the best controller (114.2). nano-jev has 125.3 and Laya has 150.0.
 - Plan A: complete. nano-jev is equal to the MLP at 1% and 5% and worse at 20% and 100%. See `docs/planA_results.md`.
-- Plans B to G: not started.
+- Plan F: complete. The intent has little decision value with these tools. A perfect reader gains at most 11 risk points, only with a tight budget. See `docs/planF_results.md`.
+- Plans B, C, D, E and G: not started.
 
 ## 3. Recommended order
 

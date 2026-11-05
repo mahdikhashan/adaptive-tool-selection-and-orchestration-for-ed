@@ -1,0 +1,1275 @@
+{
+  "kind": "component",
+  "budget": 0.05,
+  "regime": "weak",
+  "intents": [
+    {
+      "id": "new_wording:polymer-insulator-upper-shackle:0:6907",
+      "group": "new_wording",
+      "kind": "component",
+      "focus": [
+        "polymer-insulator-upper-shackle"
+      ],
+      "strict": false,
+      "text": "Please report every problem on the polymer insulator upper shackle."
+    },
+    {
+      "id": "new_wording:polymer-insulator-upper-shackle:1:3346",
+      "group": "new_wording",
+      "kind": "component",
+      "focus": [
+        "polymer-insulator-upper-shackle"
+      ],
+      "strict": true,
+      "text": "Please report every problem on the polymer insulator upper shackle. False reports waste crew time, so keep them rare."
+    },
+    {
+      "id": "new_wording:yoke-suspension:0:5796",
+      "group": "new_wording",
+      "kind": "component",
+      "focus": [
+        "yoke-suspension"
+      ],
+      "strict": false,
+      "text": "Please report every problem on the yoke suspension."
+    },
+    {
+      "id": "new_wording:yoke-suspension:1:8627",
+      "group": "new_wording",
+      "kind": "component",
+      "focus": [
+        "yoke-suspension"
+      ],
+      "strict": true,
+      "text": "Focus the inspection on the yoke suspension. False reports waste crew time, so keep them rare."
+    },
+    {
+      "id": "new_wording:vari-grip:0:0156",
+      "group": "new_wording",
+      "kind": "component",
+      "focus": [
+        "vari-grip"
+      ],
+      "strict": false,
+      "text": "The maintenance crew asks for a close look at the vari grip, the other components matter less."
+    },
+    {
+      "id": "new_wording:vari-grip:1:2834",
+      "group": "new_wording",
+      "kind": "component",
+      "focus": [
+        "vari-grip"
+      ],
+      "strict": true,
+      "text": "Focus the inspection on the vari grip. False reports waste crew time, so keep them rare."
+    },
+    {
+      "id": "new_wording:polymer-insulator-lower-shackle:0:1336",
+      "group": "new_wording",
+      "kind": "component",
+      "focus": [
+        "polymer-insulator-lower-shackle"
+      ],
+      "strict": false,
+      "text": "The maintenance crew asks for a close look at the polymer insulator lower shackle, the other components matter less."
+    },
+    {
+      "id": "new_wording:polymer-insulator-lower-shackle:1:7927",
+      "group": "new_wording",
+      "kind": "component",
+      "focus": [
+        "polymer-insulator-lower-shackle"
+      ],
+      "strict": true,
+      "text": "Please report every problem on the polymer insulator lower shackle. False reports waste crew time, so keep them rare."
+    },
+    {
+      "id": "new_wording:polymer-insulator-upper-shackle+glass-insulator:0:4521",
+      "group": "new_wording",
+      "kind": "component",
+      "focus": [
+        "polymer-insulator-upper-shackle",
+        "glass-insulator"
+      ],
+      "strict": false,
+      "text": "The maintenance crew asks for a close look at the polymer insulator upper shackle and glass insulator, the other components matter less."
+    },
+    {
+      "id": "new_wording:polymer-insulator-upper-shackle+glass-insulator:1:8570",
+      "group": "new_wording",
+      "kind": "component",
+      "focus": [
+        "polymer-insulator-upper-shackle",
+        "glass-insulator"
+      ],
+      "strict": true,
+      "text": "The maintenance crew asks for a close look at the polymer insulator upper shackle and glass insulator, the other components matter less. False reports waste crew time, so keep them rare."
+    },
+    {
+      "id": "new_wording:polymer-insulator-upper-shackle+yoke-suspension:0:0961",
+      "group": "new_wording",
+      "kind": "component",
+      "focus": [
+        "polymer-insulator-upper-shackle",
+        "yoke-suspension"
+      ],
+      "strict": false,
+      "text": "Focus the inspection on the polymer insulator upper shackle and yoke suspension."
+    },
+    {
+      "id": "new_wording:polymer-insulator-upper-shackle+yoke-suspension:1:6836",
+      "group": "new_wording",
+      "kind": "component",
+      "focus": [
+        "polymer-insulator-upper-shackle",
+        "yoke-suspension"
+      ],
+      "strict": true,
+      "text": "Please report every problem on the polymer insulator upper shackle and yoke suspension. False reports waste crew time, so keep them rare."
+    },
+    {
+      "id": "new_focus:glass-insulator:0:1338",
+      "group": "new_focus",
+      "kind": "component",
+      "focus": [
+        "glass-insulator"
+      ],
+      "strict": false,
+      "text": "Focus the inspection on the glass insulator."
+    },
+    {
+      "id": "new_focus:glass-insulator:1:9700",
+      "group": "new_focus",
+      "kind": "component",
+      "focus": [
+        "glass-insulator"
+      ],
+      "strict": true,
+      "text": "Focus the inspection on the glass insulator. False reports waste crew time, so keep them rare."
+    },
+    {
+      "id": "new_focus:lightning-rod-suspension:0:1152",
+      "group": "new_focus",
+      "kind": "component",
+      "focus": [
+        "lightning-rod-suspension"
+      ],
+      "strict": false,
+      "text": "Focus the inspection on the lightning rod suspension."
+    },
+    {
+      "id": "new_focus:lightning-rod-suspension:1:6855",
+      "group": "new_focus",
+      "kind": "component",
+      "focus": [
+        "lightning-rod-suspension"
+      ],
+      "strict": true,
+      "text": "The maintenance crew asks for a close look at the lightning rod suspension, the other components matter less. False reports waste crew time, so keep them rare."
+    },
+    {
+      "id": "new_focus:polymer-insulator-upper-shackle+polymer-insulator-lower-shackle:0:1532",
+      "group": "new_focus",
+      "kind": "component",
+      "focus": [
+        "polymer-insulator-upper-shackle",
+        "polymer-insulator-lower-shackle"
+      ],
+      "strict": false,
+      "text": "Please report every problem on the polymer insulator upper shackle and polymer insulator lower shackle."
+    },
+    {
+      "id": "new_focus:polymer-insulator-upper-shackle+polymer-insulator-lower-shackle:1:3563",
+      "group": "new_focus",
+      "kind": "component",
+      "focus": [
+        "polymer-insulator-upper-shackle",
+        "polymer-insulator-lower-shackle"
+      ],
+      "strict": true,
+      "text": "The maintenance crew asks for a close look at the polymer insulator upper shackle and polymer insulator lower shackle, the other components matter less. False reports waste crew time, so keep them rare."
+    },
+    {
+      "id": "new_focus:glass-insulator+polymer-insulator-lower-shackle:0:5749",
+      "group": "new_focus",
+      "kind": "component",
+      "focus": [
+        "glass-insulator",
+        "polymer-insulator-lower-shackle"
+      ],
+      "strict": false,
+      "text": "Focus the inspection on the glass insulator and polymer insulator lower shackle."
+    },
+    {
+      "id": "new_focus:glass-insulator+polymer-insulator-lower-shackle:1:0039",
+      "group": "new_focus",
+      "kind": "component",
+      "focus": [
+        "glass-insulator",
+        "polymer-insulator-lower-shackle"
+      ],
+      "strict": true,
+      "text": "The maintenance crew asks for a close look at the glass insulator and polymer insulator lower shackle, the other components matter less. False reports waste crew time, so keep them rare."
+    },
+    {
+      "id": "new_focus:yoke-suspension+lightning-rod-suspension:0:1343",
+      "group": "new_focus",
+      "kind": "component",
+      "focus": [
+        "yoke-suspension",
+        "lightning-rod-suspension"
+      ],
+      "strict": false,
+      "text": "Focus the inspection on the yoke suspension and lightning rod suspension."
+    },
+    {
+      "id": "new_focus:yoke-suspension+lightning-rod-suspension:1:8331",
+      "group": "new_focus",
+      "kind": "component",
+      "focus": [
+        "yoke-suspension",
+        "lightning-rod-suspension"
+      ],
+      "strict": true,
+      "text": "Please report every problem on the yoke suspension and lightning rod suspension. False reports waste crew time, so keep them rare."
+    }
+  ],
+  "policies": {
+    "classifier only": {
+      "summary": {
+        "new_wording": {
+          "risk_per_1000": 113.3626,
+          "critical_recall": 0.9083,
+          "escalation_rate": 0.0
+        },
+        "new_focus": {
+          "risk_per_1000": 164.2058,
+          "critical_recall": 0.8817,
+          "escalation_rate": 0.0
+        }
+      },
+      "per_intent": {
+        "new_wording:polymer-insulator-upper-shackle:0:6907": {
+          "risk_per_1000": 53.42213405129659,
+          "critical_recall": 0.9521739130434783,
+          "critical_items": 230,
+          "escalation_rate": 0.0
+        },
+        "new_wording:polymer-insulator-upper-shackle:1:3346": {
+          "risk_per_1000": 98.48377497520192,
+          "critical_recall": 0.9521739130434783,
+          "critical_items": 230,
+          "escalation_rate": 0.0
+        },
+        "new_wording:yoke-suspension:0:5796": {
+          "risk_per_1000": 55.97279297151764,
+          "critical_recall": 0.994475138121547,
+          "critical_items": 181,
+          "escalation_rate": 0.0
+        },
+        "new_wording:yoke-suspension:1:8627": {
+          "risk_per_1000": 101.03443389542298,
+          "critical_recall": 0.994475138121547,
+          "critical_items": 181,
+          "escalation_rate": 0.0
+        },
+        "new_wording:vari-grip:0:0156": {
+          "risk_per_1000": 53.42213405129659,
+          "critical_recall": 1.0,
+          "critical_items": 153,
+          "escalation_rate": 0.0
+        },
+        "new_wording:vari-grip:1:2834": {
+          "risk_per_1000": 98.48377497520192,
+          "critical_recall": 1.0,
+          "critical_items": 153,
+          "escalation_rate": 0.0
+        },
+        "new_wording:polymer-insulator-lower-shackle:0:1336": {
+          "risk_per_1000": 163.10046762080205,
+          "critical_recall": 0.6504065040650406,
+          "critical_items": 123,
+          "escalation_rate": 0.0
+        },
+        "new_wording:polymer-insulator-lower-shackle:1:7927": {
+          "risk_per_1000": 208.1621085447074,
+          "critical_recall": 0.6504065040650406,
+          "critical_items": 123,
+          "escalation_rate": 0.0
+        },
+        "new_wording:polymer-insulator-upper-shackle+glass-insulator:0:4521": {
+          "risk_per_1000": 163.10046762080205,
+          "critical_recall": 0.8818380743982495,
+          "critical_items": 457,
+          "escalation_rate": 0.0
+        },
+        "new_wording:polymer-insulator-upper-shackle+glass-insulator:1:8570": {
+          "risk_per_1000": 208.1621085447074,
+          "critical_recall": 0.8818380743982495,
+          "critical_items": 457,
+          "escalation_rate": 0.0
+        },
+        "new_wording:polymer-insulator-upper-shackle+yoke-suspension:0:0961": {
+          "risk_per_1000": 55.97279297151764,
+          "critical_recall": 0.9708029197080292,
+          "critical_items": 411,
+          "escalation_rate": 0.0
+        },
+        "new_wording:polymer-insulator-upper-shackle+yoke-suspension:1:6836": {
+          "risk_per_1000": 101.03443389542298,
+          "critical_recall": 0.9708029197080292,
+          "critical_items": 411,
+          "escalation_rate": 0.0
+        },
+        "new_focus:glass-insulator:0:1338": {
+          "risk_per_1000": 163.10046762080205,
+          "critical_recall": 0.8105726872246696,
+          "critical_items": 227,
+          "escalation_rate": 0.0
+        },
+        "new_focus:glass-insulator:1:9700": {
+          "risk_per_1000": 208.1621085447074,
+          "critical_recall": 0.8105726872246696,
+          "critical_items": 227,
+          "escalation_rate": 0.0
+        },
+        "new_focus:lightning-rod-suspension:0:1152": {
+          "risk_per_1000": 53.42213405129659,
+          "critical_recall": 1.0,
+          "critical_items": 113,
+          "escalation_rate": 0.0
+        },
+        "new_focus:lightning-rod-suspension:1:6855": {
+          "risk_per_1000": 98.48377497520192,
+          "critical_recall": 1.0,
+          "critical_items": 113,
+          "escalation_rate": 0.0
+        },
+        "new_focus:polymer-insulator-upper-shackle+polymer-insulator-lower-shackle:0:1532": {
+          "risk_per_1000": 163.10046762080205,
+          "critical_recall": 0.8470254957507082,
+          "critical_items": 353,
+          "escalation_rate": 0.0
+        },
+        "new_focus:polymer-insulator-upper-shackle+polymer-insulator-lower-shackle:1:3563": {
+          "risk_per_1000": 208.1621085447074,
+          "critical_recall": 0.8470254957507082,
+          "critical_items": 353,
+          "escalation_rate": 0.0
+        },
+        "new_focus:glass-insulator+polymer-insulator-lower-shackle:0:5749": {
+          "risk_per_1000": 272.7788011903075,
+          "critical_recall": 0.7542857142857143,
+          "critical_items": 350,
+          "escalation_rate": 0.0
+        },
+        "new_focus:glass-insulator+polymer-insulator-lower-shackle:1:0039": {
+          "risk_per_1000": 317.84044211421286,
+          "critical_recall": 0.7542857142857143,
+          "critical_items": 350,
+          "escalation_rate": 0.0
+        },
+        "new_focus:yoke-suspension+lightning-rod-suspension:0:1343": {
+          "risk_per_1000": 55.97279297151764,
+          "critical_recall": 0.9965986394557823,
+          "critical_items": 294,
+          "escalation_rate": 0.0
+        },
+        "new_focus:yoke-suspension+lightning-rod-suspension:1:8331": {
+          "risk_per_1000": 101.03443389542298,
+          "critical_recall": 0.9965986394557823,
+          "critical_items": 294,
+          "escalation_rate": 0.0
+        }
+      }
+    },
+    "oracle": {
+      "summary": {
+        "new_wording": {
+          "risk_per_1000": 34.9157,
+          "critical_recall": 0.9564,
+          "escalation_rate": 0.0299
+        },
+        "new_focus": {
+          "risk_per_1000": 59.6741,
+          "critical_recall": 0.9403,
+          "escalation_rate": 0.0299
+        }
+      },
+      "per_intent": {
+        "new_wording:polymer-insulator-upper-shackle:0:6907": {
+          "risk_per_1000": 15.162250247980728,
+          "critical_recall": 0.9652173913043478,
+          "critical_items": 230,
+          "escalation_rate": 0.029899390675924613
+        },
+        "new_wording:polymer-insulator-upper-shackle:1:3346": {
+          "risk_per_1000": 19.299985829672664,
+          "critical_recall": 0.9652173913043478,
+          "critical_items": 230,
+          "escalation_rate": 0.029899390675924613
+        },
+        "new_wording:yoke-suspension:0:5796": {
+          "risk_per_1000": 15.162250247980728,
+          "critical_recall": 1.0,
+          "critical_items": 181,
+          "escalation_rate": 0.029899390675924613
+        },
+        "new_wording:yoke-suspension:1:8627": {
+          "risk_per_1000": 19.299985829672664,
+          "critical_recall": 1.0,
+          "critical_items": 181,
+          "escalation_rate": 0.029899390675924613
+        },
+        "new_wording:vari-grip:0:0156": {
+          "risk_per_1000": 15.162250247980728,
+          "critical_recall": 1.0,
+          "critical_items": 153,
+          "escalation_rate": 0.029899390675924613
+        },
+        "new_wording:vari-grip:1:2834": {
+          "risk_per_1000": 19.299985829672664,
+          "critical_recall": 1.0,
+          "critical_items": 153,
+          "escalation_rate": 0.029899390675924613
+        },
+        "new_wording:polymer-insulator-lower-shackle:0:1336": {
+          "risk_per_1000": 57.50318832365028,
+          "critical_recall": 0.865040650406504,
+          "critical_items": 123,
+          "escalation_rate": 0.029899390675924613
+        },
+        "new_wording:polymer-insulator-lower-shackle:1:7927": {
+          "risk_per_1000": 61.64092390534221,
+          "critical_recall": 0.865040650406504,
+          "critical_items": 123,
+          "escalation_rate": 0.029899390675924613
+        },
+        "new_wording:polymer-insulator-upper-shackle+glass-insulator:0:4521": {
+          "risk_per_1000": 78.92872325350716,
+          "critical_recall": 0.9277899343544858,
+          "critical_items": 457,
+          "escalation_rate": 0.029899390675924613
+        },
+        "new_wording:polymer-insulator-upper-shackle+glass-insulator:1:8570": {
+          "risk_per_1000": 83.06645883519909,
+          "critical_recall": 0.9277899343544858,
+          "critical_items": 457,
+          "escalation_rate": 0.029899390675924613
+        },
+        "new_wording:polymer-insulator-upper-shackle+yoke-suspension:0:0961": {
+          "risk_per_1000": 15.162250247980728,
+          "critical_recall": 0.9805352798053528,
+          "critical_items": 411,
+          "escalation_rate": 0.029899390675924613
+        },
+        "new_wording:polymer-insulator-upper-shackle+yoke-suspension:1:6836": {
+          "risk_per_1000": 19.299985829672664,
+          "critical_recall": 0.9805352798053528,
+          "critical_items": 411,
+          "escalation_rate": 0.029899390675924613
+        },
+        "new_focus:glass-insulator:0:1338": {
+          "risk_per_1000": 78.92872325350716,
+          "critical_recall": 0.8898678414096917,
+          "critical_items": 227,
+          "escalation_rate": 0.029899390675924613
+        },
+        "new_focus:glass-insulator:1:9700": {
+          "risk_per_1000": 83.06645883519909,
+          "critical_recall": 0.8898678414096917,
+          "critical_items": 227,
+          "escalation_rate": 0.029899390675924613
+        },
+        "new_focus:lightning-rod-suspension:0:1152": {
+          "risk_per_1000": 15.162250247980728,
+          "critical_recall": 1.0,
+          "critical_items": 113,
+          "escalation_rate": 0.029899390675924613
+        },
+        "new_focus:lightning-rod-suspension:1:6855": {
+          "risk_per_1000": 19.299985829672664,
+          "critical_recall": 1.0,
+          "critical_items": 113,
+          "escalation_rate": 0.029899390675924613
+        },
+        "new_focus:polymer-insulator-upper-shackle+polymer-insulator-lower-shackle:0:1532": {
+          "risk_per_1000": 57.50318832365028,
+          "critical_recall": 0.9303116147308782,
+          "critical_items": 353,
+          "escalation_rate": 0.029899390675924613
+        },
+        "new_focus:polymer-insulator-upper-shackle+polymer-insulator-lower-shackle:1:3563": {
+          "risk_per_1000": 61.64092390534221,
+          "critical_recall": 0.9303116147308782,
+          "critical_items": 353,
+          "escalation_rate": 0.029899390675924613
+        },
+        "new_focus:glass-insulator+polymer-insulator-lower-shackle:0:5749": {
+          "risk_per_1000": 121.2696613291767,
+          "critical_recall": 0.8811428571428571,
+          "critical_items": 350,
+          "escalation_rate": 0.029899390675924613
+        },
+        "new_focus:glass-insulator+polymer-insulator-lower-shackle:1:0039": {
+          "risk_per_1000": 125.40739691086864,
+          "critical_recall": 0.8811428571428571,
+          "critical_items": 350,
+          "escalation_rate": 0.029899390675924613
+        },
+        "new_focus:yoke-suspension+lightning-rod-suspension:0:1343": {
+          "risk_per_1000": 15.162250247980728,
+          "critical_recall": 1.0,
+          "critical_items": 294,
+          "escalation_rate": 0.029899390675924613
+        },
+        "new_focus:yoke-suspension+lightning-rod-suspension:1:8331": {
+          "risk_per_1000": 19.299985829672664,
+          "critical_recall": 1.0,
+          "critical_items": 294,
+          "escalation_rate": 0.029899390675924613
+        }
+      }
+    },
+    "static cascade θ=0.9": {
+      "summary": {
+        "new_wording": {
+          "risk_per_1000": 109.3949,
+          "critical_recall": 0.9013,
+          "escalation_rate": 0.0496
+        },
+        "new_focus": {
+          "risk_per_1000": 149.6953,
+          "critical_recall": 0.8843,
+          "escalation_rate": 0.0496
+        }
+      },
+      "per_intent": {
+        "new_wording:polymer-insulator-upper-shackle:0:6907": {
+          "risk_per_1000": 65.4669122856738,
+          "critical_recall": 0.9217391304347826,
+          "critical_items": 230,
+          "escalation_rate": 0.049596145670965
+        },
+        "new_wording:polymer-insulator-upper-shackle:1:3346": {
+          "risk_per_1000": 97.2084455150914,
+          "critical_recall": 0.9217391304347826,
+          "critical_items": 230,
+          "escalation_rate": 0.049596145670965
+        },
+        "new_wording:yoke-suspension:0:5796": {
+          "risk_per_1000": 57.814935525010625,
+          "critical_recall": 0.9779005524861878,
+          "critical_items": 181,
+          "escalation_rate": 0.049596145670965
+        },
+        "new_wording:yoke-suspension:1:8627": {
+          "risk_per_1000": 89.55646875442822,
+          "critical_recall": 0.9779005524861878,
+          "critical_items": 181,
+          "escalation_rate": 0.049596145670965
+        },
+        "new_wording:vari-grip:0:0156": {
+          "risk_per_1000": 47.6122998441264,
+          "critical_recall": 1.0,
+          "critical_items": 153,
+          "escalation_rate": 0.049596145670965
+        },
+        "new_wording:vari-grip:1:2834": {
+          "risk_per_1000": 79.353833073544,
+          "critical_recall": 1.0,
+          "critical_items": 153,
+          "escalation_rate": 0.049596145670965
+        },
+        "new_wording:polymer-insulator-lower-shackle:0:1336": {
+          "risk_per_1000": 144.53733881252657,
+          "critical_recall": 0.6910569105691057,
+          "critical_items": 123,
+          "escalation_rate": 0.049596145670965
+        },
+        "new_wording:polymer-insulator-lower-shackle:1:7927": {
+          "risk_per_1000": 176.27887204194417,
+          "critical_recall": 0.6910569105691057,
+          "critical_items": 123,
+          "escalation_rate": 0.049596145670965
+        },
+        "new_wording:polymer-insulator-upper-shackle+glass-insulator:0:4521": {
+          "risk_per_1000": 170.04392801473713,
+          "critical_recall": 0.8708971553610503,
+          "critical_items": 457,
+          "escalation_rate": 0.049596145670965
+        },
+        "new_wording:polymer-insulator-upper-shackle+glass-insulator:1:8570": {
+          "risk_per_1000": 201.78546124415473,
+          "critical_recall": 0.8708971553610503,
+          "critical_items": 457,
+          "escalation_rate": 0.049596145670965
+        },
+        "new_wording:polymer-insulator-upper-shackle+yoke-suspension:0:0961": {
+          "risk_per_1000": 75.66954796655803,
+          "critical_recall": 0.9464720194647201,
+          "critical_items": 411,
+          "escalation_rate": 0.049596145670965
+        },
+        "new_wording:polymer-insulator-upper-shackle+yoke-suspension:1:6836": {
+          "risk_per_1000": 107.41108119597563,
+          "critical_recall": 0.9464720194647201,
+          "critical_items": 411,
+          "escalation_rate": 0.049596145670965
+        },
+        "new_focus:glass-insulator:0:1338": {
+          "risk_per_1000": 152.18931557318973,
+          "critical_recall": 0.8193832599118943,
+          "critical_items": 227,
+          "escalation_rate": 0.049596145670965
+        },
+        "new_focus:glass-insulator:1:9700": {
+          "risk_per_1000": 183.93084880260733,
+          "critical_recall": 0.8193832599118943,
+          "critical_items": 227,
+          "escalation_rate": 0.049596145670965
+        },
+        "new_focus:lightning-rod-suspension:0:1152": {
+          "risk_per_1000": 47.6122998441264,
+          "critical_recall": 1.0,
+          "critical_items": 113,
+          "escalation_rate": 0.049596145670965
+        },
+        "new_focus:lightning-rod-suspension:1:6855": {
+          "risk_per_1000": 79.353833073544,
+          "critical_recall": 1.0,
+          "critical_items": 113,
+          "escalation_rate": 0.049596145670965
+        },
+        "new_focus:polymer-insulator-upper-shackle+polymer-insulator-lower-shackle:0:1532": {
+          "risk_per_1000": 162.39195125407397,
+          "critical_recall": 0.8413597733711048,
+          "critical_items": 353,
+          "escalation_rate": 0.049596145670965
+        },
+        "new_focus:polymer-insulator-upper-shackle+polymer-insulator-lower-shackle:1:3563": {
+          "risk_per_1000": 194.13348448349157,
+          "critical_recall": 0.8413597733711048,
+          "critical_items": 353,
+          "escalation_rate": 0.049596145670965
+        },
+        "new_focus:glass-insulator+polymer-insulator-lower-shackle:0:5749": {
+          "risk_per_1000": 249.1143545415899,
+          "critical_recall": 0.7742857142857142,
+          "critical_items": 350,
+          "escalation_rate": 0.049596145670965
+        },
+        "new_focus:glass-insulator+polymer-insulator-lower-shackle:1:0039": {
+          "risk_per_1000": 280.85588777100753,
+          "critical_recall": 0.7742857142857142,
+          "critical_items": 350,
+          "escalation_rate": 0.049596145670965
+        },
+        "new_focus:yoke-suspension+lightning-rod-suspension:0:1343": {
+          "risk_per_1000": 57.814935525010625,
+          "critical_recall": 0.9863945578231292,
+          "critical_items": 294,
+          "escalation_rate": 0.049596145670965
+        },
+        "new_focus:yoke-suspension+lightning-rod-suspension:1:8331": {
+          "risk_per_1000": 89.55646875442822,
+          "critical_recall": 0.9863945578231292,
+          "critical_items": 294,
+          "escalation_rate": 0.049596145670965
+        }
+      }
+    },
+    "choice + mlp_blind": {
+      "summary": {
+        "new_wording": {
+          "risk_per_1000": 82.9106,
+          "critical_recall": 0.9145,
+          "escalation_rate": 0.0438
+        },
+        "new_focus": {
+          "risk_per_1000": 128.7374,
+          "critical_recall": 0.8934,
+          "escalation_rate": 0.0438
+        }
+      },
+      "per_intent": {
+        "new_wording:polymer-insulator-upper-shackle:0:6907": {
+          "risk_per_1000": 38.812526569363754,
+          "critical_recall": 0.9521739130434783,
+          "critical_items": 230,
+          "escalation_rate": 0.043814652118463936
+        },
+        "new_wording:polymer-insulator-upper-shackle:1:3346": {
+          "risk_per_1000": 61.541731614000284,
+          "critical_recall": 0.9521739130434783,
+          "critical_items": 230,
+          "escalation_rate": 0.043814652118463936
+        },
+        "new_wording:yoke-suspension:0:5796": {
+          "risk_per_1000": 38.812526569363754,
+          "critical_recall": 1.0,
+          "critical_items": 181,
+          "escalation_rate": 0.043814652118463936
+        },
+        "new_wording:yoke-suspension:1:8627": {
+          "risk_per_1000": 61.541731614000284,
+          "critical_recall": 1.0,
+          "critical_items": 181,
+          "escalation_rate": 0.043814652118463936
+        },
+        "new_wording:vari-grip:0:0156": {
+          "risk_per_1000": 38.812526569363754,
+          "critical_recall": 1.0,
+          "critical_items": 153,
+          "escalation_rate": 0.043814652118463936
+        },
+        "new_wording:vari-grip:1:2834": {
+          "risk_per_1000": 61.541731614000284,
+          "critical_recall": 1.0,
+          "critical_items": 153,
+          "escalation_rate": 0.043814652118463936
+        },
+        "new_wording:polymer-insulator-lower-shackle:0:1336": {
+          "risk_per_1000": 140.83888337820605,
+          "critical_recall": 0.6666666666666666,
+          "critical_items": 123,
+          "escalation_rate": 0.043814652118463936
+        },
+        "new_wording:polymer-insulator-lower-shackle:1:7927": {
+          "risk_per_1000": 163.56808842284258,
+          "critical_recall": 0.6666666666666666,
+          "critical_items": 123,
+          "escalation_rate": 0.043814652118463936
+        },
+        "new_wording:polymer-insulator-upper-shackle+glass-insulator:0:4521": {
+          "risk_per_1000": 133.18690661754286,
+          "critical_recall": 0.8949671772428884,
+          "critical_items": 457,
+          "escalation_rate": 0.043814652118463936
+        },
+        "new_wording:polymer-insulator-upper-shackle+glass-insulator:1:8570": {
+          "risk_per_1000": 155.9161116621794,
+          "critical_recall": 0.8949671772428884,
+          "critical_items": 457,
+          "escalation_rate": 0.043814652118463936
+        },
+        "new_wording:polymer-insulator-upper-shackle+yoke-suspension:0:0961": {
+          "risk_per_1000": 38.812526569363754,
+          "critical_recall": 0.9732360097323601,
+          "critical_items": 411,
+          "escalation_rate": 0.043814652118463936
+        },
+        "new_wording:polymer-insulator-upper-shackle+yoke-suspension:1:6836": {
+          "risk_per_1000": 61.541731614000284,
+          "critical_recall": 0.9732360097323601,
+          "critical_items": 411,
+          "escalation_rate": 0.043814652118463936
+        },
+        "new_focus:glass-insulator:0:1338": {
+          "risk_per_1000": 133.18690661754286,
+          "critical_recall": 0.8370044052863436,
+          "critical_items": 227,
+          "escalation_rate": 0.043814652118463936
+        },
+        "new_focus:glass-insulator:1:9700": {
+          "risk_per_1000": 155.9161116621794,
+          "critical_recall": 0.8370044052863436,
+          "critical_items": 227,
+          "escalation_rate": 0.043814652118463936
+        },
+        "new_focus:lightning-rod-suspension:0:1152": {
+          "risk_per_1000": 38.812526569363754,
+          "critical_recall": 1.0,
+          "critical_items": 113,
+          "escalation_rate": 0.043814652118463936
+        },
+        "new_focus:lightning-rod-suspension:1:6855": {
+          "risk_per_1000": 61.541731614000284,
+          "critical_recall": 1.0,
+          "critical_items": 113,
+          "escalation_rate": 0.043814652118463936
+        },
+        "new_focus:polymer-insulator-upper-shackle+polymer-insulator-lower-shackle:0:1532": {
+          "risk_per_1000": 140.83888337820605,
+          "critical_recall": 0.8526912181303116,
+          "critical_items": 353,
+          "escalation_rate": 0.043814652118463936
+        },
+        "new_focus:polymer-insulator-upper-shackle+polymer-insulator-lower-shackle:1:3563": {
+          "risk_per_1000": 163.56808842284258,
+          "critical_recall": 0.8526912181303116,
+          "critical_items": 353,
+          "escalation_rate": 0.043814652118463936
+        },
+        "new_focus:glass-insulator+polymer-insulator-lower-shackle:0:5749": {
+          "risk_per_1000": 235.21326342638514,
+          "critical_recall": 0.7771428571428571,
+          "critical_items": 350,
+          "escalation_rate": 0.043814652118463936
+        },
+        "new_focus:glass-insulator+polymer-insulator-lower-shackle:1:0039": {
+          "risk_per_1000": 257.9424684710217,
+          "critical_recall": 0.7771428571428571,
+          "critical_items": 350,
+          "escalation_rate": 0.043814652118463936
+        },
+        "new_focus:yoke-suspension+lightning-rod-suspension:0:1343": {
+          "risk_per_1000": 38.812526569363754,
+          "critical_recall": 1.0,
+          "critical_items": 294,
+          "escalation_rate": 0.043814652118463936
+        },
+        "new_focus:yoke-suspension+lightning-rod-suspension:1:8331": {
+          "risk_per_1000": 61.541731614000284,
+          "critical_recall": 1.0,
+          "critical_items": 294,
+          "escalation_rate": 0.043814652118463936
+        }
+      }
+    },
+    "choice + mlp_blind, threshold per intent": {
+      "summary": {
+        "new_wording": {
+          "risk_per_1000": 82.9909,
+          "critical_recall": 0.9133,
+          "escalation_rate": 0.0425
+        },
+        "new_focus": {
+          "risk_per_1000": 128.8097,
+          "critical_recall": 0.8929,
+          "escalation_rate": 0.0426
+        }
+      },
+      "per_intent": {
+        "new_wording:polymer-insulator-upper-shackle:0:6907": {
+          "risk_per_1000": 38.812526569363754,
+          "critical_recall": 0.9521739130434783,
+          "critical_items": 230,
+          "escalation_rate": 0.043814652118463936
+        },
+        "new_wording:polymer-insulator-upper-shackle:1:3346": {
+          "risk_per_1000": 61.782627178687825,
+          "critical_recall": 0.9521739130434783,
+          "critical_items": 230,
+          "escalation_rate": 0.03973359784611025
+        },
+        "new_wording:yoke-suspension:0:5796": {
+          "risk_per_1000": 38.812526569363754,
+          "critical_recall": 1.0,
+          "critical_items": 181,
+          "escalation_rate": 0.043814652118463936
+        },
+        "new_wording:yoke-suspension:1:8627": {
+          "risk_per_1000": 61.782627178687825,
+          "critical_recall": 1.0,
+          "critical_items": 181,
+          "escalation_rate": 0.03973359784611025
+        },
+        "new_wording:vari-grip:0:0156": {
+          "risk_per_1000": 38.812526569363754,
+          "critical_recall": 1.0,
+          "critical_items": 153,
+          "escalation_rate": 0.043814652118463936
+        },
+        "new_wording:vari-grip:1:2834": {
+          "risk_per_1000": 61.541731614000284,
+          "critical_recall": 1.0,
+          "critical_items": 153,
+          "escalation_rate": 0.043814652118463936
+        },
+        "new_wording:polymer-insulator-lower-shackle:0:1336": {
+          "risk_per_1000": 140.83888337820605,
+          "critical_recall": 0.6666666666666666,
+          "critical_items": 123,
+          "escalation_rate": 0.043814652118463936
+        },
+        "new_wording:polymer-insulator-lower-shackle:1:7927": {
+          "risk_per_1000": 163.80898398753013,
+          "critical_recall": 0.6520325203252032,
+          "critical_items": 123,
+          "escalation_rate": 0.03973359784611025
+        },
+        "new_wording:polymer-insulator-upper-shackle+glass-insulator:0:4521": {
+          "risk_per_1000": 133.18690661754286,
+          "critical_recall": 0.8949671772428884,
+          "critical_items": 457,
+          "escalation_rate": 0.043814652118463936
+        },
+        "new_wording:polymer-insulator-upper-shackle+glass-insulator:1:8570": {
+          "risk_per_1000": 155.9161116621794,
+          "critical_recall": 0.8949671772428884,
+          "critical_items": 457,
+          "escalation_rate": 0.043814652118463936
+        },
+        "new_wording:polymer-insulator-upper-shackle+yoke-suspension:0:0961": {
+          "risk_per_1000": 38.812526569363754,
+          "critical_recall": 0.9732360097323601,
+          "critical_items": 411,
+          "escalation_rate": 0.043814652118463936
+        },
+        "new_wording:polymer-insulator-upper-shackle+yoke-suspension:1:6836": {
+          "risk_per_1000": 61.782627178687825,
+          "critical_recall": 0.9732360097323601,
+          "critical_items": 411,
+          "escalation_rate": 0.03973359784611025
+        },
+        "new_focus:glass-insulator:0:1338": {
+          "risk_per_1000": 133.18690661754286,
+          "critical_recall": 0.8370044052863436,
+          "critical_items": 227,
+          "escalation_rate": 0.043814652118463936
+        },
+        "new_focus:glass-insulator:1:9700": {
+          "risk_per_1000": 155.9161116621794,
+          "critical_recall": 0.8370044052863436,
+          "critical_items": 227,
+          "escalation_rate": 0.043814652118463936
+        },
+        "new_focus:lightning-rod-suspension:0:1152": {
+          "risk_per_1000": 38.812526569363754,
+          "critical_recall": 1.0,
+          "critical_items": 113,
+          "escalation_rate": 0.043814652118463936
+        },
+        "new_focus:lightning-rod-suspension:1:6855": {
+          "risk_per_1000": 61.782627178687825,
+          "critical_recall": 1.0,
+          "critical_items": 113,
+          "escalation_rate": 0.03973359784611025
+        },
+        "new_focus:polymer-insulator-upper-shackle+polymer-insulator-lower-shackle:0:1532": {
+          "risk_per_1000": 140.83888337820605,
+          "critical_recall": 0.8526912181303116,
+          "critical_items": 353,
+          "escalation_rate": 0.043814652118463936
+        },
+        "new_focus:polymer-insulator-upper-shackle+polymer-insulator-lower-shackle:1:3563": {
+          "risk_per_1000": 163.80898398753013,
+          "critical_recall": 0.8475920679886685,
+          "critical_items": 353,
+          "escalation_rate": 0.03973359784611025
+        },
+        "new_focus:glass-insulator+polymer-insulator-lower-shackle:0:5749": {
+          "risk_per_1000": 235.21326342638514,
+          "critical_recall": 0.7771428571428571,
+          "critical_items": 350,
+          "escalation_rate": 0.043814652118463936
+        },
+        "new_focus:glass-insulator+polymer-insulator-lower-shackle:1:0039": {
+          "risk_per_1000": 257.9424684710217,
+          "critical_recall": 0.7771428571428571,
+          "critical_items": 350,
+          "escalation_rate": 0.043814652118463936
+        },
+        "new_focus:yoke-suspension+lightning-rod-suspension:0:1343": {
+          "risk_per_1000": 38.812526569363754,
+          "critical_recall": 1.0,
+          "critical_items": 294,
+          "escalation_rate": 0.043814652118463936
+        },
+        "new_focus:yoke-suspension+lightning-rod-suspension:1:8331": {
+          "risk_per_1000": 61.782627178687825,
+          "critical_recall": 1.0,
+          "critical_items": 294,
+          "escalation_rate": 0.03973359784611025
+        }
+      }
+    },
+    "choice + mlp_bow": {
+      "summary": {
+        "new_wording": {
+          "risk_per_1000": 114.5954,
+          "critical_recall": 0.9074,
+          "escalation_rate": 0.0375
+        },
+        "new_focus": {
+          "risk_per_1000": 165.26,
+          "critical_recall": 0.8812,
+          "escalation_rate": 0.025
+        }
+      },
+      "per_intent": {
+        "new_wording:polymer-insulator-upper-shackle:0:6907": {
+          "risk_per_1000": 70.76661470879978,
+          "critical_recall": 0.931304347826087,
+          "critical_items": 230,
+          "escalation_rate": 0.050021255491001844
+        },
+        "new_wording:polymer-insulator-upper-shackle:1:3346": {
+          "risk_per_1000": 99.33399461527561,
+          "critical_recall": 0.9521739130434783,
+          "critical_items": 230,
+          "escalation_rate": 0.050021255491001844
+        },
+        "new_wording:yoke-suspension:0:5796": {
+          "risk_per_1000": 63.624769732180816,
+          "critical_recall": 0.994475138121547,
+          "critical_items": 181,
+          "escalation_rate": 0.050021255491001844
+        },
+        "new_wording:yoke-suspension:1:8627": {
+          "risk_per_1000": 101.03443389542298,
+          "critical_recall": 0.994475138121547,
+          "critical_items": 181,
+          "escalation_rate": 0.0
+        },
+        "new_wording:vari-grip:0:0156": {
+          "risk_per_1000": 53.138727504605356,
+          "critical_recall": 1.0,
+          "critical_items": 153,
+          "escalation_rate": 0.050021255491001844
+        },
+        "new_wording:vari-grip:1:2834": {
+          "risk_per_1000": 98.48377497520192,
+          "critical_recall": 1.0,
+          "critical_items": 153,
+          "escalation_rate": 0.0
+        },
+        "new_wording:polymer-insulator-lower-shackle:0:1336": {
+          "risk_per_1000": 162.81706107411082,
+          "critical_recall": 0.6504065040650406,
+          "critical_items": 123,
+          "escalation_rate": 0.050021255491001844
+        },
+        "new_wording:polymer-insulator-lower-shackle:1:7927": {
+          "risk_per_1000": 209.01232818478107,
+          "critical_recall": 0.6504065040650406,
+          "critical_items": 123,
+          "escalation_rate": 0.050021255491001844
+        },
+        "new_wording:polymer-insulator-upper-shackle+glass-insulator:0:4521": {
+          "risk_per_1000": 155.16508431344764,
+          "critical_recall": 0.888402625820569,
+          "critical_items": 457,
+          "escalation_rate": 0.050021255491001844
+        },
+        "new_wording:polymer-insulator-upper-shackle+glass-insulator:1:8570": {
+          "risk_per_1000": 201.3603514241179,
+          "critical_recall": 0.888402625820569,
+          "critical_items": 457,
+          "escalation_rate": 0.050021255491001844
+        },
+        "new_wording:polymer-insulator-upper-shackle+yoke-suspension:0:0961": {
+          "risk_per_1000": 55.97279297151764,
+          "critical_recall": 0.9708029197080292,
+          "critical_items": 411,
+          "escalation_rate": 0.0
+        },
+        "new_wording:polymer-insulator-upper-shackle+yoke-suspension:1:6836": {
+          "risk_per_1000": 104.43531245571772,
+          "critical_recall": 0.9683698296836983,
+          "critical_items": 411,
+          "escalation_rate": 0.050021255491001844
+        },
+        "new_focus:glass-insulator:0:1338": {
+          "risk_per_1000": 163.10046762080205,
+          "critical_recall": 0.8105726872246696,
+          "critical_items": 227,
+          "escalation_rate": 0.0
+        },
+        "new_focus:glass-insulator:1:9700": {
+          "risk_per_1000": 208.1621085447074,
+          "critical_recall": 0.8105726872246696,
+          "critical_items": 227,
+          "escalation_rate": 0.0
+        },
+        "new_focus:lightning-rod-suspension:0:1152": {
+          "risk_per_1000": 53.42213405129659,
+          "critical_recall": 1.0,
+          "critical_items": 113,
+          "escalation_rate": 0.0
+        },
+        "new_focus:lightning-rod-suspension:1:6855": {
+          "risk_per_1000": 99.33399461527561,
+          "critical_recall": 1.0,
+          "critical_items": 113,
+          "escalation_rate": 0.050021255491001844
+        },
+        "new_focus:polymer-insulator-upper-shackle+polymer-insulator-lower-shackle:0:1532": {
+          "risk_per_1000": 175.3436304378631,
+          "critical_recall": 0.8368271954674221,
+          "critical_items": 353,
+          "escalation_rate": 0.050021255491001844
+        },
+        "new_focus:polymer-insulator-upper-shackle+polymer-insulator-lower-shackle:1:3563": {
+          "risk_per_1000": 209.01232818478107,
+          "critical_recall": 0.8470254957507082,
+          "critical_items": 353,
+          "escalation_rate": 0.050021255491001844
+        },
+        "new_focus:glass-insulator+polymer-insulator-lower-shackle:0:5749": {
+          "risk_per_1000": 272.7788011903075,
+          "critical_recall": 0.7542857142857143,
+          "critical_items": 350,
+          "escalation_rate": 0.0
+        },
+        "new_focus:glass-insulator+polymer-insulator-lower-shackle:1:0039": {
+          "risk_per_1000": 311.03868499362335,
+          "critical_recall": 0.7628571428571429,
+          "critical_items": 350,
+          "escalation_rate": 0.050021255491001844
+        },
+        "new_focus:yoke-suspension+lightning-rod-suspension:0:1343": {
+          "risk_per_1000": 55.97279297151764,
+          "critical_recall": 0.9965986394557823,
+          "critical_items": 294,
+          "escalation_rate": 0.0
+        },
+        "new_focus:yoke-suspension+lightning-rod-suspension:1:8331": {
+          "risk_per_1000": 104.43531245571772,
+          "critical_recall": 0.9931972789115646,
+          "critical_items": 294,
+          "escalation_rate": 0.050021255491001844
+        }
+      }
+    },
+    "choice + mlp_parsed": {
+      "summary": {
+        "new_wording": {
+          "risk_per_1000": 83.266,
+          "critical_recall": 0.9079,
+          "escalation_rate": 0.0401
+        },
+        "new_focus": {
+          "risk_per_1000": 126.9931,
+          "critical_recall": 0.8935,
+          "escalation_rate": 0.0393
+        }
+      },
+      "per_intent": {
+        "new_wording:polymer-insulator-upper-shackle:0:6907": {
+          "risk_per_1000": 38.51494969533796,
+          "critical_recall": 0.9521739130434783,
+          "critical_items": 230,
+          "escalation_rate": 0.035822587501771294
+        },
+        "new_wording:polymer-insulator-upper-shackle:1:3346": {
+          "risk_per_1000": 60.66317131925747,
+          "critical_recall": 0.9521739130434783,
+          "critical_items": 230,
+          "escalation_rate": 0.043701289499787445
+        },
+        "new_wording:yoke-suspension:0:5796": {
+          "risk_per_1000": 38.27405413065042,
+          "critical_recall": 1.0,
+          "critical_items": 181,
+          "escalation_rate": 0.03743800481791129
+        },
+        "new_wording:yoke-suspension:1:8627": {
+          "risk_per_1000": 60.734022955930286,
+          "critical_recall": 1.0,
+          "critical_items": 181,
+          "escalation_rate": 0.04194416891030183
+        },
+        "new_wording:vari-grip:0:0156": {
+          "risk_per_1000": 38.826696896698316,
+          "critical_recall": 1.0,
+          "critical_items": 153,
+          "escalation_rate": 0.03825988380331586
+        },
+        "new_wording:vari-grip:1:2834": {
+          "risk_per_1000": 60.52146804591186,
+          "critical_recall": 1.0,
+          "critical_items": 153,
+          "escalation_rate": 0.044778234377214114
+        },
+        "new_wording:polymer-insulator-lower-shackle:0:1336": {
+          "risk_per_1000": 153.7480515799915,
+          "critical_recall": 0.6130081300813008,
+          "critical_items": 123,
+          "escalation_rate": 0.03514241178971234
+        },
+        "new_wording:polymer-insulator-lower-shackle:1:7927": {
+          "risk_per_1000": 169.97307637806435,
+          "critical_recall": 0.6341463414634146,
+          "critical_items": 123,
+          "escalation_rate": 0.04112228992489726
+        },
+        "new_wording:polymer-insulator-upper-shackle+glass-insulator:0:4521": {
+          "risk_per_1000": 131.91157715743233,
+          "critical_recall": 0.8949671772428884,
+          "critical_items": 457,
+          "escalation_rate": 0.035482499645741815
+        },
+        "new_wording:polymer-insulator-upper-shackle+glass-insulator:1:8570": {
+          "risk_per_1000": 147.92404704548673,
+          "critical_recall": 0.9015317286652079,
+          "critical_items": 457,
+          "escalation_rate": 0.04469321241320674
+        },
+        "new_wording:polymer-insulator-upper-shackle+yoke-suspension:0:0961": {
+          "risk_per_1000": 37.65055972792972,
+          "critical_recall": 0.9732360097323601,
+          "critical_items": 411,
+          "escalation_rate": 0.03854329035000709
+        },
+        "new_wording:polymer-insulator-upper-shackle+yoke-suspension:1:6836": {
+          "risk_per_1000": 60.45061640923905,
+          "critical_recall": 0.9732360097323601,
+          "critical_items": 411,
+          "escalation_rate": 0.04466487175853762
+        },
+        "new_focus:glass-insulator:0:1338": {
+          "risk_per_1000": 128.68074252515234,
+          "critical_recall": 0.8414096916299559,
+          "critical_items": 227,
+          "escalation_rate": 0.035822587501771294
+        },
+        "new_focus:glass-insulator:1:9700": {
+          "risk_per_1000": 146.87544282272918,
+          "critical_recall": 0.8502202643171806,
+          "critical_items": 227,
+          "escalation_rate": 0.04219923480232393
+        },
+        "new_focus:lightning-rod-suspension:0:1152": {
+          "risk_per_1000": 39.166784752727786,
+          "critical_recall": 1.0,
+          "critical_items": 113,
+          "escalation_rate": 0.034773983279013744
+        },
+        "new_focus:lightning-rod-suspension:1:6855": {
+          "risk_per_1000": 58.82102876576449,
+          "critical_recall": 1.0,
+          "critical_items": 113,
+          "escalation_rate": 0.041207311888904634
+        },
+        "new_focus:polymer-insulator-upper-shackle+polymer-insulator-lower-shackle:0:1532": {
+          "risk_per_1000": 145.35921779793114,
+          "critical_recall": 0.8453257790368272,
+          "critical_items": 353,
+          "escalation_rate": 0.03692787303386708
+        },
+        "new_focus:polymer-insulator-upper-shackle+polymer-insulator-lower-shackle:1:3563": {
+          "risk_per_1000": 166.00538472438714,
+          "critical_recall": 0.8470254957507082,
+          "critical_items": 353,
+          "escalation_rate": 0.04350290491710358
+        },
+        "new_focus:glass-insulator+polymer-insulator-lower-shackle:0:5749": {
+          "risk_per_1000": 232.57758254215673,
+          "critical_recall": 0.7742857142857142,
+          "critical_items": 350,
+          "escalation_rate": 0.03423551084030041
+        },
+        "new_focus:glass-insulator+polymer-insulator-lower-shackle:1:0039": {
+          "risk_per_1000": 252.60025506589201,
+          "critical_recall": 0.7771428571428571,
+          "critical_items": 350,
+          "escalation_rate": 0.04231259742100042
+        },
+        "new_focus:yoke-suspension+lightning-rod-suspension:0:1343": {
+          "risk_per_1000": 38.330735439988665,
+          "critical_recall": 1.0,
+          "critical_items": 294,
+          "escalation_rate": 0.038429927731330596
+        },
+        "new_focus:yoke-suspension+lightning-rod-suspension:1:8331": {
+          "risk_per_1000": 61.51339095933116,
+          "critical_recall": 1.0,
+          "critical_items": 294,
+          "escalation_rate": 0.04336120164375797
+        }
+      }
+    }
+  }
+}

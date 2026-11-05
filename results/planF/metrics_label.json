@@ -1,0 +1,1275 @@
+{
+  "kind": "label",
+  "budget": null,
+  "regime": "weak",
+  "intents": [
+    {
+      "id": "new_wording:defect:0:0761",
+      "group": "new_wording",
+      "kind": "label",
+      "focus": [
+        "defect"
+      ],
+      "strict": false,
+      "text": "Please make sure that no general defects goes unreported."
+    },
+    {
+      "id": "new_wording:defect:1:6187",
+      "group": "new_wording",
+      "kind": "label",
+      "focus": [
+        "defect"
+      ],
+      "strict": true,
+      "text": "Please make sure that no general defects goes unreported. False reports waste crew time, so keep them rare."
+    },
+    {
+      "id": "new_wording:corrosion:0:7679",
+      "group": "new_wording",
+      "kind": "label",
+      "focus": [
+        "corrosion"
+      ],
+      "strict": false,
+      "text": "Please make sure that no corrosion goes unreported."
+    },
+    {
+      "id": "new_wording:corrosion:1:3797",
+      "group": "new_wording",
+      "kind": "label",
+      "focus": [
+        "corrosion"
+      ],
+      "strict": true,
+      "text": "Look out for corrosion above everything else. False reports waste crew time, so keep them rare."
+    },
+    {
+      "id": "new_wording:missing-cap:0:6577",
+      "group": "new_wording",
+      "kind": "label",
+      "focus": [
+        "missing-cap"
+      ],
+      "strict": false,
+      "text": "Our maintenance team cares most about missing caps, the remaining defect types matter less."
+    },
+    {
+      "id": "new_wording:missing-cap:1:7616",
+      "group": "new_wording",
+      "kind": "label",
+      "focus": [
+        "missing-cap"
+      ],
+      "strict": true,
+      "text": "Look out for missing caps above everything else. False reports waste crew time, so keep them rare."
+    },
+    {
+      "id": "new_wording:nest:0:7380",
+      "group": "new_wording",
+      "kind": "label",
+      "focus": [
+        "nest"
+      ],
+      "strict": false,
+      "text": "Our maintenance team cares most about bird nests, the remaining defect types matter less."
+    },
+    {
+      "id": "new_wording:nest:1:1488",
+      "group": "new_wording",
+      "kind": "label",
+      "focus": [
+        "nest"
+      ],
+      "strict": true,
+      "text": "Please make sure that no bird nests goes unreported. False reports waste crew time, so keep them rare."
+    },
+    {
+      "id": "new_wording:defect+rust:0:1225",
+      "group": "new_wording",
+      "kind": "label",
+      "focus": [
+        "defect",
+        "rust"
+      ],
+      "strict": false,
+      "text": "Our maintenance team cares most about general defects and rust, the remaining defect types matter less."
+    },
+    {
+      "id": "new_wording:defect+rust:1:4862",
+      "group": "new_wording",
+      "kind": "label",
+      "focus": [
+        "defect",
+        "rust"
+      ],
+      "strict": true,
+      "text": "Our maintenance team cares most about general defects and rust, the remaining defect types matter less. False reports waste crew time, so keep them rare."
+    },
+    {
+      "id": "new_wording:defect+corrosion:0:1859",
+      "group": "new_wording",
+      "kind": "label",
+      "focus": [
+        "defect",
+        "corrosion"
+      ],
+      "strict": false,
+      "text": "Look out for general defects and corrosion above everything else."
+    },
+    {
+      "id": "new_wording:defect+corrosion:1:3483",
+      "group": "new_wording",
+      "kind": "label",
+      "focus": [
+        "defect",
+        "corrosion"
+      ],
+      "strict": true,
+      "text": "Please make sure that no general defects and corrosion goes unreported. False reports waste crew time, so keep them rare."
+    },
+    {
+      "id": "new_focus:rust:0:3338",
+      "group": "new_focus",
+      "kind": "label",
+      "focus": [
+        "rust"
+      ],
+      "strict": false,
+      "text": "Look out for rust above everything else."
+    },
+    {
+      "id": "new_focus:rust:1:2086",
+      "group": "new_focus",
+      "kind": "label",
+      "focus": [
+        "rust"
+      ],
+      "strict": true,
+      "text": "Look out for rust above everything else. False reports waste crew time, so keep them rare."
+    },
+    {
+      "id": "new_focus:other-defect:0:0329",
+      "group": "new_focus",
+      "kind": "label",
+      "focus": [
+        "other-defect"
+      ],
+      "strict": false,
+      "text": "Look out for torn parts or peeling paint above everything else."
+    },
+    {
+      "id": "new_focus:other-defect:1:4720",
+      "group": "new_focus",
+      "kind": "label",
+      "focus": [
+        "other-defect"
+      ],
+      "strict": true,
+      "text": "Our maintenance team cares most about torn parts or peeling paint, the remaining defect types matter less. False reports waste crew time, so keep them rare."
+    },
+    {
+      "id": "new_focus:defect+nest:0:8536",
+      "group": "new_focus",
+      "kind": "label",
+      "focus": [
+        "defect",
+        "nest"
+      ],
+      "strict": false,
+      "text": "Please make sure that no general defects and bird nests goes unreported."
+    },
+    {
+      "id": "new_focus:defect+nest:1:6191",
+      "group": "new_focus",
+      "kind": "label",
+      "focus": [
+        "defect",
+        "nest"
+      ],
+      "strict": true,
+      "text": "Our maintenance team cares most about general defects and bird nests, the remaining defect types matter less. False reports waste crew time, so keep them rare."
+    },
+    {
+      "id": "new_focus:rust+nest:0:3446",
+      "group": "new_focus",
+      "kind": "label",
+      "focus": [
+        "rust",
+        "nest"
+      ],
+      "strict": false,
+      "text": "Look out for rust and bird nests above everything else."
+    },
+    {
+      "id": "new_focus:rust+nest:1:4250",
+      "group": "new_focus",
+      "kind": "label",
+      "focus": [
+        "rust",
+        "nest"
+      ],
+      "strict": true,
+      "text": "Our maintenance team cares most about rust and bird nests, the remaining defect types matter less. False reports waste crew time, so keep them rare."
+    },
+    {
+      "id": "new_focus:corrosion+other-defect:0:1133",
+      "group": "new_focus",
+      "kind": "label",
+      "focus": [
+        "corrosion",
+        "other-defect"
+      ],
+      "strict": false,
+      "text": "Look out for corrosion and torn parts or peeling paint above everything else."
+    },
+    {
+      "id": "new_focus:corrosion+other-defect:1:0388",
+      "group": "new_focus",
+      "kind": "label",
+      "focus": [
+        "corrosion",
+        "other-defect"
+      ],
+      "strict": true,
+      "text": "Please make sure that no corrosion and torn parts or peeling paint goes unreported. False reports waste crew time, so keep them rare."
+    }
+  ],
+  "policies": {
+    "classifier only": {
+      "summary": {
+        "new_wording": {
+          "risk_per_1000": 162.6754,
+          "critical_recall": 0.9135,
+          "escalation_rate": 0.0
+        },
+        "new_focus": {
+          "risk_per_1000": 139.2093,
+          "critical_recall": 0.7119,
+          "escalation_rate": 0.0
+        }
+      },
+      "per_intent": {
+        "new_wording:defect:0:0761": {
+          "risk_per_1000": 180.95508006234945,
+          "critical_recall": 0.9063670411985019,
+          "critical_items": 534,
+          "escalation_rate": 0.0
+        },
+        "new_wording:defect:1:6187": {
+          "risk_per_1000": 226.0167209862548,
+          "critical_recall": 0.9063670411985019,
+          "critical_items": 534,
+          "escalation_rate": 0.0
+        },
+        "new_wording:corrosion:0:7679": {
+          "risk_per_1000": 53.42213405129659,
+          "critical_recall": 0.96,
+          "critical_items": 100,
+          "escalation_rate": 0.0
+        },
+        "new_wording:corrosion:1:3797": {
+          "risk_per_1000": 98.48377497520192,
+          "critical_recall": 0.96,
+          "critical_items": 100,
+          "escalation_rate": 0.0
+        },
+        "new_wording:missing-cap:0:6577": {
+          "risk_per_1000": 109.53663029615984,
+          "critical_recall": 0.8103448275862069,
+          "critical_items": 116,
+          "escalation_rate": 0.0
+        },
+        "new_wording:missing-cap:1:7616": {
+          "risk_per_1000": 154.5982712200652,
+          "critical_recall": 0.8103448275862069,
+          "critical_items": 116,
+          "escalation_rate": 0.0
+        },
+        "new_wording:nest:0:7380": {
+          "risk_per_1000": 53.42213405129659,
+          "critical_recall": 1.0,
+          "critical_items": 40,
+          "escalation_rate": 0.0
+        },
+        "new_wording:nest:1:1488": {
+          "risk_per_1000": 98.48377497520192,
+          "critical_recall": 1.0,
+          "critical_items": 40,
+          "escalation_rate": 0.0
+        },
+        "new_wording:defect+rust:0:1225": {
+          "risk_per_1000": 262.5761655094233,
+          "critical_recall": 0.8897149938042132,
+          "critical_items": 807,
+          "escalation_rate": 0.0
+        },
+        "new_wording:defect+rust:1:4862": {
+          "risk_per_1000": 307.6378064333286,
+          "critical_recall": 0.8897149938042132,
+          "critical_items": 807,
+          "escalation_rate": 0.0
+        },
+        "new_wording:defect+corrosion:0:1859": {
+          "risk_per_1000": 180.95508006234945,
+          "critical_recall": 0.9148264984227129,
+          "critical_items": 634,
+          "escalation_rate": 0.0
+        },
+        "new_wording:defect+corrosion:1:3483": {
+          "risk_per_1000": 226.0167209862548,
+          "critical_recall": 0.9148264984227129,
+          "critical_items": 634,
+          "escalation_rate": 0.0
+        },
+        "new_focus:rust:0:3338": {
+          "risk_per_1000": 135.0432194983704,
+          "critical_recall": 0.8571428571428571,
+          "critical_items": 273,
+          "escalation_rate": 0.0
+        },
+        "new_focus:rust:1:2086": {
+          "risk_per_1000": 180.10486042227575,
+          "critical_recall": 0.8571428571428571,
+          "critical_items": 273,
+          "escalation_rate": 0.0
+        },
+        "new_focus:other-defect:0:0329": {
+          "risk_per_1000": 66.17542865240188,
+          "critical_recall": 0.0,
+          "critical_items": 5,
+          "escalation_rate": 0.0
+        },
+        "new_focus:other-defect:1:4720": {
+          "risk_per_1000": 111.2370695763072,
+          "critical_recall": 0.0,
+          "critical_items": 5,
+          "escalation_rate": 0.0
+        },
+        "new_focus:defect+nest:0:8536": {
+          "risk_per_1000": 180.95508006234945,
+          "critical_recall": 0.9128919860627178,
+          "critical_items": 574,
+          "escalation_rate": 0.0
+        },
+        "new_focus:defect+nest:1:6191": {
+          "risk_per_1000": 226.0167209862548,
+          "critical_recall": 0.9128919860627178,
+          "critical_items": 574,
+          "escalation_rate": 0.0
+        },
+        "new_focus:rust+nest:0:3446": {
+          "risk_per_1000": 135.0432194983704,
+          "critical_recall": 0.8753993610223643,
+          "critical_items": 313,
+          "escalation_rate": 0.0
+        },
+        "new_focus:rust+nest:1:4250": {
+          "risk_per_1000": 180.10486042227575,
+          "critical_recall": 0.8753993610223643,
+          "critical_items": 313,
+          "escalation_rate": 0.0
+        },
+        "new_focus:corrosion+other-defect:0:1133": {
+          "risk_per_1000": 66.17542865240188,
+          "critical_recall": 0.9142857142857143,
+          "critical_items": 105,
+          "escalation_rate": 0.0
+        },
+        "new_focus:corrosion+other-defect:1:0388": {
+          "risk_per_1000": 111.2370695763072,
+          "critical_recall": 0.9142857142857143,
+          "critical_items": 105,
+          "escalation_rate": 0.0
+        }
+      }
+    },
+    "oracle": {
+      "summary": {
+        "new_wording": {
+          "risk_per_1000": 39.7619,
+          "critical_recall": 0.9628,
+          "escalation_rate": 0.0307
+        },
+        "new_focus": {
+          "risk_per_1000": 38.6907,
+          "critical_recall": 0.9516,
+          "escalation_rate": 0.0307
+        }
+      },
+      "per_intent": {
+        "new_wording:defect:0:0761": {
+          "risk_per_1000": 31.7415332294176,
+          "critical_recall": 0.9868913857677902,
+          "critical_items": 534,
+          "escalation_rate": 0.0307496103159983
+        },
+        "new_wording:defect:1:6187": {
+          "risk_per_1000": 35.02904917103585,
+          "critical_recall": 0.9868913857677902,
+          "critical_items": 534,
+          "escalation_rate": 0.0307496103159983
+        },
+        "new_wording:corrosion:0:7679": {
+          "risk_per_1000": 13.8869207878702,
+          "critical_recall": 0.99,
+          "critical_items": 100,
+          "escalation_rate": 0.0307496103159983
+        },
+        "new_wording:corrosion:1:3797": {
+          "risk_per_1000": 17.174436729488452,
+          "critical_recall": 0.99,
+          "critical_items": 100,
+          "escalation_rate": 0.0307496103159983
+        },
+        "new_wording:missing-cap:0:6577": {
+          "risk_per_1000": 57.248122431628175,
+          "critical_recall": 0.853448275862069,
+          "critical_items": 116,
+          "escalation_rate": 0.0307496103159983
+        },
+        "new_wording:missing-cap:1:7616": {
+          "risk_per_1000": 60.53563837324642,
+          "critical_recall": 0.853448275862069,
+          "critical_items": 116,
+          "escalation_rate": 0.0307496103159983
+        },
+        "new_wording:nest:0:7380": {
+          "risk_per_1000": 13.8869207878702,
+          "critical_recall": 1.0,
+          "critical_items": 40,
+          "escalation_rate": 0.0307496103159983
+        },
+        "new_wording:nest:1:1488": {
+          "risk_per_1000": 17.174436729488452,
+          "critical_recall": 1.0,
+          "critical_items": 40,
+          "escalation_rate": 0.0307496103159983
+        },
+        "new_wording:defect+rust:0:1225": {
+          "risk_per_1000": 80.20405271361768,
+          "critical_recall": 0.9591078066914498,
+          "critical_items": 807,
+          "escalation_rate": 0.0307496103159983
+        },
+        "new_wording:defect+rust:1:4862": {
+          "risk_per_1000": 83.49156865523594,
+          "critical_recall": 0.9591078066914498,
+          "critical_items": 807,
+          "escalation_rate": 0.0307496103159983
+        },
+        "new_wording:defect+corrosion:0:1859": {
+          "risk_per_1000": 31.7415332294176,
+          "critical_recall": 0.9873817034700315,
+          "critical_items": 634,
+          "escalation_rate": 0.0307496103159983
+        },
+        "new_wording:defect+corrosion:1:3483": {
+          "risk_per_1000": 35.02904917103585,
+          "critical_recall": 0.9873817034700315,
+          "critical_items": 634,
+          "escalation_rate": 0.0307496103159983
+        },
+        "new_focus:rust:0:3338": {
+          "risk_per_1000": 62.34944027207029,
+          "critical_recall": 0.9047619047619048,
+          "critical_items": 273,
+          "escalation_rate": 0.0307496103159983
+        },
+        "new_focus:rust:1:2086": {
+          "risk_per_1000": 65.63695621368853,
+          "critical_recall": 0.9047619047619048,
+          "critical_items": 273,
+          "escalation_rate": 0.0307496103159983
+        },
+        "new_focus:other-defect:0:0329": {
+          "risk_per_1000": 14.397052571914411,
+          "critical_recall": 0.96,
+          "critical_items": 5,
+          "escalation_rate": 0.0307496103159983
+        },
+        "new_focus:other-defect:1:4720": {
+          "risk_per_1000": 17.684568513532664,
+          "critical_recall": 0.96,
+          "critical_items": 5,
+          "escalation_rate": 0.0307496103159983
+        },
+        "new_focus:defect+nest:0:8536": {
+          "risk_per_1000": 31.7415332294176,
+          "critical_recall": 0.9878048780487805,
+          "critical_items": 574,
+          "escalation_rate": 0.0307496103159983
+        },
+        "new_focus:defect+nest:1:6191": {
+          "risk_per_1000": 35.02904917103585,
+          "critical_recall": 0.9878048780487805,
+          "critical_items": 574,
+          "escalation_rate": 0.0307496103159983
+        },
+        "new_focus:rust+nest:0:3446": {
+          "risk_per_1000": 62.34944027207029,
+          "critical_recall": 0.9169329073482428,
+          "critical_items": 313,
+          "escalation_rate": 0.0307496103159983
+        },
+        "new_focus:rust+nest:1:4250": {
+          "risk_per_1000": 65.63695621368853,
+          "critical_recall": 0.9169329073482428,
+          "critical_items": 313,
+          "escalation_rate": 0.0307496103159983
+        },
+        "new_focus:corrosion+other-defect:0:1133": {
+          "risk_per_1000": 14.397052571914411,
+          "critical_recall": 0.9885714285714285,
+          "critical_items": 105,
+          "escalation_rate": 0.0307496103159983
+        },
+        "new_focus:corrosion+other-defect:1:0388": {
+          "risk_per_1000": 17.684568513532664,
+          "critical_recall": 0.9885714285714285,
+          "critical_items": 105,
+          "escalation_rate": 0.0307496103159983
+        }
+      }
+    },
+    "static cascade θ=0.95": {
+      "summary": {
+        "new_wording": {
+          "risk_per_1000": 133.7679,
+          "critical_recall": 0.9166,
+          "escalation_rate": 0.1444
+        },
+        "new_focus": {
+          "risk_per_1000": 110.982,
+          "critical_recall": 0.8396,
+          "escalation_rate": 0.1444
+        }
+      },
+      "per_intent": {
+        "new_wording:defect:0:0761": {
+          "risk_per_1000": 150.9139861130792,
+          "critical_recall": 0.9194756554307116,
+          "critical_items": 534,
+          "escalation_rate": 0.14439563553918094
+        },
+        "new_wording:defect:1:6187": {
+          "risk_per_1000": 176.13716876859854,
+          "critical_recall": 0.9194756554307116,
+          "critical_items": 534,
+          "escalation_rate": 0.14439563553918094
+        },
+        "new_wording:corrosion:0:7679": {
+          "risk_per_1000": 48.88762930423693,
+          "critical_recall": 0.97,
+          "critical_items": 100,
+          "escalation_rate": 0.14439563553918094
+        },
+        "new_wording:corrosion:1:3797": {
+          "risk_per_1000": 74.11081195975628,
+          "critical_recall": 0.97,
+          "critical_items": 100,
+          "escalation_rate": 0.14439563553918094
+        },
+        "new_wording:missing-cap:0:6577": {
+          "risk_per_1000": 97.35014878843701,
+          "critical_recall": 0.8103448275862069,
+          "critical_items": 116,
+          "escalation_rate": 0.14439563553918094
+        },
+        "new_wording:missing-cap:1:7616": {
+          "risk_per_1000": 122.57333144395635,
+          "critical_recall": 0.8103448275862069,
+          "critical_items": 116,
+          "escalation_rate": 0.14439563553918094
+        },
+        "new_wording:nest:0:7380": {
+          "risk_per_1000": 43.78631146379482,
+          "critical_recall": 0.975,
+          "critical_items": 40,
+          "escalation_rate": 0.14439563553918094
+        },
+        "new_wording:nest:1:1488": {
+          "risk_per_1000": 69.00949411931416,
+          "critical_recall": 0.975,
+          "critical_items": 40,
+          "escalation_rate": 0.14439563553918094
+        },
+        "new_wording:defect+rust:0:1225": {
+          "risk_per_1000": 227.43375371971092,
+          "critical_recall": 0.8971499380421314,
+          "critical_items": 807,
+          "escalation_rate": 0.14439563553918094
+        },
+        "new_wording:defect+rust:1:4862": {
+          "risk_per_1000": 252.65693637523026,
+          "critical_recall": 0.8971499380421314,
+          "critical_items": 807,
+          "escalation_rate": 0.14439563553918094
+        },
+        "new_wording:defect+corrosion:0:1859": {
+          "risk_per_1000": 158.5659628737424,
+          "critical_recall": 0.9274447949526814,
+          "critical_items": 634,
+          "escalation_rate": 0.14439563553918094
+        },
+        "new_wording:defect+corrosion:1:3483": {
+          "risk_per_1000": 183.78914552926173,
+          "critical_recall": 0.9274447949526814,
+          "critical_items": 634,
+          "escalation_rate": 0.14439563553918094
+        },
+        "new_focus:rust:0:3338": {
+          "risk_per_1000": 117.75542015020547,
+          "critical_recall": 0.8534798534798534,
+          "critical_items": 273,
+          "escalation_rate": 0.14439563553918094
+        },
+        "new_focus:rust:1:2086": {
+          "risk_per_1000": 142.97860280572482,
+          "critical_recall": 0.8534798534798534,
+          "critical_items": 273,
+          "escalation_rate": 0.14439563553918094
+        },
+        "new_focus:other-defect:0:0329": {
+          "risk_per_1000": 46.33697038401587,
+          "critical_recall": 0.6,
+          "critical_items": 5,
+          "escalation_rate": 0.14439563553918094
+        },
+        "new_focus:other-defect:1:4720": {
+          "risk_per_1000": 71.56015303953521,
+          "critical_recall": 0.6,
+          "critical_items": 5,
+          "escalation_rate": 0.14439563553918094
+        },
+        "new_focus:defect+nest:0:8536": {
+          "risk_per_1000": 153.46464503330026,
+          "critical_recall": 0.9233449477351916,
+          "critical_items": 574,
+          "escalation_rate": 0.14439563553918094
+        },
+        "new_focus:defect+nest:1:6191": {
+          "risk_per_1000": 178.68782768881962,
+          "critical_recall": 0.9233449477351916,
+          "critical_items": 574,
+          "escalation_rate": 0.14439563553918094
+        },
+        "new_focus:rust+nest:0:3446": {
+          "risk_per_1000": 120.30607907042652,
+          "critical_recall": 0.8690095846645367,
+          "critical_items": 313,
+          "escalation_rate": 0.14439563553918094
+        },
+        "new_focus:rust+nest:1:4250": {
+          "risk_per_1000": 145.52926172594587,
+          "critical_recall": 0.8690095846645367,
+          "critical_items": 313,
+          "escalation_rate": 0.14439563553918094
+        },
+        "new_focus:corrosion+other-defect:0:1133": {
+          "risk_per_1000": 53.988947144679045,
+          "critical_recall": 0.9523809523809523,
+          "critical_items": 105,
+          "escalation_rate": 0.14439563553918094
+        },
+        "new_focus:corrosion+other-defect:1:0388": {
+          "risk_per_1000": 79.21212980019838,
+          "critical_recall": 0.9523809523809523,
+          "critical_items": 105,
+          "escalation_rate": 0.14439563553918094
+        }
+      }
+    },
+    "choice + mlp_blind": {
+      "summary": {
+        "new_wording": {
+          "risk_per_1000": 120.8446,
+          "critical_recall": 0.924,
+          "escalation_rate": 0.2413
+        },
+        "new_focus": {
+          "risk_per_1000": 106.8669,
+          "critical_recall": 0.8616,
+          "escalation_rate": 0.2413
+        }
+      },
+      "per_intent": {
+        "new_wording:defect:0:0761": {
+          "risk_per_1000": 131.84072552075952,
+          "critical_recall": 0.9325842696629213,
+          "critical_items": 534,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_wording:defect:1:6187": {
+          "risk_per_1000": 157.80076519767607,
+          "critical_recall": 0.9325842696629213,
+          "critical_items": 534,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_wording:corrosion:0:7679": {
+          "risk_per_1000": 40.017004392801475,
+          "critical_recall": 0.96,
+          "critical_items": 100,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_wording:corrosion:1:3797": {
+          "risk_per_1000": 65.977044069718,
+          "critical_recall": 0.96,
+          "critical_items": 100,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_wording:missing-cap:0:6577": {
+          "risk_per_1000": 85.9288649567805,
+          "critical_recall": 0.8448275862068966,
+          "critical_items": 116,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_wording:missing-cap:1:7616": {
+          "risk_per_1000": 111.88890463369704,
+          "critical_recall": 0.8448275862068966,
+          "critical_items": 116,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_wording:nest:0:7380": {
+          "risk_per_1000": 42.56766331302253,
+          "critical_recall": 0.975,
+          "critical_items": 40,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_wording:nest:1:1488": {
+          "risk_per_1000": 68.52770298993907,
+          "critical_recall": 0.975,
+          "critical_items": 40,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_wording:defect+rust:0:1225": {
+          "risk_per_1000": 214.992206319966,
+          "critical_recall": 0.894919454770756,
+          "critical_items": 807,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_wording:defect+rust:1:4862": {
+          "risk_per_1000": 240.95224599688254,
+          "critical_recall": 0.894919454770756,
+          "critical_items": 807,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_wording:defect+corrosion:0:1859": {
+          "risk_per_1000": 131.84072552075952,
+          "critical_recall": 0.9369085173501577,
+          "critical_items": 634,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_wording:defect+corrosion:1:3483": {
+          "risk_per_1000": 157.80076519767607,
+          "critical_recall": 0.9369085173501577,
+          "critical_items": 634,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_focus:rust:0:3338": {
+          "risk_per_1000": 123.16848519200794,
+          "critical_recall": 0.8212454212454212,
+          "critical_items": 273,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_focus:rust:1:2086": {
+          "risk_per_1000": 149.12852486892447,
+          "critical_recall": 0.8212454212454212,
+          "critical_items": 273,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_focus:other-defect:0:0329": {
+          "risk_per_1000": 43.07779509706674,
+          "critical_recall": 0.76,
+          "critical_items": 5,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_focus:other-defect:1:4720": {
+          "risk_per_1000": 69.03783477398328,
+          "critical_recall": 0.76,
+          "critical_items": 5,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_focus:defect+nest:0:8536": {
+          "risk_per_1000": 134.39138444098057,
+          "critical_recall": 0.9355400696864111,
+          "critical_items": 574,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_focus:defect+nest:1:6191": {
+          "risk_per_1000": 160.35142411789712,
+          "critical_recall": 0.9355400696864111,
+          "critical_items": 574,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_focus:rust+nest:0:3446": {
+          "risk_per_1000": 125.71914411222899,
+          "critical_recall": 0.8408945686900958,
+          "critical_items": 313,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_focus:rust+nest:1:4250": {
+          "risk_per_1000": 151.67918378914553,
+          "critical_recall": 0.8408945686900958,
+          "critical_items": 313,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_focus:corrosion+other-defect:0:1133": {
+          "risk_per_1000": 43.07779509706674,
+          "critical_recall": 0.9504761904761905,
+          "critical_items": 105,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_focus:corrosion+other-defect:1:0388": {
+          "risk_per_1000": 69.03783477398328,
+          "critical_recall": 0.9504761904761905,
+          "critical_items": 105,
+          "escalation_rate": 0.24126399319824288
+        }
+      }
+    },
+    "choice + mlp_blind, threshold per intent": {
+      "summary": {
+        "new_wording": {
+          "risk_per_1000": 120.5848,
+          "critical_recall": 0.924,
+          "escalation_rate": 0.2328
+        },
+        "new_focus": {
+          "risk_per_1000": 106.3993,
+          "critical_recall": 0.8616,
+          "escalation_rate": 0.226
+        }
+      },
+      "per_intent": {
+        "new_wording:defect:0:0761": {
+          "risk_per_1000": 131.84072552075952,
+          "critical_recall": 0.9325842696629213,
+          "critical_items": 534,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_wording:defect:1:6187": {
+          "risk_per_1000": 157.80076519767607,
+          "critical_recall": 0.9325842696629213,
+          "critical_items": 534,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_wording:corrosion:0:7679": {
+          "risk_per_1000": 40.017004392801475,
+          "critical_recall": 0.96,
+          "critical_items": 100,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_wording:corrosion:1:3797": {
+          "risk_per_1000": 64.41830806291625,
+          "critical_recall": 0.96,
+          "critical_items": 100,
+          "escalation_rate": 0.19025081479382175
+        },
+        "new_wording:missing-cap:0:6577": {
+          "risk_per_1000": 85.9288649567805,
+          "critical_recall": 0.8448275862068966,
+          "critical_items": 116,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_wording:missing-cap:1:7616": {
+          "risk_per_1000": 110.33016862689529,
+          "critical_recall": 0.8448275862068966,
+          "critical_items": 116,
+          "escalation_rate": 0.19025081479382175
+        },
+        "new_wording:nest:0:7380": {
+          "risk_per_1000": 42.56766331302253,
+          "critical_recall": 0.975,
+          "critical_items": 40,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_wording:nest:1:1488": {
+          "risk_per_1000": 68.52770298993907,
+          "critical_recall": 0.975,
+          "critical_items": 40,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_wording:defect+rust:0:1225": {
+          "risk_per_1000": 214.992206319966,
+          "critical_recall": 0.894919454770756,
+          "critical_items": 807,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_wording:defect+rust:1:4862": {
+          "risk_per_1000": 240.95224599688254,
+          "critical_recall": 0.894919454770756,
+          "critical_items": 807,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_wording:defect+corrosion:0:1859": {
+          "risk_per_1000": 131.84072552075952,
+          "critical_recall": 0.9369085173501577,
+          "critical_items": 634,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_wording:defect+corrosion:1:3483": {
+          "risk_per_1000": 157.80076519767607,
+          "critical_recall": 0.9369085173501577,
+          "critical_items": 634,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_focus:rust:0:3338": {
+          "risk_per_1000": 123.16848519200794,
+          "critical_recall": 0.8212454212454212,
+          "critical_items": 273,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_focus:rust:1:2086": {
+          "risk_per_1000": 147.56978886212272,
+          "critical_recall": 0.8212454212454212,
+          "critical_items": 273,
+          "escalation_rate": 0.19025081479382175
+        },
+        "new_focus:other-defect:0:0329": {
+          "risk_per_1000": 43.07779509706674,
+          "critical_recall": 0.76,
+          "critical_items": 5,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_focus:other-defect:1:4720": {
+          "risk_per_1000": 67.47909876718153,
+          "critical_recall": 0.76,
+          "critical_items": 5,
+          "escalation_rate": 0.19025081479382175
+        },
+        "new_focus:defect+nest:0:8536": {
+          "risk_per_1000": 134.39138444098057,
+          "critical_recall": 0.9355400696864111,
+          "critical_items": 574,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_focus:defect+nest:1:6191": {
+          "risk_per_1000": 160.35142411789712,
+          "critical_recall": 0.9355400696864111,
+          "critical_items": 574,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_focus:rust+nest:0:3446": {
+          "risk_per_1000": 125.71914411222899,
+          "critical_recall": 0.8408945686900958,
+          "critical_items": 313,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_focus:rust+nest:1:4250": {
+          "risk_per_1000": 151.67918378914553,
+          "critical_recall": 0.8408945686900958,
+          "critical_items": 313,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_focus:corrosion+other-defect:0:1133": {
+          "risk_per_1000": 43.07779509706674,
+          "critical_recall": 0.9504761904761905,
+          "critical_items": 105,
+          "escalation_rate": 0.24126399319824288
+        },
+        "new_focus:corrosion+other-defect:1:0388": {
+          "risk_per_1000": 67.47909876718153,
+          "critical_recall": 0.9504761904761905,
+          "critical_items": 105,
+          "escalation_rate": 0.19025081479382175
+        }
+      }
+    },
+    "choice + mlp_bow": {
+      "summary": {
+        "new_wording": {
+          "risk_per_1000": 165.8401,
+          "critical_recall": 0.906,
+          "escalation_rate": 0.5
+        },
+        "new_focus": {
+          "risk_per_1000": 140.9381,
+          "critical_recall": 0.7701,
+          "escalation_rate": 0.4
+        }
+      },
+      "per_intent": {
+        "new_wording:defect:0:0761": {
+          "risk_per_1000": 175.28694912852487,
+          "critical_recall": 0.9138576779026217,
+          "critical_items": 534,
+          "escalation_rate": 1.0
+        },
+        "new_wording:defect:1:6187": {
+          "risk_per_1000": 226.0167209862548,
+          "critical_recall": 0.9063670411985019,
+          "critical_items": 534,
+          "escalation_rate": 0.0
+        },
+        "new_wording:corrosion:0:7679": {
+          "risk_per_1000": 73.26059231968259,
+          "critical_recall": 0.94,
+          "critical_items": 100,
+          "escalation_rate": 1.0
+        },
+        "new_wording:corrosion:1:3797": {
+          "risk_per_1000": 98.48377497520192,
+          "critical_recall": 0.96,
+          "critical_items": 100,
+          "escalation_rate": 0.0
+        },
+        "new_wording:missing-cap:0:6577": {
+          "risk_per_1000": 126.82442964432478,
+          "critical_recall": 0.7672413793103449,
+          "critical_items": 116,
+          "escalation_rate": 1.0
+        },
+        "new_wording:missing-cap:1:7616": {
+          "risk_per_1000": 154.5982712200652,
+          "critical_recall": 0.8103448275862069,
+          "critical_items": 116,
+          "escalation_rate": 0.0
+        },
+        "new_wording:nest:0:7380": {
+          "risk_per_1000": 60.5072977185773,
+          "critical_recall": 0.975,
+          "critical_items": 40,
+          "escalation_rate": 1.0
+        },
+        "new_wording:nest:1:1488": {
+          "risk_per_1000": 98.48377497520192,
+          "critical_recall": 1.0,
+          "critical_items": 40,
+          "escalation_rate": 0.0
+        },
+        "new_wording:defect+rust:0:1225": {
+          "risk_per_1000": 259.4586934958198,
+          "critical_recall": 0.8847583643122676,
+          "critical_items": 807,
+          "escalation_rate": 1.0
+        },
+        "new_wording:defect+rust:1:4862": {
+          "risk_per_1000": 310.18846535354965,
+          "critical_recall": 0.8847583643122676,
+          "critical_items": 807,
+          "escalation_rate": 1.0
+        },
+        "new_wording:defect+corrosion:0:1859": {
+          "risk_per_1000": 180.95508006234945,
+          "critical_recall": 0.9148264984227129,
+          "critical_items": 634,
+          "escalation_rate": 0.0
+        },
+        "new_wording:defect+corrosion:1:3483": {
+          "risk_per_1000": 226.0167209862548,
+          "critical_recall": 0.9148264984227129,
+          "critical_items": 634,
+          "escalation_rate": 0.0
+        },
+        "new_focus:rust:0:3338": {
+          "risk_per_1000": 135.0432194983704,
+          "critical_recall": 0.8571428571428571,
+          "critical_items": 273,
+          "escalation_rate": 0.0
+        },
+        "new_focus:rust:1:2086": {
+          "risk_per_1000": 180.10486042227575,
+          "critical_recall": 0.8571428571428571,
+          "critical_items": 273,
+          "escalation_rate": 0.0
+        },
+        "new_focus:other-defect:0:0329": {
+          "risk_per_1000": 66.17542865240188,
+          "critical_recall": 0.0,
+          "critical_items": 5,
+          "escalation_rate": 0.0
+        },
+        "new_focus:other-defect:1:4720": {
+          "risk_per_1000": 113.78772849652827,
+          "critical_recall": 0.6,
+          "critical_items": 5,
+          "escalation_rate": 1.0
+        },
+        "new_focus:defect+nest:0:8536": {
+          "risk_per_1000": 177.83760804874592,
+          "critical_recall": 0.9181184668989547,
+          "critical_items": 574,
+          "escalation_rate": 1.0
+        },
+        "new_focus:defect+nest:1:6191": {
+          "risk_per_1000": 228.56737990647585,
+          "critical_recall": 0.9181184668989547,
+          "critical_items": 574,
+          "escalation_rate": 1.0
+        },
+        "new_focus:rust+nest:0:3446": {
+          "risk_per_1000": 135.0432194983704,
+          "critical_recall": 0.8753993610223643,
+          "critical_items": 313,
+          "escalation_rate": 0.0
+        },
+        "new_focus:rust+nest:1:4250": {
+          "risk_per_1000": 195.4088139436021,
+          "critical_recall": 0.8466453674121406,
+          "critical_items": 313,
+          "escalation_rate": 1.0
+        },
+        "new_focus:corrosion+other-defect:0:1133": {
+          "risk_per_1000": 66.17542865240188,
+          "critical_recall": 0.9142857142857143,
+          "critical_items": 105,
+          "escalation_rate": 0.0
+        },
+        "new_focus:corrosion+other-defect:1:0388": {
+          "risk_per_1000": 111.2370695763072,
+          "critical_recall": 0.9142857142857143,
+          "critical_items": 105,
+          "escalation_rate": 0.0
+        }
+      }
+    },
+    "choice + mlp_parsed": {
+      "summary": {
+        "new_wording": {
+          "risk_per_1000": 126.9059,
+          "critical_recall": 0.9187,
+          "escalation_rate": 0.0436
+        },
+        "new_focus": {
+          "risk_per_1000": 104.988,
+          "critical_recall": 0.7785,
+          "escalation_rate": 0.0416
+        }
+      },
+      "per_intent": {
+        "new_wording:defect:0:0761": {
+          "risk_per_1000": 157.70157290633412,
+          "critical_recall": 0.9119850187265918,
+          "critical_items": 534,
+          "escalation_rate": 0.038203202493977614
+        },
+        "new_wording:defect:1:6187": {
+          "risk_per_1000": 171.61683434887345,
+          "critical_recall": 0.9176029962546817,
+          "critical_items": 534,
+          "escalation_rate": 0.04630862972934675
+        },
+        "new_wording:corrosion:0:7679": {
+          "risk_per_1000": 37.49468612724954,
+          "critical_recall": 0.96,
+          "critical_items": 100,
+          "escalation_rate": 0.04018704832081621
+        },
+        "new_wording:corrosion:1:3797": {
+          "risk_per_1000": 60.03967691653677,
+          "critical_recall": 0.96,
+          "critical_items": 100,
+          "escalation_rate": 0.0466203769307071
+        },
+        "new_wording:missing-cap:0:6577": {
+          "risk_per_1000": 83.81748618393085,
+          "critical_recall": 0.8448275862068966,
+          "critical_items": 116,
+          "escalation_rate": 0.03800481791129375
+        },
+        "new_wording:missing-cap:1:7616": {
+          "risk_per_1000": 106.23494402720704,
+          "critical_recall": 0.8448275862068966,
+          "critical_items": 116,
+          "escalation_rate": 0.04832081621085447
+        },
+        "new_wording:nest:0:7380": {
+          "risk_per_1000": 41.4765481082613,
+          "critical_recall": 0.975,
+          "critical_items": 40,
+          "escalation_rate": 0.03602097208445515
+        },
+        "new_wording:nest:1:1488": {
+          "risk_per_1000": 61.52756128666572,
+          "critical_recall": 0.975,
+          "critical_items": 40,
+          "escalation_rate": 0.04375797080912569
+        },
+        "new_wording:defect+rust:0:1225": {
+          "risk_per_1000": 221.42553492985687,
+          "critical_recall": 0.8983890954151177,
+          "critical_items": 807,
+          "escalation_rate": 0.04163242170894148
+        },
+        "new_wording:defect+rust:1:4862": {
+          "risk_per_1000": 247.73983279013746,
+          "critical_recall": 0.8941759603469641,
+          "critical_items": 807,
+          "escalation_rate": 0.05038968400170044
+        },
+        "new_wording:defect+corrosion:0:1859": {
+          "risk_per_1000": 155.22176562278588,
+          "critical_recall": 0.9211356466876972,
+          "critical_items": 634,
+          "escalation_rate": 0.04421142128383165
+        },
+        "new_wording:defect+corrosion:1:3483": {
+          "risk_per_1000": 178.57446507014313,
+          "critical_recall": 0.9211356466876972,
+          "critical_items": 634,
+          "escalation_rate": 0.04919937650559728
+        },
+        "new_focus:rust:0:3338": {
+          "risk_per_1000": 105.93736715318124,
+          "critical_recall": 0.8652014652014652,
+          "critical_items": 273,
+          "escalation_rate": 0.03828822445798498
+        },
+        "new_focus:rust:1:2086": {
+          "risk_per_1000": 132.47839025081478,
+          "critical_recall": 0.8652014652014652,
+          "critical_items": 273,
+          "escalation_rate": 0.04630862972934675
+        },
+        "new_focus:other-defect:0:0329": {
+          "risk_per_1000": 48.90179963157149,
+          "critical_recall": 0.2,
+          "critical_items": 5,
+          "escalation_rate": 0.0347173019696755
+        },
+        "new_focus:other-defect:1:4720": {
+          "risk_per_1000": 65.56610457701574,
+          "critical_recall": 0.4,
+          "critical_items": 5,
+          "escalation_rate": 0.041802465636956214
+        },
+        "new_focus:defect+nest:0:8536": {
+          "risk_per_1000": 161.48505030466205,
+          "critical_recall": 0.9163763066202091,
+          "critical_items": 574,
+          "escalation_rate": 0.038203202493977614
+        },
+        "new_focus:defect+nest:1:6191": {
+          "risk_per_1000": 174.39421850644752,
+          "critical_recall": 0.921602787456446,
+          "critical_items": 574,
+          "escalation_rate": 0.047300552642766044
+        },
+        "new_focus:rust+nest:0:3446": {
+          "risk_per_1000": 110.726937792263,
+          "critical_recall": 0.8766773162939298,
+          "critical_items": 313,
+          "escalation_rate": 0.03681451041519059
+        },
+        "new_focus:rust+nest:1:4250": {
+          "risk_per_1000": 137.46634547258043,
+          "critical_recall": 0.8728434504792333,
+          "critical_items": 313,
+          "escalation_rate": 0.04605356383732464
+        },
+        "new_focus:corrosion+other-defect:0:1133": {
+          "risk_per_1000": 45.37338812526569,
+          "critical_recall": 0.9333333333333333,
+          "critical_items": 105,
+          "escalation_rate": 0.0400453450474706
+        },
+        "new_focus:corrosion+other-defect:1:0388": {
+          "risk_per_1000": 67.54995040385433,
+          "critical_recall": 0.9333333333333333,
+          "critical_items": 105,
+          "escalation_rate": 0.0466203769307071
+        }
+      }
+    }
+  }
+}

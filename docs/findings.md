@@ -1,6 +1,6 @@
-# Findings, steps 1 to 4b and plan A
+# Findings, steps 1 to 4b, plan A and plan F
 
-Date: 2026-11-05. This document collects all findings to this date. Each section gives the source files. The detailed documents are `docs/asset_verification.md`, `docs/step2_results.md`, `docs/step3_results.md`, `docs/step4_results.md`, `docs/step4b_results.md` and `docs/planA_results.md`.
+Date: 2026-11-05. This document collects all findings to this date. Each section gives the source files. The detailed documents are `docs/asset_verification.md`, `docs/step2_results.md`, `docs/step3_results.md`, `docs/step4_results.md`, `docs/step4b_results.md`, `docs/planA_results.md` and `docs/planF_results.md`.
 
 Common settings: 7,057 test-tower frames (14 towers). Risk weights 10 / 1 / 0.5 (`docs/risk_weights.md`). Replay values are the mean of 5 seeds in the weak network regime, with the Jetson factor 9, unless a finding gives a different setting.
 
@@ -69,14 +69,24 @@ Sources: `results/planA/metrics.json`, `docs/planA_results.md`. 3 training seeds
 34. At 5%, the learned controllers are equal to the static cascade (155.7). They start to beat it between 5% and 20%, that is with more than about 1,300 to 5,100 labelled frames.
 35. nano-jev is less stable than the MLP. At 20%, its standard deviation is 24.7 risk points.
 
-## 7. Conclusions to this date
+## 7. Free-text operator intents (plan F)
 
-36. The best deployable controller is the choice-target MLP (risk 114.2). It is 27% better than the static cascade. Its gap to the oracle is 51 risk points.
-37. With the same facts, a decision model does not beat the MLP. This is true with all labels and with few labels. The larger model (Laya, 421M) is worse than the smaller model (nano-jev, 33M). This agrees with arXiv 2610.00346: a fine-tuned classifier beat the decision models when task labels exist.
-38. One drone alone needs more than about 5% of the train-tower frames before a learned controller beats the static cascade. The fleet together has more labelled frames. Thus federated learning has a clear purpose: it gives each drone the data that it does not have alone.
-39. The controller for the federated step is the choice MLP. The decision models stay as centralised ablations. Plan F (free-text intents) and plan B (unseen components) are the remaining tests where a decision model can have an advantage.
+Sources: `results/planF/*.json`, `docs/planF_results.md`. The intents are synthetic.
 
-## 8. Limits
+36. Without an escalation budget, the intent has almost no value for the decision. A perfect reader of the intent changes the risk by −3.1 to +0.5 risk points.
+37. With a budget of 2% and defect-type intents, a perfect reader decreases the risk by 5% to 8%. The reader must combine the intent with the score in code. An MLP that gets the true intent as numbers does not learn this combination.
+38. A bag-of-words MLP fails on new wording. Its risk is higher than the classifier alone.
+39. Zero-shot Laya parses the strict flag correctly for all 56 intents. It parses the exact focus set for only 13 of 56 intents.
+40. Plan F cannot show an advantage for nano-jev. The largest gain from the intent (11 risk points) is equal to the gap between nano-jev and the MLP.
+
+## 8. Conclusions to this date
+
+41. The best deployable controller is the choice-target MLP (risk 114.2). It is 27% better than the static cascade. Its gap to the oracle is 51 risk points.
+42. With the same facts, a decision model does not beat the MLP. This is true with all labels and with few labels. The larger model (Laya, 421M) is worse than the smaller model (nano-jev, 33M). This agrees with arXiv 2610.00346: a fine-tuned classifier beat the decision models when task labels exist.
+43. One drone alone needs more than about 5% of the train-tower frames before a learned controller beats the static cascade. The fleet together has more labelled frames. Thus federated learning has a clear purpose: it gives each drone the data that it does not have alone.
+44. The controller for the federated step is the choice MLP. The decision models stay as centralised ablations. Plan F did not show an advantage. Plan B (unseen components) is the remaining test. A decision model can be useful as a parser of operator intents, with a rule in code. This is future work, and it needs real operator intents.
+
+## 9. Limits
 
 - The Jetson factor 9 is an estimate. No measurement on a Jetson exists.
 - We constructed the network regimes from downlink traces.

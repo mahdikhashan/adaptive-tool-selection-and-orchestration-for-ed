@@ -1,0 +1,1282 @@
+{
+ "label": [
+  {
+   "id": "train:corrosion+nest:0:8882",
+   "group": "train",
+   "true": [
+    "corrosion",
+    "nest"
+   ],
+   "parsed": [
+    "defect",
+    "rust",
+    "corrosion",
+    "nest"
+   ],
+   "strict_true": false,
+   "strict_parsed": false,
+   "probs": {
+    "defect": 0.592,
+    "rust": 0.905,
+    "corrosion": 0.94,
+    "missing-cap": 0.228,
+    "nest": 0.914,
+    "other-defect": 0.233,
+    "strict": 0.141
+   }
+  },
+  {
+   "id": "train:missing-cap+nest:0:6917",
+   "group": "train",
+   "true": [
+    "missing-cap",
+    "nest"
+   ],
+   "parsed": [
+    "missing-cap",
+    "nest"
+   ],
+   "strict_true": false,
+   "strict_parsed": false,
+   "probs": {
+    "defect": 0.026,
+    "rust": 0.0,
+    "corrosion": 0.0,
+    "missing-cap": 0.788,
+    "nest": 0.634,
+    "other-defect": 0.073,
+    "strict": 0.122
+   }
+  },
+  {
+   "id": "train:corrosion:0:8825",
+   "group": "train",
+   "true": [
+    "corrosion"
+   ],
+   "parsed": [
+    "rust",
+    "corrosion"
+   ],
+   "strict_true": false,
+   "strict_parsed": false,
+   "probs": {
+    "defect": 0.388,
+    "rust": 0.859,
+    "corrosion": 1.0,
+    "missing-cap": 0.281,
+    "nest": 0.086,
+    "other-defect": 0.283,
+    "strict": 0.097
+   }
+  },
+  {
+   "id": "train:rust+corrosion:0:6728",
+   "group": "train",
+   "true": [
+    "rust",
+    "corrosion"
+   ],
+   "parsed": [
+    "defect",
+    "rust",
+    "corrosion",
+    "other-defect"
+   ],
+   "strict_true": false,
+   "strict_parsed": false,
+   "probs": {
+    "defect": 0.566,
+    "rust": 0.933,
+    "corrosion": 0.921,
+    "missing-cap": 0.202,
+    "nest": 0.102,
+    "other-defect": 0.602,
+    "strict": 0.109
+   }
+  },
+  {
+   "id": "train:nest+other-defect:1:8172",
+   "group": "train",
+   "true": [
+    "nest",
+    "other-defect"
+   ],
+   "parsed": [
+    "defect",
+    "missing-cap",
+    "nest",
+    "other-defect"
+   ],
+   "strict_true": true,
+   "strict_parsed": true,
+   "probs": {
+    "defect": 0.674,
+    "rust": 0.211,
+    "corrosion": 0.178,
+    "missing-cap": 0.758,
+    "nest": 0.829,
+    "other-defect": 0.922,
+    "strict": 0.744
+   }
+  },
+  {
+   "id": "train:corrosion+nest:1:5090",
+   "group": "train",
+   "true": [
+    "corrosion",
+    "nest"
+   ],
+   "parsed": [
+    "defect",
+    "rust"
+   ],
+   "strict_true": true,
+   "strict_parsed": true,
+   "probs": {
+    "defect": 1.0,
+    "rust": 0.959,
+    "corrosion": 0.496,
+    "missing-cap": 0.0,
+    "nest": 0.048,
+    "other-defect": 0.097,
+    "strict": 0.957
+   }
+  },
+  {
+   "id": "new_wording:defect:0:0761",
+   "group": "new_wording",
+   "true": [
+    "defect"
+   ],
+   "parsed": [],
+   "strict_true": false,
+   "strict_parsed": false,
+   "probs": {
+    "defect": 0.455,
+    "rust": 0.134,
+    "corrosion": 0.103,
+    "missing-cap": 0.127,
+    "nest": 0.001,
+    "other-defect": 0.248,
+    "strict": 0.465
+   }
+  },
+  {
+   "id": "new_wording:defect:1:6187",
+   "group": "new_wording",
+   "true": [
+    "defect"
+   ],
+   "parsed": [],
+   "strict_true": true,
+   "strict_parsed": true,
+   "probs": {
+    "defect": 0.247,
+    "rust": 0.143,
+    "corrosion": 0.134,
+    "missing-cap": 0.123,
+    "nest": 0.001,
+    "other-defect": 0.26,
+    "strict": 0.843
+   }
+  },
+  {
+   "id": "new_wording:corrosion:0:7679",
+   "group": "new_wording",
+   "true": [
+    "corrosion"
+   ],
+   "parsed": [],
+   "strict_true": false,
+   "strict_parsed": false,
+   "probs": {
+    "defect": 0.395,
+    "rust": 0.366,
+    "corrosion": 0.314,
+    "missing-cap": 0.175,
+    "nest": 0.006,
+    "other-defect": 0.444,
+    "strict": 0.428
+   }
+  },
+  {
+   "id": "new_wording:corrosion:1:3797",
+   "group": "new_wording",
+   "true": [
+    "corrosion"
+   ],
+   "parsed": [
+    "defect",
+    "rust",
+    "corrosion",
+    "other-defect"
+   ],
+   "strict_true": true,
+   "strict_parsed": true,
+   "probs": {
+    "defect": 0.778,
+    "rust": 0.869,
+    "corrosion": 0.84,
+    "missing-cap": 0.462,
+    "nest": 0.163,
+    "other-defect": 0.543,
+    "strict": 0.788
+   }
+  },
+  {
+   "id": "new_wording:missing-cap:0:6577",
+   "group": "new_wording",
+   "true": [
+    "missing-cap"
+   ],
+   "parsed": [
+    "rust",
+    "missing-cap"
+   ],
+   "strict_true": false,
+   "strict_parsed": false,
+   "probs": {
+    "defect": 0.246,
+    "rust": 0.638,
+    "corrosion": 0.277,
+    "missing-cap": 0.898,
+    "nest": 0.0,
+    "other-defect": 0.157,
+    "strict": 0.205
+   }
+  },
+  {
+   "id": "new_wording:missing-cap:1:7616",
+   "group": "new_wording",
+   "true": [
+    "missing-cap"
+   ],
+   "parsed": [
+    "defect",
+    "missing-cap"
+   ],
+   "strict_true": true,
+   "strict_parsed": true,
+   "probs": {
+    "defect": 0.604,
+    "rust": 0.366,
+    "corrosion": 0.345,
+    "missing-cap": 0.91,
+    "nest": 0.136,
+    "other-defect": 0.386,
+    "strict": 0.79
+   }
+  },
+  {
+   "id": "new_wording:nest:0:7380",
+   "group": "new_wording",
+   "true": [
+    "nest"
+   ],
+   "parsed": [
+    "nest"
+   ],
+   "strict_true": false,
+   "strict_parsed": false,
+   "probs": {
+    "defect": 0.146,
+    "rust": 0.206,
+    "corrosion": 0.203,
+    "missing-cap": 0.095,
+    "nest": 0.936,
+    "other-defect": 0.116,
+    "strict": 0.309
+   }
+  },
+  {
+   "id": "new_wording:nest:1:1488",
+   "group": "new_wording",
+   "true": [
+    "nest"
+   ],
+   "parsed": [
+    "missing-cap",
+    "nest"
+   ],
+   "strict_true": true,
+   "strict_parsed": true,
+   "probs": {
+    "defect": 0.23,
+    "rust": 0.087,
+    "corrosion": 0.07,
+    "missing-cap": 0.5,
+    "nest": 0.647,
+    "other-defect": 0.18,
+    "strict": 0.779
+   }
+  },
+  {
+   "id": "new_wording:defect+rust:0:1225",
+   "group": "new_wording",
+   "true": [
+    "defect",
+    "rust"
+   ],
+   "parsed": [
+    "defect",
+    "rust",
+    "corrosion"
+   ],
+   "strict_true": false,
+   "strict_parsed": false,
+   "probs": {
+    "defect": 0.902,
+    "rust": 0.874,
+    "corrosion": 0.735,
+    "missing-cap": 0.103,
+    "nest": 0.001,
+    "other-defect": 0.47,
+    "strict": 0.168
+   }
+  },
+  {
+   "id": "new_wording:defect+rust:1:4862",
+   "group": "new_wording",
+   "true": [
+    "defect",
+    "rust"
+   ],
+   "parsed": [
+    "defect",
+    "rust",
+    "corrosion"
+   ],
+   "strict_true": true,
+   "strict_parsed": true,
+   "probs": {
+    "defect": 0.97,
+    "rust": 0.925,
+    "corrosion": 0.837,
+    "missing-cap": 0.146,
+    "nest": 0.028,
+    "other-defect": 0.487,
+    "strict": 0.827
+   }
+  },
+  {
+   "id": "new_wording:defect+corrosion:0:1859",
+   "group": "new_wording",
+   "true": [
+    "defect",
+    "corrosion"
+   ],
+   "parsed": [
+    "defect",
+    "rust",
+    "corrosion"
+   ],
+   "strict_true": false,
+   "strict_parsed": false,
+   "probs": {
+    "defect": 0.846,
+    "rust": 0.889,
+    "corrosion": 0.875,
+    "missing-cap": 0.122,
+    "nest": 0.098,
+    "other-defect": 0.456,
+    "strict": 0.165
+   }
+  },
+  {
+   "id": "new_wording:defect+corrosion:1:3483",
+   "group": "new_wording",
+   "true": [
+    "defect",
+    "corrosion"
+   ],
+   "parsed": [
+    "rust",
+    "corrosion"
+   ],
+   "strict_true": true,
+   "strict_parsed": true,
+   "probs": {
+    "defect": 0.421,
+    "rust": 0.717,
+    "corrosion": 0.517,
+    "missing-cap": 0.146,
+    "nest": 0.001,
+    "other-defect": 0.46,
+    "strict": 0.818
+   }
+  },
+  {
+   "id": "new_focus:rust:0:3338",
+   "group": "new_focus",
+   "true": [
+    "rust"
+   ],
+   "parsed": [
+    "defect",
+    "rust",
+    "corrosion",
+    "other-defect"
+   ],
+   "strict_true": false,
+   "strict_parsed": false,
+   "probs": {
+    "defect": 0.715,
+    "rust": 0.887,
+    "corrosion": 0.839,
+    "missing-cap": 0.272,
+    "nest": 0.22,
+    "other-defect": 0.733,
+    "strict": 0.137
+   }
+  },
+  {
+   "id": "new_focus:rust:1:2086",
+   "group": "new_focus",
+   "true": [
+    "rust"
+   ],
+   "parsed": [
+    "defect",
+    "rust",
+    "corrosion",
+    "other-defect"
+   ],
+   "strict_true": true,
+   "strict_parsed": true,
+   "probs": {
+    "defect": 0.785,
+    "rust": 0.832,
+    "corrosion": 0.865,
+    "missing-cap": 0.341,
+    "nest": 0.179,
+    "other-defect": 0.603,
+    "strict": 0.788
+   }
+  },
+  {
+   "id": "new_focus:other-defect:0:0329",
+   "group": "new_focus",
+   "true": [
+    "other-defect"
+   ],
+   "parsed": [
+    "defect",
+    "rust",
+    "corrosion",
+    "other-defect"
+   ],
+   "strict_true": false,
+   "strict_parsed": false,
+   "probs": {
+    "defect": 0.642,
+    "rust": 0.798,
+    "corrosion": 0.506,
+    "missing-cap": 0.217,
+    "nest": 0.273,
+    "other-defect": 0.846,
+    "strict": 0.288
+   }
+  },
+  {
+   "id": "new_focus:other-defect:1:4720",
+   "group": "new_focus",
+   "true": [
+    "other-defect"
+   ],
+   "parsed": [
+    "defect",
+    "rust",
+    "corrosion",
+    "other-defect"
+   ],
+   "strict_true": true,
+   "strict_parsed": true,
+   "probs": {
+    "defect": 0.808,
+    "rust": 0.642,
+    "corrosion": 0.57,
+    "missing-cap": 0.142,
+    "nest": 0.134,
+    "other-defect": 1.0,
+    "strict": 0.841
+   }
+  },
+  {
+   "id": "new_focus:defect+nest:0:8536",
+   "group": "new_focus",
+   "true": [
+    "defect",
+    "nest"
+   ],
+   "parsed": [
+    "defect"
+   ],
+   "strict_true": false,
+   "strict_parsed": false,
+   "probs": {
+    "defect": 0.63,
+    "rust": 0.161,
+    "corrosion": 0.086,
+    "missing-cap": 0.138,
+    "nest": 0.31,
+    "other-defect": 0.329,
+    "strict": 0.399
+   }
+  },
+  {
+   "id": "new_focus:defect+nest:1:6191",
+   "group": "new_focus",
+   "true": [
+    "defect",
+    "nest"
+   ],
+   "parsed": [
+    "defect",
+    "rust",
+    "corrosion",
+    "nest"
+   ],
+   "strict_true": true,
+   "strict_parsed": true,
+   "probs": {
+    "defect": 1.0,
+    "rust": 0.771,
+    "corrosion": 0.606,
+    "missing-cap": 0.208,
+    "nest": 0.92,
+    "other-defect": 0.414,
+    "strict": 0.894
+   }
+  },
+  {
+   "id": "new_focus:rust+nest:0:3446",
+   "group": "new_focus",
+   "true": [
+    "rust",
+    "nest"
+   ],
+   "parsed": [
+    "defect",
+    "rust",
+    "corrosion",
+    "nest",
+    "other-defect"
+   ],
+   "strict_true": false,
+   "strict_parsed": false,
+   "probs": {
+    "defect": 0.764,
+    "rust": 0.842,
+    "corrosion": 0.844,
+    "missing-cap": 0.14,
+    "nest": 0.861,
+    "other-defect": 0.505,
+    "strict": 0.29
+   }
+  },
+  {
+   "id": "new_focus:rust+nest:1:4250",
+   "group": "new_focus",
+   "true": [
+    "rust",
+    "nest"
+   ],
+   "parsed": [
+    "defect",
+    "rust",
+    "corrosion",
+    "nest"
+   ],
+   "strict_true": true,
+   "strict_parsed": true,
+   "probs": {
+    "defect": 0.847,
+    "rust": 1.0,
+    "corrosion": 0.963,
+    "missing-cap": 0.262,
+    "nest": 0.959,
+    "other-defect": 0.436,
+    "strict": 0.9
+   }
+  },
+  {
+   "id": "new_focus:corrosion+other-defect:0:1133",
+   "group": "new_focus",
+   "true": [
+    "corrosion",
+    "other-defect"
+   ],
+   "parsed": [
+    "defect",
+    "rust",
+    "corrosion",
+    "other-defect"
+   ],
+   "strict_true": false,
+   "strict_parsed": false,
+   "probs": {
+    "defect": 0.741,
+    "rust": 0.856,
+    "corrosion": 0.841,
+    "missing-cap": 0.168,
+    "nest": 0.195,
+    "other-defect": 0.813,
+    "strict": 0.234
+   }
+  },
+  {
+   "id": "new_focus:corrosion+other-defect:1:0388",
+   "group": "new_focus",
+   "true": [
+    "corrosion",
+    "other-defect"
+   ],
+   "parsed": [
+    "defect",
+    "rust",
+    "corrosion",
+    "other-defect"
+   ],
+   "strict_true": true,
+   "strict_parsed": true,
+   "probs": {
+    "defect": 0.677,
+    "rust": 0.751,
+    "corrosion": 0.729,
+    "missing-cap": 0.158,
+    "nest": 0.053,
+    "other-defect": 0.719,
+    "strict": 0.766
+   }
+  }
+ ],
+ "component": [
+  {
+   "id": "train:yoke-suspension+polymer-insulator-lower-shackle:0:5895",
+   "group": "train",
+   "true": [
+    "yoke-suspension",
+    "polymer-insulator-lower-shackle"
+   ],
+   "parsed": [
+    "yoke-suspension",
+    "polymer-insulator-lower-shackle"
+   ],
+   "strict_true": false,
+   "strict_parsed": false,
+   "probs": {
+    "polymer-insulator-upper-shackle": 0.075,
+    "glass-insulator": 0.207,
+    "yoke-suspension": 0.521,
+    "vari-grip": 0.04,
+    "polymer-insulator-lower-shackle": 0.656,
+    "lightning-rod-suspension": 0.448,
+    "strict": 0.283
+   }
+  },
+  {
+   "id": "train:vari-grip+polymer-insulator-lower-shackle:0:5301",
+   "group": "train",
+   "true": [
+    "vari-grip",
+    "polymer-insulator-lower-shackle"
+   ],
+   "parsed": [
+    "vari-grip",
+    "polymer-insulator-lower-shackle"
+   ],
+   "strict_true": false,
+   "strict_parsed": false,
+   "probs": {
+    "polymer-insulator-upper-shackle": 0.201,
+    "glass-insulator": 0.392,
+    "yoke-suspension": 0.053,
+    "vari-grip": 0.873,
+    "polymer-insulator-lower-shackle": 0.627,
+    "lightning-rod-suspension": 0.046,
+    "strict": 0.122
+   }
+  },
+  {
+   "id": "train:yoke-suspension:0:6501",
+   "group": "train",
+   "true": [
+    "yoke-suspension"
+   ],
+   "parsed": [
+    "yoke-suspension"
+   ],
+   "strict_true": false,
+   "strict_parsed": false,
+   "probs": {
+    "polymer-insulator-upper-shackle": 0.199,
+    "glass-insulator": 0.383,
+    "yoke-suspension": 0.671,
+    "vari-grip": 0.069,
+    "polymer-insulator-lower-shackle": 0.084,
+    "lightning-rod-suspension": 0.189,
+    "strict": 0.166
+   }
+  },
+  {
+   "id": "train:glass-insulator+yoke-suspension:0:7382",
+   "group": "train",
+   "true": [
+    "glass-insulator",
+    "yoke-suspension"
+   ],
+   "parsed": [
+    "glass-insulator"
+   ],
+   "strict_true": false,
+   "strict_parsed": false,
+   "probs": {
+    "polymer-insulator-upper-shackle": 0.114,
+    "glass-insulator": 0.596,
+    "yoke-suspension": 0.492,
+    "vari-grip": 0.105,
+    "polymer-insulator-lower-shackle": 0.108,
+    "lightning-rod-suspension": 0.286,
+    "strict": 0.15
+   }
+  },
+  {
+   "id": "train:polymer-insulator-lower-shackle+lightning-rod-suspension:1:0152",
+   "group": "train",
+   "true": [
+    "polymer-insulator-lower-shackle",
+    "lightning-rod-suspension"
+   ],
+   "parsed": [
+    "polymer-insulator-upper-shackle",
+    "glass-insulator",
+    "yoke-suspension",
+    "vari-grip",
+    "polymer-insulator-lower-shackle",
+    "lightning-rod-suspension"
+   ],
+   "strict_true": true,
+   "strict_parsed": true,
+   "probs": {
+    "polymer-insulator-upper-shackle": 0.657,
+    "glass-insulator": 0.836,
+    "yoke-suspension": 0.883,
+    "vari-grip": 0.748,
+    "polymer-insulator-lower-shackle": 0.913,
+    "lightning-rod-suspension": 0.935,
+    "strict": 0.783
+   }
+  },
+  {
+   "id": "train:yoke-suspension+polymer-insulator-lower-shackle:1:9713",
+   "group": "train",
+   "true": [
+    "yoke-suspension",
+    "polymer-insulator-lower-shackle"
+   ],
+   "parsed": [
+    "yoke-suspension",
+    "polymer-insulator-lower-shackle"
+   ],
+   "strict_true": true,
+   "strict_parsed": true,
+   "probs": {
+    "polymer-insulator-upper-shackle": 0.139,
+    "glass-insulator": 0.114,
+    "yoke-suspension": 0.725,
+    "vari-grip": 0.038,
+    "polymer-insulator-lower-shackle": 0.648,
+    "lightning-rod-suspension": 0.258,
+    "strict": 0.757
+   }
+  },
+  {
+   "id": "new_wording:polymer-insulator-upper-shackle:0:6907",
+   "group": "new_wording",
+   "true": [
+    "polymer-insulator-upper-shackle"
+   ],
+   "parsed": [],
+   "strict_true": false,
+   "strict_parsed": false,
+   "probs": {
+    "polymer-insulator-upper-shackle": 0.423,
+    "glass-insulator": 0.083,
+    "yoke-suspension": 0.114,
+    "vari-grip": 0.09,
+    "polymer-insulator-lower-shackle": 0.0,
+    "lightning-rod-suspension": 0.166,
+    "strict": 0.22
+   }
+  },
+  {
+   "id": "new_wording:polymer-insulator-upper-shackle:1:3346",
+   "group": "new_wording",
+   "true": [
+    "polymer-insulator-upper-shackle"
+   ],
+   "parsed": [],
+   "strict_true": true,
+   "strict_parsed": true,
+   "probs": {
+    "polymer-insulator-upper-shackle": 0.283,
+    "glass-insulator": 0.21,
+    "yoke-suspension": 0.098,
+    "vari-grip": 0.122,
+    "polymer-insulator-lower-shackle": 0.15,
+    "lightning-rod-suspension": 0.151,
+    "strict": 0.725
+   }
+  },
+  {
+   "id": "new_wording:yoke-suspension:0:5796",
+   "group": "new_wording",
+   "true": [
+    "yoke-suspension"
+   ],
+   "parsed": [],
+   "strict_true": false,
+   "strict_parsed": false,
+   "probs": {
+    "polymer-insulator-upper-shackle": 0.067,
+    "glass-insulator": 0.074,
+    "yoke-suspension": 0.239,
+    "vari-grip": 0.085,
+    "polymer-insulator-lower-shackle": 0.032,
+    "lightning-rod-suspension": 0.114,
+    "strict": 0.204
+   }
+  },
+  {
+   "id": "new_wording:yoke-suspension:1:8627",
+   "group": "new_wording",
+   "true": [
+    "yoke-suspension"
+   ],
+   "parsed": [
+    "yoke-suspension"
+   ],
+   "strict_true": true,
+   "strict_parsed": true,
+   "probs": {
+    "polymer-insulator-upper-shackle": 0.171,
+    "glass-insulator": 0.205,
+    "yoke-suspension": 0.755,
+    "vari-grip": 0.12,
+    "polymer-insulator-lower-shackle": 0.146,
+    "lightning-rod-suspension": 0.137,
+    "strict": 0.819
+   }
+  },
+  {
+   "id": "new_wording:vari-grip:0:0156",
+   "group": "new_wording",
+   "true": [
+    "vari-grip"
+   ],
+   "parsed": [
+    "glass-insulator",
+    "vari-grip",
+    "lightning-rod-suspension"
+   ],
+   "strict_true": false,
+   "strict_parsed": false,
+   "probs": {
+    "polymer-insulator-upper-shackle": 0.244,
+    "glass-insulator": 0.799,
+    "yoke-suspension": 0.237,
+    "vari-grip": 0.827,
+    "polymer-insulator-lower-shackle": 0.234,
+    "lightning-rod-suspension": 0.702,
+    "strict": 0.125
+   }
+  },
+  {
+   "id": "new_wording:vari-grip:1:2834",
+   "group": "new_wording",
+   "true": [
+    "vari-grip"
+   ],
+   "parsed": [
+    "vari-grip"
+   ],
+   "strict_true": true,
+   "strict_parsed": true,
+   "probs": {
+    "polymer-insulator-upper-shackle": 0.151,
+    "glass-insulator": 0.146,
+    "yoke-suspension": 0.079,
+    "vari-grip": 0.516,
+    "polymer-insulator-lower-shackle": 0.103,
+    "lightning-rod-suspension": 0.098,
+    "strict": 0.823
+   }
+  },
+  {
+   "id": "new_wording:polymer-insulator-lower-shackle:0:1336",
+   "group": "new_wording",
+   "true": [
+    "polymer-insulator-lower-shackle"
+   ],
+   "parsed": [
+    "glass-insulator",
+    "yoke-suspension",
+    "vari-grip",
+    "polymer-insulator-lower-shackle",
+    "lightning-rod-suspension"
+   ],
+   "strict_true": false,
+   "strict_parsed": false,
+   "probs": {
+    "polymer-insulator-upper-shackle": 0.161,
+    "glass-insulator": 0.819,
+    "yoke-suspension": 0.743,
+    "vari-grip": 0.618,
+    "polymer-insulator-lower-shackle": 0.778,
+    "lightning-rod-suspension": 0.899,
+    "strict": 0.122
+   }
+  },
+  {
+   "id": "new_wording:polymer-insulator-lower-shackle:1:7927",
+   "group": "new_wording",
+   "true": [
+    "polymer-insulator-lower-shackle"
+   ],
+   "parsed": [],
+   "strict_true": true,
+   "strict_parsed": true,
+   "probs": {
+    "polymer-insulator-upper-shackle": 0.054,
+    "glass-insulator": 0.405,
+    "yoke-suspension": 0.107,
+    "vari-grip": 0.137,
+    "polymer-insulator-lower-shackle": 0.29,
+    "lightning-rod-suspension": 0.21,
+    "strict": 0.726
+   }
+  },
+  {
+   "id": "new_wording:polymer-insulator-upper-shackle+glass-insulator:0:4521",
+   "group": "new_wording",
+   "true": [
+    "polymer-insulator-upper-shackle",
+    "glass-insulator"
+   ],
+   "parsed": [
+    "polymer-insulator-upper-shackle",
+    "glass-insulator",
+    "yoke-suspension",
+    "vari-grip",
+    "polymer-insulator-lower-shackle",
+    "lightning-rod-suspension"
+   ],
+   "strict_true": false,
+   "strict_parsed": false,
+   "probs": {
+    "polymer-insulator-upper-shackle": 0.894,
+    "glass-insulator": 0.871,
+    "yoke-suspension": 0.596,
+    "vari-grip": 0.798,
+    "polymer-insulator-lower-shackle": 0.661,
+    "lightning-rod-suspension": 0.766,
+    "strict": 0.144
+   }
+  },
+  {
+   "id": "new_wording:polymer-insulator-upper-shackle+glass-insulator:1:8570",
+   "group": "new_wording",
+   "true": [
+    "polymer-insulator-upper-shackle",
+    "glass-insulator"
+   ],
+   "parsed": [
+    "polymer-insulator-upper-shackle",
+    "glass-insulator",
+    "yoke-suspension",
+    "vari-grip",
+    "lightning-rod-suspension"
+   ],
+   "strict_true": true,
+   "strict_parsed": true,
+   "probs": {
+    "polymer-insulator-upper-shackle": 0.922,
+    "glass-insulator": 0.906,
+    "yoke-suspension": 0.697,
+    "vari-grip": 0.839,
+    "polymer-insulator-lower-shackle": 0.462,
+    "lightning-rod-suspension": 0.88,
+    "strict": 0.85
+   }
+  },
+  {
+   "id": "new_wording:polymer-insulator-upper-shackle+yoke-suspension:0:0961",
+   "group": "new_wording",
+   "true": [
+    "polymer-insulator-upper-shackle",
+    "yoke-suspension"
+   ],
+   "parsed": [
+    "polymer-insulator-upper-shackle",
+    "yoke-suspension"
+   ],
+   "strict_true": false,
+   "strict_parsed": false,
+   "probs": {
+    "polymer-insulator-upper-shackle": 0.792,
+    "glass-insulator": 0.086,
+    "yoke-suspension": 0.871,
+    "vari-grip": 0.082,
+    "polymer-insulator-lower-shackle": 0.055,
+    "lightning-rod-suspension": 0.46,
+    "strict": 0.176
+   }
+  },
+  {
+   "id": "new_wording:polymer-insulator-upper-shackle+yoke-suspension:1:6836",
+   "group": "new_wording",
+   "true": [
+    "polymer-insulator-upper-shackle",
+    "yoke-suspension"
+   ],
+   "parsed": [],
+   "strict_true": true,
+   "strict_parsed": true,
+   "probs": {
+    "polymer-insulator-upper-shackle": 0.302,
+    "glass-insulator": 0.169,
+    "yoke-suspension": 0.26,
+    "vari-grip": 0.101,
+    "polymer-insulator-lower-shackle": 0.159,
+    "lightning-rod-suspension": 0.359,
+    "strict": 0.759
+   }
+  },
+  {
+   "id": "new_focus:glass-insulator:0:1338",
+   "group": "new_focus",
+   "true": [
+    "glass-insulator"
+   ],
+   "parsed": [
+    "glass-insulator"
+   ],
+   "strict_true": false,
+   "strict_parsed": false,
+   "probs": {
+    "polymer-insulator-upper-shackle": 0.079,
+    "glass-insulator": 0.774,
+    "yoke-suspension": 0.101,
+    "vari-grip": 0.11,
+    "polymer-insulator-lower-shackle": 0.08,
+    "lightning-rod-suspension": 0.138,
+    "strict": 0.226
+   }
+  },
+  {
+   "id": "new_focus:glass-insulator:1:9700",
+   "group": "new_focus",
+   "true": [
+    "glass-insulator"
+   ],
+   "parsed": [
+    "glass-insulator",
+    "lightning-rod-suspension"
+   ],
+   "strict_true": true,
+   "strict_parsed": true,
+   "probs": {
+    "polymer-insulator-upper-shackle": 0.115,
+    "glass-insulator": 0.796,
+    "yoke-suspension": 0.162,
+    "vari-grip": 0.132,
+    "polymer-insulator-lower-shackle": 0.24,
+    "lightning-rod-suspension": 0.695,
+    "strict": 0.828
+   }
+  },
+  {
+   "id": "new_focus:lightning-rod-suspension:0:1152",
+   "group": "new_focus",
+   "true": [
+    "lightning-rod-suspension"
+   ],
+   "parsed": [
+    "lightning-rod-suspension"
+   ],
+   "strict_true": false,
+   "strict_parsed": false,
+   "probs": {
+    "polymer-insulator-upper-shackle": 0.086,
+    "glass-insulator": 0.005,
+    "yoke-suspension": 0.099,
+    "vari-grip": 0.11,
+    "polymer-insulator-lower-shackle": 0.052,
+    "lightning-rod-suspension": 0.827,
+    "strict": 0.238
+   }
+  },
+  {
+   "id": "new_focus:lightning-rod-suspension:1:6855",
+   "group": "new_focus",
+   "true": [
+    "lightning-rod-suspension"
+   ],
+   "parsed": [
+    "yoke-suspension",
+    "lightning-rod-suspension"
+   ],
+   "strict_true": true,
+   "strict_parsed": true,
+   "probs": {
+    "polymer-insulator-upper-shackle": 0.139,
+    "glass-insulator": 0.157,
+    "yoke-suspension": 0.715,
+    "vari-grip": 0.269,
+    "polymer-insulator-lower-shackle": 0.194,
+    "lightning-rod-suspension": 0.921,
+    "strict": 0.886
+   }
+  },
+  {
+   "id": "new_focus:polymer-insulator-upper-shackle+polymer-insulator-lower-shackle:0:1532",
+   "group": "new_focus",
+   "true": [
+    "polymer-insulator-upper-shackle",
+    "polymer-insulator-lower-shackle"
+   ],
+   "parsed": [],
+   "strict_true": false,
+   "strict_parsed": false,
+   "probs": {
+    "polymer-insulator-upper-shackle": 0.307,
+    "glass-insulator": 0.091,
+    "yoke-suspension": 0.097,
+    "vari-grip": 0.086,
+    "polymer-insulator-lower-shackle": 0.204,
+    "lightning-rod-suspension": 0.349,
+    "strict": 0.239
+   }
+  },
+  {
+   "id": "new_focus:polymer-insulator-upper-shackle+polymer-insulator-lower-shackle:1:3563",
+   "group": "new_focus",
+   "true": [
+    "polymer-insulator-upper-shackle",
+    "polymer-insulator-lower-shackle"
+   ],
+   "parsed": [
+    "polymer-insulator-upper-shackle",
+    "glass-insulator",
+    "vari-grip",
+    "polymer-insulator-lower-shackle",
+    "lightning-rod-suspension"
+   ],
+   "strict_true": true,
+   "strict_parsed": true,
+   "probs": {
+    "polymer-insulator-upper-shackle": 0.906,
+    "glass-insulator": 0.844,
+    "yoke-suspension": 0.216,
+    "vari-grip": 0.724,
+    "polymer-insulator-lower-shackle": 0.931,
+    "lightning-rod-suspension": 0.815,
+    "strict": 0.785
+   }
+  },
+  {
+   "id": "new_focus:glass-insulator+polymer-insulator-lower-shackle:0:5749",
+   "group": "new_focus",
+   "true": [
+    "glass-insulator",
+    "polymer-insulator-lower-shackle"
+   ],
+   "parsed": [
+    "glass-insulator",
+    "polymer-insulator-lower-shackle"
+   ],
+   "strict_true": false,
+   "strict_parsed": false,
+   "probs": {
+    "polymer-insulator-upper-shackle": 0.227,
+    "glass-insulator": 0.715,
+    "yoke-suspension": 0.111,
+    "vari-grip": 0.117,
+    "polymer-insulator-lower-shackle": 0.853,
+    "lightning-rod-suspension": 0.105,
+    "strict": 0.308
+   }
+  },
+  {
+   "id": "new_focus:glass-insulator+polymer-insulator-lower-shackle:1:0039",
+   "group": "new_focus",
+   "true": [
+    "glass-insulator",
+    "polymer-insulator-lower-shackle"
+   ],
+   "parsed": [
+    "polymer-insulator-upper-shackle",
+    "glass-insulator",
+    "yoke-suspension",
+    "vari-grip",
+    "polymer-insulator-lower-shackle",
+    "lightning-rod-suspension"
+   ],
+   "strict_true": true,
+   "strict_parsed": true,
+   "probs": {
+    "polymer-insulator-upper-shackle": 0.575,
+    "glass-insulator": 0.947,
+    "yoke-suspension": 0.659,
+    "vari-grip": 0.79,
+    "polymer-insulator-lower-shackle": 0.917,
+    "lightning-rod-suspension": 0.89,
+    "strict": 0.837
+   }
+  },
+  {
+   "id": "new_focus:yoke-suspension+lightning-rod-suspension:0:1343",
+   "group": "new_focus",
+   "true": [
+    "yoke-suspension",
+    "lightning-rod-suspension"
+   ],
+   "parsed": [
+    "yoke-suspension",
+    "lightning-rod-suspension"
+   ],
+   "strict_true": false,
+   "strict_parsed": false,
+   "probs": {
+    "polymer-insulator-upper-shackle": 0.111,
+    "glass-insulator": 0.085,
+    "yoke-suspension": 0.763,
+    "vari-grip": 0.167,
+    "polymer-insulator-lower-shackle": 0.138,
+    "lightning-rod-suspension": 0.675,
+    "strict": 0.205
+   }
+  },
+  {
+   "id": "new_focus:yoke-suspension+lightning-rod-suspension:1:8331",
+   "group": "new_focus",
+   "true": [
+    "yoke-suspension",
+    "lightning-rod-suspension"
+   ],
+   "parsed": [],
+   "strict_true": true,
+   "strict_parsed": true,
+   "probs": {
+    "polymer-insulator-upper-shackle": 0.105,
+    "glass-insulator": 0.114,
+    "yoke-suspension": 0.115,
+    "vari-grip": 0.083,
+    "polymer-insulator-lower-shackle": 0.063,
+    "lightning-rod-suspension": 0.192,
+    "strict": 0.673
+   }
+  }
+ ]
+}

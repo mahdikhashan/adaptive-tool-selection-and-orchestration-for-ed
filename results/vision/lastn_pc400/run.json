@@ -1,0 +1,174 @@
+{
+  "name": "lastn_pc400",
+  "per_class": 400,
+  "calib_images": 100,
+  "val_images": 600,
+  "freeze": "last_n",
+  "n_last": 4,
+  "passes": 2.5,
+  "batch_size": 8,
+  "lr_head": 0.0001,
+  "lr_backbone": 2e-05,
+  "warmup": 25,
+  "seed": 0,
+  "workers": 4,
+  "limit": 0,
+  "latency_frames": 500,
+  "checkpoint": "thaitea/laya-vision",
+  "revision": "f2fe3c12cb6d04c59d8a190250bf3fb40fc828dc",
+  "model_dir": "/system/user/studentwork/khashan/models/vision/lastn_pc400",
+  "questions": {
+    "component": {
+      "type": "choice",
+      "instructions": "Which power line component is in this image?",
+      "criteria": [
+        "stockbridge damper",
+        "preformed damper",
+        "glass insulator",
+        "polymer insulator",
+        "shackle",
+        "lightning rod suspension",
+        "vari-grip clamp",
+        "yoke",
+        "yoke suspension",
+        "spacer",
+        "plate"
+      ]
+    },
+    "defect": {
+      "type": "noul",
+      "instructions": "Does this power line component have a defect?"
+    },
+    "condition": {
+      "type": "choice",
+      "instructions": "Which condition does this power line component have?",
+      "criteria": [
+        "good, no defect",
+        "rust",
+        "corrosion",
+        "missing cap",
+        "bird nest",
+        "other defect (torn part or peeling paint)"
+      ]
+    },
+    "judgeable": {
+      "type": "noul",
+      "instructions": "Is the image clear enough to judge the condition of the component?"
+    }
+  },
+  "train_images": 1793,
+  "train_questions": 5379,
+  "train_images_per_condition": {
+    "good, no defect": 384,
+    "rust": 374,
+    "corrosion": 378,
+    "missing cap": 364,
+    "bird nest": 273,
+    "other defect (torn part or peeling paint)": 20
+  },
+  "calib_questions": 300,
+  "val_questions": 1800,
+  "steps": 1681,
+  "train_seconds": 430.6,
+  "train_stats": {
+    "steps": 1681,
+    "samples_per_dataset": {
+      "lastn_pc400": 13456
+    },
+    "train_minutes": 7.170776589711507,
+    "eval_minutes": 0.0,
+    "steps_per_s": 3.90706171307365,
+    "data_wait_frac": 0.002668477770403919
+  },
+  "loss_every_50": [
+    2.2444,
+    1.4451,
+    1.3114,
+    1.1752,
+    1.2099,
+    1.0871,
+    1.0935,
+    0.9909,
+    1.0271,
+    1.0538,
+    0.8874,
+    0.9215,
+    0.8423,
+    0.8111,
+    0.6754,
+    0.7527,
+    0.9027,
+    0.8093,
+    0.695,
+    0.6715,
+    0.7512,
+    0.6921,
+    0.5833,
+    0.6533,
+    0.6987,
+    0.8502,
+    0.4419,
+    0.6493,
+    0.6452,
+    0.6306,
+    0.6194,
+    0.6603,
+    0.6128,
+    0.4885
+  ],
+  "temperature": [
+    1.056578516960144,
+    1.0,
+    0.9136741161346436
+  ],
+  "val_before": {
+    "all": {
+      "n": 1800,
+      "acc": 0.6011111111111112,
+      "ece": 0.09669794309470388,
+      "nll": 1.2892179979756475
+    },
+    "lastn_pc400": {
+      "n": 1800,
+      "acc": 0.6011111111111112,
+      "ece": 0.09669794309470388,
+      "nll": 1.2892179979756475
+    }
+  },
+  "val_after": {
+    "all": {
+      "n": 1800,
+      "acc": 0.5661111111111111,
+      "ece": 0.18591171371440093,
+      "nll": 1.2931781895243006
+    },
+    "lastn_pc400": {
+      "n": 1800,
+      "acc": 0.5661111111111111,
+      "ece": 0.18591171371440093,
+      "nll": 1.2931781895243006
+    }
+  },
+  "fp32_training": true,
+  "device": "cuda",
+  "gpu": "NVIDIA GeForce RTX 2080 Ti",
+  "precision": "fp32",
+  "peak_gpu_mb": 1755.2,
+  "images": 11716,
+  "all_questions_ms": {
+    "frames": 500,
+    "mean": 76.41,
+    "median": 73.1,
+    "p90": 91.46,
+    "p95": 97.79,
+    "max": 121.31
+  },
+  "condition_only_ms": {
+    "frames": 500,
+    "mean": 74.86,
+    "median": 73.48,
+    "p90": 83.78,
+    "p95": 87.45,
+    "max": 103.68
+  }
+}

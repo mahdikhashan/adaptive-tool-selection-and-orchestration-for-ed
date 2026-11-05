@@ -2,6 +2,7 @@ import re
 
 LABELS = [
     ("无法判断", "cannot-judge"),
+    ("不足以判断", "cannot-judge"),
     ("状态正常", "good"),
     ("存在缺陷", "defect"),
     ("锈蚀", "rust"),

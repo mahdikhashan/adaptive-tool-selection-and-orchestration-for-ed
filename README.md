@@ -96,19 +96,62 @@ The script runs six checks. Each check writes one JSON file in `results/step1/`.
 
 To run only some checks, give their names: `... step1_verify_assets.py env smoke`.
 
+## Step 2: build the tool cache
+
+Step 2 trains two tools and runs five tools on all 39,228 tower14 items. Run the commands in this order:
+
+```bash
+git pull
+uv sync --locked
+uv run --locked python scripts/step2_train_classifier.py
+uv run --locked python scripts/step2_train_smolvlm.py
+for tool in classifier smolvlm_base smolvlm_local smolvlm_split cloud; do
+  uv run --locked python scripts/step2_run_tools.py $tool --limit 200
+done
+```
+
+The `--limit 200` run is a test. It shows the speed of each tool. Then run the full cache:
+
+```bash
+for tool in classifier smolvlm_base smolvlm_local smolvlm_split cloud; do
+  uv run --locked python scripts/step2_run_tools.py $tool
+done
+uv run --locked python scripts/step2_summarize.py
+```
+
+`step2_run_tools.py` continues from the last completed item. If another user needs the GPU, stop the script with `Ctrl-c` and run the same command again later.
+
+| Tool | Model | Place | Precision |
+|---|---|---|---|
+| `classifier` | ResNet-50, trained on the train towers | drone | fp16 |
+| `smolvlm_base` | SmolVLM-256M, not fine-tuned | drone | fp32 |
+| `smolvlm_local` | SmolVLM-256M with the LoRA adapter (EVLM recipe) | drone | fp32 |
+| `smolvlm_split` | `smolvlm_local` with INT8 visual tokens | drone and cloud | fp32 |
+| `cloud` | Qwen3-VL-8B, not fine-tuned | cloud | fp16 |
+
+Each VLM reads the image at a maximum side of 512 px. Each VLM gives one probability for each answer letter in one forward pass. The tools do not generate text.
+
+Outputs:
+- `results/step2/tool_<tool>.jsonl`: one line for each item (prediction, correct, confidence, probabilities, compute time, payload).
+- `results/step2/classifier_train.json`, `smolvlm_train.json`: training curves and validation results.
+- `results/step2/summary.json`: accuracy, recall for each label, abstention rate, compute time and payload for each tool.
+- `$FEDORCH_WORK/runs/step2/`: the classifier weights and the LoRA adapter. These files stay on the server.
+
+Commit `results/step2` when all five tools are complete.
+
 ## Transfer results
 
 Commit and push all result files that are smaller than 1 GB:
 
 ```bash
-git add results/step1
-git commit -m "step1 results from student07"
+git add results/<step>
+git commit -m "<step> results from student07"
 git push origin step1-asset-verification
 ```
 
 Then tell Claude "pushed step 1".
 
-Git LFS stores these result types: `.safetensors`, `.pt`, `.bin`, `.npy`, `.parquet` (see `.gitattributes`). Git stores all other files (JSON, CSV, Markdown, logs).
+Git LFS stores these result types: `.safetensors`, `.pt`, `.bin`, `.npy`, `.parquet`, `.jsonl` (see `.gitattributes`). Git stores all other files (JSON, CSV, Markdown, logs).
 
 Before you commit, find files that are 1 GB or larger:
 

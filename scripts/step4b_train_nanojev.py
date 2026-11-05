@@ -7,15 +7,15 @@ from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
 from fedorch.cache import load_cache
 from fedorch.common import device, results_dir, runs_dir, write_json
-from fedorch.decision import ACTION_TEXT, ACTIONS, QUESTION, evidence_text, load_evidence, soft_target, write_p
+from fedorch.decision import ACTION_TEXT, ACTIONS, QUESTION, config_name, evidence_text, load_evidence, soft_target, training_items, write_p
 from fedorch.items import load_items
 
 MODEL, REVISION = "sdmlai/nano-jev", "v1.0"
 
 
-def examples(items, cache, evidence):
+def examples(items, cache, evidence, temperature):
     return [(i["item_id"], evidence_text(i, cache[i["item_id"]]["classifier"], evidence[i["item_id"]]),
-             [soft_target(i, cache[i["item_id"]])[a] for a in ACTIONS]) for i in items]
+             [soft_target(i, cache[i["item_id"]], temperature)[a] for a in ACTIONS]) for i in items]
 
 
 def option_logits(model, tokenizer, batch, run_on):
@@ -31,6 +31,8 @@ def main():
     parser.add_argument("--epochs", type=int, default=3)
     parser.add_argument("--batch-size", type=int, default=32)
     parser.add_argument("--lr", type=float, default=2e-4)
+    parser.add_argument("--temperature", type=float, default=1.0, help="soft-target temperature")
+    parser.add_argument("--oversample", type=int, default=1, help="copies of each informative training frame")
     parser.add_argument("--limit", type=int, default=None, help="use only the first N items per split (for a quick test)")
     args = parser.parse_args()
 
@@ -43,7 +45,8 @@ def main():
     model = get_peft_model(model, config).to(run_on)
     optimizer = torch.optim.AdamW([p for p in model.parameters() if p.requires_grad], lr=args.lr)
     scaler = torch.amp.GradScaler(enabled=run_on == "cuda")
-    train, history = examples(split["train"], cache, evidence), []
+    name = config_name("nanojev", args.temperature, args.oversample)
+    train, history = examples(training_items(split["train"], cache, args.oversample), cache, evidence, args.temperature), []
 
     for epoch in range(args.epochs):
         model.train()
@@ -63,14 +66,14 @@ def main():
     p = {}
     with torch.no_grad():
         for s in ["val", "test"]:
-            rows = examples(split[s], cache, evidence)
+            rows = examples(split[s], cache, evidence, args.temperature)
             for start in range(0, len(rows), 128):
                 batch = rows[start:start + 128]
                 for b, probs in zip(batch, torch.softmax(option_logits(model, tokenizer, batch, run_on), -1).tolist()):
                     p[b[0]] = dict(zip(ACTIONS, probs))
-    write_p("nanojev", p)
-    model.save_pretrained(runs_dir("step4b") / "nanojev_choice_lora")
-    write_json(results_dir("step4b") / "nanojev_train.json", {"epochs": args.epochs, "lr": args.lr, "examples": len(train),
+    write_p(name, p)
+    model.save_pretrained(runs_dir("step4b") / f"{name}_lora")
+    write_json(results_dir("step4b") / f"{name}_train.json", {"epochs": args.epochs, "lr": args.lr, "examples": len(train),
                                                                "loss_every_200_steps": history[::200], "lora": config.to_dict()})
 
 

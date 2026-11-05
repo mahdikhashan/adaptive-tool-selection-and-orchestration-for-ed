@@ -15,8 +15,9 @@ ACTION_TEXT = {
     "cloud": "ask the cloud vision-language model",
 }
 ESCALATION_COST = {"accept": 0.0, "smolvlm_local": 0.1, "cloud": 0.2}
+GRID = [(1.0, 1), (1.0, 5), (0.25, 1), (0.25, 5)]
 QUESTION = "Which action gives the lowest risk for this frame?"
-MARGINS = [-0.2, -0.1, 0.0, 0.1, 0.2, 0.3, 0.5]
+QUANTILES = [0.8, 0.85, 0.9, 0.92, 0.94, 0.95, 0.96, 0.97, 0.98, 0.99, 0.995, 1.0]
 
 
 def answer_risk(answer, label):
@@ -27,8 +28,21 @@ def answer_risk(answer, label):
     return RISK["abstain"] if answer == "cannot-judge" else 0.0
 
 
-def soft_target(item, rows, temperature=1.0):
-    risks = {a: answer_risk(rows[ACTION_TOOL[a]]["prediction"], item["label"]) + ESCALATION_COST[a] for a in ACTIONS}
+def action_risks(item, rows):
+    return {a: answer_risk(rows[ACTION_TOOL[a]]["prediction"], item["label"]) + ESCALATION_COST[a] for a in ACTIONS}
+
+
+def informative(item, rows):
+    risks = action_risks(item, rows)
+    return max(risks.values()) - min(risks.values()) > max(ESCALATION_COST.values())
+
+
+def training_items(items, cache, oversample):
+    return [i for i in items for _ in range(oversample if informative(i, cache[i["item_id"]]) else 1)]
+
+
+def soft_target(item, rows, temperature):
+    risks = action_risks(item, rows)
     weights = {a: math.exp(-r / temperature) for a, r in risks.items()}
     total = sum(weights.values())
     return {a: w / total for a, w in weights.items()}
@@ -56,6 +70,10 @@ def numeric_v2(item, row, ev, assets):
                ev["brightness"], ev["contrast"]])
 
 
+def config_name(model, temperature, oversample):
+    return f"{model}_T{temperature}_O{oversample}"
+
+
 def write_p(name, p_by_item):
     with (results_dir("step4b") / f"p_{name}.jsonl").open("w") as file:
         for item_id, p in p_by_item.items():
@@ -66,16 +84,25 @@ def read_p(path):
     return {row["item_id"]: row["p"] for row in map(json.loads, path.open())}
 
 
-def choice_rule(p, cache, margin):
+def gap(probs, tool):
+    return probs[tool] - probs["accept"]
+
+
+def thresholds(p, item_ids):
+    gaps = sorted(max(gap(p[i], "smolvlm_local"), gap(p[i], "cloud")) for i in item_ids)
+    return [gaps[min(len(gaps) - 1, int(q * len(gaps)))] if q < 1 else gaps[-1] + 1e-9 for q in QUANTILES]
+
+
+def choice_rule(p, cache, threshold):
     def policy(item, history, state):
         if not history:
             return "classifier"
         if len(history) > 1:
             return None
         probs = p[item["item_id"]]
-        best, best_score = None, probs["accept"] + margin
+        best, best_gap = None, threshold
         for tool in ("smolvlm_local", "cloud"):
-            if expected_latency(tool, cache[item["item_id"]][tool], state) is not None and probs[tool] > best_score:
-                best, best_score = tool, probs[tool]
+            if expected_latency(tool, cache[item["item_id"]][tool], state) is not None and gap(probs, tool) >= best_gap:
+                best, best_gap = tool, gap(probs, tool)
         return best
     return policy

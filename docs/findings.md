@@ -1,6 +1,6 @@
-# Findings, steps 1 to 4b
+# Findings, steps 1 to 4b and plan A
 
-Date: 2026-11-05. This document collects all findings to this date. Each section gives the source files. The detailed documents are `docs/asset_verification.md`, `docs/step2_results.md`, `docs/step3_results.md`, `docs/step4_results.md` and `docs/step4b_results.md`.
+Date: 2026-11-05. This document collects all findings to this date. Each section gives the source files. The detailed documents are `docs/asset_verification.md`, `docs/step2_results.md`, `docs/step3_results.md`, `docs/step4_results.md`, `docs/step4b_results.md` and `docs/planA_results.md`.
 
 Common settings: 7,057 test-tower frames (14 towers). Risk weights 10 / 1 / 0.5 (`docs/risk_weights.md`). Replay values are the mean of 5 seeds in the weak network regime, with the Jetson factor 9, unless a finding gives a different setting.
 
@@ -58,15 +58,28 @@ Sources: `results/step4b/metrics.json`, `results/step4b/metrics_t1.json`, `docs/
 28. A sharp soft target (temperature 0.25) is worse for both models.
 29. Laya with the selected setting (temperature 1, 5 copies) has a risk of 150.0 and escalates 2.6% of the frames. With the first setting (no copies) it has 159.1. Thus Laya is better than the static cascade, but worse than nano-jev and the MLP.
 
-## 6. Conclusions to this date
+## 6. Controllers with few labelled frames (plan A)
 
-30. The best deployable controller is the choice-target MLP (risk 114.2). It is 27% better than the static cascade. Its gap to the oracle is 51 risk points.
-31. With the same facts and with all labels, a decision model does not beat the MLP. The larger model (Laya, 421M) is worse than the smaller model (nano-jev, 33M). This agrees with arXiv 2610.00346: a fine-tuned classifier beat the decision models when task labels exist.
-32. The next test is plan A in `docs/decision_model_plans.md`: the risk when each controller trains on few labelled frames. One drone has few labelled frames. Thus this test decides which controller each drone should train in the federated step.
+Sources: `results/planA/metrics.json`, `docs/planA_results.md`. 3 training seeds for each size (Laya: 1 seed).
 
-## 7. Limits
+30. With 1% and 5% of the train-tower frames, nano-jev and the MLP are equal within the seed variation. The mean paired difference is −0.2 and −2.8 risk points. nano-jev is better on 1 of 3 seeds.
+31. With 20% and 100%, the MLP is better than nano-jev by 13.5 and 15.0 risk points.
+32. Laya is worse than both controllers at every size (168.0 at 5%, 165.8 at 20%).
+33. At 1% (about 255 frames), no controller learns a useful decision. The risk is about 172. The classifier alone has 177.0.
+34. At 5%, the learned controllers are equal to the static cascade (155.7). They start to beat it between 5% and 20%, that is with more than about 1,300 to 5,100 labelled frames.
+35. nano-jev is less stable than the MLP. At 20%, its standard deviation is 24.7 risk points.
+
+## 7. Conclusions to this date
+
+36. The best deployable controller is the choice-target MLP (risk 114.2). It is 27% better than the static cascade. Its gap to the oracle is 51 risk points.
+37. With the same facts, a decision model does not beat the MLP. This is true with all labels and with few labels. The larger model (Laya, 421M) is worse than the smaller model (nano-jev, 33M). This agrees with arXiv 2610.00346: a fine-tuned classifier beat the decision models when task labels exist.
+38. One drone alone needs more than about 5% of the train-tower frames before a learned controller beats the static cascade. The fleet together has more labelled frames. Thus federated learning has a clear purpose: it gives each drone the data that it does not have alone.
+39. The controller for the federated step is the choice MLP. The decision models stay as centralised ablations. Plan F (free-text intents) and plan B (unseen components) are the remaining tests where a decision model can have an advantage.
+
+## 8. Limits
 
 - The Jetson factor 9 is an estimate. No measurement on a Jetson exists.
 - We constructed the network regimes from downlink traces.
 - The risk weights are assumptions.
-- All controller results use one training seed, except where a finding gives more seeds. The replay uses 5 network seeds.
+- The step 4 and step 4b controller results use one training seed. Plan A uses 3 training seeds. The replay uses 5 network seeds.
+- In plan A, the MLP uses the validation loss for early stopping. The decision models train for a constant number of steps.

@@ -64,6 +64,12 @@ Date: 2026-11-05. This document builds on `docs/controller_evidence_options.md` 
 - **Cost:** low for nano-jev, medium for Laya.
 - **Chance to win:** low. Use these changes only after Plan A or Plan F show a gap.
 
+## Status (2026-11-05)
+
+- Step 4b: complete. The MLP is the best controller (114.2). nano-jev has 125.3 and Laya has 150.0.
+- Plan A: complete. nano-jev is equal to the MLP at 1% and 5% and worse at 20% and 100%. See `docs/planA_results.md`.
+- Plans B to G: not started.
+
 ## 3. Recommended order
 
 1. Step 4b with the real evidence. This shows whether the choice target closes the gap for the decision models.

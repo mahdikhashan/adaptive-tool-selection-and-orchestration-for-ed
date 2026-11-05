@@ -1,0 +1,166 @@
+{
+  "classifier": {
+    "items": 39228,
+    "accuracy": 0.9629,
+    "accuracy_by_task": {
+      "T2": 0.8922,
+      "T3": 0.9755
+    },
+    "accuracy_by_split": {
+      "train": 0.9648,
+      "val": 0.9583,
+      "test": 0.9605
+    },
+    "accuracy_by_tool_model": {
+      "fold0": 0.9711,
+      "fold1": 0.9617,
+      "fold2": 0.9577,
+      "full": 0.9605
+    },
+    "recall_by_label": {
+      "corrosion": 0.9161,
+      "defect": 0.901,
+      "good": 0.9793,
+      "missing-cap": 0.7613,
+      "nest": 0.9173,
+      "other-defect": 0.2083,
+      "rust": 0.8258
+    },
+    "abstention_rate": 0.0,
+    "nonfinite": 0,
+    "median_compute_ms": 7.25,
+    "mean_payload_bytes": 0
+  },
+  "smolvlm_base": {
+    "items": 39228,
+    "accuracy": 0.844,
+    "accuracy_by_task": {
+      "T2": 0.6237,
+      "T3": 0.8832
+    },
+    "accuracy_by_split": {
+      "train": 0.8611,
+      "val": 0.7932,
+      "test": 0.83
+    },
+    "accuracy_by_tool_model": {
+      "shared": 0.844
+    },
+    "recall_by_label": {
+      "corrosion": 0.0,
+      "defect": 0.0169,
+      "good": 0.9793,
+      "missing-cap": 0.0329,
+      "nest": 0.0,
+      "other-defect": 0.0,
+      "rust": 0.0095
+    },
+    "abstention_rate": 0.015,
+    "nonfinite": 0,
+    "median_compute_ms": 61.37,
+    "mean_payload_bytes": 0
+  },
+  "smolvlm_local": {
+    "items": 39228,
+    "accuracy": 0.9516,
+    "accuracy_by_task": {
+      "T2": 0.9208,
+      "T3": 0.9571
+    },
+    "accuracy_by_split": {
+      "train": 0.9513,
+      "val": 0.9477,
+      "test": 0.9564
+    },
+    "accuracy_by_tool_model": {
+      "fold0": 0.9522,
+      "fold1": 0.9456,
+      "fold2": 0.954,
+      "full": 0.9564
+    },
+    "recall_by_label": {
+      "corrosion": 0.9485,
+      "defect": 0.8978,
+      "good": 0.9716,
+      "missing-cap": 0.749,
+      "nest": 0.8421,
+      "other-defect": 0.2917,
+      "rust": 0.7159
+    },
+    "abstention_rate": 0.0,
+    "nonfinite": 0,
+    "median_compute_ms": 80.77,
+    "mean_payload_bytes": 0
+  },
+  "smolvlm_split": {
+    "items": 39228,
+    "accuracy": 0.9514,
+    "accuracy_by_task": {
+      "T2": 0.9195,
+      "T3": 0.9571
+    },
+    "accuracy_by_split": {
+      "train": 0.9508,
+      "val": 0.9481,
+      "test": 0.9565
+    },
+    "accuracy_by_tool_model": {
+      "fold0": 0.9528,
+      "fold1": 0.9445,
+      "fold2": 0.9535,
+      "full": 0.9565
+    },
+    "recall_by_label": {
+      "corrosion": 0.9485,
+      "defect": 0.8959,
+      "good": 0.9717,
+      "missing-cap": 0.7435,
+      "nest": 0.8371,
+      "other-defect": 0.2917,
+      "rust": 0.7146
+    },
+    "abstention_rate": 0.0,
+    "nonfinite": 0,
+    "median_compute_ms": 80.23,
+    "mean_payload_bytes": 36868
+  },
+  "cloud": {
+    "items": 39228,
+    "accuracy": 0.8097,
+    "accuracy_by_task": {
+      "T2": 0.5384,
+      "T3": 0.8581
+    },
+    "accuracy_by_split": {
+      "train": 0.8206,
+      "val": 0.7866,
+      "test": 0.7923
+    },
+    "accuracy_by_tool_model": {
+      "shared": 0.8097
+    },
+    "recall_by_label": {
+      "corrosion": 0.0118,
+      "defect": 0.8927,
+      "good": 0.8519,
+      "missing-cap": 0.1427,
+      "nest": 0.1328,
+      "other-defect": 0.2083,
+      "rust": 0.6102
+    },
+    "abstention_rate": 0.0396,
+    "nonfinite": 0,
+    "median_compute_ms": 126.92,
+    "mean_payload_bytes": 35421
+  },
+  "oracle_cheapest_correct": {
+    "items": 39228,
+    "share": {
+      "classifier": 0.9629,
+      "smolvlm_local": 0.0205,
+      "cloud": 0.0063,
+      "none": 0.01,
+      "smolvlm_split": 0.0003
+    }
+  }
+}

@@ -1,0 +1,170 @@
+{
+  "model": "fold0",
+  "train_towers": [
+    "242-2",
+    "246-1",
+    "248-1",
+    "260-1",
+    "271-2",
+    "291-2",
+    "292-2",
+    "294-1",
+    "298-1",
+    "305-2"
+  ],
+  "select_towers": [
+    "250-1",
+    "271-1",
+    "272-1",
+    "273-1",
+    "282-1",
+    "296-2",
+    "302-1",
+    "332-1"
+  ],
+  "train_images": 14781,
+  "val_images": 3143,
+  "best_val_macro_recall": 0.7324789692105749,
+  "history": [
+    {
+      "epoch": 0,
+      "train_loss": 0.9402494039628413,
+      "accuracy": 0.9481387209672287,
+      "macro_recall": 0.6657385372527588,
+      "recall": {
+        "good": 0.9739619985925405,
+        "rust": 0.6968085106382979,
+        "corrosion": 0.609375,
+        "missing-cap": 0.75,
+        "nest": 0.9642857142857143,
+        "other-defect": 0.0
+      }
+    },
+    {
+      "epoch": 1,
+      "train_loss": 0.21792127640345396,
+      "accuracy": 0.9576837416481069,
+      "macro_recall": 0.7269865314981457,
+      "recall": {
+        "good": 0.9750175932441942,
+        "rust": 0.7712765957446809,
+        "corrosion": 0.765625,
+        "missing-cap": 0.85,
+        "nest": 1.0,
+        "other-defect": 0.0
+      }
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.10901015809458958,
+      "accuracy": 0.9723194400254533,
+      "macro_recall": 0.7070920972020502,
+      "recall": {
+        "good": 0.9915552427867699,
+        "rust": 0.7978723404255319,
+        "corrosion": 0.703125,
+        "missing-cap": 0.75,
+        "nest": 1.0,
+        "other-defect": 0.0
+      }
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.07985447974698175,
+      "accuracy": 0.960229080496341,
+      "macro_recall": 0.727711441785078,
+      "recall": {
+        "good": 0.974313863476425,
+        "rust": 0.8138297872340425,
+        "corrosion": 0.828125,
+        "missing-cap": 0.75,
+        "nest": 1.0,
+        "other-defect": 0.0
+      }
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.05958031746054883,
+      "accuracy": 0.9650015908367802,
+      "macro_recall": 0.720064775268141,
+      "recall": {
+        "good": 0.9802955665024631,
+        "rust": 0.824468085106383,
+        "corrosion": 0.765625,
+        "missing-cap": 0.75,
+        "nest": 1.0,
+        "other-defect": 0.0
+      }
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.048236891740199295,
+      "accuracy": 0.9732739420935412,
+      "macro_recall": 0.7182161199035741,
+      "recall": {
+        "good": 0.9901477832512315,
+        "rust": 0.8191489361702128,
+        "corrosion": 0.75,
+        "missing-cap": 0.75,
+        "nest": 1.0,
+        "other-defect": 0.0
+      }
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.03507644920488941,
+      "accuracy": 0.9704104358892778,
+      "macro_recall": 0.7234834873054137,
+      "recall": {
+        "good": 0.9845179451090781,
+        "rust": 0.8563829787234043,
+        "corrosion": 0.75,
+        "missing-cap": 0.75,
+        "nest": 1.0,
+        "other-defect": 0.0
+      }
+    },
+    {
+      "epoch": 7,
+      "train_loss": 0.03052935644115414,
+      "accuracy": 0.9729557747375119,
+      "macro_recall": 0.7324789692105749,
+      "recall": {
+        "good": 0.9866291344123856,
+        "rust": 0.8457446808510638,
+        "corrosion": 0.8125,
+        "missing-cap": 0.75,
+        "nest": 1.0,
+        "other-defect": 0.0
+      }
+    },
+    {
+      "epoch": 8,
+      "train_loss": 0.022915508655036974,
+      "accuracy": 0.9723194400254533,
+      "macro_recall": 0.7239591131757178,
+      "recall": {
+        "good": 0.988036593947924,
+        "rust": 0.824468085106383,
+        "corrosion": 0.78125,
+        "missing-cap": 0.75,
+        "nest": 1.0,
+        "other-defect": 0.0
+      }
+    },
+    {
+      "epoch": 9,
+      "train_loss": 0.020417001500556416,
+      "accuracy": 0.9745466115176583,
+      "macro_recall": 0.7091835564930301,
+      "recall": {
+        "good": 0.9926108374384236,
+        "rust": 0.8138297872340425,
+        "corrosion": 0.734375,
+        "missing-cap": 0.75,
+        "nest": 0.9642857142857143,
+        "other-defect": 0.0
+      }
+    }
+  ]
+}

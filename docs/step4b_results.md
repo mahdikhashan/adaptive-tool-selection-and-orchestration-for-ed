@@ -1,6 +1,6 @@
 # Step 4b results: decision models with the choice target
 
-Date: 2026-11-05. Status: complete except the Laya run with the selected setting.
+Date: 2026-11-05. Status: complete.
 Source files: `results/step4b/metrics.json` (grid and rank threshold), `results/step4b/metrics_t1.json` (first run with constant margins).
 Each value is the mean of 5 network seeds on the 7,057 test-tower frames, weak regime, Jetson factor 9.
 
@@ -23,6 +23,7 @@ Each value is the mean of 5 network seeds on the 7,057 test-tower frames, weak r
 | Choice nano-jev | T 1, 1 copy | 137.9 | 0.911 | 0.211 |
 | Choice MLP | T 0.25, 1 copy | 139.7 | 0.900 | 0.045 |
 | Choice nano-jev | T 0.25, 5 copies | 144.7 | 0.906 | 0.246 |
+| Choice Laya | T 1, 5 copies (selected) | 150.0 | 0.897 | 0.026 |
 | Static cascade | θ = 0.95 | 155.7 | 0.896 | 0.144 |
 | Choice Laya | T 1, 1 copy | 159.1 | 0.892 | 0.235 |
 | Choice nano-jev | T 0.25, 1 copy | 189.3 | 0.876 | 0.243 |
@@ -34,8 +35,7 @@ Each value is the mean of 5 network seeds on the 7,057 test-tower frames, weak r
 3. With constant margins, nano-jev does not escalate (risk 177.0) and Laya escalates 1.2% (risk 166.4). Their outputs stay near the prior. The rank-based threshold removes this problem.
 4. The MLP and nano-jev select the same setting. The temperature 0.25 is worse for both.
 5. nano-jev is 10% worse than the MLP (125.3 against 114.2). It escalates about 3 times more frames. It escalates only to the onboard VLM.
-6. The results in the good and poor regimes are within 3 risk points of the weak regime.
+6. Laya with the selected setting has a risk of 150.0. It is 4% better than the static cascade, but 31% worse than the MLP. It escalates only 2.6% of the frames.
+7. The validation set of Laya does not overlap the training set any more. Laya reports a held-out Brier score of 0.025 (before fine-tuning: 0.212).
+8. The results in the good and poor regimes are within 3 risk points of the weak regime.
 
-## Open item
-
-- Laya with T 1 and 5 copies.

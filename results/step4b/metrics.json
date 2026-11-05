@@ -255,6 +255,56 @@
         "p95_latency_s": 0.8062
       }
     },
+    "choice + laya_T1.0_O5": {
+      "good": {
+        "name": "choice + laya_T1.0_O5 δ=0.1528",
+        "items": 7057,
+        "accuracy": 0.9734,
+        "defect_recall": 0.8968,
+        "miss_rate": 0.0919,
+        "false_alarm_rate": 0.0126,
+        "abstain_rate": 0.0004,
+        "late_rate": 0.0,
+        "risk_per_1000": 150.0354,
+        "escalation_rate": 0.0263,
+        "cloud_failures_per_1000": 0.0567,
+        "uplink_mb_per_1000": 0.0629,
+        "median_latency_s": 0.0655,
+        "p95_latency_s": 0.0668
+      },
+      "weak": {
+        "name": "choice + laya_T1.0_O5 δ=0.1528",
+        "items": 7057,
+        "accuracy": 0.9735,
+        "defect_recall": 0.8968,
+        "miss_rate": 0.0919,
+        "false_alarm_rate": 0.0125,
+        "abstain_rate": 0.0004,
+        "late_rate": 0.0,
+        "risk_per_1000": 149.9646,
+        "escalation_rate": 0.0262,
+        "cloud_failures_per_1000": 0.085,
+        "uplink_mb_per_1000": 0.0583,
+        "median_latency_s": 0.0655,
+        "p95_latency_s": 0.0668
+      },
+      "poor": {
+        "name": "choice + laya_T1.0_O5 δ=0.1528",
+        "items": 7057,
+        "accuracy": 0.9735,
+        "defect_recall": 0.8966,
+        "miss_rate": 0.0923,
+        "false_alarm_rate": 0.0125,
+        "abstain_rate": 0.0003,
+        "late_rate": 0.0,
+        "risk_per_1000": 150.5172,
+        "escalation_rate": 0.026,
+        "cloud_failures_per_1000": 0.085,
+        "uplink_mb_per_1000": 0.0507,
+        "median_latency_s": 0.0655,
+        "p95_latency_s": 0.0668
+      }
+    },
     "choice + mlp_T0.25_O1": {
       "good": {
         "name": "choice + mlp_T0.25_O1 δ=-0.0541",
@@ -661,6 +711,10 @@
       "chosen": -0.028799999999999992,
       "val_risk": 217.0263788968825
     },
+    "good/laya_T1.0_O5": {
+      "chosen": 0.1528,
+      "val_risk": 203.98681055155876
+    },
     "good/mlp_T0.25_O1": {
       "chosen": -0.05408814549446106,
       "val_risk": 168.01558752997602
@@ -696,6 +750,10 @@
     "weak/laya_T1.0_O1": {
       "chosen": -0.028799999999999992,
       "val_risk": 217.0263788968825
+    },
+    "weak/laya_T1.0_O5": {
+      "chosen": 0.1528,
+      "val_risk": 203.98681055155876
     },
     "weak/mlp_T0.25_O1": {
       "chosen": -0.05408814549446106,
@@ -733,6 +791,10 @@
       "chosen": -0.028799999999999992,
       "val_risk": 217.0263788968825
     },
+    "poor/laya_T1.0_O5": {
+      "chosen": 0.1528,
+      "val_risk": 203.98681055155876
+    },
     "poor/mlp_T0.25_O1": {
       "chosen": -0.05408814549446106,
       "val_risk": 166.7416067146283
@@ -768,17 +830,17 @@
   },
   "selected_on_val": {
     "good": {
-      "laya": "laya_T1.0_O1",
+      "laya": "laya_T1.0_O5",
       "mlp": "mlp_T1.0_O5",
       "nanojev": "nanojev_T1.0_O5"
     },
     "weak": {
-      "laya": "laya_T1.0_O1",
+      "laya": "laya_T1.0_O5",
       "mlp": "mlp_T1.0_O5",
       "nanojev": "nanojev_T1.0_O5"
     },
     "poor": {
-      "laya": "laya_T1.0_O1",
+      "laya": "laya_T1.0_O5",
       "mlp": "mlp_T1.0_O5",
       "nanojev": "nanojev_T1.0_O5"
     }

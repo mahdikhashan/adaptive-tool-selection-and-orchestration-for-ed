@@ -56,12 +56,12 @@ Sources: `results/step4b/metrics.json`, `results/step4b/metrics_t1.json`, `docs/
 26. We did a grid search on the validation towers. The MLP and nano-jev select the same setting: soft-target temperature 1 and 5 copies of each informative training frame.
 27. With this setting, the MLP has a risk of 114.2 and escalates 10.8% of the frames. nano-jev has a risk of 125.3 and escalates 29.9%. Thus nano-jev is 10% worse than the MLP, but it is 20% better than the static cascade.
 28. A sharp soft target (temperature 0.25) is worse for both models.
-29. Laya with the first setting (temperature 1, no copies) has a risk of 159.1. The run with the selected setting is in progress.
+29. Laya with the selected setting (temperature 1, 5 copies) has a risk of 150.0 and escalates 2.6% of the frames. With the first setting (no copies) it has 159.1. Thus Laya is better than the static cascade, but worse than nano-jev and the MLP.
 
 ## 6. Conclusions to this date
 
 30. The best deployable controller is the choice-target MLP (risk 114.2). It is 27% better than the static cascade. Its gap to the oracle is 51 risk points.
-31. With the same facts and with all labels, a decision model does not beat the MLP. This agrees with arXiv 2610.00346: a fine-tuned classifier beat the decision models when task labels exist.
+31. With the same facts and with all labels, a decision model does not beat the MLP. The larger model (Laya, 421M) is worse than the smaller model (nano-jev, 33M). This agrees with arXiv 2610.00346: a fine-tuned classifier beat the decision models when task labels exist.
 32. The next test is plan A in `docs/decision_model_plans.md`: the risk when each controller trains on few labelled frames. One drone has few labelled frames. Thus this test decides which controller each drone should train in the federated step.
 
 ## 7. Limits

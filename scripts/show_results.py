@@ -80,7 +80,14 @@ def planF():
         print(f"laya_zero_shot_parse {kind}: strict_correct={strict}/{len(rows)} focus_exact={focus}/{len(rows)}")
 
 
-STAGES = {"step1": step1, "step2": step2, "step3": step3, "step4": step4, "step4b": step4b, "planA": planA, "planF": planF}
+def vision():
+    d = load("vision/summary.json")
+    print("reference | " + json.dumps(d["references (test, no network)"]))
+    for name, run in d["runs"].items():
+        print(name, "|", json.dumps(run.get("mean_sd_over_drones", run)))
+
+
+STAGES = {"step1": step1, "step2": step2, "step3": step3, "step4": step4, "step4b": step4b, "planA": planA, "planF": planF, "vision": vision}
 
 if __name__ == "__main__":
     names = sys.argv[1:] or list(STAGES)

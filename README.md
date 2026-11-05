@@ -225,6 +225,36 @@ git push origin step1-asset-verification
 
 A small training set gets more epochs: nano-jev trains for at least 600 optimizer steps, and Laya for at least 300 optimizer updates. Claude then runs `scripts/planA_replay.py` on the laptop.
 
+## Vision FL (branch `vision-fl`)
+
+This branch uses laya-vision, a vision-language decision model. The model reads only the image. The setup has no network and no cloud. The design is in `docs/vision_fl_design.md`.
+
+The branch has different packages (laya-vision as `laya`, `transformers==5.17.0`). Thus sync again after the checkout:
+
+```bash
+git fetch origin
+git checkout vision-fl
+uv sync --locked
+```
+
+Do a short test first. It uses 20 frames of each split and 20 training steps:
+
+```bash
+uv run --locked python scripts/vision_run.py --mode fedavg --drones 3 --rounds 2 --steps 20 --limit 20
+rm -rf results/vision
+```
+
+Then do all runs in `tmux`:
+
+```bash
+bash scripts/vision_run_gpu.sh
+git add results/vision
+git commit -m "vision FL runs"
+git push origin vision-fl
+```
+
+The script skips each run that has its `train.json`. Each run writes its log to `logs/vision_<run>.log`. Claude then runs `scripts/vision_summarize.py` on the laptop.
+
 ## Transfer results
 
 Commit and push all result files that are smaller than 1 GB:

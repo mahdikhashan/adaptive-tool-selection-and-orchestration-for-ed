@@ -227,7 +227,7 @@ A small training set gets more epochs: nano-jev trains for at least 600 optimize
 
 ## Laya-vision zero-shot (branch `vision-fl`)
 
-Laya-vision looks at each image and classifies it. The model is not fine-tuned. The pipeline has no other model. The design is in `docs/vision_fl_design.md`.
+Laya-vision looks at each image and answers 4 questions: component, defect (yes or no), condition and image quality. The model is not fine-tuned. The pipeline has no other model. The design is in `docs/vision_fl_design.md`.
 
 The branch has different packages (laya-vision as `laya`, `transformers==5.17.0`). Thus sync again after the checkout:
 
@@ -237,10 +237,10 @@ git checkout vision-fl
 uv sync --locked
 ```
 
-Do a short test first, with 20 items:
+Do a short test first, with 20 images:
 
 ```bash
-uv run --locked python scripts/vision_run.py --limit 20
+uv run --locked python scripts/vision_run.py --limit 20 --latency-frames 5
 rm -rf results/vision
 ```
 
@@ -253,7 +253,7 @@ git commit -m "laya-vision zero-shot"
 git push origin vision-fl
 ```
 
-The log is `logs/vision_zeroshot.log`. Claude then runs `scripts/vision_summarize.py` on the laptop.
+The logs are `logs/vision_zeroshot.log` and `logs/vision_latency_cpu.log`. After a stop, run the script again: it continues from the last image. Claude then runs `scripts/vision_summarize.py` on the laptop.
 
 ## Transfer results
 

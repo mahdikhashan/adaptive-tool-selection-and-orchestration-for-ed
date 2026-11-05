@@ -4,7 +4,7 @@ Date: 2026-11-05. Status: code complete, not run on the GPU.
 
 ## 1. Idea
 
-Laya-vision looks at each image of the dataset and classifies it. The model is not fine-tuned. The pipeline has no routing and no other model.
+Laya-vision looks at each image of the dataset and answers 4 typed questions about it. The model is not fine-tuned. The pipeline has no routing and no other model.
 
 ## 2. Model
 
@@ -17,29 +17,64 @@ Laya-vision looks at each image of the dataset and classifies it. The model is n
 - The model needs `transformers==5.17.0`. Version 5.22 gives an error in the image features.
 - The Python package of laya-vision has the name `laya`. It replaces the text Laya on this branch. Thus the scripts that use the text Laya do not run on this branch.
 
-## 3. Input and output
+## 3. Input and questions
 
-- Input: the image only. The input has no text about the component and no output of a different model.
-- Laya-vision needs a question and a set of options. The question is the same for all images of one task:
-  - T2: "Does the power line component in this image have a defect?"
-  - T3: "Which condition does the power line component in this image have?"
-- Options: the answer options of the dataset item, for example "good, no defect", "rust", "corrosion", "cannot judge".
-- Prediction: the option with the highest probability.
+The input is the image only. The script calls `agent.predict` one time for each image, with 4 questions:
 
-## 4. Data
+```python
+agent.predict(
+    {"image": image},
+    {
+        "component": {"type": "choice", "instructions": "Which power line component is in this image?",
+                      "criteria": ["stockbridge damper", "preformed damper", "glass insulator", "polymer insulator",
+                                   "shackle", "lightning rod suspension", "vari-grip clamp", "yoke",
+                                   "yoke suspension", "spacer", "plate"]},
+        "defect":    {"type": "noul", "instructions": "Does this power line component have a defect?"},
+        "condition": {"type": "choice", "instructions": "Which condition does this power line component have?",
+                      "criteria": ["good, no defect", "rust", "corrosion", "missing cap", "bird nest",
+                                   "other defect (torn part or peeling paint)"]},
+        "judgeable": {"type": "noul",
+                      "instructions": "Is the image clear enough to judge the condition of the component?"},
+    },
+)
+```
 
-All 39,228 ElecVQA-Bench items (train 25,499, val 6,672, test 7,057). The model is not trained, so each split is a test set. The main result is the test split, for comparison with the other experiments.
+- The model encodes the image one time and uses it for the 4 questions.
+- The probabilities use the temperatures of the checkpoint.
+- No question is too long. The script records each answer that the model cuts (`truncated`).
 
-## 5. Metrics
+## 4. Data and ground truth
 
-- Accuracy, overall and for each task (T2, T3).
-- Recall for each label.
-- Defect recall: the part of the defect frames with a defect answer.
-- Abstention rate: the part of the answers that are "cannot judge".
-- Risk per 1,000 frames, with the weights in `docs/risk_weights.md` (miss 10, false alarm 1, abstention 0.5).
-- Latency. Section 6 gives the method.
+- The unit is one image. ElecVQA-Bench has 39,228 items on 35,415 images. Some images have a T2 item and a T3 item.
+- Ground truth for each image:
+  - Component: the component folder of the image. The 7 shackle types become "shackle". Thus there are 11 components.
+  - Condition: the class folder of the image (for example `rust`, `corrosão`, `missingcap`). Torn-up and peeling-paint become "other defect". This label exists for all 35,415 images, also for the images with only a T2 item.
+  - Defect: the condition is not "good".
+- The T2 and T3 labels of ElecVQA-Bench agree with the class folder on all images.
+- The model is not trained. Thus each split is a test set. The main result is the test split (14 towers), for comparison with the other experiments.
 
-Values from step 2 on the test split, for comparison only (these models are not in this pipeline):
+## 5. Evaluation
+
+The script `scripts/vision_summarize.py` compares the answers with the ground truth.
+
+| Question | Metrics |
+|---|---|
+| `component` | Accuracy, balanced accuracy, macro F1, precision, recall and F1 for each class, confusion matrix |
+| `condition` | The same metrics as `component` |
+| `defect` | AUROC, average precision, expected calibration error (ECE). Precision, recall, F1, false-alarm rate and risk at the threshold 0.5 and at the threshold from the validation towers |
+| `judgeable` | No ground truth. AUROC of P(judgeable) for a correct `condition` answer: a test of the value as a confidence signal |
+
+Other results:
+
+- Majority baseline for `component` and `condition`. The data is not balanced: 90% of the test images are "good". Thus the accuracy alone is not a good metric. Use the balanced accuracy and the macro F1.
+- Defect from `condition`: a defect answer is a condition that is not "good". The script compares this answer with `defect` (agreement).
+- Risk per 1,000 images: 10 for each missed defect, 1 for each false alarm (`docs/risk_weights.md`).
+- The threshold for `defect` comes from the validation towers, with the lowest risk. The script applies it to the test towers.
+- 95% bootstrap intervals on the test split, from 1,000 samples. The intervals are for these metrics: accuracy, macro F1 and balanced accuracy of `condition`. Accuracy of `component`. AUROC and recall of `defect`.
+- Results for each component on the test split.
+- A test with synthetic answers gave the expected values (for example, condition accuracy 0.832 against 0.833).
+
+Values from step 2 on the test items, for comparison only (these models are not in this pipeline):
 
 | Model | Accuracy | Fine-tuned |
 |---|---|---|
@@ -52,13 +87,11 @@ Values from step 2 on the test split, for comparison only (these models are not 
 
 ### 6.1 Measurement
 
-- The script measures 500 test frames, one frame at a time (batch 1), as on a drone. A random seed of 0 selects the frames. The first 10 frames are a warm-up and the script does not count them.
-- For each frame, the script records 2 parts:
-  - Preprocessing: read the image from the disk, resize it, make the tokens, move the data to the GPU.
-  - Model: one forward pass. The script synchronizes the GPU before and after the pass.
-- The script gives the mean, the median, p90, p95 and the maximum of each part, in ms.
-- The script also records the throughput of the full run (batch 32) and the peak GPU memory.
-- A second run measures 100 frames on the CPU of student07 (`--device cpu --latency-only`).
+- The script measures the time of each `agent.predict` call, one image at a time (batch 1), as on a drone. The time includes the read of the image from the disk, the preprocessing and the model.
+- The full run records the time of each of the 35,415 images.
+- After the full run, the script measures 500 test images again with 2 sets of questions: all 4 questions, and `condition` only. The first 10 images are a warm-up and the script does not count them.
+- The script gives the mean, the median, p90, p95 and the maximum, in ms. It also records the peak GPU memory.
+- A second run measures 100 images on the CPU of student07 (`--device cpu --latency-only`).
 
 ### 6.2 Comparison with EVLM
 
@@ -73,7 +106,7 @@ EVLM gives these values on an NVIDIA Jetson (8-core CPU, 16 GB, 1024 CUDA cores)
 
 The summary script calculates:
 
-- Segment time (measured) = 3.45 × the median time for one frame.
+- Segment time (measured) = 3.45 × the median time for one image, for all 4 questions and for `condition` only.
 - Segment time on a Jetson (estimate) = 9 × the segment time on the GV100. The factor 9 comes from step 3. No Jetson measurement exists. Thus this value is an estimate.
 
 Differences that the comparison must show:
@@ -85,7 +118,7 @@ Differences that the comparison must show:
 
 ## 7. Files
 
-- `src/fedorch/vision.py`: question, options and prediction.
-- `scripts/vision_run.py`: prediction for all items (`--limit` for a short test).
-- `scripts/vision_run_gpu.sh`: the full run on student07.
-- `scripts/vision_summarize.py`: metrics on the laptop from `results/vision/zeroshot/scores.jsonl`.
+- `src/fedorch/vision.py`: questions, ground truth, prediction, latency.
+- `scripts/vision_run.py`: prediction for all images (`--limit` for a short test). After a stop, the script continues from the last image in `predictions.jsonl`.
+- `scripts/vision_run_gpu.sh`: the full run and the CPU latency run on student07.
+- `scripts/vision_summarize.py`: the evaluation on the laptop. It writes `results/vision/summary.json`.

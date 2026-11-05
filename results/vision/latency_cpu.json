@@ -1,0 +1,21 @@
+{
+  "device": "cpu",
+  "gpu": "NVIDIA GeForce RTX 2080 Ti",
+  "precision": "fp32",
+  "all_questions_ms": {
+    "frames": 100,
+    "mean": 2518.54,
+    "median": 2529.04,
+    "p90": 2624.23,
+    "p95": 2640.71,
+    "max": 2727.15
+  },
+  "condition_only_ms": {
+    "frames": 100,
+    "mean": 2078.18,
+    "median": 2101.85,
+    "p90": 2213.58,
+    "p95": 2242.51,
+    "max": 2485.73
+  }
+}

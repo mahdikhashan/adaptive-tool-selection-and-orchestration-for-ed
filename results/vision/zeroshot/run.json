@@ -1,0 +1,67 @@
+{
+  "limit": 0,
+  "latency_frames": 500,
+  "device": "cuda",
+  "latency_only": false,
+  "checkpoint": "thaitea/laya-vision",
+  "revision": "f2fe3c12cb6d04c59d8a190250bf3fb40fc828dc",
+  "images": 35415,
+  "questions": {
+    "component": {
+      "type": "choice",
+      "instructions": "Which power line component is in this image?",
+      "criteria": [
+        "stockbridge damper",
+        "preformed damper",
+        "glass insulator",
+        "polymer insulator",
+        "shackle",
+        "lightning rod suspension",
+        "vari-grip clamp",
+        "yoke",
+        "yoke suspension",
+        "spacer",
+        "plate"
+      ]
+    },
+    "defect": {
+      "type": "noul",
+      "instructions": "Does this power line component have a defect?"
+    },
+    "condition": {
+      "type": "choice",
+      "instructions": "Which condition does this power line component have?",
+      "criteria": [
+        "good, no defect",
+        "rust",
+        "corrosion",
+        "missing cap",
+        "bird nest",
+        "other defect (torn part or peeling paint)"
+      ]
+    },
+    "judgeable": {
+      "type": "noul",
+      "instructions": "Is the image clear enough to judge the condition of the component?"
+    }
+  },
+  "gpu": "NVIDIA GeForce RTX 2080 Ti",
+  "precision": "fp32",
+  "peak_gpu_mb": 880.2,
+  "all_questions_ms": {
+    "frames": 500,
+    "mean": 75.87,
+    "median": 72.04,
+    "p90": 91.59,
+    "p95": 98.52,
+    "max": 123.25
+  },
+  "condition_only_ms": {
+    "frames": 500,
+    "mean": 72.41,
+    "median": 71.37,
+    "p90": 79.87,
+    "p95": 81.54,
+    "max": 88.35
+  }
+}

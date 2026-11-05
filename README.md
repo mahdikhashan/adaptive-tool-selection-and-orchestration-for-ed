@@ -162,6 +162,30 @@ uv run --locked python scripts/step3_replay.py --jetson-factor 35 --out metrics_
 
 The results are in `results/step3/`. `docs/step3_results.md` explains them.
 
+## Step 4: learned controllers (central training)
+
+Each controller learns q(item, tool): the probability that the tool gives the correct answer. A constant rule in `src/fedorch/controller.py` then uses q, the risk weights (`docs/risk_weights.md`) and the latency to select the tool.
+
+Run the two decision models on the GPU:
+
+```bash
+git pull
+uv run --locked python scripts/step4_train_nanojev.py
+uv run --locked python scripts/step4_train_laya.py
+git add results/step4
+git commit -m "step4 decision-model results"
+git push origin step1-asset-verification
+```
+
+Each script writes `results/step4/q_<model>.jsonl` and a training summary. The weights stay in `$FEDORCH_WORK/runs/step4/`.
+
+Claude runs the other parts on the laptop. These parts do not need a GPU:
+
+```bash
+uv run --locked python scripts/step4_train_numeric.py
+uv run --locked python scripts/step4_replay.py
+```
+
 ## Transfer results
 
 Commit and push all result files that are smaller than 1 GB:

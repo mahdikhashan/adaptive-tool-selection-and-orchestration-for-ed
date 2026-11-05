@@ -1,0 +1,32 @@
+{
+  "logistic": {
+    "val_loss": 0.2964126765727997,
+    "auroc": {
+      "val": {
+        "classifier": 0.9162,
+        "smolvlm_local": 0.8611,
+        "cloud": 0.8668
+      },
+      "test": {
+        "classifier": 0.9574,
+        "smolvlm_local": 0.8468,
+        "cloud": 0.841
+      }
+    }
+  },
+  "mlp": {
+    "val_loss": 0.1858624815940857,
+    "auroc": {
+      "val": {
+        "classifier": 0.9426,
+        "smolvlm_local": 0.8711,
+        "cloud": 0.8853
+      },
+      "test": {
+        "classifier": 0.9644,
+        "smolvlm_local": 0.853,
+        "cloud": 0.8741
+      }
+    }
+  }
+}

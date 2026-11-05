@@ -1,0 +1,162 @@
+{
+  "epochs": 2,
+  "summary": {
+    "train_items": 76097,
+    "calibration_items": 400,
+    "eval_items": 20016,
+    "skipped": {},
+    "epoch_loss": [
+      1.0274344165077636,
+      0.99362186889181
+    ],
+    "temperature": [
+      1.0,
+      1.0,
+      5.0
+    ],
+    "temperature_by_options": {},
+    "n_by_bucket": {
+      "noul:2": 400
+    },
+    "calibration": {
+      "choice": {
+        "items": 0,
+        "temperature": 1.0,
+        "issues": []
+      },
+      "score": {
+        "items": 0,
+        "temperature": 1.0,
+        "issues": []
+      },
+      "noul": {
+        "items": 400,
+        "temperature": 5.0,
+        "issues": [
+          "the fitted temperature 5 is on the [0.5, 5] clamp"
+        ],
+        "accuracy": 0.9325,
+        "mean_confidence": 0.9709293202084058
+      }
+    },
+    "abstention_thresholds": {
+      "noul:2": 0.8791
+    },
+    "train_report": {
+      "eval_source": "/system/user/studentwork/khashan/runs/step4/laya_val.jsonl",
+      "eval_mode": "overlapping_eval",
+      "is_held_out": false,
+      "eval_items": 20016,
+      "note": "Evaluation set contains inputs that overlap training data (19258) and calibration data (13287) (total 19260/20016 items); metrics do not reflect strictly independent held-out evaluation.",
+      "before": {
+        "items": 20016,
+        "loss": 1.3855,
+        "accuracy": 0.1849,
+        "mean_confidence": 0.7686,
+        "ece": 0.5883,
+        "brier": 1.0466,
+        "brier_top1": 0.5233,
+        "by_type": {
+          "noul": {
+            "items": 20016,
+            "loss": 1.3855,
+            "accuracy": 0.1849,
+            "mean_confidence": 0.7686,
+            "ece": 0.5883,
+            "brier": 1.0466,
+            "brier_top1": 0.5233
+          }
+        }
+      },
+      "after": {
+        "items": 20016,
+        "loss": 0.2588,
+        "accuracy": 0.9272,
+        "mean_confidence": 0.97,
+        "ece": 0.0428,
+        "brier": 0.135,
+        "brier_top1": 0.0675,
+        "by_type": {
+          "noul": {
+            "items": 20016,
+            "loss": 0.2588,
+            "accuracy": 0.9272,
+            "mean_confidence": 0.97,
+            "ece": 0.0428,
+            "brier": 0.135,
+            "brier_top1": 0.0675
+          }
+        }
+      },
+      "comparison": {
+        "delta_accuracy": 0.7423,
+        "delta_loss": -1.1267,
+        "delta_ece": -0.5455,
+        "delta_brier": -0.9116,
+        "delta_brier_top1": -0.4558,
+        "delta_mean_confidence": 0.2014
+      },
+      "calibration": {
+        "choice": {
+          "items": 0,
+          "temperature": 1.0,
+          "issues": []
+        },
+        "score": {
+          "items": 0,
+          "temperature": 1.0,
+          "issues": []
+        },
+        "noul": {
+          "items": 400,
+          "temperature": 5.0,
+          "issues": [
+            "the fitted temperature 5 is on the [0.5, 5] clamp"
+          ],
+          "accuracy": 0.9325,
+          "mean_confidence": 0.9709293202084058
+        }
+      },
+      "abstention_thresholds": {
+        "noul:2": 0.8791
+      },
+      "training": {
+        "epochs": 2,
+        "micro_batch": 8,
+        "grad_accum": 8,
+        "encoder_lr": 2.5e-05,
+        "head_lr": 0.0001,
+        "min_lr": 1e-06,
+        "weight_decay": 0.01,
+        "grad_clip": 1.0,
+        "loss": "rlcd",
+        "rl_samples": 4,
+        "sigma_start": 0.4,
+        "sigma_end": 0.1,
+        "w_sph": 0.75,
+        "w_rps": 1.0,
+        "shuffle_options": [],
+        "option_layout": null,
+        "freeze_encoder": false,
+        "calib_max": 400,
+        "calib_frac": 0.1,
+        "calib_seed": 20260922,
+        "seed": 0,
+        "max_len": null,
+        "head_max_len": null,
+        "amp": null,
+        "gradient_checkpointing": null,
+        "log_every": 100,
+        "label_smoothing": 0.0,
+        "text_column": "text",
+        "label_column": "label",
+        "question_id": "label",
+        "instructions": null,
+        "eval_data": "/system/user/studentwork/khashan/runs/step4/laya_val.jsonl",
+        "target_error": 0.1,
+        "min_abstain_n": 10
+      }
+    },
+    "output_dir": "/system/user/studentwork/khashan/runs/step4/laya_finetuned"
+  }
+}

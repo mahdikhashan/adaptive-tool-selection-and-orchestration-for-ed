@@ -150,6 +150,18 @@ Outputs:
 
 Commit `results/step2` when all five tools are complete.
 
+## Step 3: replay the baselines
+
+Step 3 does not need a GPU. It uses the step 2 cache in `results/step2/`.
+
+```bash
+uv run --locked python scripts/step3_replay.py
+uv run --locked python scripts/step3_replay.py --jetson-factor 5 --out metrics_jetson5.json
+uv run --locked python scripts/step3_replay.py --jetson-factor 35 --out metrics_jetson35.json
+```
+
+The results are in `results/step3/`. `docs/step3_results.md` explains them.
+
 ## Transfer results
 
 Commit and push all result files that are smaller than 1 GB:

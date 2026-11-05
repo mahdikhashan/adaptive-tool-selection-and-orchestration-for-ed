@@ -1,0 +1,612 @@
+{
+  "cost": {
+    "frame_interval_s": 1.1594202898550725,
+    "deadline_s": 4.0,
+    "jetson_factor": 5.0,
+    "split_edge_fraction": 0.5108695652173914,
+    "rtt_s": 0.05,
+    "timeout_s": 3.0
+  },
+  "sources": {
+    "frame_interval_s": "EVLM Table V: 3.45 key frames per 4 s segment",
+    "deadline_s": "one EVLM segment (4 s)",
+    "jetson_factor": "GV100 / Jetson Orin NX 16 GB: fp32 16.7 / 1.9 TFLOPS and memory bandwidth 870 / 102 GB/s, both about 9x; sensitivity 5x and 35x (35x = 2.8 s SmolVLM with text generation on Jetson Orin, From Pixels to Semantics)",
+    "split_edge_fraction": "split paper: onboard encoder 1.41 s of 2.76 s fully onboard",
+    "rtt_s": "assumed 4G round-trip time",
+    "timeout_s": "assumed cloud request timeout"
+  },
+  "risk_weights": {
+    "miss": 10.0,
+    "false_alarm": 1.0,
+    "abstain": 0.5
+  },
+  "regimes": {
+    "good": {
+      "scale": 1.0,
+      "outages_per_hour": 0,
+      "outage_s": 0
+    },
+    "weak": {
+      "scale": 0.1,
+      "outages_per_hour": 6,
+      "outage_s": 20
+    },
+    "poor": {
+      "scale": 0.02,
+      "outages_per_hour": 20,
+      "outage_s": 30
+    }
+  },
+  "test_items": 7057,
+  "policies": {
+    "always_classifier": {
+      "good": {
+        "name": "always_classifier",
+        "items": 7057,
+        "accuracy": 0.9605,
+        "defect_recall": 0.8876,
+        "miss_rate": 0.1021,
+        "false_alarm_rate": 0.0265,
+        "abstain_rate": 0.0,
+        "late_rate": 0.0,
+        "risk_per_1000": 176.9874,
+        "escalation_rate": 0.0,
+        "cloud_failures_per_1000": 0.0,
+        "uplink_mb_per_1000": 0.0,
+        "median_latency_s": 0.0364,
+        "p95_latency_s": 0.0369
+      },
+      "weak": {
+        "name": "always_classifier",
+        "items": 7057,
+        "accuracy": 0.9605,
+        "defect_recall": 0.8876,
+        "miss_rate": 0.1021,
+        "false_alarm_rate": 0.0265,
+        "abstain_rate": 0.0,
+        "late_rate": 0.0,
+        "risk_per_1000": 176.9874,
+        "escalation_rate": 0.0,
+        "cloud_failures_per_1000": 0.0,
+        "uplink_mb_per_1000": 0.0,
+        "median_latency_s": 0.0364,
+        "p95_latency_s": 0.0369
+      },
+      "poor": {
+        "name": "always_classifier",
+        "items": 7057,
+        "accuracy": 0.9605,
+        "defect_recall": 0.8876,
+        "miss_rate": 0.1021,
+        "false_alarm_rate": 0.0265,
+        "abstain_rate": 0.0,
+        "late_rate": 0.0,
+        "risk_per_1000": 176.9874,
+        "escalation_rate": 0.0,
+        "cloud_failures_per_1000": 0.0,
+        "uplink_mb_per_1000": 0.0,
+        "median_latency_s": 0.0364,
+        "p95_latency_s": 0.0369
+      }
+    },
+    "always_local (EVLM)": {
+      "good": {
+        "name": "always_local (EVLM)",
+        "items": 7057,
+        "accuracy": 0.9564,
+        "defect_recall": 0.8792,
+        "miss_rate": 0.1077,
+        "false_alarm_rate": 0.0299,
+        "abstain_rate": 0.0,
+        "late_rate": 0.0,
+        "risk_per_1000": 188.3237,
+        "escalation_rate": 1.0,
+        "cloud_failures_per_1000": 0.0,
+        "uplink_mb_per_1000": 0.0,
+        "median_latency_s": 0.4042,
+        "p95_latency_s": 0.417
+      },
+      "weak": {
+        "name": "always_local (EVLM)",
+        "items": 7057,
+        "accuracy": 0.9564,
+        "defect_recall": 0.8792,
+        "miss_rate": 0.1077,
+        "false_alarm_rate": 0.0299,
+        "abstain_rate": 0.0,
+        "late_rate": 0.0,
+        "risk_per_1000": 188.3237,
+        "escalation_rate": 1.0,
+        "cloud_failures_per_1000": 0.0,
+        "uplink_mb_per_1000": 0.0,
+        "median_latency_s": 0.4042,
+        "p95_latency_s": 0.417
+      },
+      "poor": {
+        "name": "always_local (EVLM)",
+        "items": 7057,
+        "accuracy": 0.9564,
+        "defect_recall": 0.8792,
+        "miss_rate": 0.1077,
+        "false_alarm_rate": 0.0299,
+        "abstain_rate": 0.0,
+        "late_rate": 0.0,
+        "risk_per_1000": 188.3237,
+        "escalation_rate": 1.0,
+        "cloud_failures_per_1000": 0.0,
+        "uplink_mb_per_1000": 0.0,
+        "median_latency_s": 0.4042,
+        "p95_latency_s": 0.417
+      }
+    },
+    "always_split": {
+      "good": {
+        "name": "always_split",
+        "items": 7057,
+        "accuracy": 0.9509,
+        "defect_recall": 0.8742,
+        "miss_rate": 0.1125,
+        "false_alarm_rate": 0.0288,
+        "abstain_rate": 0.0056,
+        "late_rate": 0.0061,
+        "risk_per_1000": 197.5769,
+        "escalation_rate": 1.0,
+        "cloud_failures_per_1000": 10.5427,
+        "uplink_mb_per_1000": 36.4793,
+        "median_latency_s": 0.3022,
+        "p95_latency_s": 0.538
+      },
+      "weak": {
+        "name": "always_split",
+        "items": 7057,
+        "accuracy": 0.9096,
+        "defect_recall": 0.8414,
+        "miss_rate": 0.1455,
+        "false_alarm_rate": 0.0277,
+        "abstain_rate": 0.0429,
+        "late_rate": 0.0492,
+        "risk_per_1000": 265.1835,
+        "escalation_rate": 1.0,
+        "cloud_failures_per_1000": 25.4782,
+        "uplink_mb_per_1000": 35.9287,
+        "median_latency_s": 0.4018,
+        "p95_latency_s": 4.0706
+      },
+      "poor": {
+        "name": "always_split",
+        "items": 7057,
+        "accuracy": 0.5447,
+        "defect_recall": 0.5371,
+        "miss_rate": 0.4543,
+        "false_alarm_rate": 0.0176,
+        "abstain_rate": 0.3703,
+        "late_rate": 0.4296,
+        "risk_per_1000": 887.6151,
+        "escalation_rate": 1.0,
+        "cloud_failures_per_1000": 81.6494,
+        "uplink_mb_per_1000": 33.8577,
+        "median_latency_s": 2.7926,
+        "p95_latency_s": 91.9875
+      }
+    },
+    "always_cloud": {
+      "good": {
+        "name": "always_cloud",
+        "items": 7057,
+        "accuracy": 0.7906,
+        "defect_recall": 0.6558,
+        "miss_rate": 0.2963,
+        "false_alarm_rate": 0.145,
+        "abstain_rate": 0.0401,
+        "late_rate": 0.0043,
+        "risk_per_1000": 591.4695,
+        "escalation_rate": 1.0,
+        "cloud_failures_per_1000": 10.4577,
+        "uplink_mb_per_1000": 37.915,
+        "median_latency_s": 0.2064,
+        "p95_latency_s": 0.3418
+      },
+      "weak": {
+        "name": "always_cloud",
+        "items": 7057,
+        "accuracy": 0.7587,
+        "defect_recall": 0.6279,
+        "miss_rate": 0.3268,
+        "false_alarm_rate": 0.1382,
+        "abstain_rate": 0.0734,
+        "late_rate": 0.0459,
+        "risk_per_1000": 648.505,
+        "escalation_rate": 1.0,
+        "cloud_failures_per_1000": 26.2151,
+        "uplink_mb_per_1000": 37.2534,
+        "median_latency_s": 0.295,
+        "p95_latency_s": 3.5065
+      },
+      "poor": {
+        "name": "always_cloud",
+        "items": 7057,
+        "accuracy": 0.4576,
+        "defect_recall": 0.2961,
+        "miss_rate": 0.6811,
+        "false_alarm_rate": 0.0852,
+        "abstain_rate": 0.3663,
+        "late_rate": 0.4256,
+        "risk_per_1000": 1286.2123,
+        "escalation_rate": 1.0,
+        "cloud_failures_per_1000": 90.5201,
+        "uplink_mb_per_1000": 34.16,
+        "median_latency_s": 2.8659,
+        "p95_latency_s": 67.4428
+      }
+    },
+    "split_paper_rule": {
+      "good": {
+        "name": "split_paper_rule",
+        "items": 7057,
+        "accuracy": 0.8134,
+        "defect_recall": 0.6785,
+        "miss_rate": 0.2773,
+        "false_alarm_rate": 0.1307,
+        "abstain_rate": 0.0322,
+        "late_rate": 0.0,
+        "risk_per_1000": 546.7621,
+        "escalation_rate": 1.0,
+        "cloud_failures_per_1000": 1.8705,
+        "uplink_mb_per_1000": 33.7443,
+        "median_latency_s": 0.2092,
+        "p95_latency_s": 0.4065
+      },
+      "weak": {
+        "name": "split_paper_rule",
+        "items": 7057,
+        "accuracy": 0.9562,
+        "defect_recall": 0.8785,
+        "miss_rate": 0.1079,
+        "false_alarm_rate": 0.0299,
+        "abstain_rate": 0.0,
+        "late_rate": 0.0,
+        "risk_per_1000": 188.6071,
+        "escalation_rate": 1.0,
+        "cloud_failures_per_1000": 0.0,
+        "uplink_mb_per_1000": 0.0176,
+        "median_latency_s": 0.4042,
+        "p95_latency_s": 0.417
+      },
+      "poor": {
+        "name": "split_paper_rule",
+        "items": 7057,
+        "accuracy": 0.9564,
+        "defect_recall": 0.8792,
+        "miss_rate": 0.1077,
+        "false_alarm_rate": 0.0299,
+        "abstain_rate": 0.0,
+        "late_rate": 0.0,
+        "risk_per_1000": 188.3237,
+        "escalation_rate": 1.0,
+        "cloud_failures_per_1000": 0.0,
+        "uplink_mb_per_1000": 0.0,
+        "median_latency_s": 0.4042,
+        "p95_latency_s": 0.417
+      }
+    },
+    "oracle": {
+      "good": {
+        "name": "oracle",
+        "items": 7057,
+        "accuracy": 0.9914,
+        "defect_recall": 0.953,
+        "miss_rate": 0.0395,
+        "false_alarm_rate": 0.0017,
+        "abstain_rate": 0.0,
+        "late_rate": 0.0,
+        "risk_per_1000": 61.2442,
+        "escalation_rate": 0.031,
+        "cloud_failures_per_1000": 0.0567,
+        "uplink_mb_per_1000": 0.1772,
+        "median_latency_s": 0.0364,
+        "p95_latency_s": 0.0372
+      },
+      "weak": {
+        "name": "oracle",
+        "items": 7057,
+        "accuracy": 0.9911,
+        "defect_recall": 0.9521,
+        "miss_rate": 0.0404,
+        "false_alarm_rate": 0.0019,
+        "abstain_rate": 0.0,
+        "late_rate": 0.0,
+        "risk_per_1000": 62.8596,
+        "escalation_rate": 0.0307,
+        "cloud_failures_per_1000": 0.1134,
+        "uplink_mb_per_1000": 0.1671,
+        "median_latency_s": 0.0364,
+        "p95_latency_s": 0.0372
+      },
+      "poor": {
+        "name": "oracle",
+        "items": 7057,
+        "accuracy": 0.9906,
+        "defect_recall": 0.9498,
+        "miss_rate": 0.0427,
+        "false_alarm_rate": 0.0021,
+        "abstain_rate": 0.0,
+        "late_rate": 0.0,
+        "risk_per_1000": 66.4022,
+        "escalation_rate": 0.0304,
+        "cloud_failures_per_1000": 0.1984,
+        "uplink_mb_per_1000": 0.1435,
+        "median_latency_s": 0.0364,
+        "p95_latency_s": 0.0372
+      }
+    },
+    "cascade_local": {
+      "good": {
+        "name": "cascade_local θ=0.95",
+        "items": 7057,
+        "accuracy": 0.9717,
+        "defect_recall": 0.8961,
+        "miss_rate": 0.0946,
+        "false_alarm_rate": 0.0149,
+        "abstain_rate": 0.0,
+        "late_rate": 0.0,
+        "risk_per_1000": 155.7319,
+        "escalation_rate": 0.1444,
+        "cloud_failures_per_1000": 0.0,
+        "uplink_mb_per_1000": 0.0,
+        "median_latency_s": 0.0364,
+        "p95_latency_s": 0.4438
+      },
+      "weak": {
+        "name": "cascade_local θ=0.95",
+        "items": 7057,
+        "accuracy": 0.9717,
+        "defect_recall": 0.8961,
+        "miss_rate": 0.0946,
+        "false_alarm_rate": 0.0149,
+        "abstain_rate": 0.0,
+        "late_rate": 0.0,
+        "risk_per_1000": 155.7319,
+        "escalation_rate": 0.1444,
+        "cloud_failures_per_1000": 0.0,
+        "uplink_mb_per_1000": 0.0,
+        "median_latency_s": 0.0364,
+        "p95_latency_s": 0.4438
+      },
+      "poor": {
+        "name": "cascade_local θ=0.95",
+        "items": 7057,
+        "accuracy": 0.9717,
+        "defect_recall": 0.8961,
+        "miss_rate": 0.0946,
+        "false_alarm_rate": 0.0149,
+        "abstain_rate": 0.0,
+        "late_rate": 0.0,
+        "risk_per_1000": 155.7319,
+        "escalation_rate": 0.1444,
+        "cloud_failures_per_1000": 0.0,
+        "uplink_mb_per_1000": 0.0,
+        "median_latency_s": 0.0364,
+        "p95_latency_s": 0.4438
+      }
+    },
+    "cascade_cloud (INAR-VL guard)": {
+      "good": {
+        "name": "cascade_cloud (INAR-VL guard) θ=0.6",
+        "items": 7057,
+        "accuracy": 0.9601,
+        "defect_recall": 0.8803,
+        "miss_rate": 0.1099,
+        "false_alarm_rate": 0.0252,
+        "abstain_rate": 0.0007,
+        "late_rate": 0.0,
+        "risk_per_1000": 188.1536,
+        "escalation_rate": 0.0149,
+        "cloud_failures_per_1000": 0.0567,
+        "uplink_mb_per_1000": 0.573,
+        "median_latency_s": 0.0364,
+        "p95_latency_s": 0.0369
+      },
+      "weak": {
+        "name": "cascade_cloud (INAR-VL guard) θ=0.95",
+        "items": 7057,
+        "accuracy": 0.9717,
+        "defect_recall": 0.8961,
+        "miss_rate": 0.0946,
+        "false_alarm_rate": 0.0149,
+        "abstain_rate": 0.0,
+        "late_rate": 0.0,
+        "risk_per_1000": 155.7319,
+        "escalation_rate": 0.1444,
+        "cloud_failures_per_1000": 0.0,
+        "uplink_mb_per_1000": 0.0,
+        "median_latency_s": 0.0364,
+        "p95_latency_s": 0.4438
+      },
+      "poor": {
+        "name": "cascade_cloud (INAR-VL guard) θ=0.95",
+        "items": 7057,
+        "accuracy": 0.9717,
+        "defect_recall": 0.8961,
+        "miss_rate": 0.0946,
+        "false_alarm_rate": 0.0149,
+        "abstain_rate": 0.0,
+        "late_rate": 0.0,
+        "risk_per_1000": 155.7319,
+        "escalation_rate": 0.1444,
+        "cloud_failures_per_1000": 0.0,
+        "uplink_mb_per_1000": 0.0,
+        "median_latency_s": 0.0364,
+        "p95_latency_s": 0.4438
+      }
+    },
+    "cascade_by_task": {
+      "good": {
+        "name": "cascade_by_task θ=0.95",
+        "items": 7057,
+        "accuracy": 0.9505,
+        "defect_recall": 0.9062,
+        "miss_rate": 0.0845,
+        "false_alarm_rate": 0.041,
+        "abstain_rate": 0.0006,
+        "late_rate": 0.0,
+        "risk_per_1000": 162.8737,
+        "escalation_rate": 0.1444,
+        "cloud_failures_per_1000": 0.2267,
+        "uplink_mb_per_1000": 3.0308,
+        "median_latency_s": 0.0364,
+        "p95_latency_s": 0.4373
+      },
+      "weak": {
+        "name": "cascade_by_task θ=0.95",
+        "items": 7057,
+        "accuracy": 0.9536,
+        "defect_recall": 0.9052,
+        "miss_rate": 0.0854,
+        "false_alarm_rate": 0.0371,
+        "abstain_rate": 0.0006,
+        "late_rate": 0.0,
+        "risk_per_1000": 161.0033,
+        "escalation_rate": 0.1444,
+        "cloud_failures_per_1000": 0.3968,
+        "uplink_mb_per_1000": 2.6393,
+        "median_latency_s": 0.0364,
+        "p95_latency_s": 0.4425
+      },
+      "poor": {
+        "name": "cascade_by_task θ=0.95",
+        "items": 7057,
+        "accuracy": 0.9699,
+        "defect_recall": 0.8966,
+        "miss_rate": 0.094,
+        "false_alarm_rate": 0.0169,
+        "abstain_rate": 0.0001,
+        "late_rate": 0.0,
+        "risk_per_1000": 156.6813,
+        "escalation_rate": 0.1444,
+        "cloud_failures_per_1000": 0.085,
+        "uplink_mb_per_1000": 0.324,
+        "median_latency_s": 0.0364,
+        "p95_latency_s": 0.4441
+      }
+    }
+  },
+  "tuning": {
+    "good/cascade_local": {
+      "chosen": 0.95,
+      "val_risk": {
+        "0.5": 233.51318944844124,
+        "0.6": 227.96762589928056,
+        "0.7": 231.11510791366908,
+        "0.8": 234.71223021582733,
+        "0.85": 229.16666666666666,
+        "0.9": 230.36570743405275,
+        "0.95": 220.02398081534773,
+        "0.99": 225.71942446043167
+      }
+    },
+    "good/cascade_cloud (INAR-VL guard)": {
+      "chosen": 0.6,
+      "val_risk": {
+        "0.5": 238.00959232613909,
+        "0.6": 225.64448441247004,
+        "0.7": 242.28117505995203,
+        "0.8": 261.765587529976,
+        "0.85": 275.25479616306956,
+        "0.9": 296.9124700239808,
+        "0.95": 306.50479616306956,
+        "0.99": 418.1654676258993
+      }
+    },
+    "good/cascade_by_task": {
+      "chosen": 0.95,
+      "val_risk": {
+        "0.5": 233.51318944844124,
+        "0.6": 217.47601918465227,
+        "0.7": 214.02877697841726,
+        "0.8": 217.7757793764988,
+        "0.85": 213.20443645083932,
+        "0.9": 222.64688249400479,
+        "0.95": 207.35911270983215,
+        "0.99": 234.18764988009593
+      }
+    },
+    "weak/cascade_local": {
+      "chosen": 0.95,
+      "val_risk": {
+        "0.5": 233.51318944844124,
+        "0.6": 227.96762589928056,
+        "0.7": 231.11510791366908,
+        "0.8": 234.71223021582733,
+        "0.85": 229.16666666666666,
+        "0.9": 230.36570743405275,
+        "0.95": 220.02398081534773,
+        "0.99": 225.71942446043167
+      }
+    },
+    "weak/cascade_cloud (INAR-VL guard)": {
+      "chosen": 0.95,
+      "val_risk": {
+        "0.5": 233.51318944844124,
+        "0.6": 227.96762589928056,
+        "0.7": 231.11510791366908,
+        "0.8": 234.71223021582733,
+        "0.85": 229.16666666666666,
+        "0.9": 230.36570743405275,
+        "0.95": 220.02398081534773,
+        "0.99": 225.71942446043167
+      }
+    },
+    "weak/cascade_by_task": {
+      "chosen": 0.95,
+      "val_risk": {
+        "0.5": 233.51318944844124,
+        "0.6": 220.173860911271,
+        "0.7": 218.5251798561151,
+        "0.8": 220.173860911271,
+        "0.85": 215.6025179856115,
+        "0.9": 224.44544364508394,
+        "0.95": 208.70803357314148,
+        "0.99": 231.63968824940048
+      }
+    },
+    "poor/cascade_local": {
+      "chosen": 0.95,
+      "val_risk": {
+        "0.5": 233.51318944844124,
+        "0.6": 227.96762589928056,
+        "0.7": 231.11510791366908,
+        "0.8": 234.71223021582733,
+        "0.85": 229.16666666666666,
+        "0.9": 230.36570743405275,
+        "0.95": 220.02398081534773,
+        "0.99": 225.71942446043167
+      }
+    },
+    "poor/cascade_cloud (INAR-VL guard)": {
+      "chosen": 0.95,
+      "val_risk": {
+        "0.5": 233.51318944844124,
+        "0.6": 227.96762589928056,
+        "0.7": 231.11510791366908,
+        "0.8": 234.71223021582733,
+        "0.85": 229.16666666666666,
+        "0.9": 230.36570743405275,
+        "0.95": 220.02398081534773,
+        "0.99": 225.71942446043167
+      }
+    },
+    "poor/cascade_by_task": {
+      "chosen": 0.95,
+      "val_risk": {
+        "0.5": 233.51318944844124,
+        "0.6": 224.97002398081534,
+        "0.7": 228.2673860911271,
+        "0.8": 232.1642685851319,
+        "0.85": 226.61870503597123,
+        "0.9": 228.11750599520383,
+        "0.95": 217.326139088729,
+        "0.99": 222.87170263788968
+      }
+    }
+  }
+}

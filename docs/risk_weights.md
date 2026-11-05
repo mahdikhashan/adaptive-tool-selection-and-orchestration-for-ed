@@ -16,6 +16,56 @@ risk per 1,000 frames = 1,000 × (10 × misses + 1 × false alarms + 0.5 × abst
 
 The code is in `src/fedorch/simulate.py` (`RISK` and `metrics`).
 
+As a formula:
+
+$$\text{risk per 1,000 frames} = \frac{1000}{N}\,\big(10 \cdot M + 1 \cdot F + 0.5 \cdot A\big)$$
+
+- $N$ is the number of frames in the mission. The test mission has 7,057 frames.
+- $M$ is the number of misses.
+- $F$ is the number of false alarms.
+- $A$ is the number of abstentions.
+
+One case has no cost: a defect frame with the wrong defect type, for example "rust" for corrosion. The system reports a defect, so a person examines the frame. This case is not a miss. It decreases the defect recall, and the replay reports the recall separately.
+
+## Calculation for one frame
+
+The replay does these steps for each frame (`run_mission` in `src/fedorch/simulate.py`):
+
+1. It runs the tools that the controller selects, in the simulated onboard queue and network.
+2. It takes the answer of the last tool that succeeded.
+3. If the frame finishes more than 4 s after its arrival, the answer becomes "no answer".
+4. It counts the frame as a miss, a false alarm, an abstention or no cost.
+
+Each risk value in the results is the mean of 5 network seeds.
+
+## Example: the classifier alone
+
+The test mission has 1,068 defect frames and 5,989 good frames.
+
+| Error | Count | Weight | Points |
+|---|---|---|---|
+| Miss | 109 | 10 | 1,090 |
+| False alarm | 159 | 1 | 159 |
+| Abstention | 0 | 0.5 | 0 |
+| Wrong defect type | 11 | 0 | 0 |
+
+$$\frac{1000}{7057}\,(1090 + 159) = 177.0$$
+
+The choice MLP has a risk of 114.2. Thus its weighted errors are about 806 points on the same mission, against 1,249 for the classifier alone. Most of the decrease comes from fewer misses, because one miss costs as much as 10 false alarms.
+
+## Weights in plan F
+
+In plan F, the weights depend on the operator intent (`answer_risk` in `src/fedorch/intents.py`):
+
+| Error | Weight |
+|---|---|
+| Miss on a focus frame (focus defect type or focus component) | 20 |
+| Miss on a different defect frame | 2 |
+| False alarm | 1, or 3 if the intent is strict |
+| Abstention | 0.5 |
+
+The formula does not change: the sum of the weighted errors, multiplied by 1,000 and divided by the number of frames.
+
 ## Reasons for the weights
 
 1. A miss has the highest weight. A missed defect stays on the power line until the next inspection. A defect such as corrosion or a missing cap can cause a failure of the line. Thus a miss has the highest cost.

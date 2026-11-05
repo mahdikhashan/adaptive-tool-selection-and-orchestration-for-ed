@@ -186,6 +186,27 @@ uv run --locked python scripts/step4_train_numeric.py
 uv run --locked python scripts/step4_replay.py
 ```
 
+## Step 4b: decision models with the choice target
+
+Step 4b gives every controller the same new target and the same new evidence. The target is one choice between `accept`, `smolvlm_local` and `cloud`. Its soft probabilities come from the realised risk of each option. The evidence adds the full classifier output (6 classes) and image signals (size, blur, brightness, contrast).
+
+Run these commands on student07 in this order:
+
+```bash
+git pull
+uv run --locked python scripts/step4b_extract_evidence.py
+git add results/step4b/evidence.jsonl
+git commit -m "step4b evidence"
+git push origin step1-asset-verification
+uv run --locked python scripts/step4b_train_nanojev.py
+uv run --locked python scripts/step4b_train_laya.py
+git add results/step4b
+git commit -m "step4b decision-model results"
+git push origin step1-asset-verification
+```
+
+Push the evidence file first. Claude then trains the MLP on the laptop while the decision models train on the GPU.
+
 ## Transfer results
 
 Commit and push all result files that are smaller than 1 GB:

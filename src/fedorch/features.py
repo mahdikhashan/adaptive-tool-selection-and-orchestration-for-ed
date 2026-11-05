@@ -33,8 +33,8 @@ def evidence(item, row):
             f"Classifier answer: {first} with probability {p1:.2f}. Second answer: {second} with probability {p2:.2f}.")
 
 
-def write_q(name, q_by_item):
-    with (results_dir("step4") / f"q_{name}.jsonl").open("w") as file:
+def write_q(name, q_by_item, step="step4"):
+    with (results_dir(step) / f"q_{name}.jsonl").open("w") as file:
         for item_id, q in q_by_item.items():
             file.write(json.dumps({"item_id": item_id, "q": q}) + "\n")
 

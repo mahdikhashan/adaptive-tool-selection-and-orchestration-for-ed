@@ -80,16 +80,16 @@ def planF():
         print(f"laya_zero_shot_parse {kind}: strict_correct={strict}/{len(rows)} focus_exact={focus}/{len(rows)}")
 
 
-def vision():
-    for part, m in load("vision/summary.json").items():
+def vision(run="zeroshot"):
+    for part, m in load(f"vision/{run}/summary.json").items():
         print(part, "|", json.dumps(m))
 
 
 STAGES = {"step1": step1, "step2": step2, "step3": step3, "step4": step4, "step4b": step4b, "planA": planA, "planF": planF, "vision": vision}
 
 if __name__ == "__main__":
-    names = sys.argv[1:] or list(STAGES)
+    names = sys.argv[1:2] or list(STAGES)
     for name in names:
         print(f"===== {name} =====")
-        STAGES[name]()
+        STAGES[name](*sys.argv[2:])
         print()

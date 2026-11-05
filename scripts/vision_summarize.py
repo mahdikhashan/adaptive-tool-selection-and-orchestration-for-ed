@@ -1,4 +1,5 @@
 import json
+import sys
 
 import numpy as np
 
@@ -169,21 +170,22 @@ def latency(run, predictions):
 
 
 def main():
+    run = sys.argv[1] if len(sys.argv) > 1 else "zeroshot"
     truth = {x["image"]: x for x in vision.images(load_items())}
-    out = results_dir("vision/zeroshot")
+    out = results_dir(f"vision/{run}")
     predictions = [json.loads(line) for line in (out / "predictions.jsonl").open()]
     rows = [(truth[p["image"]], p["answers"]) for p in predictions]
     split = {s: [row for row in rows if row[0]["split"] == s] for s in ("train", "val", "test")}
     threshold = tune([p["defect"] for _, p in split["val"]], [x["defect"] for x, _ in split["val"]])
-    summary = {"images": len(rows), "truncated": sum(bool(p["truncated"]) for p in predictions),
+    summary = {"run": run, "images": len(rows), "truncated": sum(bool(p["truncated"]) for p in predictions),
                "defect_threshold_from_val": r(threshold),
                "test": evaluate(split["test"], threshold),
                "test_bootstrap_95ci": bootstrap(split["test"], threshold),
                "test_per_component": per_component(split["test"], threshold),
-               "val": evaluate(split["val"], threshold), "train": evaluate(split["train"], threshold),
+               **{s: evaluate(split[s], threshold) for s in ("val", "train") if split[s]},
                "all": evaluate(rows, threshold),
                "latency": latency(json.loads((out / "run.json").read_text()), predictions)}
-    write_json(results_dir("vision") / "summary.json", summary)
+    write_json(out / "summary.json", summary)
     t = summary["test"]
     print(json.dumps({"component": {k: t["component"][k] for k in ("accuracy", "balanced_accuracy", "macro_f1", "majority")},
                       "condition": {k: t["condition"][k] for k in ("accuracy", "balanced_accuracy", "macro_f1", "majority")},

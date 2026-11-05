@@ -255,6 +255,28 @@ git push origin vision-fl
 
 The logs are `logs/vision_zeroshot.log` and `logs/vision_latency_cpu.log`. After a stop, run the script again: it continues from the last image. Claude then runs `scripts/vision_summarize.py` on the laptop.
 
+## Laya-vision fine-tuning (branch `vision-fl`)
+
+This run follows the fine-tune guide of laya-vision (`site-docs/how-to/fine-tune.md`). The design is in `docs/vision_finetune.md`.
+
+Do a short test first:
+
+```bash
+uv run --locked python scripts/vision_finetune.py --name smoke --per-class 3 --calib-images 2 --val-images 3 --passes 0.5 --limit 4 --latency-frames 2
+rm -rf results/vision/smoke "$FEDORCH_WORK/models/vision/smoke"
+```
+
+Then do the full run in `tmux`:
+
+```bash
+bash scripts/vision_finetune_gpu.sh
+git add results/vision/lastn_pc400
+git commit -m "laya-vision fine-tune lastn_pc400"
+git push origin vision-fl
+```
+
+The model is in `$FEDORCH_WORK/models/vision/lastn_pc400` (about 800 MB). Do not commit it. The log is `logs/vision_finetune.log`. If the prediction part stops, run the script again: the training starts again, but the prediction continues from the last image. Claude then runs `scripts/vision_summarize.py lastn_pc400` on the laptop.
+
 ## Transfer results
 
 Commit and push all result files that are smaller than 1 GB:

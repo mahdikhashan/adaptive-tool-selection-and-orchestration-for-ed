@@ -1,5 +1,10 @@
+import contextlib
+import json
+import random
 import statistics
 import time
+
+import torch
 
 from laya.vlm import load_vlm
 
@@ -49,8 +54,18 @@ QUESTIONS = {
 }
 
 
-def load(device):
+def load(device, path=None):
+    if path:
+        return load_vlm(str(path), device=device, dtype="fp32")
     return load_vlm(CHECKPOINT, revision=REVISION, device=device, dtype="fp32")
+
+
+def gpu_name():
+    return torch.cuda.get_device_name(0) if torch.cuda.is_available() else "none"
+
+
+def peak_mb():
+    return round(torch.cuda.max_memory_allocated() / 1e6, 1) if torch.cuda.is_available() else 0.0
 
 
 def images(items):
@@ -84,4 +99,42 @@ def stats(values):
 
 def latency(agent, rows, questions, warmup=10):
     times = [predict(agent, row["image"], questions)[1] for row in rows]
-    return stats(times[warmup:])
+    return stats(times[min(warmup, len(times) // 2):])
+
+
+def timing(agent, rows, frames):
+    sample = random.Random(0).sample(rows, min(len(rows), frames + 10))
+    return {"all_questions_ms": latency(agent, sample, QUESTIONS),
+            "condition_only_ms": latency(agent, sample, {"condition": QUESTIONS["condition"]})}
+
+
+def labelled(row):
+    component = QUESTIONS["component"]["criteria"].index(row["component"])
+    condition = QUESTIONS["condition"]["criteria"].index(row["condition"])
+    image = str(INSPLAD / row["image"])
+    return [{"id": f"{row['image']}#{q}", "image": image, "question": QUESTIONS[q], "label": label}
+            for q, label in (("component", component), ("defect", int(row["defect"])), ("condition", condition))]
+
+
+def fp32_on_old_gpus():
+    if torch.cuda.is_available() and not torch.cuda.is_bf16_supported(including_emulation=False):
+        torch.autocast = lambda *args, **kwargs: contextlib.nullcontext()
+        return True
+    return False
+
+
+def predict_all(agent, rows, path):
+    done = {json.loads(line)["image"] for line in path.open()} if path.exists() else set()
+    todo = [r for r in rows if r["image"] not in done]
+    print(f"{len(rows)} images, {len(done)} done, {len(todo)} to do", flush=True)
+    for row in rows[:10]:
+        predict(agent, row["image"])
+    start = time.time()
+    with path.open("a") as file:
+        for n, row in enumerate(todo, 1):
+            answers, ms, truncated = predict(agent, row["image"])
+            file.write(json.dumps({"image": row["image"], "answers": answers, "ms": round(ms, 2),
+                                   "truncated": truncated}, ensure_ascii=False) + "\n")
+            if n % 500 == 0:
+                file.flush()
+                print(f"{n}/{len(todo)} images, {(time.time() - start) / n * 1000:.1f} ms each", flush=True)

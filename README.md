@@ -225,9 +225,9 @@ git push origin step1-asset-verification
 
 A small training set gets more epochs: nano-jev trains for at least 600 optimizer steps, and Laya for at least 300 optimizer updates. Claude then runs `scripts/planA_replay.py` on the laptop.
 
-## Vision FL (branch `vision-fl`)
+## Laya-vision zero-shot (branch `vision-fl`)
 
-This branch uses laya-vision, a vision-language decision model. The model reads only the image. The setup has no network and no cloud. The design is in `docs/vision_fl_design.md`.
+Laya-vision looks at each image and classifies it. The model is not fine-tuned. The pipeline has no other model. The design is in `docs/vision_fl_design.md`.
 
 The branch has different packages (laya-vision as `laya`, `transformers==5.17.0`). Thus sync again after the checkout:
 
@@ -237,23 +237,23 @@ git checkout vision-fl
 uv sync --locked
 ```
 
-Do a short test first. It uses 20 frames of each split and 20 training steps:
+Do a short test first, with 20 items:
 
 ```bash
-uv run --locked python scripts/vision_run.py --mode fedavg --drones 3 --rounds 2 --steps 20 --limit 20
+uv run --locked python scripts/vision_run.py --limit 20
 rm -rf results/vision
 ```
 
-Then do all runs in `tmux`:
+Then do the full run in `tmux`:
 
 ```bash
 bash scripts/vision_run_gpu.sh
 git add results/vision
-git commit -m "vision FL runs"
+git commit -m "laya-vision zero-shot"
 git push origin vision-fl
 ```
 
-The script skips each run that has its `train.json`. Each run writes its log to `logs/vision_<run>.log`. Claude then runs `scripts/vision_summarize.py` on the laptop.
+The log is `logs/vision_zeroshot.log`. Claude then runs `scripts/vision_summarize.py` on the laptop.
 
 ## Transfer results
 

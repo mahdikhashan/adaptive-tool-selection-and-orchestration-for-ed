@@ -81,10 +81,8 @@ def planF():
 
 
 def vision():
-    d = load("vision/summary.json")
-    print("reference | " + json.dumps(d["references (test, no network)"]))
-    for name, run in d["runs"].items():
-        print(name, "|", json.dumps(run.get("mean_sd_over_drones", run)))
+    for part, m in load("vision/summary.json").items():
+        print(part, "|", json.dumps(m))
 
 
 STAGES = {"step1": step1, "step2": step2, "step3": step3, "step4": step4, "step4b": step4b, "planA": planA, "planF": planF, "vision": vision}

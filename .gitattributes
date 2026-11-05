@@ -3,4 +3,3 @@ results/**/*.pt filter=lfs diff=lfs merge=lfs -text
 results/**/*.bin filter=lfs diff=lfs merge=lfs -text
 results/**/*.npy filter=lfs diff=lfs merge=lfs -text
 results/**/*.parquet filter=lfs diff=lfs merge=lfs -text
-results/**/*.jsonl filter=lfs diff=lfs merge=lfs -text

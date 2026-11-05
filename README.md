@@ -162,7 +162,7 @@ git push origin step1-asset-verification
 
 Then tell Claude "pushed step 1".
 
-Git LFS stores these result types: `.safetensors`, `.pt`, `.bin`, `.npy`, `.parquet`, `.jsonl` (see `.gitattributes`). Git stores all other files (JSON, CSV, Markdown, logs).
+Git LFS stores these result types: `.safetensors`, `.pt`, `.bin`, `.npy`, `.parquet` (see `.gitattributes`). Git stores all other files (JSON, CSV, Markdown, logs).
 
 Before you commit, find files that are 1 GB or larger:
 

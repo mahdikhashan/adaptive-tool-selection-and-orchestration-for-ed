@@ -74,9 +74,10 @@ def planF():
         print()
     for kind in ["label", "component"]:
         print(f"value_check_{kind}", json.dumps(load(f"planF/value_check_{kind}.json")))
-    parse = load("planF/laya_zero_shot_parse.json")
-    print("laya_zero_shot_parse", json.dumps({k: {m: v for m, v in d.items() if not isinstance(v, list)}
-                                               for k, d in parse.items()})[:2000])
+    for kind, rows in load("planF/laya_zero_shot_parse.json").items():
+        strict = sum(r["strict_true"] == r["strict_parsed"] for r in rows)
+        focus = sum(set(r["true"]) == set(r["parsed"]) for r in rows)
+        print(f"laya_zero_shot_parse {kind}: strict_correct={strict}/{len(rows)} focus_exact={focus}/{len(rows)}")
 
 
 STAGES = {"step1": step1, "step2": step2, "step3": step3, "step4": step4, "step4b": step4b, "planA": planA, "planF": planF}

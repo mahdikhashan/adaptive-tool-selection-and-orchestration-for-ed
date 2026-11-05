@@ -19,7 +19,7 @@ export USE_TF=0
 export OMP_NUM_THREADS="${OMP_NUM_THREADS:-1}"
 export MKL_THREADING_LAYER=SEQUENTIAL
 
-mkdir -p "$FEDORCH_WORK"/{bin,cache,tmp,uv-python} "$INSPLAD_DIR"
+mkdir -p "$FEDORCH_WORK"/{bin,cache,tmp,uv-python} "$XDG_CACHE_HOME" "$INSPLAD_DIR"
 
 [ -n "${CUDA_VISIBLE_DEVICES:-}" ] || echo "Set CUDA_VISIBLE_DEVICES to your booked GPU."
 echo "FEDORCH_WORK=$FEDORCH_WORK"

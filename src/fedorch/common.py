@@ -28,7 +28,7 @@ def device():
 
 
 def gpu_dtype():
-    return torch.bfloat16 if torch.cuda.is_available() and torch.cuda.is_bf16_supported() else torch.float16
+    return torch.bfloat16 if torch.cuda.is_available() and torch.cuda.is_bf16_supported(including_emulation=False) else torch.float16
 
 
 def write_json(path, obj):
@@ -42,6 +42,7 @@ def write_env(step):
         "torch": torch.__version__,
         "gpu": torch.cuda.get_device_name(0) if torch.cuda.is_available() else "cpu",
         "cuda_visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES", "unset"),
+        "gpu_dtype": str(gpu_dtype()),
     }
     env.update({package: version(package) for package in ["transformers", "peft"]})
     write_json(results_dir(step) / "env.json", env)

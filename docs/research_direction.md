@@ -36,7 +36,7 @@ Non-inference action: `request_additional_observation`. Plus `accept` / `abstain
    and to measure controller overhead.
 2. Split by video / asset / location, never by frame.
 3. Every policy sees the same telemetry and the same feasible tool set.
-4. Controller latency, memory and energy count against every agentic policy.
+4. Controller latency counts against every agentic policy.
 5. Desktop numbers are development only; edge claims require Jetson measurements.
    Cloud cost is reported as calls and bytes, not energy.
 6. Flight control is out of scope for the agent.
@@ -89,8 +89,10 @@ Both papers name our problem as their future work:
 ### Design consequences
 - Action space: a1 YOLO defect detector onboard; a2 SmolVLM-256M-LoRA onboard; a3 same model split (INT8);
   a4 same model cloud; a5 larger VLM in cloud; a6 skip / wait for next key frame; accept / abstain.
-- Energy is a secondary metric: EVLM's own model puts the compute at 5.6 W vs ~873 W propulsion. Primary constraints:
-  deadline/backlog, uplink bytes, GPU memory.
+- The cost model uses two resources only: uplink bytes (bandwidth) and latency (deadline and backlog).
+  GPU memory and battery energy are out of scope. They are not inputs to the controller.
+  EVLM's own model gives 5.6 W for compute and about 873 W for propulsion. Thus the choice of tool has
+  almost no effect on the battery.
 - Placement given a bandwidth estimate is nearly closed-form (payloads known in advance), so an SLM probably
   adds little there; test its value on the semantic side (open intents, sufficiency judgement). Hybrid is the lead design.
 - Gate detector must be defect-specific: EVLM's DCP kept 110/120 frames because components appear in almost every frame.

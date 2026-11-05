@@ -128,6 +128,7 @@ There are two learning regimes, and the distinction matters for novelty:
 4. **The server aggregates** (FedAvg; FedProx for heterogeneity).
 5. **Personalization:** each drone keeps a small local head on top of the global model (FedPer-style). The baseline is Federate the Router's interpolation between federated and local estimators.
 6. **The cost model $c_\phi$ never leaves the drone.** It is updated online from the drone's own measured latencies and bandwidth (EWMA estimator), and payload size is computed exactly from the image aspect ratio (split-paper formula: $36.9\,T$ kB INT8, with $T = 4\lceil 4r\rceil + 1$).
+7. **The cost model has two resources only:** uplink bytes and latency. GPU memory and battery energy are out of scope. Each tool has a fixed placement, so the controller does not check memory. Onboard compute uses about 5.6 W and propulsion uses about 873 W (EVLM), so the tool choice has almost no effect on the battery.
 
 Framework: **Flower** (simulation mode), which suits the special issue (guest editor Nicholas Lane is a co-founder of Flower Labs).
 
@@ -260,7 +261,8 @@ Not new on its own: federated routing (Federate the Router), **federated escalat
 2. **Network heterogeneity is constructed** from one LTE trace. State this clearly, and run a sensitivity analysis over the regime assignment.
 3. **No Jetson.** Edge costs come from published measurements; add a ±50% cost-model sensitivity analysis.
 4. **Clients may be too similar** for FL to matter. Measure the heterogeneity between clients (label-distribution distance) and report it.
-5. **Unverified items:** the ElecVQA-Bench download location; the decision-model checkpoints (NanoJev, Laya: weights and licence).
+5. **No GPU memory or energy model.** A reviewer can ask about these two resources. The answer is in §5, item 7.
+6. **Unverified items:** the ElecVQA-Bench download location; the decision-model checkpoints (NanoJev, Laya: weights and licence).
 
 ---
 

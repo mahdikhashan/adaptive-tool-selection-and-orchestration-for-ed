@@ -315,7 +315,7 @@ git push origin vision-fl
 
 The models are in `$FEDORCH_WORK/models/vision/fl_*` (about 800 MB each). Do not commit them. The logs are `logs/vision_fl_*.log`.
 
-The script puts the temporary files of the data loaders in `/dev/shm` (local memory). On the network drive, Python cannot remove these files, and each data loader writes an error to the log.
+The script puts the temporary files of the data loaders in `/dev/shm` (local memory). On the network drive, Python cannot delete these files, and each data loader writes an error to the log.
 
 ## Transfer results
 

@@ -1,0 +1,149 @@
+{
+  "name": "fl_local_k6",
+  "mode": "local",
+  "drones": 6,
+  "rounds": 10,
+  "passes": 2.5,
+  "towers": "all",
+  "start": "base",
+  "freeze": "full",
+  "n_last": 4,
+  "prox": 0.0,
+  "holdout": 0.06,
+  "batch_size": 8,
+  "lr_head": 0.0001,
+  "lr_backbone": 2e-05,
+  "val_images": 600,
+  "seed": 0,
+  "workers": 4,
+  "limit": 0,
+  "latency_frames": 100,
+  "run": "fl_local_k6_d5",
+  "model_dir": "/system/user/studentwork/khashan/models/vision/fl_local_k6_d5",
+  "checkpoint": "thaitea/laya-vision",
+  "revision": "f2fe3c12cb6d04c59d8a190250bf3fb40fc828dc",
+  "questions": {
+    "component": {
+      "type": "choice",
+      "instructions": "Which power line component is in this image?",
+      "criteria": [
+        "stockbridge damper",
+        "preformed damper",
+        "glass insulator",
+        "polymer insulator",
+        "shackle",
+        "lightning rod suspension",
+        "vari-grip clamp",
+        "yoke",
+        "yoke suspension",
+        "spacer",
+        "plate"
+      ]
+    },
+    "defect": {
+      "type": "noul",
+      "instructions": "Does this power line component have a defect?"
+    },
+    "condition": {
+      "type": "choice",
+      "instructions": "Which condition does this power line component have?",
+      "criteria": [
+        "good, no defect",
+        "rust",
+        "corrosion",
+        "missing cap",
+        "bird nest",
+        "other defect (torn part or peeling paint)"
+      ]
+    },
+    "judgeable": {
+      "type": "noul",
+      "instructions": "Is the image clear enough to judge the condition of the component?"
+    }
+  },
+  "temperature": [
+    3.991279125213623,
+    1.0,
+    7.20955228805542
+  ],
+  "drones_info": [
+    {
+      "drone": 5,
+      "train_images": 647,
+      "holdout_images": 41,
+      "defect_share": 0.365
+    }
+  ],
+  "trainable_parameters": 114728323,
+  "update_mb_fp16": 229.5,
+  "seconds": 7678.7,
+  "fp32_training": true,
+  "device": "cuda",
+  "gpu": "NVIDIA GeForce RTX 2080 Ti",
+  "precision": "fp32",
+  "peak_gpu_mb": 3573.9,
+  "images": 11716,
+  "steps": 610,
+  "rounds_log": [
+    {
+      "round": 0,
+      "loss": 1.3147
+    },
+    {
+      "round": 1,
+      "loss": 0.8815
+    },
+    {
+      "round": 2,
+      "loss": 0.6127
+    },
+    {
+      "round": 3,
+      "loss": 0.552
+    },
+    {
+      "round": 4,
+      "loss": 0.5286
+    },
+    {
+      "round": 5,
+      "loss": 0.3967
+    },
+    {
+      "round": 6,
+      "loss": 0.4889
+    },
+    {
+      "round": 7,
+      "loss": 0.4116
+    },
+    {
+      "round": 8,
+      "loss": 0.5584
+    },
+    {
+      "round": 9,
+      "loss": 0.8508
+    }
+  ],
+  "val_after": {
+    "acc": 0.7883,
+    "nll": 0.9263
+  },
+  "all_questions_ms": {
+    "frames": 100,
+    "mean": 81.74,
+    "median": 77.94,
+    "p90": 101.09,
+    "p95": 109.29,
+    "max": 173.32
+  },
+  "condition_only_ms": {
+    "frames": 100,
+    "mean": 75.12,
+    "median": 74.17,
+    "p90": 82.43,
+    "p95": 83.23,
+    "max": 85.58
+  }
+}

@@ -1,0 +1,201 @@
+{
+  "name": "fl_fedavg_k6",
+  "mode": "fedavg",
+  "drones": 6,
+  "rounds": 10,
+  "passes": 2.5,
+  "towers": "all",
+  "start": "base",
+  "freeze": "full",
+  "n_last": 4,
+  "prox": 0.0,
+  "holdout": 0.06,
+  "batch_size": 8,
+  "lr_head": 0.0001,
+  "lr_backbone": 2e-05,
+  "val_images": 600,
+  "seed": 0,
+  "workers": 4,
+  "limit": 0,
+  "latency_frames": 100,
+  "run": "fl_fedavg_k6",
+  "model_dir": "/system/user/studentwork/khashan/models/vision/fl_fedavg_k6",
+  "checkpoint": "thaitea/laya-vision",
+  "revision": "f2fe3c12cb6d04c59d8a190250bf3fb40fc828dc",
+  "questions": {
+    "component": {
+      "type": "choice",
+      "instructions": "Which power line component is in this image?",
+      "criteria": [
+        "stockbridge damper",
+        "preformed damper",
+        "glass insulator",
+        "polymer insulator",
+        "shackle",
+        "lightning rod suspension",
+        "vari-grip clamp",
+        "yoke",
+        "yoke suspension",
+        "spacer",
+        "plate"
+      ]
+    },
+    "defect": {
+      "type": "noul",
+      "instructions": "Does this power line component have a defect?"
+    },
+    "condition": {
+      "type": "choice",
+      "instructions": "Which condition does this power line component have?",
+      "criteria": [
+        "good, no defect",
+        "rust",
+        "corrosion",
+        "missing cap",
+        "bird nest",
+        "other defect (torn part or peeling paint)"
+      ]
+    },
+    "judgeable": {
+      "type": "noul",
+      "instructions": "Is the image clear enough to judge the condition of the component?"
+    }
+  },
+  "temperature": [
+    1.934514045715332,
+    1.0,
+    2.610069513320923
+  ],
+  "drones_info": [
+    {
+      "drone": 0,
+      "train_images": 1103,
+      "holdout_images": 70,
+      "defect_share": 0.415
+    },
+    {
+      "drone": 1,
+      "train_images": 1042,
+      "holdout_images": 66,
+      "defect_share": 0.586
+    },
+    {
+      "drone": 2,
+      "train_images": 645,
+      "holdout_images": 41,
+      "defect_share": 0.343
+    },
+    {
+      "drone": 3,
+      "train_images": 639,
+      "holdout_images": 41,
+      "defect_share": 0.286
+    },
+    {
+      "drone": 4,
+      "train_images": 726,
+      "holdout_images": 46,
+      "defect_share": 0.559
+    },
+    {
+      "drone": 5,
+      "train_images": 647,
+      "holdout_images": 41,
+      "defect_share": 0.365
+    }
+  ],
+  "trainable_parameters": 114728323,
+  "update_mb_fp16": 229.5,
+  "seconds": 3746.5,
+  "fp32_training": true,
+  "device": "cuda",
+  "gpu": "NVIDIA GeForce RTX 2080 Ti",
+  "precision": "fp32",
+  "peak_gpu_mb": 3573.0,
+  "images": 11716,
+  "steps": 4530,
+  "rounds_log": [
+    {
+      "round": -1,
+      "acc": 0.595,
+      "nll": 1.2932
+    },
+    {
+      "round": 0,
+      "loss": 1.1674,
+      "acc": 0.6572,
+      "nll": 1.3406
+    },
+    {
+      "round": 1,
+      "loss": 0.9737,
+      "acc": 0.6972,
+      "nll": 1.2021
+    },
+    {
+      "round": 2,
+      "loss": 0.7283,
+      "acc": 0.7267,
+      "nll": 1.0614
+    },
+    {
+      "round": 3,
+      "loss": 0.71,
+      "acc": 0.7456,
+      "nll": 1.0152
+    },
+    {
+      "round": 4,
+      "loss": 0.5698,
+      "acc": 0.7956,
+      "nll": 0.871
+    },
+    {
+      "round": 5,
+      "loss": 0.4991,
+      "acc": 0.7894,
+      "nll": 0.8917
+    },
+    {
+      "round": 6,
+      "loss": 0.4289,
+      "acc": 0.82,
+      "nll": 0.7173
+    },
+    {
+      "round": 7,
+      "loss": 0.4186,
+      "acc": 0.8272,
+      "nll": 0.6153
+    },
+    {
+      "round": 8,
+      "loss": 0.4641,
+      "acc": 0.8289,
+      "nll": 0.5757
+    },
+    {
+      "round": 9,
+      "loss": 0.4356,
+      "acc": 0.8389,
+      "nll": 0.5676
+    }
+  ],
+  "uplink_mb_total_fp16": 13770.0,
+  "all_questions_ms": {
+    "frames": 100,
+    "mean": 78.53,
+    "median": 74.64,
+    "p90": 95.59,
+    "p95": 104.05,
+    "max": 110.03
+  },
+  "condition_only_ms": {
+    "frames": 100,
+    "mean": 75.09,
+    "median": 74.15,
+    "p90": 82.61,
+    "p95": 84.72,
+    "max": 93.04
+  }
+}

@@ -1,0 +1,195 @@
+{
+  "name": "fl_fleet_warm_k5",
+  "mode": "fedavg",
+  "drones": 5,
+  "rounds": 10,
+  "passes": 2.5,
+  "towers": "fleet",
+  "start": "fl_server_central",
+  "freeze": "full",
+  "n_last": 4,
+  "prox": 0.0,
+  "holdout": 0.06,
+  "batch_size": 8,
+  "lr_head": 0.0001,
+  "lr_backbone": 2e-05,
+  "val_images": 600,
+  "seed": 0,
+  "workers": 4,
+  "limit": 0,
+  "latency_frames": 100,
+  "run": "fl_fleet_warm_k5",
+  "model_dir": "/system/user/studentwork/khashan/models/vision/fl_fleet_warm_k5",
+  "checkpoint": "thaitea/laya-vision",
+  "revision": "f2fe3c12cb6d04c59d8a190250bf3fb40fc828dc",
+  "questions": {
+    "component": {
+      "type": "choice",
+      "instructions": "Which power line component is in this image?",
+      "criteria": [
+        "stockbridge damper",
+        "preformed damper",
+        "glass insulator",
+        "polymer insulator",
+        "shackle",
+        "lightning rod suspension",
+        "vari-grip clamp",
+        "yoke",
+        "yoke suspension",
+        "spacer",
+        "plate"
+      ]
+    },
+    "defect": {
+      "type": "noul",
+      "instructions": "Does this power line component have a defect?"
+    },
+    "condition": {
+      "type": "choice",
+      "instructions": "Which condition does this power line component have?",
+      "criteria": [
+        "good, no defect",
+        "rust",
+        "corrosion",
+        "missing cap",
+        "bird nest",
+        "other defect (torn part or peeling paint)"
+      ]
+    },
+    "judgeable": {
+      "type": "noul",
+      "instructions": "Is the image clear enough to judge the condition of the component?"
+    }
+  },
+  "temperature": [
+    4.318138122558594,
+    1.0,
+    5.716501235961914
+  ],
+  "drones_info": [
+    {
+      "drone": 0,
+      "train_images": 1042,
+      "holdout_images": 66,
+      "defect_share": 0.581
+    },
+    {
+      "drone": 1,
+      "train_images": 613,
+      "holdout_images": 39,
+      "defect_share": 0.343
+    },
+    {
+      "drone": 2,
+      "train_images": 313,
+      "holdout_images": 20,
+      "defect_share": 0.559
+    },
+    {
+      "drone": 3,
+      "train_images": 227,
+      "holdout_images": 14,
+      "defect_share": 0.441
+    },
+    {
+      "drone": 4,
+      "train_images": 206,
+      "holdout_images": 13,
+      "defect_share": 0.67
+    }
+  ],
+  "trainable_parameters": 114728323,
+  "update_mb_fp16": 229.5,
+  "seconds": 2904.7,
+  "fp32_training": true,
+  "device": "cuda",
+  "gpu": "NVIDIA GeForce RTX 2080 Ti",
+  "precision": "fp32",
+  "peak_gpu_mb": 3570.5,
+  "images": 11716,
+  "steps": 2280,
+  "rounds_log": [
+    {
+      "round": -1,
+      "acc": 0.9039,
+      "nll": 0.3911
+    },
+    {
+      "round": 0,
+      "loss": 1.6503,
+      "acc": 0.8828,
+      "nll": 0.4859
+    },
+    {
+      "round": 1,
+      "loss": 1.2803,
+      "acc": 0.92,
+      "nll": 0.3172
+    },
+    {
+      "round": 2,
+      "loss": 1.0184,
+      "acc": 0.9306,
+      "nll": 0.2891
+    },
+    {
+      "round": 3,
+      "loss": 1.2224,
+      "acc": 0.9317,
+      "nll": 0.284
+    },
+    {
+      "round": 4,
+      "loss": 1.0461,
+      "acc": 0.9172,
+      "nll": 0.3162
+    },
+    {
+      "round": 5,
+      "loss": 0.7023,
+      "acc": 0.9311,
+      "nll": 0.2785
+    },
+    {
+      "round": 6,
+      "loss": 0.7983,
+      "acc": 0.9356,
+      "nll": 0.2816
+    },
+    {
+      "round": 7,
+      "loss": 0.7038,
+      "acc": 0.9417,
+      "nll": 0.2598
+    },
+    {
+      "round": 8,
+      "loss": 0.6545,
+      "acc": 0.9383,
+      "nll": 0.2724
+    },
+    {
+      "round": 9,
+      "loss": 0.6446,
+      "acc": 0.9394,
+      "nll": 0.2727
+    }
+  ],
+  "uplink_mb_total_fp16": 11475.0,
+  "all_questions_ms": {
+    "frames": 100,
+    "mean": 78.03,
+    "median": 74.51,
+    "p90": 91.13,
+    "p95": 103.66,
+    "max": 120.07
+  },
+  "condition_only_ms": {
+    "frames": 100,
+    "mean": 74.88,
+    "median": 73.86,
+    "p90": 81.93,
+    "p95": 84.93,
+    "max": 90.38
+  }
+}

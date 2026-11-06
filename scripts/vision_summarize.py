@@ -193,6 +193,26 @@ def prior_corrected(rows, train_rows, val_rows):
     return out
 
 
+LABEL_TEXT = {k: v for k, v in vision.CONDITION.items()}
+
+
+def item_level(items, answers):
+    correct, risk = [], 0.0
+    for item in items:
+        p = answers[item["image"]]
+        if item["task"] == "T2":
+            pred = "defect" if p["defect"] >= 0.5 else "good"
+        else:
+            options = [o for o in item["options"].values() if o in LABEL_TEXT]
+            pred = max(options, key=lambda o: p["condition"][LABEL_TEXT[o]])
+        correct.append(pred == item["label"])
+        if item["label"] == "good":
+            risk += FALSE_ALARM * (pred != "good")
+        else:
+            risk += MISS * (pred == "good")
+    return {"items": len(items), "accuracy": r(np.mean(correct)), "risk_per_1000": round(1000 * risk / len(items), 2)}
+
+
 def main():
     run = sys.argv[1] if len(sys.argv) > 1 else "zeroshot"
     truth = {x["image"]: x for x in vision.images(load_items())}
@@ -209,12 +229,17 @@ def main():
                **{s: evaluate(split[s], threshold) for s in ("val", "train") if split[s]},
                "all": evaluate(rows, threshold),
                "latency": latency(json.loads((out / "run.json").read_text()), predictions)}
+    answers = {p["image"]: p["answers"] for p in predictions}
+    test_items = [i for i in load_items(("test",)) if i["image"] in answers]
+    summary["test_items"] = item_level(test_items, answers)
     trained = out / "train_images.txt"
     if trained.exists():
         train_rows = [truth[line] for line in trained.read_text().split("\n") if line]
         fixed = prior_corrected(rows, train_rows, [x for x, _ in split["val"]])
         fixed_split = {s: [row for row in fixed if row[0]["split"] == s] for s in ("val", "test")}
         fixed_threshold = tune([p["defect"] for _, p in fixed_split["val"]], [x["defect"] for x, _ in fixed_split["val"]])
+        fixed_answers = {x["image"]: p for x, p in fixed}
+        summary["prior_corrected_items"] = item_level(test_items, fixed_answers)
         summary["prior_corrected"] = {"method": "p(c) * share_val(c) / share_train(c), renormalized; shares from labels, +1 smoothing",
                                       "defect_threshold_from_val": r(fixed_threshold),
                                       "test": evaluate(fixed_split["test"], fixed_threshold),

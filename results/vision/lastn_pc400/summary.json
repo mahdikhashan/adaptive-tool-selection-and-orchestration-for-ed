@@ -1145,6 +1145,16 @@
       }
     }
   },
+  "test_items": {
+    "items": 7057,
+    "accuracy": 0.7024,
+    "risk_per_1000": 414.2
+  },
+  "prior_corrected_items": {
+    "items": 7057,
+    "accuracy": 0.8579,
+    "risk_per_1000": 604.93
+  },
   "prior_corrected": {
     "method": "p(c) * share_val(c) / share_train(c), renormalized; shares from labels, +1 smoothing",
     "defect_threshold_from_val": 0.296,

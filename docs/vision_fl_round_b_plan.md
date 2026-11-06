@@ -1,6 +1,6 @@
 # Plan: federated rounds B, C and D (smaller updates, few labels, different image types)
 
-Date: 2026-11-08. Status: round B code complete (`--share`, `--lora-rank`, `--quantize`, `--prox` in `scripts/vision_fl.py`, runs in `scripts/vision_fl_round_b.sh`), not run on the GPU. Rounds C and D: code complete (`--partition`, `--alpha`, `--budget`, `--natural`, `--local-passes`, `--val-images-held`). All 25 runs are in `scripts/vision_jobs.txt`, for parallel queues on several GPUs (`scripts/vision_queue.sh`). Rounds C and D use `last_n` 4, because they run at the same time as round B. Round A results: `docs/vision_fl_results.md`.
+Date: 2026-11-08. Status: round B code complete (`--share`, `--lora-rank`, `--quantize`, `--prox` in `scripts/vision_fl.py`, runs in `scripts/runs/`), not run on the GPU. Rounds C and D: code complete (`--partition`, `--alpha`, `--budget`, `--natural`, `--local-passes`, `--val-images-held`). Each of the 25 runs has its own script in `scripts/runs/` (argument: the GPU number). Rounds C and D use `last_n` 4, because they run at the same time as round B. Round A results: `docs/vision_fl_results.md`.
 
 ## 1. Starting point
 

@@ -317,28 +317,17 @@ The models are in `$FEDORCH_WORK/models/vision/fl_*` (about 800 MB each). Do not
 
 The script puts the temporary files of the data loaders in `/dev/shm` (local memory). On the network drive, Python cannot delete these files, and each data loader writes an error to the log.
 
-## Laya-vision federated learning, round B (branch `vision-fl`)
+## Laya-vision federated learning, rounds B, C and D (branch `vision-fl`)
 
-Round B tests smaller updates (head, LoRA, last 4 layers, all language layers, int8) and FedProx. The plan is in `docs/vision_fl_round_b_plan.md`. One script makes 8 runs with 6 drones (about 9 hours). It skips each run that has its `run.json`.
+Each of the 25 runs has its own script in `scripts/runs/`. The plan is in `docs/vision_fl_round_b_plan.md`. Rounds C and D use the update `last_n` 4, because they run at the same time as round B.
+
+A script takes the GPU number from `nvidia-smi` (the script sets `CUDA_DEVICE_ORDER=PCI_BUS_ID`):
 
 ```bash
-git pull
-uv sync --locked
-tmux new -s flb
-bash scripts/vision_fl_round_b.sh
-git add results/vision/fl_b_*
-git commit -m "laya-vision federated round B"
-git pull --rebase origin vision-fl
-git push origin vision-fl
+bash scripts/runs/fl_b_head.sh 0
 ```
 
-The order of the runs puts the small updates first. The 30-round run is last, because it needs the most time (about 2.5 hours).
-
-## Laya-vision federated learning, rounds B, C and D on several GPUs (branch `vision-fl`)
-
-`scripts/vision_jobs.txt` lists 25 runs: round B (8), round C (12) and round D (5). The plan is in `docs/vision_fl_round_b_plan.md`. Rounds C and D use the update `last_n` 4, the provisional winner of round B.
-
-`scripts/vision_queue.sh <gpu>` takes the next free run from the list and runs it on that GPU. Start one queue for each GPU. A queue skips each run with a `.done` file and each run that a different queue runs. The GPU numbers are the numbers of `nvidia-smi` (the script sets `CUDA_DEVICE_ORDER=PCI_BUS_ID`).
+Arguments after the GPU number go to `scripts/vision_fl.py`. Use them for a short test, for example `bash scripts/runs/fl_d_iid.sh 0 --rounds 1 --passes 0.02 --limit 24 --val-images 4 --latency-frames 2`. Then delete `results/vision/fl_d_iid` and `logs/vision_fl_d_iid.*`.
 
 First, make sure that each GPU works with this torch:
 
@@ -346,27 +335,23 @@ First, make sure that each GPU works with this torch:
 for g in 0 1 2; do CUDA_DEVICE_ORDER=PCI_BUS_ID CUDA_VISIBLE_DEVICES=$g uv run --locked python -c "import torch; x = torch.ones(64, 64, device='cuda'); print(torch.cuda.get_device_name(0), torch.cuda.get_device_capability(0), float((x @ x).sum()))"; done
 ```
 
-Then start one queue for each GPU, each in its own `tmux` window:
+A possible division over 3 GPUs (about 8 to 9 hours on each GPU, estimate). Put the number of each GPU in place of `<gv100>`, `<2080>` and `<1080>`, and run each line in its own `tmux` window:
 
 ```bash
-bash scripts/vision_queue.sh 0
-bash scripts/vision_queue.sh 1
-bash scripts/vision_queue.sh 2
+for r in fl_b_last4_r30 fl_b_full_prox fl_b_layers fl_b_lora8 fl_b_last4 fl_b_last4_int8 fl_b_head; do bash scripts/runs/$r.sh <gv100>; done
+for r in fl_d_component_local fl_d_component fl_d_component_prox fl_d_dirichlet fl_d_iid fl_b_last4_prox; do bash scripts/runs/$r.sh <2080>; done
+for r in fl_c_warm_local_n200 fl_c_warm_local_n50 fl_c_base_n200 fl_c_warm_n200 fl_c_warm_central_n200 fl_c_base_n100 fl_c_warm_n100 fl_c_base_n50 fl_c_warm_n50 fl_c_warm_central_n50 fl_c_base_n25 fl_c_warm_n25; do bash scripts/runs/$r.sh <1080>; done
 ```
+
+The round-C runs with `fl_c_warm` in the name need the model `fl_server_central` from round A in `$FEDORCH_WORK/models/vision/`.
 
 To see the state of all runs:
 
 ```bash
-bash scripts/vision_queue_status.sh
+bash scripts/runs/status.sh
 ```
 
-If a run fails, read its log (`logs/vision_<run>.log`). To start it again, delete its claim and start a queue:
-
-```bash
-rm -r results/vision/.queue/<run>.claim
-```
-
-After the last run:
+A run writes `logs/vision_<run>.done` at its end. After the last run:
 
 ```bash
 git add results/vision/fl_*

@@ -1,6 +1,6 @@
 # Plan: federated fine-tuning of laya-vision on a fleet of drones
 
-Date: 2026-11-07. Status: plan. No code and no run.
+Date: 2026-11-07. Status: code complete, not run on the GPU. Code: `src/fedorch/federated.py`, `scripts/vision_fl.py`, `scripts/vision_fl_runs.sh`.
 
 ## 1. Goal
 
@@ -76,6 +76,32 @@ The experiments are in rounds. Each round starts from the best result of the rou
 | `fl_fedavg_k18` | 18 | FedAvg |
 
 The local-only run gives 6 models. The evaluation gives the mean, the minimum and the maximum of the 6 models on the test towers.
+
+### Control: the same training loop on one server
+
+The run `fl_central_k1` uses the federated training loop with 1 drone that has all images. It has a new optimizer in each round, as the drones have. Thus the difference between `fl_central_k1` and `good300_full` shows the effect of the loop. The difference between FedAvg and `fl_central_k1` shows the effect of the federation only.
+
+### Two start models: not fine-tuned and fine-tuned
+
+Round A starts from the published checkpoint, which is not fine-tuned on the inspection data. A second set of runs compares this start with a fine-tuned start on the same drone data.
+
+The model `good300_full` cannot be the fine-tuned start, because it saw the images of all drones. Thus the script divides the training towers into 2 groups (`tower_buckets`, 2 groups):
+
+| Group | Towers | Images | Defect share | Role |
+|---|---|---|---|---|
+| Server | 13 | 2,554 | 0.37 | Central fine-tuning before the federation |
+| Fleet | 5 | 2,553 | 0.51 | 5 drones, one tower for each drone |
+
+Each group has all 11 components and all 6 conditions.
+
+| Run | Start | Data | Method |
+|---|---|---|---|
+| `fl_server_central` | Published checkpoint | Server towers | Central (1 drone) |
+| `fl_fleet_base_k5` | Published checkpoint (not fine-tuned) | Fleet towers | FedAvg, 5 drones |
+| `fl_fleet_warm_k5` | `fl_server_central` (fine-tuned) | Fleet towers | FedAvg, 5 drones |
+
+- `fl_fleet_warm_k5` against `fl_server_central` shows what the fleet adds to a fine-tuned model.
+- `fl_fleet_warm_k5` against `fl_fleet_base_k5` shows what a fine-tuned start adds to the federation.
 
 ### Round B: which part each drone sends
 

@@ -292,6 +292,29 @@ git push origin vision-fl
 
 The script skips a model that has its `run.json`. The logs are `logs/vision_good300_lastn.log` and `logs/vision_good300_full.log`.
 
+## Laya-vision federated learning (branch `vision-fl`)
+
+The plan is in `docs/vision_fl_plan.md`. One script makes 8 runs (about 10 hours on the RTX 2080 Ti). It skips each run that has its `run.json`.
+
+Do a short test first:
+
+```bash
+uv run --locked python scripts/vision_fl.py --name smoke --mode fedavg --drones 3 --rounds 2 --passes 0.02 --limit 12 --val-images 4 --latency-frames 2
+rm -rf results/vision/smoke "$FEDORCH_WORK/models/vision/smoke"
+```
+
+Then do all runs in `tmux`:
+
+```bash
+tmux new -s fl
+bash scripts/vision_fl_runs.sh
+git add results/vision/fl_*
+git commit -m "laya-vision federated runs"
+git push origin vision-fl
+```
+
+The models are in `$FEDORCH_WORK/models/vision/fl_*` (about 800 MB each). Do not commit them. The logs are `logs/vision_fl_*.log`.
+
 ## Transfer results
 
 Commit and push all result files that are smaller than 1 GB:

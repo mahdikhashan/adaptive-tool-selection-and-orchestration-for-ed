@@ -321,29 +321,41 @@ The script puts the temporary files of the data loaders in `/dev/shm` (local mem
 
 Each of the 25 runs has its own script in `scripts/runs/`. The plan is in `docs/vision_fl_round_b_plan.md`. Rounds C and D use the update `last_n` 4, because they run at the same time as round B.
 
-A script takes the GPU number from `nvidia-smi` (the script sets `CUDA_DEVICE_ORDER=PCI_BUS_ID`):
+Choose the GPU, then start the script:
 
 ```bash
-bash scripts/runs/fl_b_head.sh 0
+export CUDA_VISIBLE_DEVICES=0
+bash scripts/runs/fl_b_head.sh
 ```
 
-Arguments after the GPU number go to `scripts/vision_fl.py`. Use them for a short test, for example `bash scripts/runs/fl_d_iid.sh 0 --rounds 1 --passes 0.02 --limit 24 --val-images 4 --latency-frames 2`. Then delete `results/vision/fl_d_iid` and `logs/vision_fl_d_iid.*`.
+`scripts/server_env.sh` sets `CUDA_DEVICE_ORDER=PCI_BUS_ID`, so the GPU numbers are the numbers of `nvidia-smi`. It also puts the temporary files of the data loaders in `/dev/shm`.
+
+Arguments after the script name go to `scripts/vision_fl.py`. Use them for a short test, for example `bash scripts/runs/fl_d_iid.sh --rounds 1 --passes 0.02 --limit 24 --val-images 4 --latency-frames 2`. Then move `results/vision/fl_d_iid` and `logs/vision_fl_d_iid.*` out of the repository.
 
 First, make sure that each GPU works with this torch:
 
 ```bash
-for g in 0 1 2; do CUDA_DEVICE_ORDER=PCI_BUS_ID CUDA_VISIBLE_DEVICES=$g uv run --locked python -c "import torch; x = torch.ones(64, 64, device='cuda'); print(torch.cuda.get_device_name(0), torch.cuda.get_device_capability(0), float((x @ x).sum()))"; done
+for g in 0 1 2; do CUDA_VISIBLE_DEVICES=$g uv run --locked python -c "import torch; x = torch.ones(64, 64, device='cuda'); print(torch.cuda.get_device_name(0), torch.cuda.get_device_capability(0), float((x @ x).sum()))"; done
 ```
 
-A possible division over 3 GPUs (about 8 to 9 hours on each GPU, estimate). Put the number of each GPU in place of `<gv100>`, `<2080>` and `<1080>`, and run each line in its own `tmux` window:
+A possible division over 3 GPUs (about 8 to 9 hours on each GPU, estimate). Run each block in its own `tmux` window, with the number of that GPU:
 
 ```bash
-for r in fl_b_last4_r30 fl_b_full_prox fl_b_layers fl_b_lora8 fl_b_last4 fl_b_last4_int8 fl_b_head; do bash scripts/runs/$r.sh <gv100>; done
-for r in fl_d_component_local fl_d_component fl_d_component_prox fl_d_dirichlet fl_d_iid fl_b_last4_prox; do bash scripts/runs/$r.sh <2080>; done
-for r in fl_c_warm_local_n200 fl_c_warm_local_n50 fl_c_base_n200 fl_c_warm_n200 fl_c_warm_central_n200 fl_c_base_n100 fl_c_warm_n100 fl_c_base_n50 fl_c_warm_n50 fl_c_warm_central_n50 fl_c_base_n25 fl_c_warm_n25; do bash scripts/runs/$r.sh <1080>; done
+export CUDA_VISIBLE_DEVICES=0
+for r in fl_b_last4_r30 fl_b_full_prox fl_b_layers fl_b_lora8 fl_b_last4 fl_b_last4_int8 fl_b_head; do bash scripts/runs/$r.sh; done
 ```
 
-The round-C runs with `fl_c_warm` in the name need the model `fl_server_central` from round A in `$FEDORCH_WORK/models/vision/`.
+```bash
+export CUDA_VISIBLE_DEVICES=1
+for r in fl_d_component_local fl_d_component fl_d_component_prox fl_d_dirichlet fl_d_iid fl_b_last4_prox; do bash scripts/runs/$r.sh; done
+```
+
+```bash
+export CUDA_VISIBLE_DEVICES=2
+for r in fl_c_warm_local_n200 fl_c_warm_local_n50 fl_c_base_n200 fl_c_warm_n200 fl_c_warm_central_n200 fl_c_base_n100 fl_c_warm_n100 fl_c_base_n50 fl_c_warm_n50 fl_c_warm_central_n50 fl_c_base_n25 fl_c_warm_n25; do bash scripts/runs/$r.sh; done
+```
+
+The first block is round B, for the GV100. The second block is round D, for the RTX 2080. The third block is round C, for the GTX 1080. The round-C runs with `fl_c_warm` in the name need the model `fl_server_central` from round A in `$FEDORCH_WORK/models/vision/`.
 
 To see the state of all runs:
 
@@ -351,7 +363,7 @@ To see the state of all runs:
 bash scripts/runs/status.sh
 ```
 
-A run writes `logs/vision_<run>.done` at its end. After the last run:
+A run writes `logs/vision_<run>.done` at its end. The status script shows a run as done when this file is newer than the log of the run. After the last run:
 
 ```bash
 git add results/vision/fl_*

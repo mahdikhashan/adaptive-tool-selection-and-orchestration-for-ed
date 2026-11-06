@@ -1,0 +1,92 @@
+{
+  "runs": [
+    "fl_local_k6_d0",
+    "fl_local_k6_d1",
+    "fl_local_k6_d2",
+    "fl_local_k6_d3",
+    "fl_local_k6_d4",
+    "fl_local_k6_d5"
+  ],
+  "test_per_drone": {
+    "fl_local_k6_d0": {
+      "condition.accuracy": 0.8925,
+      "condition.balanced_accuracy": 0.4394,
+      "condition.macro_f1": 0.4091,
+      "component.accuracy": 0.7825,
+      "defect_noul.auroc": 0.9112,
+      "defect_noul.average_precision": 0.5731
+    },
+    "fl_local_k6_d1": {
+      "condition.accuracy": 0.8895,
+      "condition.balanced_accuracy": 0.5885,
+      "condition.macro_f1": 0.5248,
+      "component.accuracy": 0.6986,
+      "defect_noul.auroc": 0.9157,
+      "defect_noul.average_precision": 0.6372
+    },
+    "fl_local_k6_d2": {
+      "condition.accuracy": 0.9074,
+      "condition.balanced_accuracy": 0.3543,
+      "condition.macro_f1": 0.3579,
+      "component.accuracy": 0.5363,
+      "defect_noul.auroc": 0.8685,
+      "defect_noul.average_precision": 0.5523
+    },
+    "fl_local_k6_d3": {
+      "condition.accuracy": 0.8738,
+      "condition.balanced_accuracy": 0.3684,
+      "condition.macro_f1": 0.2776,
+      "component.accuracy": 0.4977,
+      "defect_noul.auroc": 0.8478,
+      "defect_noul.average_precision": 0.4478
+    },
+    "fl_local_k6_d4": {
+      "condition.accuracy": 0.8859,
+      "condition.balanced_accuracy": 0.4043,
+      "condition.macro_f1": 0.3627,
+      "component.accuracy": 0.5332,
+      "defect_noul.auroc": 0.9043,
+      "defect_noul.average_precision": 0.5468
+    },
+    "fl_local_k6_d5": {
+      "condition.accuracy": 0.8982,
+      "condition.balanced_accuracy": 0.3171,
+      "condition.macro_f1": 0.293,
+      "component.accuracy": 0.677,
+      "defect_noul.auroc": 0.8372,
+      "defect_noul.average_precision": 0.5194
+    }
+  },
+  "test_mean_min_max": {
+    "condition.accuracy": [
+      0.8912,
+      0.8738,
+      0.9074
+    ],
+    "condition.balanced_accuracy": [
+      0.412,
+      0.3171,
+      0.5885
+    ],
+    "condition.macro_f1": [
+      0.3709,
+      0.2776,
+      0.5248
+    ],
+    "component.accuracy": [
+      0.6209,
+      0.4977,
+      0.7825
+    ],
+    "defect_noul.auroc": [
+      0.8808,
+      0.8372,
+      0.9157
+    ],
+    "defect_noul.average_precision": [
+      0.5461,
+      0.4478,
+      0.6372
+    ]
+  }
+}

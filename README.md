@@ -338,7 +338,7 @@ The order of the runs puts the small updates first. The 30-round run is last, be
 
 `scripts/vision_jobs.txt` lists 25 runs: round B (8), round C (12) and round D (5). The plan is in `docs/vision_fl_round_b_plan.md`. Rounds C and D use the update `last_n` 4, the provisional winner of round B.
 
-`scripts/vision_queue.sh <gpu>` takes the next free run from the list and runs it on that GPU. Start one queue for each GPU. A queue skips each run that has finished and each run that a different queue runs. The GPU numbers are the numbers of `nvidia-smi` (the script sets `CUDA_DEVICE_ORDER=PCI_BUS_ID`).
+`scripts/vision_queue.sh <gpu>` takes the next free run from the list and runs it on that GPU. Start one queue for each GPU. A queue skips each run with a `.done` file and each run that a different queue runs. The GPU numbers are the numbers of `nvidia-smi` (the script sets `CUDA_DEVICE_ORDER=PCI_BUS_ID`).
 
 First, make sure that each GPU works with this torch:
 
@@ -366,7 +366,7 @@ If a run fails, read its log (`logs/vision_<run>.log`). To start it again, delet
 rm -r results/vision/.queue/<run>.claim
 ```
 
-When all runs have finished:
+After the last run:
 
 ```bash
 git add results/vision/fl_*

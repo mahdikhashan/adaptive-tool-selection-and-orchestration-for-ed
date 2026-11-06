@@ -45,6 +45,34 @@ def grouped(ax, runs, colors):
     ax.set_ylabel("Score on test towers")
 
 
+COL2 = 252 / 72.27
+WIDE2 = 522 / 72.27
+
+
+def legend_above(ax, ncols):
+    ax.legend(loc="lower left", bbox_to_anchor=(0, 1.02, 1, 0.2), mode="expand", ncols=ncols, fontsize=6, borderaxespad=0)
+
+
+def fig_finetune_2col():
+    runs = [("Zero-shot", "zeroshot"), ("R1: 1,793 imgs, last 4", "lastn_pc400"),
+            ("R2: 4,807 imgs, last 4", "good300_lastn"), ("R2: 4,807 imgs, full", "good300_full")]
+    fig, ax = figure(width=COL2, ratio=0.78)
+    grouped(ax, runs, [MUTED] + family("red", 3))
+    ax.set_ylim(0, 1.15)
+    legend_above(ax, 2)
+    save(fig, str(HERE / "fig2_finetune"))
+
+
+def fig_starts_2col():
+    runs = [("Server towers only", "fl_server_central"), ("Fleet FedAvg, base start", "fl_fleet_base_k5"),
+            ("Fleet FedAvg, fine-tuned start", "fl_fleet_warm_k5"), ("Central, all towers", "good300_full")]
+    fig, ax = figure(width=COL2, ratio=0.78)
+    grouped(ax, runs, [MUTED, PALETTE["blue"], PALETTE["red"], BASELINE])
+    ax.set_ylim(0, 1.15)
+    legend_above(ax, 2)
+    save(fig, str(HERE / "fig2_starts"))
+
+
 def fig_finetune():
     runs = [("Zero-shot", "zeroshot"), ("Round 1: 1,793 images, last 4 layers", "lastn_pc400"),
             ("Round 2: 4,807 images, last 4 layers", "good300_lastn"), ("Round 2: 4,807 images, full", "good300_full")]
@@ -54,8 +82,8 @@ def fig_finetune():
     save(fig, str(HERE / "fig_finetune"))
 
 
-def fig_federated():
-    fig, axes = figure_grid(1, 3, width=TEXT, ratio=0.36)
+def fig_federated(width=TEXT, stem="fig_federated"):
+    fig, axes = figure_grid(1, 3, width=width, ratio=0.36 if width == TEXT else 0.3)
     curves = [("1 drone (control)", "fl_central_k1"), ("3 drones", "fl_fedavg_k3"), ("6 drones", "fl_fedavg_k6"), ("18 drones", "fl_fedavg_k18")]
     colors = [BASELINE] + family("blue", 3)
     for (name, run), color in zip(curves, colors):
@@ -86,7 +114,7 @@ def fig_federated():
     axes[2].set_ylim(0.8, 1.0)
     axes[1].legend(loc="lower left", fontsize=6)
     panel_labels(axes)
-    save(fig, str(HERE / "fig_federated"))
+    save(fig, str(HERE / stem))
 
 
 def fig_starts():
@@ -105,3 +133,6 @@ if __name__ == "__main__":
     fig_finetune()
     fig_federated()
     fig_starts()
+    fig_finetune_2col()
+    fig_federated(WIDE2, "fig2_federated")
+    fig_starts_2col()

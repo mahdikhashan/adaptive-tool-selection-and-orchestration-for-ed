@@ -2,6 +2,8 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 mkdir -p logs
+export TMPDIR="/dev/shm/${USER}-fedorch"
+mkdir -p "$TMPDIR"
 
 run() {
     local name=$1; shift

@@ -24,7 +24,9 @@ def arguments():
     parser.add_argument("--passes", type=float, default=2.5)
     parser.add_argument("--towers", default="all")
     parser.add_argument("--start", default="base")
-    parser.add_argument("--freeze", default="full")
+    parser.add_argument("--share", default="full")
+    parser.add_argument("--lora-rank", type=int, default=8)
+    parser.add_argument("--quantize", default="none")
     parser.add_argument("--n-last", type=int, default=4)
     parser.add_argument("--prox", type=float, default=0.0)
     parser.add_argument("--holdout", type=float, default=0.06)
@@ -39,6 +41,10 @@ def arguments():
     args = parser.parse_args()
     if args.mode not in MODES or args.towers not in ("all", "server", "fleet"):
         parser.error(f"--mode must be one of {MODES}, --towers one of all, server, fleet")
+    if args.share not in list(fl.SHARES) + ["lora"] or args.quantize not in ("none", "int8"):
+        parser.error("--share must be full, layers, last_n, head or lora; --quantize none or int8")
+    if args.share == "lora" and args.mode == "local":
+        parser.error("--share lora works only with --mode fedavg or central")
     return args
 
 
@@ -60,7 +66,13 @@ def train_rounds(agent, params, group, args, round_index, anchor, drone):
                           args.prox, anchor, fl.seed_for(args.seed, round_index, drone), args.workers), steps
 
 
+def update_mb(params, args):
+    return fl.megabytes(params, 1 if args.quantize == "int8" else 2)
+
+
 def finish(agent, params, args, name, groups, held, info, start):
+    if args.share == "lora":
+        fl.merge_lora(agent.model)
     out = results_dir(f"vision/{name}")
     write_env(f"vision/{name}")
     (out / "train_images.txt").write_text("\n".join(r["image"] for g in groups for r in g["train"]) + "\n")
@@ -78,7 +90,7 @@ def finish(agent, params, args, name, groups, held, info, start):
                                                     "defect_share": round(sum(r["defect"] for r in g["train"]) / len(g["train"]), 3)}
                                                    for g in groups],
                                       trainable_parameters=sum(p.numel() for p in params.values()),
-                                      update_mb_fp16=fl.megabytes(params), seconds=round(time.time() - start, 1),
+                                      update_mb_fp16=fl.megabytes(params), update_mb_sent=update_mb(params, args), seconds=round(time.time() - start, 1),
                                       fp32_training=True, device=str(agent.device), gpu=vision.gpu_name(), precision="fp32",
                                       peak_gpu_mb=vision.peak_mb(), images=len(held), **info,
                                       **vision.timing(agent, test, args.latency_frames)))
@@ -104,7 +116,9 @@ def main():
     vision.fp32_on_old_gpus()
     device = "cuda" if torch.cuda.is_available() else "cpu"
     agent = vision.load(device, None if args.start == "base" else WORK / "models" / "vision" / args.start)
-    params = fl.trainable(agent.model, args.freeze, args.n_last)
+    params = fl.trainable(agent.model, args.share, args.n_last, args.lora_rank)
+    print(f"{args.name}: share {args.share}, {sum(p.numel() for p in params.values())} parameters, "
+          f"update {update_mb(params, args)} MB for each drone and round", flush=True)
     start = time.time()
     if args.mode == "local":
         init, temperature = fl.snapshot(params), list(agent.temperature)
@@ -132,14 +146,17 @@ def main():
             losses += loss
             w = len(g["train"]) / total
             local = fl.snapshot(params)
+            if args.quantize == "int8":
+                local = fl.quantized(local, state)
             summed = {k2: w * v for k2, v in local.items()} if summed is None else {k2: summed[k2] + w * v for k2, v in local.items()}
         state = summed
         fl.assign(params, state)
         curve.append({"round": r, "loss": round(sum(losses) / len(losses), 4), **val_score(agent, val_ex)})
         print(json.dumps(curve[-1]), flush=True)
-    uplink = fl.megabytes(params) * len(groups) * args.rounds if args.mode == "fedavg" else 0.0
+    uplink = update_mb(params, args) * len(groups) * args.rounds if args.mode == "fedavg" else 0.0
     finish(agent, params, args, args.name, groups, held,
-           {"steps": steps, "rounds_log": curve, "uplink_mb_total_fp16": round(uplink, 1)}, start)
+           {"steps": steps, "rounds_log": curve, "uplink_mb_total": round(uplink, 1),
+            "uplink_mb_total_fp16": round(fl.megabytes(params) * len(groups) * args.rounds if args.mode == "fedavg" else 0.0, 1)}, start)
 
 
 if __name__ == "__main__":

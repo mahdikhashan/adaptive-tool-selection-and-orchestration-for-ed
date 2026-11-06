@@ -1,6 +1,6 @@
 # Plan: federated rounds B, C and D (smaller updates, few labels, different image types)
 
-Date: 2026-11-08. Status: plan. No code and no run. Round A results: `docs/vision_fl_results.md`.
+Date: 2026-11-08. Status: round B code complete (`--share`, `--lora-rank`, `--quantize`, `--prox` in `scripts/vision_fl.py`, runs in `scripts/vision_fl_round_b.sh`), not run on the GPU. Rounds C and D: plan only. Round A results: `docs/vision_fl_results.md`.
 
 ## 1. Starting point
 
@@ -143,7 +143,7 @@ The update is the winner of round B. The run with the `tower` partition and the 
 | `--local-passes` | passes for each round (round C) |
 | `--val-images-held` | number of val images in the final prediction |
 
-- LoRA uses `peft` (already a dependency) on the 7 linear layers of the language layers. The head trains without LoRA.
+- LoRA is a small class in `src/fedorch/federated.py` (`LoRALinear`), on the 7 linear layers of the language layers. The head trains without LoRA. After the training, the script adds the LoRA product to the base weights. Thus the saved model has the usual weight names and loads with `load_vlm`. The server averages the 2 LoRA matrices separately, as in standard FedAvg of LoRA.
 - All existing options keep their defaults. Thus the round-A runs stay reproducible.
 
 ## 7. GPU time (estimate, RTX 2080 Ti)

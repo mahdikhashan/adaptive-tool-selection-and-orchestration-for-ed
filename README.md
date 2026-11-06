@@ -317,6 +317,23 @@ The models are in `$FEDORCH_WORK/models/vision/fl_*` (about 800 MB each). Do not
 
 The script puts the temporary files of the data loaders in `/dev/shm` (local memory). On the network drive, Python cannot delete these files, and each data loader writes an error to the log.
 
+## Laya-vision federated learning, round B (branch `vision-fl`)
+
+Round B tests smaller updates (head, LoRA, last 4 layers, all language layers, int8) and FedProx. The plan is in `docs/vision_fl_round_b_plan.md`. One script makes 8 runs with 6 drones (about 9 hours). It skips each run that has its `run.json`.
+
+```bash
+git pull
+uv sync --locked
+tmux new -s flb
+bash scripts/vision_fl_round_b.sh
+git add results/vision/fl_b_*
+git commit -m "laya-vision federated round B"
+git pull --rebase origin vision-fl
+git push origin vision-fl
+```
+
+The order of the runs puts the small updates first. The 30-round run is last, because it needs the most time (about 2.5 hours).
+
 ## Transfer results
 
 Commit and push all result files that are smaller than 1 GB:

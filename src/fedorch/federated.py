@@ -32,9 +32,65 @@ def drones(rows, k, holdout, rng):
     return [d for d in out if d["train"]]
 
 
-def trainable(model, freeze, n_last):
-    set_trainable(model, freeze, n_last=n_last)
+LORA_TARGETS = ("q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj")
+SHARES = {"full": ("full", None), "layers": ("last_n", 20), "last_n": ("last_n", None), "head": ("head", None)}
+
+
+class LoRALinear(torch.nn.Module):
+    def __init__(self, base, rank, alpha):
+        super().__init__()
+        self.base = base
+        self.lora_a = torch.nn.Parameter(torch.empty(rank, base.in_features, device=base.weight.device))
+        self.lora_b = torch.nn.Parameter(torch.zeros(base.out_features, rank, device=base.weight.device))
+        torch.nn.init.kaiming_uniform_(self.lora_a, a=math.sqrt(5))
+        self.scale = alpha / rank
+
+    def forward(self, x):
+        return self.base(x) + (x @ self.lora_a.t() @ self.lora_b.t()) * self.scale
+
+    @torch.no_grad()
+    def merged(self):
+        self.base.weight += (self.lora_b @ self.lora_a).to(self.base.weight.dtype) * self.scale
+        return self.base
+
+
+def lora_parents(model):
+    for layer in model.encoder.text_model.layers:
+        for parent in (layer.self_attn, layer.mlp):
+            for name in LORA_TARGETS:
+                if hasattr(parent, name):
+                    yield parent, name
+
+
+def add_lora(model, rank):
+    for parent, name in lora_parents(model):
+        setattr(parent, name, LoRALinear(getattr(parent, name), rank, 2 * rank))
+
+
+def merge_lora(model):
+    for parent, name in lora_parents(model):
+        module = getattr(parent, name)
+        if isinstance(module, LoRALinear):
+            setattr(parent, name, module.merged())
+
+
+def trainable(model, share, n_last, rank=8):
+    if share == "lora":
+        set_trainable(model, "head")
+        add_lora(model, rank)
+    else:
+        mode, n = SHARES[share]
+        set_trainable(model, mode, n_last=n or n_last)
     return {name: p for name, p in model.named_parameters() if p.requires_grad}
+
+
+def int8(delta):
+    scale = delta.abs().max() / 127
+    return delta if scale == 0 else (delta / scale).round().clamp(-127, 127) * scale
+
+
+def quantized(local, state):
+    return {name: state[name] + int8(local[name] - state[name]) for name in local}
 
 
 def snapshot(params):

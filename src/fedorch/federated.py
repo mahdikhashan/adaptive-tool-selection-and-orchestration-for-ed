@@ -1,6 +1,7 @@
 import functools
 import math
 
+import numpy as np
 import torch
 from laya.vlm import set_trainable
 from laya.vlm_train import ItemStream, _collate_train, _forward, _to, collect_logits, jsonl_example, vlm_loss
@@ -21,15 +22,66 @@ def split_towers(rows, group):
     return [r for r in rows if bucket[r["tower"]] == keep]
 
 
-def drones(rows, k, holdout, rng):
-    bucket = tower_buckets(rows, k)
+COMPONENT_DRONES = [["shackle"], ["vari-grip clamp"], ["glass insulator", "spacer"], ["lightning rod suspension", "plate"],
+                    ["yoke suspension", "yoke"], ["polymer insulator", "stockbridge damper", "preformed damper"]]
+PARTITIONS = ["tower", "iid", "component", "dirichlet"]
+
+
+def assignment(rows, k, partition, alpha, rng):
+    if partition == "tower":
+        bucket = tower_buckets(rows, k)
+        return [bucket[r["tower"]] for r in rows]
+    if partition == "iid":
+        order = list(range(len(rows)))
+        rng.shuffle(order)
+        where = [0] * len(rows)
+        for i, j in enumerate(order):
+            where[j] = i % k
+        return where
+    if partition == "component":
+        if k != len(COMPONENT_DRONES):
+            raise ValueError(f"the component partition needs {len(COMPONENT_DRONES)} drones")
+        drone_of = {c: d for d, group in enumerate(COMPONENT_DRONES) for c in group}
+        return [drone_of[r["component"]] for r in rows]
+    gen = np.random.default_rng(rng.randrange(2 ** 31))
+    where = [0] * len(rows)
+    for condition in vision.CONDITION.values():
+        idx = [i for i, r in enumerate(rows) if r["condition"] == condition]
+        gen.shuffle(idx)
+        cuts = (np.cumsum(gen.dirichlet([alpha] * k)) * len(idx)).astype(int)[:-1]
+        for d, part in enumerate(np.split(np.array(idx, dtype=int), cuts)):
+            for i in part:
+                where[i] = d
+    return where
+
+
+def drones(rows, k, holdout, rng, partition="tower", alpha=0.3, budget=0):
+    where = assignment(rows, k, partition, alpha, rng)
     out = []
     for d in range(k):
-        mine = [r for r in rows if bucket[r["tower"]] == d]
+        mine = [r for r, w in zip(rows, where) if w == d]
         rng.shuffle(mine)
+        if budget:
+            mine = mine[:budget]
         n = int(round(holdout * len(mine)))
         out.append({"drone": d, "train": mine[n:], "holdout": mine[:n]})
     return [d for d in out if d["train"]]
+
+
+def merged(groups):
+    return [{"drone": 0, "train": [r for g in groups for r in g["train"]], "holdout": [r for g in groups for r in g["holdout"]]}]
+
+
+def shares_of(rows):
+    counts = np.array([sum(r["condition"] == c for r in rows) for c in vision.CONDITION.values()], dtype=float)
+    return counts / max(1.0, counts.sum())
+
+
+def divergence(rows, everything):
+    p, q = shares_of(rows), shares_of(everything)
+    m = (p + q) / 2
+    kl = lambda a: float(np.sum([x * np.log2(x / y) for x, y in zip(a, m) if x > 0]))
+    return round(0.5 * kl(p) + 0.5 * kl(q), 4)
 
 
 LORA_TARGETS = ("q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj")

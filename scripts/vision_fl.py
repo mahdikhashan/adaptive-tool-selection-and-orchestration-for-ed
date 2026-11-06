@@ -27,6 +27,12 @@ def arguments():
     parser.add_argument("--share", default="full")
     parser.add_argument("--lora-rank", type=int, default=8)
     parser.add_argument("--quantize", default="none")
+    parser.add_argument("--partition", default="tower")
+    parser.add_argument("--alpha", type=float, default=0.3)
+    parser.add_argument("--budget", type=int, default=0)
+    parser.add_argument("--natural", action="store_true")
+    parser.add_argument("--local-passes", type=float, default=0.0)
+    parser.add_argument("--val-images-held", type=int, default=0)
     parser.add_argument("--n-last", type=int, default=4)
     parser.add_argument("--prox", type=float, default=0.0)
     parser.add_argument("--holdout", type=float, default=0.06)
@@ -43,6 +49,8 @@ def arguments():
         parser.error(f"--mode must be one of {MODES}, --towers one of all, server, fleet")
     if args.share not in list(fl.SHARES) + ["lora"] or args.quantize not in ("none", "int8"):
         parser.error("--share must be full, layers, last_n, head or lora; --quantize none or int8")
+    if args.partition not in fl.PARTITIONS:
+        parser.error(f"--partition must be one of {fl.PARTITIONS}")
     if args.share == "lora" and args.mode == "local":
         parser.error("--share lora works only with --mode fedavg or central")
     return args
@@ -60,7 +68,7 @@ def val_score(agent, val_ex):
 
 
 def train_rounds(agent, params, group, args, round_index, anchor, drone):
-    steps = fl.steps_for(group["train"], args.passes / args.rounds, args.batch_size)
+    steps = fl.steps_for(group["train"], args.local_passes or args.passes / args.rounds, args.batch_size)
     f = fl.lr_factor(round_index, args.rounds)
     return fl.local_train(agent, params, group["train"], steps, args.batch_size, args.lr_head * f, args.lr_backbone * f,
                           args.prox, anchor, fl.seed_for(args.seed, round_index, drone), args.workers), steps
@@ -87,7 +95,8 @@ def finish(agent, params, args, name, groups, held, info, start):
                                       revision=vision.REVISION, questions=vision.QUESTIONS, temperature=agent.temperature,
                                       drones_info=[{"drone": g["drone"], "train_images": len(g["train"]),
                                                     "holdout_images": len(g["holdout"]),
-                                                    "defect_share": round(sum(r["defect"] for r in g["train"]) / len(g["train"]), 3)}
+                                                    "defect_share": round(sum(r["defect"] for r in g["train"]) / len(g["train"]), 3),
+                                                    "condition_divergence": g.get("divergence")}
                                                    for g in groups],
                                       trainable_parameters=sum(p.numel() for p in params.values()),
                                       update_mb_fp16=fl.megabytes(params), update_mb_sent=update_mb(params, args), seconds=round(time.time() - start, 1),
@@ -103,14 +112,24 @@ def main():
     torch.manual_seed(args.seed)
     rows = vision.images(load_items())
     data = fl.split_towers(pool(rows), args.towers)
+    if args.natural:
+        towers = {r["tower"] for r in data}
+        data = [r for r in rows if r["split"] == "train" and r["tower"] in towers]
     if args.limit:
         data = data[: args.limit]
-    k = 1 if args.mode == "central" else args.drones
-    groups = fl.drones(data, k, args.holdout, rng)
+    groups = fl.drones(data, args.drones, args.holdout, rng, args.partition, args.alpha, args.budget)
+    everything = [r for g in groups for r in g["train"]]
+    for g in groups:
+        g["divergence"] = fl.divergence(g["train"], everything)
+    if args.mode == "central":
+        groups = fl.merged(groups)
     print(f"{args.name}: {args.mode}, {len(groups)} drones, towers {args.towers}, start {args.start}, "
           f"train images {[len(g['train']) for g in groups]}", flush=True)
     held = [r for r in rows if r["split"] in ("val", "test")]
     val_ex = fl.examples(rng.sample([r for r in rows if r["split"] == "val"], args.val_images))
+    if args.val_images_held:
+        val = [r for r in held if r["split"] == "val"]
+        held = rng.sample(val, min(args.val_images_held, len(val))) + [r for r in held if r["split"] == "test"]
     if args.limit:
         held, val_ex = held[: args.limit], val_ex[: args.limit]
     vision.fp32_on_old_gpus()

@@ -6,4 +6,8 @@ for d in results/vision/fl_*/; do
     uv run --locked python scripts/vision_summarize.py "$(basename "$d")" > /dev/null
     echo "summarized $(basename "$d")"
 done
-uv run --locked python scripts/vision_fl_local_summary.py fl_local_k6
+for d in results/vision/fl_*_d0/; do
+    name=$(basename "$d" _d0)
+    uv run --locked python scripts/vision_fl_local_summary.py "$name" > /dev/null
+    echo "combined $name"
+done

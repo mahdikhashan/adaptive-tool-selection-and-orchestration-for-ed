@@ -334,6 +334,47 @@ git push origin vision-fl
 
 The order of the runs puts the small updates first. The 30-round run is last, because it needs the most time (about 2.5 hours).
 
+## Laya-vision federated learning, rounds B, C and D on several GPUs (branch `vision-fl`)
+
+`scripts/vision_jobs.txt` lists 25 runs: round B (8), round C (12) and round D (5). The plan is in `docs/vision_fl_round_b_plan.md`. Rounds C and D use the update `last_n` 4, the provisional winner of round B.
+
+`scripts/vision_queue.sh <gpu>` takes the next free run from the list and runs it on that GPU. Start one queue for each GPU. A queue skips each run that has finished and each run that a different queue runs. The GPU numbers are the numbers of `nvidia-smi` (the script sets `CUDA_DEVICE_ORDER=PCI_BUS_ID`).
+
+First, make sure that each GPU works with this torch:
+
+```bash
+for g in 0 1 2; do CUDA_DEVICE_ORDER=PCI_BUS_ID CUDA_VISIBLE_DEVICES=$g uv run --locked python -c "import torch; x = torch.ones(64, 64, device='cuda'); print(torch.cuda.get_device_name(0), torch.cuda.get_device_capability(0), float((x @ x).sum()))"; done
+```
+
+Then start one queue for each GPU, each in its own `tmux` window:
+
+```bash
+bash scripts/vision_queue.sh 0
+bash scripts/vision_queue.sh 1
+bash scripts/vision_queue.sh 2
+```
+
+To see the state of all runs:
+
+```bash
+bash scripts/vision_queue_status.sh
+```
+
+If a run fails, read its log (`logs/vision_<run>.log`). To start it again, delete its claim and start a queue:
+
+```bash
+rm -r results/vision/.queue/<run>.claim
+```
+
+When all runs have finished:
+
+```bash
+git add results/vision/fl_*
+git commit -m "laya-vision federated rounds B, C and D"
+git pull --rebase origin vision-fl
+git push origin vision-fl
+```
+
 ## Transfer results
 
 Commit and push all result files that are smaller than 1 GB:

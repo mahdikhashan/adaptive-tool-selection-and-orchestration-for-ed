@@ -10,8 +10,12 @@ from fedorch import vision
 from fedorch.folds import tower_buckets
 
 
-def examples(rows):
-    return [ex for row in rows for ex in (jsonl_example(r, "/", "fl") for r in vision.labelled(row)) if ex]
+def examples(rows, balance=False):
+    out = []
+    for row in rows:
+        group = ("defect" if row["defect"] else "good") if balance else "fl"
+        out += [ex for ex in (jsonl_example(r, "/", group) for r in vision.labelled(row)) if ex]
+    return out
 
 
 def split_towers(rows, group):
@@ -159,13 +163,13 @@ def lr_factor(round_index, rounds):
     return 0.1 + 0.45 * (1 + math.cos(math.pi * round_index / max(1, rounds)))
 
 
-def local_train(agent, params, rows, steps, batch_size, lr_head, lr_backbone, prox, anchor, seed, workers):
+def local_train(agent, params, rows, steps, batch_size, lr_head, lr_backbone, prox, anchor, seed, workers, balance=False):
     model = agent.model
     head = [p for n, p in params.items() if not n.startswith("encoder.")]
     encoder = [p for n, p in params.items() if n.startswith("encoder.")]
     groups = [{"params": head, "lr": lr_head}] + ([{"params": encoder, "lr": lr_backbone}] if encoder else [])
     opt = torch.optim.AdamW(groups, weight_decay=0.01)
-    stream = ItemStream(agent.processor, examples(rows), seed)
+    stream = ItemStream(agent.processor, examples(rows, balance), seed)
     collate = functools.partial(_collate_train, pad_id=agent.processor.tokenizer.pad_token_id)
     loader = torch.utils.data.DataLoader(stream, batch_size=batch_size, num_workers=workers, collate_fn=collate)
     near = [(p, anchor[n].to(p.device)) for n, p in params.items()] if prox else []
@@ -200,3 +204,7 @@ def megabytes(params, bytes_per_value=2):
 
 def seed_for(base, round_index, drone):
     return base * 100003 + round_index * 101 + drone
+
+
+def server_step(state, mean, rate):
+    return mean if rate == 1.0 else {name: state[name] + rate * (mean[name] - state[name]) for name in state}

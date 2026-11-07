@@ -372,6 +372,25 @@ git pull --rebase origin vision-fl
 git push origin vision-fl
 ```
 
+## Laya-vision federated learning, round E (branch `vision-fl`)
+
+Round E starts from the server model `fl_server_central`, uses only the 5 fleet towers and sends int8 updates. The plan is in `docs/vision_fl_round_e_plan.md`. Each of the 18 runs has its own script in `scripts/runs/fl_e*.sh`. All runs need the model `fl_server_central` in `$FEDORCH_WORK/models/vision/`.
+
+```bash
+export CUDA_VISIBLE_DEVICES=0
+for r in fl_e1_full fl_e1_layers fl_e1_last4 fl_e1_lora8 fl_e1_head fl_e2_plain_n200 fl_e2_plain_n50; do bash scripts/runs/$r.sh; done
+```
+
+```bash
+export CUDA_VISIBLE_DEVICES=1
+for r in fl_e2_balance_n200 fl_e2_slr_n200 fl_e2_prox_n200 fl_e2_balance_n50 fl_e2_prox_n50; do bash scripts/runs/$r.sh; done
+```
+
+```bash
+export CUDA_VISIBLE_DEVICES=2
+for r in fl_e3_component_local fl_e3_component fl_e3_component_prox fl_e3_dirichlet fl_e3_iid fl_e2_slr_n50; do bash scripts/runs/$r.sh; done
+```
+
 ## Transfer results
 
 Commit and push all result files that are smaller than 1 GB:

@@ -33,6 +33,8 @@ def arguments():
     parser.add_argument("--natural", action="store_true")
     parser.add_argument("--local-passes", type=float, default=0.0)
     parser.add_argument("--val-images-held", type=int, default=0)
+    parser.add_argument("--balance", action="store_true")
+    parser.add_argument("--server-lr", type=float, default=1.0)
     parser.add_argument("--n-last", type=int, default=4)
     parser.add_argument("--prox", type=float, default=0.0)
     parser.add_argument("--holdout", type=float, default=0.06)
@@ -71,7 +73,7 @@ def train_rounds(agent, params, group, args, round_index, anchor, drone):
     steps = fl.steps_for(group["train"], args.local_passes or args.passes / args.rounds, args.batch_size)
     f = fl.lr_factor(round_index, args.rounds)
     return fl.local_train(agent, params, group["train"], steps, args.batch_size, args.lr_head * f, args.lr_backbone * f,
-                          args.prox, anchor, fl.seed_for(args.seed, round_index, drone), args.workers), steps
+                          args.prox, anchor, fl.seed_for(args.seed, round_index, drone), args.workers, args.balance), steps
 
 
 def update_mb(params, args):
@@ -168,7 +170,7 @@ def main():
             if args.quantize == "int8":
                 local = fl.quantized(local, state)
             summed = {k2: w * v for k2, v in local.items()} if summed is None else {k2: summed[k2] + w * v for k2, v in local.items()}
-        state = summed
+        state = fl.server_step(state, summed, args.server_lr)
         fl.assign(params, state)
         curve.append({"round": r, "loss": round(sum(losses) / len(losses), 4), **val_score(agent, val_ex)})
         print(json.dumps(curve[-1]), flush=True)

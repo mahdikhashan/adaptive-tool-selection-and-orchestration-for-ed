@@ -1,6 +1,6 @@
 # Plan: federated round E (fine-tuned start, int8, less data, less uplink)
 
-Date: 2026-11-08. Status: code complete (`--balance`, `--server-lr` in `scripts/vision_fl.py`; 18 scripts `scripts/runs/fl_e*.sh`), not run on the GPU. Earlier results: `docs/vision_fl_results.md`, `docs/vision_fl_bcd_results.md`.
+Date: 2026-11-08. Status: code complete, not run on the GPU. The new options are `--balance` and `--server-lr` in `scripts/vision_fl.py`. The 18 scripts are `scripts/runs/fl_e*.sh`. Earlier results: `docs/vision_fl_results.md`, `docs/vision_fl_bcd_results.md`.
 
 ## 1. Goal
 

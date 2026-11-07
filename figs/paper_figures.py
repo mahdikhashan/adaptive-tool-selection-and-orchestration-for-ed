@@ -83,7 +83,7 @@ def fig_finetune():
 
 
 def fig_federated(width=TEXT, stem="fig_federated"):
-    fig, axes = figure_grid(1, 3, width=width, ratio=0.36 if width == TEXT else 0.3)
+    fig, axes = figure_grid(1, 3, width=width, ratio=0.36 if width == TEXT else 0.27)
     curves = [("1 drone (control)", "fl_central_k1"), ("3 drones", "fl_fedavg_k3"), ("6 drones", "fl_fedavg_k6"), ("18 drones", "fl_fedavg_k18")]
     colors = [BASELINE] + family("blue", 3)
     for (name, run), color in zip(curves, colors):
@@ -128,6 +128,76 @@ def fig_starts():
     save(fig, str(HERE / "fig_starts"))
 
 
+def uplink_gb(run):
+    r = run_info(run)
+    return r.get("uplink_mb_total", r["uplink_mb_total_fp16"]) / 1000
+
+
+def fig_round_b_2col():
+    fig, axes = figure_grid(1, 2, width=WIDE2, ratio=0.27)
+    curves = [("head only", "fl_b_head"), ("LoRA r8 + head", "fl_b_lora8"), ("last 4 + head", "fl_b_last4"),
+              ("all language layers", "fl_b_layers"), ("full model", "fl_fedavg_k6"), ("last 4 + head, 30 rounds", "fl_b_last4_r30")]
+    colors = family("blue", 3) + [PALETTE["orange"], PALETTE["red"], BASELINE]
+    for (name, run), color in zip(curves, colors):
+        log = run_info(run)["rounds_log"]
+        axes[0].plot([x["round"] + 1 for x in log], [x["acc"] for x in log], color=color, label=name,
+                     ls="--" if run == "fl_b_last4_r30" else "-", marker="o" if len(log) < 15 else None, markersize=2)
+    axes[0].set_xlabel("FedAvg rounds completed")
+    axes[0].set_ylabel("Val accuracy")
+    axes[0].set_ylim(0.55, 0.9)
+    axes[0].legend(loc="upper left", fontsize=5.5, ncols=2)
+    points = [("head", "fl_b_head"), ("LoRA", "fl_b_lora8"), ("last 4, int8", "fl_b_last4_int8"), ("last 4", "fl_b_last4"),
+              ("last 4, FedProx", "fl_b_last4_prox"), ("last 4, 30 rounds", "fl_b_last4_r30"), ("all layers", "fl_b_layers"),
+              ("full", "fl_fedavg_k6"), ("full, FedProx", "fl_b_full_prox")]
+    for name, run in points:
+        v, lo, hi = metric(run, "condition", "macro_f1", "condition_macro_f1")
+        x = uplink_gb(run)
+        axes[1].errorbar([x], [v], yerr=[[v - lo], [hi - v]], marker="o", color=PALETTE["blue"], capsize=1.2, lw=0.8, markersize=3)
+        dx, dy = {"head": (-4, 2), "LoRA": (3, 6), "last 4": (3, 8), "last 4, FedProx": (3, -10), "full": (3, 7),
+                  "full, FedProx": (3, -10), "last 4, 30 rounds": (3, 6), "all layers": (3, -10), "last 4, int8": (3, 9)}[name]
+        axes[1].annotate(name, (x, v), xytext=(dx, dy), textcoords="offset points", fontsize=5.5, ha="right" if name == "head" else "left")
+    axes[1].axhline(summary("good300_full")["test"]["condition"]["macro_f1"], color=BASELINE, ls="--", lw=0.8)
+    axes[1].text(1.05, 0.71, "central", fontsize=5.5, color=BASELINE)
+    axes[1].set_xscale("log")
+    axes[1].set_xlim(0.7, 20)
+    axes[1].set_xlabel("Total uplink of the run (GB, fp16 or int8)")
+    axes[1].set_ylabel("Condition macro F1")
+    axes[1].set_ylim(0.2, 0.76)
+    panel_labels(axes)
+    save(fig, str(HERE / "fig2_roundb"))
+
+
+def fig_round_c_2col():
+    fig, axes = figure_grid(1, 2, width=COL2, ratio=0.58)
+    budgets = [50, 100, 200]
+    for ax, (label, part, key, ci) in zip(axes, [("Condition macro F1", "condition", "macro_f1", "condition_macro_f1"),
+                                                ("Defect AUROC", "defect_noul", "auroc", "defect_auroc")]):
+        for name, prefix, bs, color, marker in [("FedAvg, fine-tuned start", "fl_c_warm", budgets, PALETTE["red"], "o"),
+                                                ("FedAvg, base start", "fl_c_base", budgets, PALETTE["blue"], "s"),
+                                                ("pooled centrally", "fl_c_warm_central", [50, 200], BASELINE, "^")]:
+            style = "none" if prefix == "fl_c_warm_central" else "-"
+            vals = [metric(f"{prefix}_n{n}", part, key, ci) for n in bs]
+            v = np.array([a for a, _, _ in vals])
+            ax.errorbar(bs, v, yerr=[v - [lo for _, lo, _ in vals], [hi for _, _, hi in vals] - v], marker=marker, color=color,
+                        capsize=1.2, lw=0.9, markersize=2.5, label=name, ls=style)
+        local = [[summary(f"fl_c_warm_local_n{n}_d{i}")["test"][part][key] for i in range(5)] for n in (50, 200)]
+        m = np.array([np.mean(x) for x in local])
+        ax.errorbar([50, 200], m, yerr=[m - [min(x) for x in local], [max(x) for x in local] - m], marker="D", color=PALETTE["orange"],
+                    capsize=1.2, lw=0.9, markersize=2.5, ls="none", label="each drone alone")
+        ax.axhline(summary("fl_server_central")["test"][part][key], color=MUTED, ls="--", lw=0.8, label="server model only")
+        ax.set_xscale("log")
+        ax.set_xticks(budgets, [str(b) for b in budgets])
+        ax.minorticks_off()
+        ax.set_xlabel("Labels per drone")
+        ax.set_ylabel(label)
+    axes[0].set_ylim(0.1, 0.7)
+    axes[1].set_ylim(0.7, 1.0)
+    fig.legend(*axes[0].get_legend_handles_labels(), loc="lower center", ncols=3, fontsize=5, bbox_to_anchor=(0.5, -0.01))
+    fig.get_layout_engine().set(rect=(0, 0.13, 1, 0.87))
+    panel_labels(axes)
+    save(fig, str(HERE / "fig2_roundc"))
+
+
 if __name__ == "__main__":
     use_style()
     fig_finetune()
@@ -136,3 +206,5 @@ if __name__ == "__main__":
     fig_finetune_2col()
     fig_federated(WIDE2, "fig2_federated")
     fig_starts_2col()
+    fig_round_b_2col()
+    fig_round_c_2col()

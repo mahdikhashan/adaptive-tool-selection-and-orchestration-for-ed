@@ -198,6 +198,98 @@ def fig_round_c_2col():
     save(fig, str(HERE / "fig2_roundc"))
 
 
+def fleet_defects(run):
+    return sum(round(g["defect_share"] * g["train_images"]) for g in run_info(run)["drones_info"])
+
+
+def fig_overview_2col():
+    groups = [("Round A", PALETTE["blue"], [("control, 1 drone", "fl_central_k1"), ("3 drones", "fl_fedavg_k3"), ("6 drones", "fl_fedavg_k6"),
+                                            ("18 drones", "fl_fedavg_k18"), ("fleet, base start", "fl_fleet_base_k5"), ("fleet, fine-tuned start", "fl_fleet_warm_k5")]),
+              ("Round B", PALETTE["orange"], [("head", "fl_b_head"), ("LoRA", "fl_b_lora8"), ("last 4", "fl_b_last4"), ("last 4, int8", "fl_b_last4_int8"),
+                                              ("last 4, FedProx", "fl_b_last4_prox"), ("last 4, 30 rounds", "fl_b_last4_r30"), ("all layers", "fl_b_layers"),
+                                              ("full, FedProx", "fl_b_full_prox")]),
+              ("Round C", PALETTE["red"], [(f"fleet, {n} labels/drone", f"fl_c_warm_n{n}") for n in (25, 50, 100, 200)]),
+              ("Round D", BASELINE, [("random split", "fl_d_iid"), ("component split", "fl_d_component"), ("component + FedProx", "fl_d_component_prox"),
+                                     ("Dirichlet split", "fl_d_dirichlet")])]
+    central = summary("good300_full")["test"]["condition"]["macro_f1"]
+    rows = []
+    for group, color, runs in groups:
+        for name, run in runs:
+            v, lo, hi = metric(run, "condition", "macro_f1", "condition_macro_f1")
+            rows.append((v - central, lo - central, hi - central, name, color, group))
+    rows.sort(key=lambda r: r[0])
+    fig, ax = figure(width=COL2, ratio=1.2)
+    for i, (v, lo, hi, name, color, group) in enumerate(rows):
+        ax.errorbar([v], [i], xerr=[[v - lo], [hi - v]], marker="o", color=color, capsize=1.2, lw=0.8, markersize=3)
+    ax.set_yticks(range(len(rows)), [r[3] for r in rows], fontsize=5.5)
+    ax.axvline(0, color=BASELINE, lw=0.8, ls="--")
+    ax.set_xlabel("Condition macro F1 minus central training")
+    ax.grid(axis="x")
+    ax.grid(axis="y", visible=False)
+    for group, color, _ in groups:
+        ax.plot([], [], "o", color=color, label=group, markersize=3)
+    ax.legend(loc="lower right", fontsize=5.5)
+    save(fig, str(HERE / "fig2_overview"))
+
+
+def fig_round_d_2col():
+    names = ["shackle", "vari-grip clamp", "glass insulator, spacer", "lightning rod, plate", "yoke susp., yoke", "polymer insul., dampers"]
+    rows = [(f"alone: {names[i]}", f"fl_d_component_local_d{i}") for i in range(6)]
+    rows += [("FedAvg last 4, component", "fl_d_component"), ("same + FedProx", "fl_d_component_prox"), ("FedAvg last 4, random", "fl_d_iid"),
+             ("FedAvg last 4, Dirichlet", "fl_d_dirichlet"), ("FedAvg full, tower (round A)", "fl_fedavg_k6"), ("central full model", "good300_full")]
+    conditions = ["good, no defect", "rust", "corrosion", "missing cap", "bird nest"]
+    columns = ["good", "rust", "corrosion", "missing\ncap", "bird\nnest", "comp.\nacc."]
+    values = []
+    for _, run in rows:
+        t = summary(run)["test"]
+        values.append([t["condition"]["per_class"][c]["recall"] for c in conditions] + [t["component"]["accuracy"]])
+    values = np.array(values)
+    fig, ax = figure(width=COL2, ratio=1.05)
+    image = ax.imshow(values, cmap="viridis", vmin=0, vmax=1, aspect="auto")
+    for i in range(values.shape[0]):
+        for j in range(values.shape[1]):
+            ax.text(j, i, f"{values[i, j]:.2f}", ha="center", va="center", fontsize=5, color="white" if values[i, j] < 0.6 else "black")
+    ax.set_xticks(range(len(columns)), [c.replace("\\n", "\n") for c in columns], fontsize=5.5)
+    ax.set_yticks(range(len(rows)), [r[0] for r in rows], fontsize=5.5)
+    ax.axhline(5.5, color="white", lw=1.2)
+    ax.axhline(9.5, color="white", lw=1.2)
+    ax.grid(False)
+    ax.tick_params(length=0)
+    ax.xaxis.tick_top()
+    fig.colorbar(image, ax=ax, fraction=0.04, pad=0.02).set_label("Test recall / accuracy", fontsize=6)
+    save(fig, str(HERE / "fig2_roundd"))
+
+
+def fig_round_c_defects_2col():
+    fig, axes = figure_grid(1, 2, width=COL2, ratio=0.58)
+    for ax, (label, part, key, ci) in zip(axes, [("Condition macro F1", "condition", "macro_f1", "condition_macro_f1"),
+                                                ("Defect AUROC", "defect_noul", "auroc", "defect_auroc")]):
+        for name, prefix, bs, color, marker, style in [("FedAvg, fine-tuned start", "fl_c_warm", [25, 50, 100, 200], PALETTE["red"], "o", "-"),
+                                                       ("FedAvg, base start", "fl_c_base", [25, 50, 100, 200], PALETTE["blue"], "s", "-"),
+                                                       ("pooled on one server", "fl_c_warm_central", [50, 200], BASELINE, "^", "none")]:
+            x = [fleet_defects(f"{prefix}_n{n}") if prefix != "fl_c_warm_central" else fleet_defects(f"fl_c_warm_n{n}") for n in bs]
+            vals = [metric(f"{prefix}_n{n}", part, key, ci) for n in bs]
+            v = np.array([a for a, _, _ in vals])
+            ax.errorbar(x, v, yerr=[v - [lo for _, lo, _ in vals], [hi for _, _, hi in vals] - v], marker=marker, color=color,
+                        capsize=1.2, lw=0.9, markersize=2.5, label=name, ls=style)
+        local = [[summary(f"fl_c_warm_local_n{n}_d{i}")["test"][part][key] for i in range(5)] for n in (50, 200)]
+        m = np.array([np.mean(a) for a in local])
+        ax.errorbar([fleet_defects(f"fl_c_warm_n{n}") for n in (50, 200)], m, yerr=[m - [min(a) for a in local], [max(a) for a in local] - m],
+                    marker="D", color=PALETTE["orange"], capsize=1.2, lw=0.9, markersize=2.5, ls="none", label="each drone alone")
+        ax.axhline(summary("fl_server_central")["test"][part][key], color=MUTED, ls="--", lw=0.8, label="server model only")
+        ax.set_xscale("log")
+        ax.set_xticks([18, 37, 69, 149], ["18", "37", "69", "149"])
+        ax.minorticks_off()
+        ax.set_xlabel("Defects labelled in fleet")
+        ax.set_ylabel(label)
+    axes[0].set_ylim(0.1, 0.7)
+    axes[1].set_ylim(0.7, 1.0)
+    fig.legend(*axes[0].get_legend_handles_labels(), loc="lower center", ncols=3, fontsize=5, bbox_to_anchor=(0.5, -0.01))
+    fig.get_layout_engine().set(rect=(0, 0.13, 1, 0.87))
+    panel_labels(axes)
+    save(fig, str(HERE / "fig2_roundc"))
+
+
 if __name__ == "__main__":
     use_style()
     fig_finetune()
@@ -207,4 +299,6 @@ if __name__ == "__main__":
     fig_federated(WIDE2, "fig2_federated")
     fig_starts_2col()
     fig_round_b_2col()
-    fig_round_c_2col()
+    fig_round_c_defects_2col()
+    fig_overview_2col()
+    fig_round_d_2col()

@@ -90,7 +90,7 @@ Questions:
 
 ## 7. Success criteria
 
-1. E1: an update with at most 1.15 GB of uplink (10% of 11.5 GB) has a condition macro F1 of at least 0.612 and a defect AUROC of at least 0.942. These are the lower limits of the 95% intervals of `fl_fleet_warm_k5`.
+1. E1: an update has at most 1.15 GB of uplink (10% of 11.5 GB). Its condition macro F1 is at least 0.612, and its defect AUROC is at least 0.942. These are the lower limits of the 95% intervals of `fl_fleet_warm_k5`.
 2. E2: with 50 labels for each drone, the defect AUROC is at least 0.903 (no decrease against the server model).
 3. E2: with 200 labels, the defect AUROC is in the 95% interval of the central result with the same labels (0.950 to 0.965).
 4. E3: the recall of each defect type that only one drone has is at least half of the central model.

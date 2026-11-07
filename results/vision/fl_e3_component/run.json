@@ -1,0 +1,219 @@
+{
+  "name": "fl_e3_component",
+  "mode": "fedavg",
+  "drones": 6,
+  "rounds": 10,
+  "passes": 2.5,
+  "towers": "fleet",
+  "start": "fl_server_central",
+  "share": "last_n",
+  "lora_rank": 8,
+  "quantize": "int8",
+  "partition": "component",
+  "alpha": 0.3,
+  "budget": 0,
+  "natural": false,
+  "local_passes": 0.0,
+  "val_images_held": 1500,
+  "balance": false,
+  "server_lr": 1.0,
+  "n_last": 4,
+  "prox": 0.0,
+  "holdout": 0.06,
+  "batch_size": 8,
+  "lr_head": 0.0001,
+  "lr_backbone": 2e-05,
+  "val_images": 600,
+  "seed": 0,
+  "workers": 4,
+  "limit": 0,
+  "latency_frames": 100,
+  "run": "fl_e3_component",
+  "model_dir": "/system/user/studentwork/khashan/models/vision/fl_e3_component",
+  "checkpoint": "thaitea/laya-vision",
+  "revision": "f2fe3c12cb6d04c59d8a190250bf3fb40fc828dc",
+  "questions": {
+    "component": {
+      "type": "choice",
+      "instructions": "Which power line component is in this image?",
+      "criteria": [
+        "stockbridge damper",
+        "preformed damper",
+        "glass insulator",
+        "polymer insulator",
+        "shackle",
+        "lightning rod suspension",
+        "vari-grip clamp",
+        "yoke",
+        "yoke suspension",
+        "spacer",
+        "plate"
+      ]
+    },
+    "defect": {
+      "type": "noul",
+      "instructions": "Does this power line component have a defect?"
+    },
+    "condition": {
+      "type": "choice",
+      "instructions": "Which condition does this power line component have?",
+      "criteria": [
+        "good, no defect",
+        "rust",
+        "corrosion",
+        "missing cap",
+        "bird nest",
+        "other defect (torn part or peeling paint)"
+      ]
+    },
+    "judgeable": {
+      "type": "noul",
+      "instructions": "Is the image clear enough to judge the condition of the component?"
+    }
+  },
+  "temperature": [
+    3.814941167831421,
+    1.0,
+    6.662444114685059
+  ],
+  "drones_info": [
+    {
+      "drone": 0,
+      "train_images": 498,
+      "holdout_images": 32,
+      "defect_share": 0.741,
+      "condition_divergence": 0.2199
+    },
+    {
+      "drone": 1,
+      "train_images": 447,
+      "holdout_images": 29,
+      "defect_share": 0.747,
+      "condition_divergence": 0.2401
+    },
+    {
+      "drone": 2,
+      "train_images": 439,
+      "holdout_images": 28,
+      "defect_share": 0.692,
+      "condition_divergence": 0.3611
+    },
+    {
+      "drone": 3,
+      "train_images": 301,
+      "holdout_images": 19,
+      "defect_share": 0.468,
+      "condition_divergence": 0.1722
+    },
+    {
+      "drone": 4,
+      "train_images": 303,
+      "holdout_images": 19,
+      "defect_share": 0.185,
+      "condition_divergence": 0.1733
+    },
+    {
+      "drone": 5,
+      "train_images": 412,
+      "holdout_images": 26,
+      "defect_share": 0.034,
+      "condition_divergence": 0.2934
+    }
+  ],
+  "trainable_parameters": 22623619,
+  "update_mb_fp16": 45.2,
+  "update_mb_sent": 22.6,
+  "seconds": 4009.9,
+  "fp32_training": true,
+  "device": "cuda",
+  "gpu": "NVIDIA GeForce GTX 1080 Ti",
+  "precision": "fp32",
+  "peak_gpu_mb": 1655.2,
+  "images": 7592,
+  "steps": 2280,
+  "rounds_log": [
+    {
+      "round": -1,
+      "acc": 0.9033,
+      "nll": 0.39
+    },
+    {
+      "round": 0,
+      "loss": 1.6026,
+      "acc": 0.9006,
+      "nll": 0.4076
+    },
+    {
+      "round": 1,
+      "loss": 1.5053,
+      "acc": 0.8911,
+      "nll": 0.4188
+    },
+    {
+      "round": 2,
+      "loss": 1.1799,
+      "acc": 0.8911,
+      "nll": 0.4244
+    },
+    {
+      "round": 3,
+      "loss": 1.1689,
+      "acc": 0.8867,
+      "nll": 0.4346
+    },
+    {
+      "round": 4,
+      "loss": 1.1614,
+      "acc": 0.8861,
+      "nll": 0.4346
+    },
+    {
+      "round": 5,
+      "loss": 1.1587,
+      "acc": 0.8883,
+      "nll": 0.4335
+    },
+    {
+      "round": 6,
+      "loss": 1.3205,
+      "acc": 0.8867,
+      "nll": 0.4276
+    },
+    {
+      "round": 7,
+      "loss": 1.2891,
+      "acc": 0.8878,
+      "nll": 0.4307
+    },
+    {
+      "round": 8,
+      "loss": 1.3004,
+      "acc": 0.8861,
+      "nll": 0.4365
+    },
+    {
+      "round": 9,
+      "loss": 1.3285,
+      "acc": 0.8822,
+      "nll": 0.4485
+    }
+  ],
+  "uplink_mb_total": 1356.0,
+  "uplink_mb_total_fp16": 2712.0,
+  "all_questions_ms": {
+    "frames": 100,
+    "mean": 101.63,
+    "median": 101.49,
+    "p90": 111.79,
+    "p95": 113.0,
+    "max": 116.28
+  },
+  "condition_only_ms": {
+    "frames": 100,
+    "mean": 96.47,
+    "median": 95.57,
+    "p90": 104.09,
+    "p95": 106.51,
+    "max": 110.45
+  }
+}

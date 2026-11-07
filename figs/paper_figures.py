@@ -320,6 +320,69 @@ def fig_samples_2col():
     save(fig, str(HERE / "fig2_samples"))
 
 
+BASE_RUNS = ["fl_fedavg_k3", "fl_fedavg_k6", "fl_fedavg_k18", "fl_fleet_base_k5", "fl_b_head", "fl_b_lora8", "fl_b_last4", "fl_b_last4_int8",
+             "fl_b_last4_prox", "fl_b_last4_r30", "fl_b_layers", "fl_b_full_prox", "fl_c_base_n25", "fl_c_base_n50", "fl_c_base_n100",
+             "fl_c_base_n200", "fl_d_iid", "fl_d_component", "fl_d_component_prox", "fl_d_dirichlet"]
+TUNED_FP16 = ["fl_fleet_warm_k5", "fl_c_warm_n25", "fl_c_warm_n50", "fl_c_warm_n100", "fl_c_warm_n200"]
+TUNED_INT8 = ["fl_e1_full", "fl_e1_layers", "fl_e1_last4", "fl_e1_lora8", "fl_e1_head", "fl_e2_plain_n50", "fl_e2_plain_n200",
+              "fl_e2_balance_n50", "fl_e2_balance_n200", "fl_e2_prox_n50", "fl_e2_prox_n200", "fl_e2_slr_n50", "fl_e2_slr_n200",
+              "fl_e3_iid", "fl_e3_component", "fl_e3_component_prox", "fl_e3_dirichlet"]
+
+
+def fig_uplink_all_2col():
+    fig, axes = figure_grid(1, 2, width=WIDE2, ratio=0.27)
+    groups = [("published checkpoint (fp16 or int8)", BASE_RUNS, PALETTE["blue"], "s"),
+              ("fine-tuned start, fp16", TUNED_FP16, PALETTE["orange"], "^"),
+              ("fine-tuned start, int8", TUNED_INT8, PALETTE["red"], "o")]
+    for ax, part, key, ci, label in [(axes[0], "condition", "macro_f1", "condition_macro_f1", "Condition macro F1"),
+                                     (axes[1], "defect_noul", "auroc", "defect_auroc", "Defect AUROC")]:
+        for name, runs, color, marker in groups:
+            for i, run in enumerate(runs):
+                v, lo, hi = metric(run, part, key, ci)
+                ax.errorbar([1000 * uplink_gb(run)], [v], yerr=[[v - lo], [hi - v]], marker=marker, color=color, capsize=1, lw=0.6,
+                            markersize=2.8, alpha=0.9, label=name if i == 0 else None)
+        for ref, text in [("good300_full", "central, all towers"), ("fl_server_central", "server model")]:
+            y = summary(ref)["test"][part][key]
+            ax.axhline(y, color=MUTED, ls="--", lw=0.7)
+            ax.text(330, y, text, fontsize=5.5, color=MUTED, va="bottom")
+        ax.set_xscale("log")
+        ax.set_xlim(300, 60000)
+        ax.set_xlabel("Total uplink of the run (MB)")
+        ax.set_ylabel(label)
+    axes[0].set_ylim(0.1, 0.75)
+    axes[1].set_ylim(0.7, 1.0)
+    axes[0].legend(fontsize=5.5, loc="lower right")
+    panel_labels(axes)
+    save(fig, str(HERE / "fig2_uplink_all"))
+
+
+def fig_round_e3_2col():
+    names = ["shackle", "vari-grip clamp", "glass insulator, spacer", "lightning rod, plate", "yoke susp., yoke", "polymer insul., dampers"]
+    rows = [("server model (start)", "fl_server_central")]
+    rows += [(f"alone: {names[i]}", f"fl_e3_component_local_d{i}") for i in range(6)]
+    rows += [("FedAvg, component", "fl_e3_component"), ("same + FedProx", "fl_e3_component_prox"), ("FedAvg, random", "fl_e3_iid"),
+             ("FedAvg, tower", "fl_e1_last4"), ("FedAvg, Dirichlet", "fl_e3_dirichlet"), ("FedAvg full, int8, tower", "fl_e1_full"),
+             ("central, all towers", "good300_full")]
+    conditions = ["good, no defect", "rust", "corrosion", "missing cap", "bird nest"]
+    columns = ["good", "rust", "corrosion", "missing\ncap", "bird\nnest", "comp.\nacc."]
+    values = np.array([[summary(run)["test"]["condition"]["per_class"][c]["recall"] for c in conditions] + [summary(run)["test"]["component"]["accuracy"]]
+                       for _, run in rows])
+    fig, ax = figure(width=COL2, ratio=0.86)
+    image = ax.imshow(values, cmap="viridis", vmin=0, vmax=1, aspect="auto")
+    for i in range(values.shape[0]):
+        for j in range(values.shape[1]):
+            ax.text(j, i, f"{values[i, j]:.2f}", ha="center", va="center", fontsize=5, color="white" if values[i, j] < 0.6 else "black")
+    ax.set_xticks(range(len(columns)), [c.replace("\\n", "\n") for c in columns], fontsize=5.5)
+    ax.set_yticks(range(len(rows)), [r[0] for r in rows], fontsize=5.5)
+    for y in (0.5, 6.5, 11.5):
+        ax.axhline(y, color="white", lw=1.2)
+    ax.grid(False)
+    ax.tick_params(length=0)
+    ax.xaxis.tick_top()
+    fig.colorbar(image, ax=ax, fraction=0.04, pad=0.02).set_label("Test recall / accuracy", fontsize=6)
+    save(fig, str(HERE / "fig2_rounde3"))
+
+
 if __name__ == "__main__":
     use_style()
     fig_finetune()
@@ -333,3 +396,5 @@ if __name__ == "__main__":
     fig_overview_2col()
     fig_round_d_2col()
     fig_samples_2col()
+    fig_uplink_all_2col()
+    fig_round_e3_2col()

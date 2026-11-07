@@ -1,0 +1,159 @@
+{
+  "name": "fl_c_warm_local_n50",
+  "mode": "local",
+  "drones": 5,
+  "rounds": 10,
+  "passes": 2.5,
+  "towers": "fleet",
+  "start": "fl_server_central",
+  "share": "last_n",
+  "lora_rank": 8,
+  "quantize": "none",
+  "partition": "tower",
+  "alpha": 0.3,
+  "budget": 50,
+  "natural": true,
+  "local_passes": 1.0,
+  "val_images_held": 1500,
+  "n_last": 4,
+  "prox": 0.0,
+  "holdout": 0.06,
+  "batch_size": 8,
+  "lr_head": 0.0001,
+  "lr_backbone": 2e-05,
+  "val_images": 600,
+  "seed": 0,
+  "workers": 4,
+  "limit": 0,
+  "latency_frames": 100,
+  "run": "fl_c_warm_local_n50_d4",
+  "model_dir": "/system/user/studentwork/khashan/models/vision/fl_c_warm_local_n50_d4",
+  "checkpoint": "thaitea/laya-vision",
+  "revision": "f2fe3c12cb6d04c59d8a190250bf3fb40fc828dc",
+  "questions": {
+    "component": {
+      "type": "choice",
+      "instructions": "Which power line component is in this image?",
+      "criteria": [
+        "stockbridge damper",
+        "preformed damper",
+        "glass insulator",
+        "polymer insulator",
+        "shackle",
+        "lightning rod suspension",
+        "vari-grip clamp",
+        "yoke",
+        "yoke suspension",
+        "spacer",
+        "plate"
+      ]
+    },
+    "defect": {
+      "type": "noul",
+      "instructions": "Does this power line component have a defect?"
+    },
+    "condition": {
+      "type": "choice",
+      "instructions": "Which condition does this power line component have?",
+      "criteria": [
+        "good, no defect",
+        "rust",
+        "corrosion",
+        "missing cap",
+        "bird nest",
+        "other defect (torn part or peeling paint)"
+      ]
+    },
+    "judgeable": {
+      "type": "noul",
+      "instructions": "Is the image clear enough to judge the condition of the component?"
+    }
+  },
+  "temperature": [
+    1.0,
+    1.0,
+    1.0
+  ],
+  "drones_info": [
+    {
+      "drone": 4,
+      "train_images": 47,
+      "holdout_images": 3,
+      "defect_share": 0.319,
+      "condition_divergence": 0.0405
+    }
+  ],
+  "trainable_parameters": 22623619,
+  "update_mb_fp16": 45.2,
+  "update_mb_sent": 45.2,
+  "seconds": 5449.6,
+  "fp32_training": true,
+  "device": "cuda",
+  "gpu": "NVIDIA GeForce GTX 1080 Ti",
+  "precision": "fp32",
+  "peak_gpu_mb": 1654.8,
+  "images": 7592,
+  "steps": 180,
+  "rounds_log": [
+    {
+      "round": 0,
+      "loss": 3.3581
+    },
+    {
+      "round": 1,
+      "loss": 2.286
+    },
+    {
+      "round": 2,
+      "loss": 1.455
+    },
+    {
+      "round": 3,
+      "loss": 0.8538
+    },
+    {
+      "round": 4,
+      "loss": 0.6343
+    },
+    {
+      "round": 5,
+      "loss": 0.5536
+    },
+    {
+      "round": 6,
+      "loss": 0.5661
+    },
+    {
+      "round": 7,
+      "loss": 0.4478
+    },
+    {
+      "round": 8,
+      "loss": 0.5028
+    },
+    {
+      "round": 9,
+      "loss": 0.6252
+    }
+  ],
+  "val_after": {
+    "acc": 0.8883,
+    "nll": 0.6763
+  },
+  "all_questions_ms": {
+    "frames": 100,
+    "mean": 102.5,
+    "median": 102.42,
+    "p90": 109.87,
+    "p95": 112.29,
+    "max": 117.19
+  },
+  "condition_only_ms": {
+    "frames": 100,
+    "mean": 97.02,
+    "median": 96.55,
+    "p90": 105.31,
+    "p95": 107.94,
+    "max": 112.05
+  }
+}

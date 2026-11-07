@@ -1,0 +1,337 @@
+{
+  "name": "fl_b_last4_r30",
+  "mode": "fedavg",
+  "drones": 6,
+  "rounds": 30,
+  "passes": 7.5,
+  "towers": "all",
+  "start": "base",
+  "share": "last_n",
+  "lora_rank": 8,
+  "quantize": "none",
+  "partition": "tower",
+  "alpha": 0.3,
+  "budget": 0,
+  "natural": false,
+  "local_passes": 0.0,
+  "val_images_held": 0,
+  "n_last": 4,
+  "prox": 0.0,
+  "holdout": 0.06,
+  "batch_size": 8,
+  "lr_head": 0.0001,
+  "lr_backbone": 2e-05,
+  "val_images": 600,
+  "seed": 0,
+  "workers": 4,
+  "limit": 0,
+  "latency_frames": 100,
+  "run": "fl_b_last4_r30",
+  "model_dir": "/system/user/studentwork/khashan/models/vision/fl_b_last4_r30",
+  "checkpoint": "thaitea/laya-vision",
+  "revision": "f2fe3c12cb6d04c59d8a190250bf3fb40fc828dc",
+  "questions": {
+    "component": {
+      "type": "choice",
+      "instructions": "Which power line component is in this image?",
+      "criteria": [
+        "stockbridge damper",
+        "preformed damper",
+        "glass insulator",
+        "polymer insulator",
+        "shackle",
+        "lightning rod suspension",
+        "vari-grip clamp",
+        "yoke",
+        "yoke suspension",
+        "spacer",
+        "plate"
+      ]
+    },
+    "defect": {
+      "type": "noul",
+      "instructions": "Does this power line component have a defect?"
+    },
+    "condition": {
+      "type": "choice",
+      "instructions": "Which condition does this power line component have?",
+      "criteria": [
+        "good, no defect",
+        "rust",
+        "corrosion",
+        "missing cap",
+        "bird nest",
+        "other defect (torn part or peeling paint)"
+      ]
+    },
+    "judgeable": {
+      "type": "noul",
+      "instructions": "Is the image clear enough to judge the condition of the component?"
+    }
+  },
+  "temperature": [
+    1.1380939483642578,
+    1.0,
+    1.4577126502990723
+  ],
+  "drones_info": [
+    {
+      "drone": 0,
+      "train_images": 1103,
+      "holdout_images": 70,
+      "defect_share": 0.415,
+      "condition_divergence": 0.0088
+    },
+    {
+      "drone": 1,
+      "train_images": 1042,
+      "holdout_images": 66,
+      "defect_share": 0.586,
+      "condition_divergence": 0.0185
+    },
+    {
+      "drone": 2,
+      "train_images": 645,
+      "holdout_images": 41,
+      "defect_share": 0.343,
+      "condition_divergence": 0.0175
+    },
+    {
+      "drone": 3,
+      "train_images": 639,
+      "holdout_images": 41,
+      "defect_share": 0.286,
+      "condition_divergence": 0.0703
+    },
+    {
+      "drone": 4,
+      "train_images": 726,
+      "holdout_images": 46,
+      "defect_share": 0.559,
+      "condition_divergence": 0.0327
+    },
+    {
+      "drone": 5,
+      "train_images": 647,
+      "holdout_images": 41,
+      "defect_share": 0.365,
+      "condition_divergence": 0.0422
+    }
+  ],
+  "trainable_parameters": 22623619,
+  "update_mb_fp16": 45.2,
+  "update_mb_sent": 45.2,
+  "seconds": 7862.2,
+  "fp32_training": true,
+  "device": "cuda",
+  "gpu": "NVIDIA GeForce RTX 2080 Ti",
+  "precision": "fp32",
+  "peak_gpu_mb": 1655.5,
+  "images": 11716,
+  "steps": 13590,
+  "rounds_log": [
+    {
+      "round": -1,
+      "acc": 0.595,
+      "nll": 1.2932
+    },
+    {
+      "round": 0,
+      "loss": 1.3459,
+      "acc": 0.5806,
+      "nll": 1.4685
+    },
+    {
+      "round": 1,
+      "loss": 1.2414,
+      "acc": 0.6167,
+      "nll": 1.4208
+    },
+    {
+      "round": 2,
+      "loss": 1.122,
+      "acc": 0.6178,
+      "nll": 1.3497
+    },
+    {
+      "round": 3,
+      "loss": 1.1429,
+      "acc": 0.6483,
+      "nll": 1.3441
+    },
+    {
+      "round": 4,
+      "loss": 1.119,
+      "acc": 0.645,
+      "nll": 1.3162
+    },
+    {
+      "round": 5,
+      "loss": 1.087,
+      "acc": 0.6411,
+      "nll": 1.3571
+    },
+    {
+      "round": 6,
+      "loss": 0.9587,
+      "acc": 0.6722,
+      "nll": 1.1966
+    },
+    {
+      "round": 7,
+      "loss": 0.9011,
+      "acc": 0.6567,
+      "nll": 1.1357
+    },
+    {
+      "round": 8,
+      "loss": 0.9039,
+      "acc": 0.6844,
+      "nll": 1.1822
+    },
+    {
+      "round": 9,
+      "loss": 0.879,
+      "acc": 0.6839,
+      "nll": 1.1685
+    },
+    {
+      "round": 10,
+      "loss": 0.8309,
+      "acc": 0.7072,
+      "nll": 1.1286
+    },
+    {
+      "round": 11,
+      "loss": 0.8275,
+      "acc": 0.7222,
+      "nll": 1.0851
+    },
+    {
+      "round": 12,
+      "loss": 0.7382,
+      "acc": 0.73,
+      "nll": 1.0062
+    },
+    {
+      "round": 13,
+      "loss": 0.7215,
+      "acc": 0.7361,
+      "nll": 1.0296
+    },
+    {
+      "round": 14,
+      "loss": 0.7233,
+      "acc": 0.7594,
+      "nll": 0.9821
+    },
+    {
+      "round": 15,
+      "loss": 0.6219,
+      "acc": 0.7811,
+      "nll": 0.9708
+    },
+    {
+      "round": 16,
+      "loss": 0.608,
+      "acc": 0.7678,
+      "nll": 0.9708
+    },
+    {
+      "round": 17,
+      "loss": 0.6432,
+      "acc": 0.7594,
+      "nll": 0.935
+    },
+    {
+      "round": 18,
+      "loss": 0.5836,
+      "acc": 0.7789,
+      "nll": 0.8633
+    },
+    {
+      "round": 19,
+      "loss": 0.6043,
+      "acc": 0.7828,
+      "nll": 0.8876
+    },
+    {
+      "round": 20,
+      "loss": 0.588,
+      "acc": 0.7911,
+      "nll": 0.8945
+    },
+    {
+      "round": 21,
+      "loss": 0.61,
+      "acc": 0.8006,
+      "nll": 0.8789
+    },
+    {
+      "round": 22,
+      "loss": 0.5207,
+      "acc": 0.7989,
+      "nll": 0.8292
+    },
+    {
+      "round": 23,
+      "loss": 0.5442,
+      "acc": 0.7994,
+      "nll": 0.869
+    },
+    {
+      "round": 24,
+      "loss": 0.5262,
+      "acc": 0.7928,
+      "nll": 0.8602
+    },
+    {
+      "round": 25,
+      "loss": 0.5404,
+      "acc": 0.8161,
+      "nll": 0.8314
+    },
+    {
+      "round": 26,
+      "loss": 0.5462,
+      "acc": 0.8217,
+      "nll": 0.8482
+    },
+    {
+      "round": 27,
+      "loss": 0.4687,
+      "acc": 0.8072,
+      "nll": 0.8459
+    },
+    {
+      "round": 28,
+      "loss": 0.4671,
+      "acc": 0.8139,
+      "nll": 0.8303
+    },
+    {
+      "round": 29,
+      "loss": 0.5139,
+      "acc": 0.8106,
+      "nll": 0.7989
+    }
+  ],
+  "uplink_mb_total": 8136.0,
+  "uplink_mb_total_fp16": 8136.0,
+  "all_questions_ms": {
+    "frames": 100,
+    "mean": 80.43,
+    "median": 75.47,
+    "p90": 95.38,
+    "p95": 101.76,
+    "max": 183.75
+  },
+  "condition_only_ms": {
+    "frames": 100,
+    "mean": 76.67,
+    "median": 74.14,
+    "p90": 88.46,
+    "p95": 91.08,
+    "max": 102.36
+  }
+}

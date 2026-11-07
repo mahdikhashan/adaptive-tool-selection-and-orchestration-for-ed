@@ -1,0 +1,1653 @@
+{
+  "run": "fl_d_component_local_d3",
+  "images": 11716,
+  "truncated": 0,
+  "defect_threshold_from_val": 0.3049,
+  "test": {
+    "component": {
+      "n": 6092,
+      "accuracy": 0.0417,
+      "balanced_accuracy": 0.1766,
+      "macro_f1": 0.0372,
+      "per_class": {
+        "stockbridge damper": {
+          "support": 932,
+          "predicted": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "preformed damper": {
+          "support": 145,
+          "predicted": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "glass insulator": {
+          "support": 826,
+          "predicted": 13,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "polymer insulator": {
+          "support": 510,
+          "predicted": 7,
+          "precision": 0.8571,
+          "recall": 0.0118,
+          "f1": 0.0232
+        },
+        "shackle": {
+          "support": 977,
+          "predicted": 6,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "lightning rod suspension": {
+          "support": 210,
+          "predicted": 5825,
+          "precision": 0.0359,
+          "recall": 0.9952,
+          "f1": 0.0693
+        },
+        "vari-grip clamp": {
+          "support": 286,
+          "predicted": 2,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "yoke": {
+          "support": 239,
+          "predicted": 28,
+          "precision": 0.1071,
+          "recall": 0.0126,
+          "f1": 0.0225
+        },
+        "yoke suspension": {
+          "support": 1911,
+          "predicted": 2,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "spacer": {
+          "support": 17,
+          "predicted": 3,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "plate": {
+          "support": 39,
+          "predicted": 206,
+          "precision": 0.1748,
+          "recall": 0.9231,
+          "f1": 0.2939
+        }
+      },
+      "confusion": {
+        "stockbridge damper": {
+          "glass insulator": 1,
+          "lightning rod suspension": 922,
+          "yoke": 9
+        },
+        "preformed damper": {
+          "lightning rod suspension": 142,
+          "yoke": 2,
+          "plate": 1
+        },
+        "glass insulator": {
+          "polymer insulator": 1,
+          "shackle": 1,
+          "lightning rod suspension": 747,
+          "vari-grip clamp": 2,
+          "yoke": 2,
+          "plate": 73
+        },
+        "polymer insulator": {
+          "glass insulator": 12,
+          "polymer insulator": 6,
+          "shackle": 2,
+          "lightning rod suspension": 389,
+          "yoke": 7,
+          "yoke suspension": 2,
+          "spacer": 2,
+          "plate": 90
+        },
+        "shackle": {
+          "lightning rod suspension": 970,
+          "yoke": 1,
+          "spacer": 1,
+          "plate": 5
+        },
+        "lightning rod suspension": {
+          "lightning rod suspension": 209,
+          "yoke": 1
+        },
+        "vari-grip clamp": {
+          "shackle": 2,
+          "lightning rod suspension": 283,
+          "yoke": 1
+        },
+        "yoke": {
+          "lightning rod suspension": 235,
+          "yoke": 3,
+          "plate": 1
+        },
+        "yoke suspension": {
+          "shackle": 1,
+          "lightning rod suspension": 1908,
+          "yoke": 2
+        },
+        "spacer": {
+          "lightning rod suspension": 17
+        },
+        "plate": {
+          "lightning rod suspension": 3,
+          "plate": 36
+        }
+      },
+      "majority": {
+        "class": "yoke suspension",
+        "accuracy": 0.3137,
+        "balanced_accuracy": 0.0909,
+        "macro_f1": 0.0434
+      }
+    },
+    "condition": {
+      "n": 6092,
+      "accuracy": 0.8377,
+      "balanced_accuracy": 0.2627,
+      "macro_f1": 0.2093,
+      "per_class": {
+        "good, no defect": {
+          "support": 5491,
+          "predicted": 5137,
+          "precision": 0.9523,
+          "recall": 0.8909,
+          "f1": 0.9206
+        },
+        "rust": {
+          "support": 308,
+          "predicted": 952,
+          "precision": 0.2216,
+          "recall": 0.6851,
+          "f1": 0.3349
+        },
+        "corrosion": {
+          "support": 110,
+          "predicted": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "missing cap": {
+          "support": 129,
+          "predicted": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "bird nest": {
+          "support": 49,
+          "predicted": 2,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "other defect (torn part or peeling paint)": {
+          "support": 5,
+          "predicted": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        }
+      },
+      "confusion": {
+        "good, no defect": {
+          "good, no defect": 4892,
+          "rust": 597,
+          "bird nest": 2
+        },
+        "rust": {
+          "good, no defect": 97,
+          "rust": 211
+        },
+        "corrosion": {
+          "good, no defect": 39,
+          "rust": 71
+        },
+        "missing cap": {
+          "good, no defect": 76,
+          "rust": 52,
+          "corrosion": 1
+        },
+        "bird nest": {
+          "good, no defect": 30,
+          "rust": 19
+        },
+        "other defect (torn part or peeling paint)": {
+          "good, no defect": 3,
+          "rust": 2
+        }
+      },
+      "majority": {
+        "class": "good, no defect",
+        "accuracy": 0.9013,
+        "balanced_accuracy": 0.1667,
+        "macro_f1": 0.158
+      }
+    },
+    "defect_noul": {
+      "n": 6092,
+      "prevalence": 0.0987,
+      "auroc": 0.7806,
+      "average_precision": 0.3181,
+      "ece": 0.1895,
+      "at_0.5": {
+        "threshold": 0.5,
+        "precision": 0.2709,
+        "recall": 0.619,
+        "f1": 0.3769,
+        "false_alarm_rate": 0.1823,
+        "risk_per_1000": 540.22
+      },
+      "at_val_threshold": {
+        "threshold": 0.3049,
+        "precision": 0.2089,
+        "recall": 0.6988,
+        "f1": 0.3216,
+        "false_alarm_rate": 0.2897,
+        "risk_per_1000": 558.27
+      },
+      "always_good_risk_per_1000": 986.54
+    },
+    "defect_from_condition": {
+      "threshold": 0.5,
+      "precision": 0.3728,
+      "recall": 0.5923,
+      "f1": 0.4576,
+      "false_alarm_rate": 0.1091,
+      "risk_per_1000": 500.49
+    },
+    "agreement_noul_vs_condition": 0.8365,
+    "judgeable": {
+      "mean_p": 0.4691,
+      "auroc_for_condition_correct": 0.2913
+    }
+  },
+  "test_bootstrap_95ci": {
+    "condition_accuracy": [
+      0.8281,
+      0.8468
+    ],
+    "condition_macro_f1": [
+      0.2036,
+      0.2152
+    ],
+    "condition_balanced_accuracy": [
+      0.2533,
+      0.2718
+    ],
+    "component_accuracy": [
+      0.0366,
+      0.0468
+    ],
+    "defect_auroc": [
+      0.7584,
+      0.8009
+    ],
+    "defect_recall_at_val_threshold": [
+      0.6623,
+      0.7349
+    ]
+  },
+  "test_per_component": {
+    "stockbridge damper": {
+      "n": 932,
+      "defects": 3,
+      "component_recall": 0.0,
+      "condition_accuracy": 0.9753,
+      "condition_balanced_accuracy": 0.4893,
+      "defect_auroc": 0.9011,
+      "defect_recall_at_val_threshold": 1.0
+    },
+    "preformed damper": {
+      "n": 145,
+      "defects": 0,
+      "component_recall": 0.0,
+      "condition_accuracy": 0.7379,
+      "condition_balanced_accuracy": 0.7379,
+      "defect_auroc": NaN,
+      "defect_recall_at_val_threshold": 0.0
+    },
+    "glass insulator": {
+      "n": 826,
+      "defects": 129,
+      "component_recall": 0.0,
+      "condition_accuracy": 0.661,
+      "condition_balanced_accuracy": 0.3917,
+      "defect_auroc": 0.3916,
+      "defect_recall_at_val_threshold": 0.4574
+    },
+    "polymer insulator": {
+      "n": 510,
+      "defects": 3,
+      "component_recall": 0.0118,
+      "condition_accuracy": 0.7353,
+      "condition_balanced_accuracy": 0.3698,
+      "defect_auroc": 0.9336,
+      "defect_recall_at_val_threshold": 1.0
+    },
+    "shackle": {
+      "n": 977,
+      "defects": 210,
+      "component_recall": 0.0,
+      "condition_accuracy": 0.7329,
+      "condition_balanced_accuracy": 0.317,
+      "defect_auroc": 0.738,
+      "defect_recall_at_val_threshold": 0.6381
+    },
+    "lightning rod suspension": {
+      "n": 210,
+      "defects": 65,
+      "component_recall": 0.9952,
+      "condition_accuracy": 0.8905,
+      "condition_balanced_accuracy": 0.8824,
+      "defect_auroc": 0.977,
+      "defect_recall_at_val_threshold": 0.9077
+    },
+    "vari-grip clamp": {
+      "n": 286,
+      "defects": 86,
+      "component_recall": 0.0,
+      "condition_accuracy": 0.7832,
+      "condition_balanced_accuracy": 0.5936,
+      "defect_auroc": 0.9099,
+      "defect_recall_at_val_threshold": 0.814
+    },
+    "yoke": {
+      "n": 239,
+      "defects": 0,
+      "component_recall": 0.0126,
+      "condition_accuracy": 0.7824,
+      "condition_balanced_accuracy": 0.7824,
+      "defect_auroc": NaN,
+      "defect_recall_at_val_threshold": 0.0
+    },
+    "yoke suspension": {
+      "n": 1911,
+      "defects": 103,
+      "component_recall": 0.0,
+      "condition_accuracy": 0.9409,
+      "condition_balanced_accuracy": 0.8909,
+      "defect_auroc": 0.9344,
+      "defect_recall_at_val_threshold": 0.8932
+    },
+    "spacer": {
+      "n": 17,
+      "defects": 0,
+      "component_recall": 0.0,
+      "condition_accuracy": 1.0,
+      "condition_balanced_accuracy": 1.0,
+      "defect_auroc": NaN,
+      "defect_recall_at_val_threshold": 0.0
+    },
+    "plate": {
+      "n": 39,
+      "defects": 2,
+      "component_recall": 0.9231,
+      "condition_accuracy": 0.9487,
+      "condition_balanced_accuracy": 0.5,
+      "defect_auroc": 0.6622,
+      "defect_recall_at_val_threshold": 0.0
+    }
+  },
+  "val": {
+    "component": {
+      "n": 5624,
+      "accuracy": 0.0398,
+      "balanced_accuracy": 0.18,
+      "macro_f1": 0.0378,
+      "per_class": {
+        "stockbridge damper": {
+          "support": 897,
+          "predicted": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "preformed damper": {
+          "support": 106,
+          "predicted": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "glass insulator": {
+          "support": 975,
+          "predicted": 19,
+          "precision": 0.1579,
+          "recall": 0.0031,
+          "f1": 0.006
+        },
+        "polymer insulator": {
+          "support": 392,
+          "predicted": 4,
+          "precision": 1.0,
+          "recall": 0.0102,
+          "f1": 0.0202
+        },
+        "shackle": {
+          "support": 893,
+          "predicted": 3,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "lightning rod suspension": {
+          "support": 191,
+          "predicted": 5441,
+          "precision": 0.0351,
+          "recall": 1.0,
+          "f1": 0.0678
+        },
+        "vari-grip clamp": {
+          "support": 300,
+          "predicted": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "yoke": {
+          "support": 192,
+          "predicted": 21,
+          "precision": 0.0476,
+          "recall": 0.0052,
+          "f1": 0.0094
+        },
+        "yoke suspension": {
+          "support": 1644,
+          "predicted": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "spacer": {
+          "support": 8,
+          "predicted": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "plate": {
+          "support": 26,
+          "predicted": 134,
+          "precision": 0.1866,
+          "recall": 0.9615,
+          "f1": 0.3125
+        }
+      },
+      "confusion": {
+        "stockbridge damper": {
+          "glass insulator": 1,
+          "shackle": 1,
+          "lightning rod suspension": 876,
+          "vari-grip clamp": 1,
+          "yoke": 12,
+          "plate": 6
+        },
+        "preformed damper": {
+          "lightning rod suspension": 106
+        },
+        "glass insulator": {
+          "glass insulator": 3,
+          "shackle": 1,
+          "lightning rod suspension": 903,
+          "yoke": 4,
+          "plate": 64
+        },
+        "polymer insulator": {
+          "glass insulator": 15,
+          "polymer insulator": 4,
+          "shackle": 1,
+          "lightning rod suspension": 331,
+          "yoke": 4,
+          "yoke suspension": 1,
+          "plate": 36
+        },
+        "shackle": {
+          "lightning rod suspension": 892,
+          "plate": 1
+        },
+        "lightning rod suspension": {
+          "lightning rod suspension": 191
+        },
+        "vari-grip clamp": {
+          "lightning rod suspension": 300
+        },
+        "yoke": {
+          "lightning rod suspension": 189,
+          "yoke": 1,
+          "plate": 2
+        },
+        "yoke suspension": {
+          "lightning rod suspension": 1644
+        },
+        "spacer": {
+          "lightning rod suspension": 8
+        },
+        "plate": {
+          "lightning rod suspension": 1,
+          "plate": 25
+        }
+      },
+      "majority": {
+        "class": "yoke suspension",
+        "accuracy": 0.2923,
+        "balanced_accuracy": 0.0909,
+        "macro_f1": 0.0411
+      }
+    },
+    "condition": {
+      "n": 5624,
+      "accuracy": 0.7913,
+      "balanced_accuracy": 0.3277,
+      "macro_f1": 0.2342,
+      "per_class": {
+        "good, no defect": {
+          "support": 4891,
+          "predicted": 4590,
+          "precision": 0.9331,
+          "recall": 0.8757,
+          "f1": 0.9035
+        },
+        "rust": {
+          "support": 219,
+          "predicted": 1029,
+          "precision": 0.1623,
+          "recall": 0.7626,
+          "f1": 0.2676
+        },
+        "corrosion": {
+          "support": 129,
+          "predicted": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "missing cap": {
+          "support": 292,
+          "predicted": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "bird nest": {
+          "support": 93,
+          "predicted": 4,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "other defect (torn part or peeling paint)": {
+          "support": 0,
+          "predicted": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        }
+      },
+      "confusion": {
+        "good, no defect": {
+          "good, no defect": 4283,
+          "rust": 604,
+          "bird nest": 4
+        },
+        "rust": {
+          "good, no defect": 51,
+          "rust": 167,
+          "missing cap": 1
+        },
+        "corrosion": {
+          "good, no defect": 30,
+          "rust": 99
+        },
+        "missing cap": {
+          "good, no defect": 154,
+          "rust": 138
+        },
+        "bird nest": {
+          "good, no defect": 72,
+          "rust": 21
+        }
+      },
+      "majority": {
+        "class": "good, no defect",
+        "accuracy": 0.8697,
+        "balanced_accuracy": 0.2,
+        "macro_f1": 0.1861
+      }
+    },
+    "defect_noul": {
+      "n": 5624,
+      "prevalence": 0.1303,
+      "auroc": 0.8139,
+      "average_precision": 0.4087,
+      "ece": 0.1923,
+      "at_0.5": {
+        "threshold": 0.5,
+        "precision": 0.3519,
+        "recall": 0.6903,
+        "f1": 0.4661,
+        "false_alarm_rate": 0.1906,
+        "risk_per_1000": 569.35
+      },
+      "at_val_threshold": {
+        "threshold": 0.3049,
+        "precision": 0.2811,
+        "recall": 0.7981,
+        "f1": 0.4158,
+        "false_alarm_rate": 0.3059,
+        "risk_per_1000": 529.16
+      },
+      "always_good_risk_per_1000": 1303.34
+    },
+    "defect_from_condition": {
+      "threshold": 0.5,
+      "precision": 0.412,
+      "recall": 0.5812,
+      "f1": 0.4822,
+      "false_alarm_rate": 0.1243,
+      "risk_per_1000": 653.98
+    },
+    "agreement_noul_vs_condition": 0.8304,
+    "judgeable": {
+      "mean_p": 0.4844,
+      "auroc_for_condition_correct": 0.2813
+    }
+  },
+  "all": {
+    "component": {
+      "n": 11716,
+      "accuracy": 0.0408,
+      "balanced_accuracy": 0.178,
+      "macro_f1": 0.0374,
+      "per_class": {
+        "stockbridge damper": {
+          "support": 1829,
+          "predicted": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "preformed damper": {
+          "support": 251,
+          "predicted": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "glass insulator": {
+          "support": 1801,
+          "predicted": 32,
+          "precision": 0.0938,
+          "recall": 0.0017,
+          "f1": 0.0033
+        },
+        "polymer insulator": {
+          "support": 902,
+          "predicted": 11,
+          "precision": 0.9091,
+          "recall": 0.0111,
+          "f1": 0.0219
+        },
+        "shackle": {
+          "support": 1870,
+          "predicted": 9,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "lightning rod suspension": {
+          "support": 401,
+          "predicted": 11266,
+          "precision": 0.0355,
+          "recall": 0.9975,
+          "f1": 0.0686
+        },
+        "vari-grip clamp": {
+          "support": 586,
+          "predicted": 3,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "yoke": {
+          "support": 431,
+          "predicted": 49,
+          "precision": 0.0816,
+          "recall": 0.0093,
+          "f1": 0.0167
+        },
+        "yoke suspension": {
+          "support": 3555,
+          "predicted": 3,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "spacer": {
+          "support": 25,
+          "predicted": 3,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "plate": {
+          "support": 65,
+          "predicted": 340,
+          "precision": 0.1794,
+          "recall": 0.9385,
+          "f1": 0.3012
+        }
+      },
+      "confusion": {
+        "stockbridge damper": {
+          "glass insulator": 2,
+          "shackle": 1,
+          "lightning rod suspension": 1798,
+          "vari-grip clamp": 1,
+          "yoke": 21,
+          "plate": 6
+        },
+        "preformed damper": {
+          "lightning rod suspension": 248,
+          "yoke": 2,
+          "plate": 1
+        },
+        "glass insulator": {
+          "glass insulator": 3,
+          "polymer insulator": 1,
+          "shackle": 2,
+          "lightning rod suspension": 1650,
+          "vari-grip clamp": 2,
+          "yoke": 6,
+          "plate": 137
+        },
+        "polymer insulator": {
+          "glass insulator": 27,
+          "polymer insulator": 10,
+          "shackle": 3,
+          "lightning rod suspension": 720,
+          "yoke": 11,
+          "yoke suspension": 3,
+          "spacer": 2,
+          "plate": 126
+        },
+        "shackle": {
+          "lightning rod suspension": 1862,
+          "yoke": 1,
+          "spacer": 1,
+          "plate": 6
+        },
+        "lightning rod suspension": {
+          "lightning rod suspension": 400,
+          "yoke": 1
+        },
+        "vari-grip clamp": {
+          "shackle": 2,
+          "lightning rod suspension": 583,
+          "yoke": 1
+        },
+        "yoke": {
+          "lightning rod suspension": 424,
+          "yoke": 4,
+          "plate": 3
+        },
+        "yoke suspension": {
+          "shackle": 1,
+          "lightning rod suspension": 3552,
+          "yoke": 2
+        },
+        "spacer": {
+          "lightning rod suspension": 25
+        },
+        "plate": {
+          "lightning rod suspension": 4,
+          "plate": 61
+        }
+      },
+      "majority": {
+        "class": "yoke suspension",
+        "accuracy": 0.3034,
+        "balanced_accuracy": 0.0909,
+        "macro_f1": 0.0423
+      }
+    },
+    "condition": {
+      "n": 11716,
+      "accuracy": 0.8154,
+      "balanced_accuracy": 0.2668,
+      "macro_f1": 0.2023,
+      "per_class": {
+        "good, no defect": {
+          "support": 10382,
+          "predicted": 9727,
+          "precision": 0.9433,
+          "recall": 0.8837,
+          "f1": 0.9125
+        },
+        "rust": {
+          "support": 527,
+          "predicted": 1981,
+          "precision": 0.1908,
+          "recall": 0.7173,
+          "f1": 0.3014
+        },
+        "corrosion": {
+          "support": 239,
+          "predicted": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "missing cap": {
+          "support": 421,
+          "predicted": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "bird nest": {
+          "support": 142,
+          "predicted": 6,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "other defect (torn part or peeling paint)": {
+          "support": 5,
+          "predicted": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        }
+      },
+      "confusion": {
+        "good, no defect": {
+          "good, no defect": 9175,
+          "rust": 1201,
+          "bird nest": 6
+        },
+        "rust": {
+          "good, no defect": 148,
+          "rust": 378,
+          "missing cap": 1
+        },
+        "corrosion": {
+          "good, no defect": 69,
+          "rust": 170
+        },
+        "missing cap": {
+          "good, no defect": 230,
+          "rust": 190,
+          "corrosion": 1
+        },
+        "bird nest": {
+          "good, no defect": 102,
+          "rust": 40
+        },
+        "other defect (torn part or peeling paint)": {
+          "good, no defect": 3,
+          "rust": 2
+        }
+      },
+      "majority": {
+        "class": "good, no defect",
+        "accuracy": 0.8861,
+        "balanced_accuracy": 0.1667,
+        "macro_f1": 0.1566
+      }
+    },
+    "defect_noul": {
+      "n": 11716,
+      "prevalence": 0.1139,
+      "auroc": 0.7998,
+      "average_precision": 0.3657,
+      "ece": 0.1909,
+      "at_0.5": {
+        "threshold": 0.5,
+        "precision": 0.3123,
+        "recall": 0.6582,
+        "f1": 0.4236,
+        "false_alarm_rate": 0.1862,
+        "risk_per_1000": 554.2
+      },
+      "at_val_threshold": {
+        "threshold": 0.3049,
+        "precision": 0.2456,
+        "recall": 0.7534,
+        "f1": 0.3704,
+        "false_alarm_rate": 0.2973,
+        "risk_per_1000": 544.3
+      },
+      "always_good_risk_per_1000": 1138.61
+    },
+    "defect_from_condition": {
+      "threshold": 0.5,
+      "precision": 0.3932,
+      "recall": 0.5862,
+      "f1": 0.4707,
+      "false_alarm_rate": 0.1163,
+      "risk_per_1000": 574.17
+    },
+    "agreement_noul_vs_condition": 0.8336,
+    "judgeable": {
+      "mean_p": 0.4764,
+      "auroc_for_condition_correct": 0.2857
+    }
+  },
+  "latency": {
+    "device": "cuda",
+    "gpu": "Quadro GV100",
+    "precision": "fp32",
+    "peak_gpu_mb": 1654.6,
+    "full_run_all_questions_ms": {
+      "frames": 11716,
+      "mean": 76.89,
+      "median": 72.74,
+      "p90": 92.3,
+      "p95": 99.95,
+      "max": 213.1
+    },
+    "batch_1_all_questions_ms": {
+      "frames": 100,
+      "mean": 76.52,
+      "median": 73.3,
+      "p90": 91.94,
+      "p95": 100.68,
+      "max": 111.19
+    },
+    "batch_1_condition_only_ms": {
+      "frames": 100,
+      "mean": 75.41,
+      "median": 72.85,
+      "p90": 87.57,
+      "p95": 90.69,
+      "max": 102.5
+    },
+    "segment_s_all_questions": {
+      "measured": 0.253,
+      "jetson_estimate_x9": 2.276
+    },
+    "segment_s_condition_only": {
+      "measured": 0.251,
+      "jetson_estimate_x9": 2.262
+    },
+    "evlm_reference": {
+      "hardware": "NVIDIA Jetson, 8-core CPU, 16 GB, 1024 CUDA cores",
+      "segment_s_table_v": 6.448,
+      "segment_s_fig_8a_non_description_intents": [
+        1.4,
+        2.3
+      ],
+      "histogram_filter_ms_per_frame_table_iv": 1.9
+    },
+    "cpu": {
+      "device": "cpu",
+      "gpu": "NVIDIA GeForce RTX 2080 Ti",
+      "precision": "fp32",
+      "all_questions_ms": {
+        "frames": 100,
+        "mean": 2518.54,
+        "median": 2529.04,
+        "p90": 2624.23,
+        "p95": 2640.71,
+        "max": 2727.15
+      },
+      "condition_only_ms": {
+        "frames": 100,
+        "mean": 2078.18,
+        "median": 2101.85,
+        "p90": 2213.58,
+        "p95": 2242.51,
+        "max": 2485.73
+      }
+    }
+  },
+  "test_items": {
+    "items": 7057,
+    "accuracy": 0.8559,
+    "risk_per_1000": 727.08
+  },
+  "prior_corrected_items": {
+    "items": 7057,
+    "accuracy": 0.8523,
+    "risk_per_1000": 765.62
+  },
+  "prior_corrected": {
+    "method": "p(c) * share_val(c) / share_train(c), renormalized; shares from labels, +1 smoothing",
+    "defect_threshold_from_val": 0.1066,
+    "test": {
+      "component": {
+        "n": 6092,
+        "accuracy": 0.0515,
+        "balanced_accuracy": 0.1808,
+        "macro_f1": 0.0886,
+        "per_class": {
+          "stockbridge damper": {
+            "support": 932,
+            "predicted": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "preformed damper": {
+            "support": 145,
+            "predicted": 8,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "glass insulator": {
+            "support": 826,
+            "predicted": 134,
+            "precision": 0.2836,
+            "recall": 0.046,
+            "f1": 0.0792
+          },
+          "polymer insulator": {
+            "support": 510,
+            "predicted": 27,
+            "precision": 0.7778,
+            "recall": 0.0412,
+            "f1": 0.0782
+          },
+          "shackle": {
+            "support": 977,
+            "predicted": 30,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "lightning rod suspension": {
+            "support": 210,
+            "predicted": 5632,
+            "precision": 0.0368,
+            "recall": 0.9857,
+            "f1": 0.0709
+          },
+          "vari-grip clamp": {
+            "support": 286,
+            "predicted": 7,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "yoke": {
+            "support": 239,
+            "predicted": 124,
+            "precision": 0.0806,
+            "recall": 0.0418,
+            "f1": 0.0551
+          },
+          "yoke suspension": {
+            "support": 1911,
+            "predicted": 69,
+            "precision": 0.058,
+            "recall": 0.0021,
+            "f1": 0.004
+          },
+          "spacer": {
+            "support": 17,
+            "predicted": 1,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "plate": {
+            "support": 39,
+            "predicted": 60,
+            "precision": 0.5667,
+            "recall": 0.8718,
+            "f1": 0.6869
+          }
+        },
+        "confusion": {
+          "stockbridge damper": {
+            "glass insulator": 2,
+            "shackle": 4,
+            "lightning rod suspension": 871,
+            "vari-grip clamp": 2,
+            "yoke": 52,
+            "yoke suspension": 1
+          },
+          "preformed damper": {
+            "shackle": 2,
+            "lightning rod suspension": 138,
+            "vari-grip clamp": 1,
+            "yoke": 2,
+            "yoke suspension": 2
+          },
+          "glass insulator": {
+            "preformed damper": 6,
+            "glass insulator": 38,
+            "polymer insulator": 5,
+            "shackle": 3,
+            "lightning rod suspension": 719,
+            "vari-grip clamp": 4,
+            "yoke": 19,
+            "yoke suspension": 17,
+            "plate": 15
+          },
+          "polymer insulator": {
+            "preformed damper": 1,
+            "glass insulator": 82,
+            "polymer insulator": 21,
+            "shackle": 20,
+            "lightning rod suspension": 323,
+            "yoke": 14,
+            "yoke suspension": 39,
+            "plate": 10
+          },
+          "shackle": {
+            "glass insulator": 3,
+            "lightning rod suspension": 965,
+            "yoke": 7,
+            "spacer": 1,
+            "plate": 1
+          },
+          "lightning rod suspension": {
+            "glass insulator": 2,
+            "lightning rod suspension": 207,
+            "yoke": 1
+          },
+          "vari-grip clamp": {
+            "lightning rod suspension": 282,
+            "yoke": 2,
+            "yoke suspension": 2
+          },
+          "yoke": {
+            "glass insulator": 3,
+            "polymer insulator": 1,
+            "lightning rod suspension": 222,
+            "yoke": 10,
+            "yoke suspension": 3
+          },
+          "yoke suspension": {
+            "preformed damper": 1,
+            "glass insulator": 4,
+            "shackle": 1,
+            "lightning rod suspension": 1885,
+            "yoke": 16,
+            "yoke suspension": 4
+          },
+          "spacer": {
+            "lightning rod suspension": 17
+          },
+          "plate": {
+            "lightning rod suspension": 3,
+            "yoke": 1,
+            "yoke suspension": 1,
+            "plate": 34
+          }
+        },
+        "majority": {
+          "class": "yoke suspension",
+          "accuracy": 0.3137,
+          "balanced_accuracy": 0.0909,
+          "macro_f1": 0.0434
+        }
+      },
+      "condition": {
+        "n": 6092,
+        "accuracy": 0.8294,
+        "balanced_accuracy": 0.2748,
+        "macro_f1": 0.2348,
+        "per_class": {
+          "good, no defect": {
+            "support": 5491,
+            "predicted": 5110,
+            "precision": 0.9495,
+            "recall": 0.8836,
+            "f1": 0.9154
+          },
+          "rust": {
+            "support": 308,
+            "predicted": 579,
+            "precision": 0.304,
+            "recall": 0.5714,
+            "f1": 0.3968
+          },
+          "corrosion": {
+            "support": 110,
+            "predicted": 10,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "missing cap": {
+            "support": 129,
+            "predicted": 390,
+            "precision": 0.0641,
+            "recall": 0.1938,
+            "f1": 0.0963
+          },
+          "bird nest": {
+            "support": 49,
+            "predicted": 3,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "other defect (torn part or peeling paint)": {
+            "support": 5,
+            "predicted": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          }
+        },
+        "confusion": {
+          "good, no defect": {
+            "good, no defect": 4852,
+            "rust": 320,
+            "corrosion": 5,
+            "missing cap": 311,
+            "bird nest": 3
+          },
+          "rust": {
+            "good, no defect": 102,
+            "rust": 176,
+            "corrosion": 3,
+            "missing cap": 27
+          },
+          "corrosion": {
+            "good, no defect": 39,
+            "rust": 45,
+            "missing cap": 26
+          },
+          "missing cap": {
+            "good, no defect": 77,
+            "rust": 25,
+            "corrosion": 2,
+            "missing cap": 25
+          },
+          "bird nest": {
+            "good, no defect": 37,
+            "rust": 12
+          },
+          "other defect (torn part or peeling paint)": {
+            "good, no defect": 3,
+            "rust": 1,
+            "missing cap": 1
+          }
+        },
+        "majority": {
+          "class": "good, no defect",
+          "accuracy": 0.9013,
+          "balanced_accuracy": 0.1667,
+          "macro_f1": 0.158
+        }
+      },
+      "defect_noul": {
+        "n": 6092,
+        "prevalence": 0.0987,
+        "auroc": 0.7806,
+        "average_precision": 0.3181,
+        "ece": 0.1055,
+        "at_0.5": {
+          "threshold": 0.5,
+          "precision": 0.3477,
+          "recall": 0.5374,
+          "f1": 0.4222,
+          "false_alarm_rate": 0.1104,
+          "risk_per_1000": 555.81
+        },
+        "at_val_threshold": {
+          "threshold": 0.1066,
+          "precision": 0.2089,
+          "recall": 0.6988,
+          "f1": 0.3216,
+          "false_alarm_rate": 0.2897,
+          "risk_per_1000": 558.27
+        },
+        "always_good_risk_per_1000": 986.54
+      },
+      "defect_from_condition": {
+        "threshold": 0.5,
+        "precision": 0.3493,
+        "recall": 0.5707,
+        "f1": 0.4334,
+        "false_alarm_rate": 0.1164,
+        "risk_per_1000": 528.4
+      },
+      "agreement_noul_vs_condition": 0.8675,
+      "judgeable": {
+        "mean_p": 0.4691,
+        "auroc_for_condition_correct": 0.293
+      }
+    },
+    "test_bootstrap_95ci": {
+      "condition_accuracy": [
+        0.8199,
+        0.8393
+      ],
+      "condition_macro_f1": [
+        0.2255,
+        0.2442
+      ],
+      "condition_balanced_accuracy": [
+        0.2599,
+        0.29
+      ],
+      "component_accuracy": [
+        0.046,
+        0.0568
+      ],
+      "defect_auroc": [
+        0.7584,
+        0.8009
+      ],
+      "defect_recall_at_val_threshold": [
+        0.6623,
+        0.7349
+      ]
+    },
+    "val": {
+      "component": {
+        "n": 5624,
+        "accuracy": 0.0546,
+        "balanced_accuracy": 0.1822,
+        "macro_f1": 0.0919,
+        "per_class": {
+          "stockbridge damper": {
+            "support": 897,
+            "predicted": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "preformed damper": {
+            "support": 106,
+            "predicted": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "glass insulator": {
+            "support": 975,
+            "predicted": 122,
+            "precision": 0.5082,
+            "recall": 0.0636,
+            "f1": 0.113
+          },
+          "polymer insulator": {
+            "support": 392,
+            "predicted": 27,
+            "precision": 0.8148,
+            "recall": 0.0561,
+            "f1": 0.105
+          },
+          "shackle": {
+            "support": 893,
+            "predicted": 21,
+            "precision": 0.0476,
+            "recall": 0.0011,
+            "f1": 0.0022
+          },
+          "lightning rod suspension": {
+            "support": 191,
+            "predicted": 5285,
+            "precision": 0.0361,
+            "recall": 1.0,
+            "f1": 0.0698
+          },
+          "vari-grip clamp": {
+            "support": 300,
+            "predicted": 11,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "yoke": {
+            "support": 192,
+            "predicted": 76,
+            "precision": 0.0921,
+            "recall": 0.0365,
+            "f1": 0.0522
+          },
+          "yoke suspension": {
+            "support": 1644,
+            "predicted": 42,
+            "precision": 0.0476,
+            "recall": 0.0012,
+            "f1": 0.0024
+          },
+          "spacer": {
+            "support": 8,
+            "predicted": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "plate": {
+            "support": 26,
+            "predicted": 40,
+            "precision": 0.55,
+            "recall": 0.8462,
+            "f1": 0.6667
+          }
+        },
+        "confusion": {
+          "stockbridge damper": {
+            "glass insulator": 2,
+            "shackle": 4,
+            "lightning rod suspension": 847,
+            "vari-grip clamp": 3,
+            "yoke": 35,
+            "yoke suspension": 4,
+            "plate": 2
+          },
+          "preformed damper": {
+            "shackle": 2,
+            "lightning rod suspension": 104
+          },
+          "glass insulator": {
+            "glass insulator": 62,
+            "polymer insulator": 5,
+            "shackle": 5,
+            "lightning rod suspension": 865,
+            "vari-grip clamp": 5,
+            "yoke": 12,
+            "yoke suspension": 7,
+            "plate": 14
+          },
+          "polymer insulator": {
+            "glass insulator": 54,
+            "polymer insulator": 22,
+            "shackle": 6,
+            "lightning rod suspension": 284,
+            "yoke": 7,
+            "yoke suspension": 17,
+            "plate": 2
+          },
+          "shackle": {
+            "glass insulator": 2,
+            "shackle": 1,
+            "lightning rod suspension": 874,
+            "vari-grip clamp": 1,
+            "yoke": 11,
+            "yoke suspension": 4
+          },
+          "lightning rod suspension": {
+            "lightning rod suspension": 191
+          },
+          "vari-grip clamp": {
+            "shackle": 2,
+            "lightning rod suspension": 292,
+            "yoke": 3,
+            "yoke suspension": 3
+          },
+          "yoke": {
+            "glass insulator": 2,
+            "lightning rod suspension": 181,
+            "yoke": 7,
+            "yoke suspension": 2
+          },
+          "yoke suspension": {
+            "shackle": 1,
+            "lightning rod suspension": 1638,
+            "vari-grip clamp": 2,
+            "yoke": 1,
+            "yoke suspension": 2
+          },
+          "spacer": {
+            "lightning rod suspension": 8
+          },
+          "plate": {
+            "lightning rod suspension": 1,
+            "yoke suspension": 3,
+            "plate": 22
+          }
+        },
+        "majority": {
+          "class": "yoke suspension",
+          "accuracy": 0.2923,
+          "balanced_accuracy": 0.0909,
+          "macro_f1": 0.0411
+        }
+      },
+      "condition": {
+        "n": 5624,
+        "accuracy": 0.7977,
+        "balanced_accuracy": 0.3375,
+        "macro_f1": 0.2769,
+        "per_class": {
+          "good, no defect": {
+            "support": 4891,
+            "predicted": 4627,
+            "precision": 0.9298,
+            "recall": 0.8796,
+            "f1": 0.904
+          },
+          "rust": {
+            "support": 219,
+            "predicted": 642,
+            "precision": 0.2305,
+            "recall": 0.6758,
+            "f1": 0.3438
+          },
+          "corrosion": {
+            "support": 129,
+            "predicted": 6,
+            "precision": 0.3333,
+            "recall": 0.0155,
+            "f1": 0.0296
+          },
+          "missing cap": {
+            "support": 292,
+            "predicted": 343,
+            "precision": 0.0991,
+            "recall": 0.1164,
+            "f1": 0.1071
+          },
+          "bird nest": {
+            "support": 93,
+            "predicted": 6,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "other defect (torn part or peeling paint)": {
+            "support": 0,
+            "predicted": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          }
+        },
+        "confusion": {
+          "good, no defect": {
+            "good, no defect": 4302,
+            "rust": 302,
+            "corrosion": 1,
+            "missing cap": 281,
+            "bird nest": 5
+          },
+          "rust": {
+            "good, no defect": 55,
+            "rust": 148,
+            "corrosion": 2,
+            "missing cap": 13,
+            "bird nest": 1
+          },
+          "corrosion": {
+            "good, no defect": 33,
+            "rust": 82,
+            "corrosion": 2,
+            "missing cap": 12
+          },
+          "missing cap": {
+            "good, no defect": 163,
+            "rust": 94,
+            "corrosion": 1,
+            "missing cap": 34
+          },
+          "bird nest": {
+            "good, no defect": 74,
+            "rust": 16,
+            "missing cap": 3
+          }
+        },
+        "majority": {
+          "class": "good, no defect",
+          "accuracy": 0.8697,
+          "balanced_accuracy": 0.2,
+          "macro_f1": 0.1861
+        }
+      },
+      "defect_noul": {
+        "n": 5624,
+        "prevalence": 0.1303,
+        "auroc": 0.8139,
+        "average_precision": 0.4087,
+        "ece": 0.0994,
+        "at_0.5": {
+          "threshold": 0.5,
+          "precision": 0.391,
+          "recall": 0.5825,
+          "f1": 0.4679,
+          "false_alarm_rate": 0.136,
+          "risk_per_1000": 662.34
+        },
+        "at_val_threshold": {
+          "threshold": 0.1066,
+          "precision": 0.2811,
+          "recall": 0.7981,
+          "f1": 0.4158,
+          "false_alarm_rate": 0.3059,
+          "risk_per_1000": 529.16
+        },
+        "always_good_risk_per_1000": 1303.34
+      },
+      "defect_from_condition": {
+        "threshold": 0.5,
+        "precision": 0.4092,
+        "recall": 0.5566,
+        "f1": 0.4717,
+        "false_alarm_rate": 0.1204,
+        "risk_per_1000": 682.61
+      },
+      "agreement_noul_vs_condition": 0.8505,
+      "judgeable": {
+        "mean_p": 0.4844,
+        "auroc_for_condition_correct": 0.2824
+      }
+    }
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "runs": [
+    "fl_c_warm_local_n200_d0",
+    "fl_c_warm_local_n200_d1",
+    "fl_c_warm_local_n200_d2",
+    "fl_c_warm_local_n200_d3",
+    "fl_c_warm_local_n200_d4"
+  ],
+  "test_per_drone": {
+    "fl_c_warm_local_n200_d0": {
+      "condition.accuracy": 0.9312,
+      "condition.balanced_accuracy": 0.5472,
+      "condition.macro_f1": 0.5444,
+      "component.accuracy": 0.9061,
+      "defect_noul.auroc": 0.8397,
+      "defect_noul.average_precision": 0.6228
+    },
+    "fl_c_warm_local_n200_d1": {
+      "condition.accuracy": 0.945,
+      "condition.balanced_accuracy": 0.548,
+      "condition.macro_f1": 0.5761,
+      "component.accuracy": 0.8946,
+      "defect_noul.auroc": 0.8991,
+      "defect_noul.average_precision": 0.7664
+    },
+    "fl_c_warm_local_n200_d2": {
+      "condition.accuracy": 0.926,
+      "condition.balanced_accuracy": 0.571,
+      "condition.macro_f1": 0.5607,
+      "component.accuracy": 0.9102,
+      "defect_noul.auroc": 0.918,
+      "defect_noul.average_precision": 0.763
+    },
+    "fl_c_warm_local_n200_d3": {
+      "condition.accuracy": 0.9315,
+      "condition.balanced_accuracy": 0.5516,
+      "condition.macro_f1": 0.5462,
+      "component.accuracy": 0.9099,
+      "defect_noul.auroc": 0.9024,
+      "defect_noul.average_precision": 0.7488
+    },
+    "fl_c_warm_local_n200_d4": {
+      "condition.accuracy": 0.9086,
+      "condition.balanced_accuracy": 0.6513,
+      "condition.macro_f1": 0.5278,
+      "component.accuracy": 0.8986,
+      "defect_noul.auroc": 0.9512,
+      "defect_noul.average_precision": 0.6355
+    }
+  },
+  "test_mean_min_max": {
+    "condition.accuracy": [
+      0.9285,
+      0.9086,
+      0.945
+    ],
+    "condition.balanced_accuracy": [
+      0.5738,
+      0.5472,
+      0.6513
+    ],
+    "condition.macro_f1": [
+      0.551,
+      0.5278,
+      0.5761
+    ],
+    "component.accuracy": [
+      0.9039,
+      0.8946,
+      0.9102
+    ],
+    "defect_noul.auroc": [
+      0.9021,
+      0.8397,
+      0.9512
+    ],
+    "defect_noul.average_precision": [
+      0.7073,
+      0.6228,
+      0.7664
+    ]
+  }
+}

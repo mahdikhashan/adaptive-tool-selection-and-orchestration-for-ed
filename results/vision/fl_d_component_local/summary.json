@@ -1,0 +1,92 @@
+{
+  "runs": [
+    "fl_d_component_local_d0",
+    "fl_d_component_local_d1",
+    "fl_d_component_local_d2",
+    "fl_d_component_local_d3",
+    "fl_d_component_local_d4",
+    "fl_d_component_local_d5"
+  ],
+  "test_per_drone": {
+    "fl_d_component_local_d0": {
+      "condition.accuracy": 0.6103,
+      "condition.balanced_accuracy": 0.3004,
+      "condition.macro_f1": 0.1766,
+      "component.accuracy": 0.1604,
+      "defect_noul.auroc": 0.8455,
+      "defect_noul.average_precision": 0.43
+    },
+    "fl_d_component_local_d1": {
+      "condition.accuracy": 0.6747,
+      "condition.balanced_accuracy": 0.3605,
+      "condition.macro_f1": 0.1921,
+      "component.accuracy": 0.0471,
+      "defect_noul.auroc": 0.7797,
+      "defect_noul.average_precision": 0.333
+    },
+    "fl_d_component_local_d2": {
+      "condition.accuracy": 0.6556,
+      "condition.balanced_accuracy": 0.2499,
+      "condition.macro_f1": 0.1509,
+      "component.accuracy": 0.1372,
+      "defect_noul.auroc": 0.793,
+      "defect_noul.average_precision": 0.3788
+    },
+    "fl_d_component_local_d3": {
+      "condition.accuracy": 0.8377,
+      "condition.balanced_accuracy": 0.2627,
+      "condition.macro_f1": 0.2093,
+      "component.accuracy": 0.0417,
+      "defect_noul.auroc": 0.7806,
+      "defect_noul.average_precision": 0.3181
+    },
+    "fl_d_component_local_d4": {
+      "condition.accuracy": 0.8715,
+      "condition.balanced_accuracy": 0.2679,
+      "condition.macro_f1": 0.2259,
+      "component.accuracy": 0.3362,
+      "defect_noul.auroc": 0.7591,
+      "defect_noul.average_precision": 0.3262
+    },
+    "fl_d_component_local_d5": {
+      "condition.accuracy": 0.9013,
+      "condition.balanced_accuracy": 0.1667,
+      "condition.macro_f1": 0.158,
+      "component.accuracy": 0.2441,
+      "defect_noul.auroc": 0.5524,
+      "defect_noul.average_precision": 0.14
+    }
+  },
+  "test_mean_min_max": {
+    "condition.accuracy": [
+      0.7585,
+      0.6103,
+      0.9013
+    ],
+    "condition.balanced_accuracy": [
+      0.268,
+      0.1667,
+      0.3605
+    ],
+    "condition.macro_f1": [
+      0.1855,
+      0.1509,
+      0.2259
+    ],
+    "component.accuracy": [
+      0.1611,
+      0.0417,
+      0.3362
+    ],
+    "defect_noul.auroc": [
+      0.7517,
+      0.5524,
+      0.8455
+    ],
+    "defect_noul.average_precision": [
+      0.321,
+      0.14,
+      0.43
+    ]
+  }
+}

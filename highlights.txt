@@ -1,5 +1,5 @@
-Fine-tuned on folder labels, a one-pass decision model reaches 0.948 item accuracy.
-Its calibrated defect score passes 15.3% of images and finds 88.5% of defects.
-FedAvg over tower-wise drones beats training alone; a fine-tuned start nears central.
-From the base model, 17-45 MB updates learn little in 10 FedAvg rounds; int8 is free.
-With 100-200 labels per drone, fleet FedAvg lifts defect AUROC from 0.903 to 0.93.
+A one-pass decision model gives drone fleets calibrated perception for planning.
+Fine-tuned on folder labels, it reaches 0.948 item accuracy at 74 ms per image.
+Its defect score escalates 15.3% of images and finds 88.5% of defects.
+Across 25 federated runs (1,014 to 41,310 MB uplink), the start matters most.
+From a fine-tuned start, 2,260 MB of uplink give 92% of the 11,475 MB result.

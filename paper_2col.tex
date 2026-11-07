@@ -14,54 +14,63 @@
 
 \begin{frontmatter}
 
-\title{From Semantics to Decisions: A Federated Vision-Language Decision Model for UAV Power-Line Inspection}
+\title{Distributed Perception for Drone Fleets: Federated Fine-Tuning of an Edge Vision-Language Decision Model for Inspection Task Planning}
 
 \author{Mahdi Khashan}
 \ead{mahdikhashan1@gmail.com}
 \affiliation{organization={[Affiliation to be added]}}
 
 \begin{abstract}
-A recent agenda for edge-native semantic UAV inspection shows that a lightweight vision-language model (VLM) runs on a Jetson-class drone computer at 2.8\,s per image, and leaves speed, measured reliability, training data and fleet collaboration open. We study a vision-language \emph{decision model}, laya-vision (201M parameters), which answers typed inspection questions in one forward pass with calibrated probabilities, not generated text. On 35,415 power-line component images (ElecVQA-Bench, InsPLAD), the published checkpoint fails zero-shot (condition macro F1 0.180). Fine-tuning on 4,807 images with labels from the dataset folders raises it to 0.703, with component accuracy 0.924 and defect AUROC 0.965, at 74\,ms per image for four questions on an RTX 2080 Ti. As a trigger, the defect probability passes 15.3\% of images on and finds 88.5\% of defects. With FedAvg over simulated tower-wise drones, accuracy falls as the data is split further (macro F1 0.624, 0.541, 0.474 for 3, 6, 18 drones) but stays above drones that train alone (0.371), and a start fine-tuned on separate server towers brings the fleet to 0.636. From the published checkpoint, small updates (17--45\,MB) learn little in ten rounds (macro F1 0.24--0.28), more rounds help (0.49 after 30), int8 updates cost nothing measurable and FedProx changes nothing. With 100--200 natural labels per drone, fleet FedAvg from the server model raises defect AUROC from 0.903 to 0.93, but 25--50 labels lower it and pooling is better (0.958). Drones that each see different components learn their own defect type alone, which small-update FedAvg loses for every split.
+A fleet of inspection drones must decide on board, for every image, what it sees and what to do next: continue, escalate the frame, or revisit the asset. Generative vision-language models (VLMs) give this perception semantic depth but need seconds per image on a drone computer, and the images that would improve them stay spread across the fleet. We study a vision-language \emph{decision model}, laya-vision (201M parameters), which answers typed inspection queries in one forward pass with calibrated probabilities that a task planner can consume directly, and we train it across the fleet with federated learning. On 35,415 power-line component images (ElecVQA-Bench, InsPLAD), the published checkpoint fails zero-shot (condition macro F1 0.180). Fine-tuning on folder labels raises it to 0.703 (defect AUROC 0.965) at 74\,ms per image for four queries on an RTX 2080 Ti; as an escalation trigger, the defect probability forwards 15.3\% of images and finds 88.5\% of defects. With FedAvg over simulated tower-wise drones, macro F1 falls from 0.697 to 0.474 as the data is spread over 1 to 18 drones, but stays above drones that train alone (0.371). Across 25 federated configurations from 1,014 to 41,310\,MB of total uplink, the starting model matters more than the uplink: from the fine-tuned start, a 45\,MB update reaches 92\% of the full-model fleet result at 20\% of its uplink, while from the published checkpoint small updates barely learn. With few labels, fleet training pays off only once the fleet has labelled about 70 defects.
 \end{abstract}
 
 \begin{keyword}
-semantic edge intelligence \sep vision-language model \sep decision model \sep federated learning \sep UAV inspection \sep power lines
+drone fleets \sep distributed intelligence \sep edge AI \sep UAV perception \sep task planning \sep vision-language model \sep federated learning \sep infrastructure inspection
 \end{keyword}
 
 \end{frontmatter}
 
 \section{Introduction}
 
-Farahani et al.~\cite{p2s} describe a move from cloud-centric image analysis and onboard detectors towards \emph{edge-native semantic inspection}, in which a lightweight vision-language model (VLM) on the drone interprets what it sees. Their study on a Jetson Orin shows that this is possible but slow: a fine-tuned SmolVLM-256M~\cite{smolvlm} needs about 2.8\,s per image, and the related EVLM system~\cite{evlm} reports 1.4--6.4\,s per 4\,s video segment for power-line inspection.
+Infrastructure inspection is moving from single drones that record video for later analysis to \emph{fleets} of drones that interpret what they see on board and act on it~\cite{p2s}. Each drone of such a fleet runs a perception--planning loop: it perceives a component, judges its condition, and the mission planner decides whether to continue, to escalate the frame to a slower model or to the operator, or to schedule a closer look. The planner needs from perception not a caption but a few typed answers with probabilities it can trust.
 
-The agenda in~\cite{p2s} leaves several challenges open, five of which are the starting point of this paper: low-latency multimodal reasoning, hierarchical processing in which an inexpensive stage decides when the expensive VLM runs, training data without captions generated by GPT-4o, confidence estimates that a mission planner can act on, and collaborative training across many UAVs. Its feasibility study also shows semantic quality only with three qualitative examples.
+Farahani et al.~\cite{p2s} show on a Jetson Orin that a lightweight VLM can run on the drone, but slowly: a fine-tuned SmolVLM-256M~\cite{smolvlm} needs about 2.8\,s per image, and EVLM~\cite{evlm} 1.4--6.4\,s per 4\,s segment. Their agenda leaves open low-latency reasoning, an inexpensive stage that decides when the VLM runs, training data without GPT-4o captions, confidence a mission planner can act on, and collaborative training across UAVs.
 
-Many inspection questions do not need free text: ``Does this clamp have a defect?'' is a choice among known options. \emph{Decision models} answer such typed questions in one forward pass with a probability per option; laya-vision~\cite{layavision} brings this design~\cite{laya} to images with a truncated SmolVLM backbone. Such a model is a natural middle stage between a detector and a describing VLM. The images that would improve it are spread across the fleet, may belong to different operators and are often sensitive, which makes federated learning~\cite{fedavg} attractive, although each drone flies its own towers and therefore sees different data.
+Many inspection queries are choices among known options: ``Which component is this?'', ``Does it have a defect?''. \emph{Decision models} answer such typed queries in one forward pass with a probability per option; laya-vision~\cite{layavision} brings this design~\cite{laya} to images. Its output is directly an input for task planning. The images that would improve it are spread across the fleet, may belong to different operators and are often sensitive, which makes federated learning~\cite{fedavg} the natural form of distributed intelligence for such a fleet, although each drone flies its own towers and therefore sees different data, and every model update competes with mission traffic for the uplink.
 
-We ask how well such a decision model classifies power-line components and their condition, zero-shot and after fine-tuning on labels that need no caption generation (RQ1); what its latency is and whether its calibrated output can trigger a slower describing model (RQ2); how close federated fine-tuning across tower-wise drones comes to central training, and whether a centrally fine-tuned start helps the fleet (RQ3); and which part of the model each drone must send, and what few labels per drone and drones with different image types do to the result (RQ4).
+We ask how well a decision model perceives power-line components and their condition, zero-shot and after fine-tuning on labels that need no caption generation (RQ1); how fast it is and whether its calibrated output can drive the escalation decision of a planner (RQ2); how close federated fine-tuning across tower-wise drones comes to central training, and whether a centrally fine-tuned start helps the fleet (RQ3); and how much uplink the fleet needs, and what few labels per drone and drones with different image types do to the result (RQ4).
 
-We contribute a quantitative evaluation of this model on 35,415 InsPLAD images, a latency and trigger analysis, and a federated study that covers the number of drones, the starting model, the size and format of the update, FedProx, few labels per drone and drones with different image types.
+We contribute an evaluation of the decision model as the perception stage of an inspection drone on 35,415 InsPLAD images, a latency and escalation analysis, and a federated study over 25 configurations that relates the accuracy of the fleet to its uplink.
 
 \section{Related work}
 
-Of the open problems that~\cite{p2s} lists, this paper gives measured evidence for latency, the trigger of a hierarchical pipeline, training data without generated captions, quantitative semantic quality and calibrated confidence, and simulated evidence for collaborative training and the size of model updates; energy, mission-aware scheduling, multimodal sensing and digital twins remain open.
+\paragraph{Edge AI for drone perception} EVLM~\cite{evlm} runs a LoRA-tuned SmolVLM-256M on a Jetson for power-line inspection and cuts the uplink of a 4\,s segment from 485\,kB to 25\,kB at 1.4--6.4\,s of generation per segment; \cite{splitvlm} profiles whether such a model should run on the drone, at the edge or split between them, and INAR-VL~\cite{inarvl} routes requests between edge and cloud. All of these generate text. Laya~\cite{laya} instead scores typed questions in one pass with a temperature per question type~\cite{guo2017}, and laya-vision~\cite{layavision} adds image input; we use its checkpoint and fine-tuning recipe.
 
-\paragraph{Edge VLMs and decision models} EVLM~\cite{evlm} runs a LoRA-tuned SmolVLM-256M on a Jetson for power-line inspection and cuts the uplink of a 4\,s segment from 485\,kB to 25\,kB at 1.4--6.4\,s of generation per segment; \cite{splitvlm} profiles where such a model should run, and INAR-VL~\cite{inarvl} routes requests between edge and cloud. All of these generate text. Laya~\cite{laya} instead scores typed questions in one pass with a temperature per question type~\cite{guo2017}, and laya-vision~\cite{layavision} adds image input; we use its checkpoint and fine-tuning recipe.
+\paragraph{Distributed intelligence and federated learning} FedAvg~\cite{fedavg} averages client models weighted by data size; non-IID data degrades it~\cite{zhao2018}, and FedProx~\cite{fedprox} adds a proximal term. Federated learning has been applied to routing language models~\cite{fedrouter}, to escalation thresholds~\cite{fedhlm}, and to adapter updates in guardrail inspection~\cite{guardrail}. We are not aware of federated fine-tuning of a vision-language decision model across an inspection fleet, or of a study that relates its accuracy to the uplink it needs.
 
-\paragraph{Federated learning} FedAvg~\cite{fedavg} averages client models weighted by data size; non-IID data degrades it~\cite{zhao2018}, and FedProx~\cite{fedprox} adds a proximal term. Federated learning has been applied to routing language models~\cite{fedrouter}, to escalation thresholds~\cite{fedhlm}, and to adapter updates in guardrail inspection~\cite{guardrail}. We are not aware of federated fine-tuning of a vision-language decision model on drone inspection data.
+\section{System and method}
 
-\section{Method}
+\subsection{Fleet model}
 
-\subsection{Model and questions}
+A fleet of $K$ drones inspects a power line; the mission planner assigns each drone a set of towers. On each image, the drone's decision model answers typed queries. The defect probability drives the escalation decision (forward the frame to a describing VLM or to the operator, or continue), and the component and condition answers feed the planner's record of the inspected assets. A server holds an initial model and, optionally, labelled images from earlier missions. Between missions, the drones fine-tune the model on images they have labelled and send model updates, never images, to the server, which aggregates them with FedAvg. Its cost is the uplink, update size $\times$ drones $\times$ rounds in MB, which we calculate; the drones are simulated on one GPU.
 
-Laya-vision~\cite{layavision} (checkpoint \texttt{thaitea/laya-vision}, revision \texttt{f2fe3c1}, 201M parameters) uses SmolVLM-256M cut to 20 of its 30 language layers, followed by a decision head. For an input and a typed question, the head returns one logit per option. A temperature per question type converts them to probabilities; the input is always the image alone. One \texttt{predict} call per image asks four questions:
+\subsection{Model and queries}
+
+Laya-vision~\cite{layavision} (checkpoint \texttt{thaitea/laya-vision}, revision \texttt{f2fe3c1}, 201M parameters) uses SmolVLM-256M cut to 20 of its 30 language layers, followed by a decision head. For an image and a typed query, the head returns one logit per option; a temperature per query type converts them to probabilities. The model can only answer with one of the given options. One \texttt{predict} call per image encodes the image once and asks four queries:
 \begin{itemize}
-\item \texttt{component} (choice, 11 options): which power-line component is in the image.
-\item \texttt{defect} (yes/no): whether the component has a defect.
-\item \texttt{condition} (choice, 6 options): good, rust, corrosion, missing cap, bird nest, or other defect (torn part or peeling paint).
-\item \texttt{judgeable} (yes/no): whether the image is clear enough to judge. This question has no ground truth.
+\item \texttt{component} (choice, 11 options): ``Which power line component is in this image?''
+\item \texttt{defect} (yes/no): ``Does this power line component have a defect?''
+\item \texttt{condition} (choice, 6 options): ``Which condition does this power line component have?'' with options good, rust, corrosion, missing cap, bird nest, or other defect (torn part or peeling paint).
+\item \texttt{judgeable} (yes/no): ``Is the image clear enough to judge the condition of the component?'' This query has no ground truth.
 \end{itemize}
-The image is encoded once and reused for all four questions, and the model can only answer with one of the given options.
+Figure~\ref{fig:samples} shows one test image of each condition with the answers of the fine-tuned model.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\linewidth]{figs/fig2_samples.pdf}
+\caption{\textbf{One query, three typed answers.} One test-tower image of each condition, with the ground truth (top) and the answers of the round-2 full model to the \texttt{component}, \texttt{defect} and \texttt{condition} queries of one \texttt{predict} call (bottom; $p$ is the probability of the chosen option). The first five are answered correctly; the last, a plate with an ``other defect'', is called a good lightning rod suspension; all five test images of this class are missed.}
+\label{fig:samples}
+\end{figure*}
 
 \subsection{Data and ground truth}\label{sec:data}
 
@@ -120,7 +129,7 @@ Figure~\ref{fig:finetune} and Table~\ref{tab:finetune} show the progression. Rou
 
 \begin{table}[t]
 \centering
-\caption{Test-tower results. Images: 6,092 test images. Items: 7,057 ElecVQA-Bench test items. The intervals for laya-vision are in the text and in Fig.~\ref{fig:finetune}. Reference tools are scored on the same items.}
+\caption{Test-tower results. Images: 6,092 test images. Items: 7,057 ElecVQA-Bench test items. The intervals for laya-vision are in the text and in Fig.~\ref{fig:finetune}. Reference tools are scored on the same items. Bold: best per column.}
 \label{tab:finetune}
 \footnotesize
 \setlength{\tabcolsep}{4pt}
@@ -132,32 +141,30 @@ Model & Cond.\ & Comp.\ & Defect & Item \\
 Zero-shot & 0.180 & 0.141 & 0.714 & 0.830 \\
 Round 1, last 4 & 0.303 & 0.465 & 0.898 & 0.702 \\
 Round 2, last 4 & 0.637 & 0.789 & 0.959 & 0.923 \\
-Round 2, full & 0.703 & 0.924 & 0.965 & 0.948 \\
+Round 2, full & \textbf{0.703} & \textbf{0.924} & \textbf{0.965} & 0.948 \\
 \midrule
-ResNet-50, tuned & -- & -- & -- & 0.961 \\
+ResNet-50, tuned & -- & -- & -- & \textbf{0.961} \\
 SmolVLM + LoRA & -- & -- & -- & 0.956 \\
 SmolVLM, no tuning & -- & -- & -- & 0.830 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Per condition, the full model has F1 0.975 for good, 0.710 for rust, 0.826 for corrosion, 0.762 for missing cap and 0.942 for bird nest. Most errors are good images called rust (152), the 5 test images of other defects are always missed, and every component except the spacer (18 training images) has a recall of at least 0.87.
-
-On the ElecVQA-Bench items the full model reaches 0.948, below the fine-tuned ResNet-50 (0.961) and SmolVLM with LoRA (0.956). Training takes 24 minutes on an RTX 2080 Ti, and test results stay close to validation results (AUROC 0.965 against 0.968).
+Per condition, the full model has F1 0.975 for good, 0.710 for rust, 0.826 for corrosion, 0.762 for missing cap and 0.942 for bird nest; most errors are good images called rust (152), and the 5 test images of other defects are always missed. On the ElecVQA-Bench items it reaches 0.948, below the fine-tuned ResNet-50 (0.961) and SmolVLM with LoRA (0.956). Training takes 24 minutes on an RTX 2080 Ti.
 
 \subsection{Latency}\label{sec:latency}
 
 On the RTX 2080 Ti in fp32, one \texttt{predict} call with all four questions takes a median of 72.0\,ms per image (p95 98.5\,ms, 74.0\,ms after fine-tuning), including image loading; the condition question alone takes 71.4\,ms, so further questions are nearly free. With 3.45 key frames per 4\,s segment~\cite{evlm}, a segment needs 0.25\,s.
 
-We have no Jetson measurement. Scaling by a factor of 9, which we estimated between a GV100-class GPU and a Jetson Orin NX from their fp32 throughput and memory bandwidth, gives about 0.67\,s per image and 2.2\,s per 4\,s segment. On a Jetson Orin, \cite{p2s} measured 2.8\,s per image for SmolVLM-256M and EVLM reports 1.4--6.4\,s per segment~\cite{evlm}, so four answers would take about a quarter of the time of one caption. The comparison is approximate: the hardware differs, and the other systems generate text from video segments, while laya-vision returns labels for single crops.
+We have no Jetson measurement. A factor of 9, which we estimated between a GV100-class GPU and a Jetson Orin NX from fp32 throughput and memory bandwidth, gives about 0.67\,s per image, about a quarter of the 2.8\,s per caption of SmolVLM-256M on a Jetson Orin~\cite{p2s}. The comparison is approximate: the hardware differs, and the other systems generate text.
 
 \subsection{The decision model as a semantic trigger}\label{sec:trigger}
 
-The agenda of~\cite{p2s} proposes a detector as the inexpensive stage that decides which frames reach the VLM; unlike a detector, the decision model judges the condition and can serve as this trigger itself. We use the defect threshold tuned on the validation towers (0.057). On the test towers it passes 931 of 6,092 images (15.3\%) to a following stage and finds 532 of the 601 defects (recall 0.885), with a false-alarm rate of 0.073 among good images and a risk of 179 per 1,000 images, against 987 for always answering good. The cascade itself is not deployed.
+Unlike a detector, the decision model judges the condition and can itself decide which frames a drone escalates. We use the defect threshold tuned on the validation towers (0.057). On the test towers it passes 931 of 6,092 images (15.3\%) to a following stage and finds 532 of the 601 defects (recall 0.885), with a false-alarm rate of 0.073 among good images and a risk of 179 per 1,000 images, against 987 for always answering good. The cascade itself is not deployed.
 
 \subsection{Calibration and confidence}\label{sec:calib}
 
-After fine-tuning, the defect probability has an ECE of 0.058 (0.178 zero-shot) and an average precision of 0.862, so a mission planner can act on it. The \texttt{judgeable} question, which asks the model whether it can judge the image, is no confidence signal: its AUROC for a correct condition answer is 0.53 zero-shot and 0.31 after fine-tuning.
+After fine-tuning, the defect probability has an ECE of 0.058 (0.178 zero-shot) and an average precision of 0.862. The \texttt{judgeable} query is no confidence signal (AUROC for a correct condition answer 0.53 zero-shot, 0.31 fine-tuned).
 
 \subsection{Federated fine-tuning across drones}\label{sec:fl}
 
@@ -170,44 +177,52 @@ After fine-tuning, the defect probability has an ECE of 0.058 (0.178 zero-shot) 
 
 \begin{table*}[t]
 \centering
-\caption{All federated configurations, ordered from the lowest to the highest total uplink (test towers, one seed per run). Start: published checkpoint (base) or server model (tuned). MB: size of one drone update (fp16 unless int8; parameter counts in brackets). Total: update size $\times$ drones $\times$ rounds, calculated. The four reference rows at the top send no model updates; central training would instead upload all training images (about 0.18\,GB).}
+\caption{All federated configurations, ordered from the lowest to the highest total uplink (test towers, one seed per run). Start: published checkpoint (base) or server model (tuned). Update: size of one drone update in MB (fp16 unless int8; parameter counts in brackets). Uplink: update size $\times$ drones $\times$ rounds in MB, calculated. \textbf{Bold}: best value of a metric within its uplink tier. $^a$Upload of all 4,807 training images once, no model update.}
 \label{tab:uplink}
 \footnotesize
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{llcrcrccc}
 \toprule
-Configuration & Start & Trained part & MB & Drones$\times$rounds & Total GB & Macro F1 & Comp.\ acc. & AUROC \\
+Configuration & Start & Trained part & Update & Drones$\times$rounds & Uplink (MB) & Macro F1 & Comp.\ acc. & AUROC \\
 \midrule
-Central, all 18 towers & -- & -- & -- & 1$\times$1 & images & 0.703 & 0.924 & 0.965 \\
-Control, 1 drone & base & full & 229.5 & 1$\times$10 & 0 & 0.697 & 0.933 & 0.959 \\
+\multicolumn{9}{l}{\emph{References (no model updates or one drone)}}\\
+Central, all 18 towers & -- & -- & -- & 1$\times$1 & 180$^a$ & \textbf{0.703} & 0.924 & \textbf{0.965} \\
+Control, 1 drone & base & full & 229.5 & 1$\times$10 & 2,295 & 0.697 & \textbf{0.933} & 0.959 \\
 Server towers only & base & full & -- & -- & 0 & 0.558 & 0.894 & 0.903 \\
 Local only, 6 drones (mean) & base & full & -- & -- & 0 & 0.371 & 0.621 & 0.881 \\
 \midrule
-Head (8.5M) & base & head & 16.9 & 6$\times$10 & 1.0 & 0.243 & 0.293 & 0.792 \\
-Head + LoRA r8 (10.1M) & base & LoRA & 20.2 & 6$\times$10 & 1.2 & 0.247 & 0.307 & 0.828 \\
-Last 4 + head, int8 (22.6M) & base & last 4 & 22.6 & 6$\times$10 & 1.4 & 0.278 & 0.320 & 0.838 \\
-Few labels, 25/drone & base & last 4 & 45.2 & 5$\times$10 & 2.3 & 0.159 & 0.196 & 0.721 \\
-Few labels, 50/drone & base & last 4 & 45.2 & 5$\times$10 & 2.3 & 0.159 & 0.371 & 0.726 \\
-Few labels, 100/drone & base & last 4 & 45.2 & 5$\times$10 & 2.3 & 0.162 & 0.441 & 0.767 \\
-Few labels, 200/drone & base & last 4 & 45.2 & 5$\times$10 & 2.3 & 0.207 & 0.509 & 0.838 \\
-Few labels, 25/drone & tuned & last 4 & 45.2 & 5$\times$10 & 2.3 & 0.565 & 0.898 & 0.856 \\
-Few labels, 50/drone & tuned & last 4 & 45.2 & 5$\times$10 & 2.3 & 0.571 & 0.903 & 0.836 \\
-Few labels, 100/drone & tuned & last 4 & 45.2 & 5$\times$10 & 2.3 & 0.582 & 0.912 & 0.930 \\
-Few labels, 200/drone & tuned & last 4 & 45.2 & 5$\times$10 & 2.3 & 0.575 & 0.914 & 0.933 \\
-Last 4 + head, tower split & base & last 4 & 45.2 & 6$\times$10 & 2.7 & 0.281 & 0.321 & 0.838 \\
-\quad + FedProx 0.01 & base & last 4 & 45.2 & 6$\times$10 & 2.7 & 0.275 & 0.331 & 0.834 \\
-\quad random split & base & last 4 & 45.2 & 6$\times$10 & 2.7 & 0.254 & 0.334 & 0.856 \\
-\quad component split & base & last 4 & 45.2 & 6$\times$10 & 2.7 & 0.287 & 0.331 & 0.837 \\
-\quad component + FedProx & base & last 4 & 45.2 & 6$\times$10 & 2.7 & 0.285 & 0.339 & 0.837 \\
-\quad Dirichlet split & base & last 4 & 45.2 & 6$\times$10 & 2.7 & 0.291 & 0.477 & 0.833 \\
-Full model, 3 drones & base & full & 229.5 & 3$\times$10 & 6.9 & 0.624 & 0.874 & 0.955 \\
-Last 4 + head, 30 rounds & base & last 4 & 45.2 & 6$\times$30 & 8.1 & 0.488 & 0.634 & 0.945 \\
-All 20 language layers (79.3M) & base & layers & 158.5 & 6$\times$10 & 9.5 & 0.488 & 0.707 & 0.931 \\
-Full model, 5 fleet drones & base & full & 229.5 & 5$\times$10 & 11.5 & 0.513 & 0.593 & 0.932 \\
-Full model, 5 fleet drones & tuned & full & 229.5 & 5$\times$10 & 11.5 & 0.636 & 0.912 & 0.953 \\
-Full model (114.7M), 6 drones & base & full & 229.5 & 6$\times$10 & 13.8 & 0.541 & 0.761 & 0.939 \\
-\quad + FedProx 0.01 & base & full & 229.5 & 6$\times$10 & 13.8 & 0.526 & 0.756 & 0.940 \\
-Full model, 18 drones & base & full & 229.5 & 18$\times$10 & 41.3 & 0.474 & 0.700 & 0.933 \\
+\multicolumn{9}{l}{\emph{Lowest uplink: 1,014--1,356\,MB}}\\
+Head (8.5M) & base & head & 16.9 & 6$\times$10 & 1,014 & 0.243 & 0.293 & 0.792 \\
+Head + LoRA r8 (10.1M) & base & LoRA & 20.2 & 6$\times$10 & 1,212 & 0.247 & 0.307 & 0.828 \\
+Last 4 + head, int8 (22.6M) & base & last 4 & 22.6 & 6$\times$10 & 1,356 & \textbf{0.278} & \textbf{0.320} & \textbf{0.838} \\
+\midrule
+\multicolumn{9}{l}{\emph{Middle: 2,260--2,712\,MB}}\\
+Few labels, 25/drone & base & last 4 & 45.2 & 5$\times$10 & 2,260 & 0.159 & 0.196 & 0.721 \\
+Few labels, 50/drone & base & last 4 & 45.2 & 5$\times$10 & 2,260 & 0.159 & 0.371 & 0.726 \\
+Few labels, 100/drone & base & last 4 & 45.2 & 5$\times$10 & 2,260 & 0.162 & 0.441 & 0.767 \\
+Few labels, 200/drone & base & last 4 & 45.2 & 5$\times$10 & 2,260 & 0.207 & 0.509 & 0.838 \\
+Few labels, 25/drone & tuned & last 4 & 45.2 & 5$\times$10 & 2,260 & 0.565 & 0.898 & 0.856 \\
+Few labels, 50/drone & tuned & last 4 & 45.2 & 5$\times$10 & 2,260 & 0.571 & 0.903 & 0.836 \\
+Few labels, 100/drone & tuned & last 4 & 45.2 & 5$\times$10 & 2,260 & \textbf{0.582} & 0.912 & 0.930 \\
+Few labels, 200/drone & tuned & last 4 & 45.2 & 5$\times$10 & 2,260 & 0.575 & \textbf{0.914} & \textbf{0.933} \\
+Last 4 + head, tower split & base & last 4 & 45.2 & 6$\times$10 & 2,712 & 0.281 & 0.321 & 0.838 \\
+\quad + FedProx 0.01 & base & last 4 & 45.2 & 6$\times$10 & 2,712 & 0.275 & 0.331 & 0.834 \\
+\quad random split & base & last 4 & 45.2 & 6$\times$10 & 2,712 & 0.254 & 0.334 & 0.856 \\
+\quad component split & base & last 4 & 45.2 & 6$\times$10 & 2,712 & 0.287 & 0.331 & 0.837 \\
+\quad component + FedProx & base & last 4 & 45.2 & 6$\times$10 & 2,712 & 0.285 & 0.339 & 0.837 \\
+\quad Dirichlet split & base & last 4 & 45.2 & 6$\times$10 & 2,712 & 0.291 & 0.477 & 0.833 \\
+\midrule
+\multicolumn{9}{l}{\emph{High: 6,885--13,770\,MB}}\\
+Full model, 3 drones & base & full & 229.5 & 3$\times$10 & 6,885 & 0.624 & 0.874 & \textbf{0.955} \\
+Last 4 + head, 30 rounds & base & last 4 & 45.2 & 6$\times$30 & 8,136 & 0.488 & 0.634 & 0.945 \\
+All 20 language layers (79.3M) & base & layers & 158.5 & 6$\times$10 & 9,510 & 0.488 & 0.707 & 0.931 \\
+Full model, 5 fleet drones & base & full & 229.5 & 5$\times$10 & 11,475 & 0.513 & 0.593 & 0.932 \\
+Full model, 5 fleet drones & tuned & full & 229.5 & 5$\times$10 & 11,475 & \textbf{0.636} & \textbf{0.912} & 0.953 \\
+Full model (114.7M), 6 drones & base & full & 229.5 & 6$\times$10 & 13,770 & 0.541 & 0.761 & 0.939 \\
+\quad + FedProx 0.01 & base & full & 229.5 & 6$\times$10 & 13,770 & 0.526 & 0.756 & 0.940 \\
+\midrule
+\multicolumn{9}{l}{\emph{Highest: 41,310\,MB}}\\
+Full model, 18 drones & base & full & 229.5 & 18$\times$10 & 41,310 & 0.474 & 0.700 & 0.933 \\
 \bottomrule
 \end{tabular}
 \end{table*}
@@ -225,30 +240,25 @@ On the same five fleet drones, the full-model FedAvg reaches a macro F1 of 0.513
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\linewidth]{figs/fig2_roundb.pdf}
-\caption{\textbf{From the published checkpoint, small updates learn slowly under FedAvg.} Six tower drones, 10 rounds unless stated. (a) Validation accuracy on 600 images after each round. (b) Test-tower condition macro F1 against the total uplink of the run (update size $\times$ 6 drones $\times$ rounds, calculated); whiskers are 95\% bootstrap intervals; the dashed line is central training of the full model. One seed per run.}
+\caption{\textbf{From the published checkpoint, small updates learn slowly under FedAvg.} Six tower drones, 10 rounds unless stated. (a) Validation accuracy on 600 images after each round. (b) Test-tower condition macro F1 against the total uplink of the run in MB (update size $\times$ 6 drones $\times$ rounds, calculated); whiskers are 95\% bootstrap intervals; the dashed line is central training of the full model. One seed per run.}
 \label{fig:roundb}
 \end{figure*}
 
-Each drone sends exactly the part it trains. The decision head has 8.5M parameters (16.9\,MB in fp16), the head with LoRA 10.1M, the head with the last four language layers 22.6M, the head with all 20 language layers 79.3M and the full model 114.7M (229.5\,MB); the vision encoder (86.4M) is always frozen, and token embeddings make up a quarter of the full update.
+Each drone sends exactly the part it trains (sizes in Table~\ref{tab:uplink}); the vision encoder (86.4M parameters) is always frozen, and token embeddings make up a quarter of the full update.
 
 Figure~\ref{fig:roundb} shows the learning curves. Trained centrally, the same last-four update reaches 0.637 (Table~\ref{tab:finetune}), so the small update is not the problem in itself; under FedAvg its validation accuracy is still rising after 30 rounds (0.66 after 10, 0.81 after 30). Our reading, supported but not proven, is that averaging six small changes per round moves the shared model slowly, and an update with more parameters moves faster per step.
 
-
-Uploading all training images once would take only about 0.18\,GB, so federation keeps images on the drones rather than saving bandwidth.
+Uploading all 4,807 training images once would take only about 180\,MB, so in this fleet federation keeps images on the drones rather than saving bandwidth.
 
 \subsection{Uplink against accuracy}\label{sec:uplink}
 
-Table~\ref{tab:uplink} orders all 25 federated configurations, after four references without model updates, by the total uplink of a run, from 1.0\,GB to 41.3\,GB, and shows that the uplink alone does not predict accuracy.
+Table~\ref{tab:uplink} orders all 25 federated configurations by the total uplink of a run, from 1,014 to 41,310\,MB, and marks the best value of each metric within four uplink tiers. The uplink alone does not predict accuracy.
 
-\emph{Lowest uplink (1.0--1.4\,GB).} Head, LoRA and the int8 last-four update from the published checkpoint stay close to the zero-shot model (macro F1 0.243--0.278, AUROC 0.792--0.838). Within this group, more parameters help only slightly, and int8 matches the fp16 last-four update (0.278 against 0.281) at half its uplink.
-
-\emph{Middle (2.3--2.7\,GB).} The same last-four update is either useless or almost as good as the full model, depending on where it starts. From the published checkpoint it reaches a macro F1 of 0.25--0.29 whatever the split or the labels; from the server model, five fleet drones reach 0.565--0.582 with only 25--200 labels each, and with 100--200 labels a defect AUROC of 0.930--0.933. This is the best accuracy per gigabyte in the table: about 20\% of the uplink of the full-model fleet run (11.5\,GB) gives 92\% of its macro F1 (0.582 against 0.636).
-
-\emph{High (6.9--13.8\,GB).} The full model and the update with all language layers learn within ten rounds (macro F1 0.488--0.636). The best federated result, 0.636 with a component accuracy of 0.912 and an AUROC of 0.953, comes again from the server-model start; from the published checkpoint, the full model reaches at most 0.624 (three drones). The 30-round last-four run (8.1\,GB) matches the all-layers run (9.5\,GB) at 0.488.
-
-\emph{Highest (41.3\,GB).} Spreading the same data over 18 drones multiplies the uplink by three against six drones but lowers the macro F1 from 0.541 to 0.474. Uplink grows with the number of drones, accuracy does not.
-
-In short, for a given uplink the starting point matters more than the update size: a fine-tuned start with a 45\,MB update is the most efficient choice in our runs, and round~B suggests that int8 would halve it again without loss; larger updates and more drones buy little.
+\emph{Lowest (1,014--1,356\,MB).} Head, LoRA and the int8 last-four update from the published checkpoint stay close to the zero-shot model (macro F1 0.243--0.278); int8 is best in this tier and matches the fp16 last-four update (0.281) at half its uplink.
+\emph{Middle (2,260--2,712\,MB).} The same last-four update is useless from the published checkpoint (0.25--0.29 whatever the split or the labels) but almost as good as the full model from the server model: five fleet drones reach 0.565--0.582 with 25--200 labels each, and a defect AUROC of 0.930--0.933 with 100--200. This is the best accuracy per megabyte in the table: 2,260\,MB, 20\% of the uplink of the full-model fleet run (11,475\,MB), give 92\% of its macro F1.
+\emph{High (6,885--13,770\,MB).} The full model and all language layers learn within ten rounds (0.488--0.636); the best macro F1 and component accuracy (0.636, 0.912) again come from the server-model start.
+\emph{Highest (41,310\,MB).} 18 drones triple the uplink of six drones but lower the macro F1 from 0.541 to 0.474.
+For a given uplink, the starting point thus matters more than the update size; round~B suggests that int8 would halve the 45\,MB update again, which remains to be confirmed from the fine-tuned start.
 
 \subsection{Few labels per drone}\label{sec:labels}
 
@@ -263,34 +273,34 @@ A real fleet labels few images, mostly of good components: 25, 50, 100 and 200 l
 
 \begin{table}[t]
 \centering
-\caption{Defect detection with few labels (test towers). Risk, recall and false-alarm rate use the threshold tuned on the validation towers; risk counts 10 per missed defect and 1 per false alarm per 1,000 images; FAR is the false-alarm rate. Drones alone: mean of the five drone models. One seed per run.}
+\caption{Defect detection with few labels (test towers). Risk, recall and false-alarm rate use the threshold tuned on the validation towers; risk counts 10 per missed defect and 1 per false alarm per 1,000 images; FAR is the false-alarm rate. Uplink: total MB of the run; for pooling, the labelled images (about 37\,kB each, estimated from the mean file size). Drones alone: mean of the five drone models. \textbf{Bold}: best per column. One seed per run.}
 \label{tab:roundc}
 \footnotesize
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{lccccc}
+\begin{tabular}{lcrcccc}
 \toprule
-Model & Defects & AUROC & Risk & Recall & FAR \\
+Model & Defects & Uplink & AUROC & Risk & Recall & FAR \\
 \midrule
-Server model only & -- & 0.903 & 291 & 0.832 & 0.139 \\
+Server model only & -- & 0 & 0.903 & 291 & 0.832 & 0.139 \\
 \midrule
-FedAvg, tuned start & 18 & 0.856 & 295 & 0.740 & 0.043 \\
- & 37 & 0.836 & 331 & 0.684 & 0.021 \\
- & 69 & 0.930 & 332 & 0.900 & 0.259 \\
- & 149 & 0.933 & 280 & 0.854 & 0.150 \\
+FedAvg, tuned & 18 & 2,260 & 0.856 & 295 & 0.740 & 0.043 \\
+ & 37 & 2,260 & 0.836 & 331 & 0.684 & \textbf{0.021} \\
+ & 69 & 2,260 & 0.930 & 332 & \textbf{0.900} & 0.259 \\
+ & 149 & 2,260 & 0.933 & 280 & 0.854 & 0.150 \\
 \midrule
-FedAvg, base start & 18 & 0.721 & 687 & 0.809 & 0.553 \\
- & 149 & 0.838 & 464 & 0.844 & 0.344 \\
+FedAvg, base & 18 & 2,260 & 0.721 & 687 & 0.809 & 0.553 \\
+ & 149 & 2,260 & 0.838 & 464 & 0.844 & 0.344 \\
 \midrule
-Pooled centrally & 37 & 0.904 & 211 & 0.832 & 0.050 \\
- & 149 & 0.958 & 181 & 0.870 & 0.059 \\
+Pooled & 37 & $\approx$9 & 0.904 & 211 & 0.832 & 0.050 \\
+ & 149 & $\approx$37 & \textbf{0.958} & \textbf{181} & 0.870 & 0.059 \\
 \midrule
-Drones alone (mean) & 37 & 0.860 & 319 & 0.730 & 0.059 \\
- & 149 & 0.902 & 272 & 0.812 & 0.096 \\
+Drones alone & 37 & 0 & 0.860 & 319 & 0.730 & 0.059 \\
+ & 149 & 0 & 0.902 & 272 & 0.812 & 0.096 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Table~\ref{tab:roundc} explains the dip. With few defects, federated averaging makes the model conservative: with 18 labelled defects, the false-alarm rate falls from 0.139 to 0.043 but the defect recall falls from 0.832 to 0.740. The cause is the averaging, not the number of labels. Pooling the same 37 defects on one server keeps the AUROC at the level of the server model (0.904) and lowers the risk to 211, whereas FedAvg over drones that hold between 0 and 15 defects each lowers the AUROC to 0.836. With 149 defects, pooling is still better (AUROC 0.958 against 0.933), but FedAvg beats the average drone alone (0.902). In this fleet, federated training pays off only once each drone has labelled several defects, about 70 across the fleet.
+Table~\ref{tab:roundc} explains the dip. With few defects, federated averaging makes the model conservative: with 18 labelled defects, the false-alarm rate falls from 0.139 to 0.043 but the defect recall falls from 0.832 to 0.740. The cause is the averaging, not the number of labels. Pooling the same 37 defects on one server keeps the AUROC at the level of the server model (0.904) and lowers the risk to 211, whereas FedAvg over drones that hold between 0 and 15 defects each lowers the AUROC to 0.836. With 149 defects, pooling is still better (AUROC 0.958 against 0.933), but FedAvg beats the average drone alone (0.902). In this fleet, federated training pays off only once the drones have labelled several defects, about 70 across the fleet; where the labels may be pooled, pooling is better and needs far less uplink (about 37\,MB of images against 2,260\,MB of updates).
 
 \subsection{Drones with different image types}\label{sec:hetero}
 
@@ -301,46 +311,19 @@ Table~\ref{tab:roundc} explains the dip. With few defects, federated averaging m
 \label{fig:roundd}
 \end{figure}
 
-\begin{table}[t]
-\centering
-\caption{Drones with different image types: six drones, the 5,107 round-2 images, last-four update from the published checkpoint, 10 rounds. JS: range of the Jensen--Shannon divergence between the condition shares of a drone and of the fleet. Intervals: 95\% bootstrap. One seed per run.}
-\label{tab:roundd}
-\footnotesize
-\setlength{\tabcolsep}{2.5pt}
-\begin{tabular}{lcccc}
-\toprule
-Split & JS & Macro F1 & Comp. & AUROC \\
-\midrule
-Random & $\le$.002 & .254 (.243--.267) & .334 & .856 \\
-Tower & .009--.070 & .281 (.258--.304) & .321 & .838 \\
-Component & .128--.333 & .287 (.260--.318) & .331 & .837 \\
-\quad + FedProx & .128--.333 & .285 (.259--.317) & .339 & .837 \\
-Dirichlet 0.3 & .090--.665 & .291 (.264--.318) & .477 & .833 \\
-\quad drones alone & -- & .185 (mean) & .161 & .752 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Although the splits differ strongly in how unevenly the conditions are spread over the drones, they give the same macro F1 within their intervals (Table~\ref{tab:roundd}), and FedProx changes nothing. Figure~\ref{fig:roundd} shows why. Each drone that trains alone learns the defect type of its own components well (corrosion 0.86, bird nest 0.94, missing cap 0.79), but FedAvg with the last-four update loses all three types, and it loses them just as much under the random split, where every drone sees every type. The limiting factor is therefore the slow small update, not the differences between drones, and with this update the experiment cannot measure the effect of the split. Full-model FedAvg keeps most of them. A specialist drone, in turn, barely recognizes the other drones' components (accuracy 0.16).
+The Jensen--Shannon divergence between the condition shares of a drone and of the fleet ranges from at most 0.002 (random) over 0.009--0.070 (tower) and 0.128--0.333 (component) to 0.090--0.665 (Dirichlet). Although the splits differ this strongly, they give the same macro F1 within their 95\% intervals (0.254--0.291 at 2,712\,MB each, Table~\ref{tab:uplink}), and FedProx changes nothing. Figure~\ref{fig:roundd} shows why. Each drone that trains alone learns the defect type of its own components well (corrosion 0.86, bird nest 0.94, missing cap 0.79), but FedAvg with the last-four update loses all three types, and it loses them just as much under the random split, where every drone sees every type. The limiting factor is therefore the slow small update, not the differences between drones, and with this update the experiment cannot measure the effect of the split. Full-model FedAvg keeps most of them. A specialist drone, in turn, barely recognizes the other drones' components (accuracy 0.16).
 
 \section{Discussion}
 
-\paragraph{What the decision model adds} A large part of the inspection decision does not need a description. From one image encoding, the decision model answers component, defect and condition questions with accuracy close to a fine-tuned describing model, needs no synthetic captions and gives probabilities that can drive a trigger; the describing VLM remains useful for reports and for defects outside the option set.
+\paragraph{Perception for task planning} A large part of the inspection decision does not need a description. From one image encoding, the decision model answers component, defect and condition queries with accuracy close to a fine-tuned describing model, needs no synthetic captions and gives calibrated probabilities that a planner can threshold. At 74\,ms per image it leaves time on board for the planner itself: the defect probability can decide which frames are escalated (15.3\% at 88.5\% recall), and the component and condition answers can mark assets for a revisit. A describing VLM remains useful for reports and for defects outside the option set (Fig.~\ref{fig:samples}).
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=\linewidth]{figs/fig2_overview.pdf}
-\caption{\textbf{The cost of federating, across all 22 federated configurations.} Test condition macro F1 minus central training (0.703). Whiskers are each run's 95\% bootstrap interval shifted by the same amount, not an interval of the difference. Rounds C and D use the last-four update; round C starts from the server model. One seed per run.}
-\label{fig:overview}
-\end{figure}
+\paragraph{Distributed intelligence across the fleet} FedAvg across tower-wise drones beats training alone, and a server-fine-tuned start brings the fleet close to central training (Table~\ref{tab:uplink}). Its costs are accuracy as the data is split further and, for the full model, 6,885--41,310\,MB of uplink per run. For the fleet operator, our results suggest a training plan: fine-tune centrally on the data the operator may hold, let the fleet continue with a small update (45\,MB per drone and round, which int8 can likely halve), and start a federated round only when the fleet has labelled enough defects and the labels cannot be pooled. Which drones join a round, and with which update, is thus itself a planning decision that trades accuracy against uplink.
 
-\paragraph{What federation adds} FedAvg across tower-wise drones beats training alone, and a server-fine-tuned start brings the fleet close to central training (Fig.~\ref{fig:overview}). Its costs are accuracy as the data is split further and, for the full model, several gigabytes of uplink per run. The recipe that works throughout is to fine-tune centrally on the data the operator may hold and let the fleet continue with a small update, which int8 can likely halve; with few labels, federation pays only once the fleet has labelled enough defects and the labels cannot be pooled.
-
-\paragraph{Limitations} All configurations have one seed, the drones are simulated on one GPU (uplink is calculated), the Jetson latency is an estimate, and energy is not measured. The data cover one benchmark and one asset type. The update-size and image-type runs start from the published checkpoint, where small updates learn slowly; repeating them from the fine-tuned start, with more seeds and a Jetson measurement, is the next step.
+\paragraph{Limitations} All configurations have one seed, the drones are simulated on one GPU (the uplink is calculated), the Jetson latency is an estimate, and energy and the planner itself are not measured. The data cover one benchmark and one asset type. The update-size and image-type runs start from the published checkpoint, where small updates learn slowly; repeating them from the fine-tuned start with int8, with more seeds and a Jetson measurement, is the next step.
 
 \section{Conclusion}
 
-A 201M-parameter vision-language decision model fails zero-shot on power-line component images, but after fine-tuning on folder labels it reaches 0.948 item accuracy at 74\,ms per image for four questions, with calibrated defect probabilities that can act as a trigger. In federated training, the starting point matters more than the uplink: a server-fine-tuned start lets a 45\,MB update reach 92\% of the full-model fleet result at a fifth of its uplink (round~B suggests int8 would halve this again), whereas from the published checkpoint small updates barely learn. With few labels, the fleet helps only once it has labelled enough defects, and pooling the same labels remains better.
+A 201M-parameter vision-language decision model fails zero-shot on power-line component images, but after fine-tuning on folder labels it reaches 0.948 item accuracy at 74\,ms per image for four queries, with calibrated defect probabilities that can drive the escalation decisions of an inspection drone. Trained across a simulated fleet, the starting point matters more than the uplink: a server-fine-tuned start lets a 45\,MB update reach 92\% of the full-model fleet result with 2,260 instead of 11,475\,MB of uplink, whereas from the published checkpoint small updates barely learn. With few labels, the fleet helps only once it has labelled enough defects, and pooling the same labels remains better.
 
 \section*{Data and code availability}
 

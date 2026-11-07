@@ -1,0 +1,122 @@
+[
+ {
+  "image": "unsupervised_anomaly_detection/plate/test/good/Fotos 16-12-2020_DJI_0524_placa_104.jpg",
+  "component": "plate",
+  "asset": "plate",
+  "condition": "good, no defect",
+  "defect": false,
+  "answers": {
+   "component": [
+    "plate",
+    0.957
+   ],
+   "defect": 0.038,
+   "condition": [
+    "good, no defect",
+    0.976
+   ],
+   "judgeable": 0.377
+  },
+  "correct": true
+ },
+ {
+  "image": "supervised_fault_classification/defect_supervised/lightning-rod-suspension/train/rust/09-06-2021_DJI_0299_526_3.jpg",
+  "component": "lightning rod suspension",
+  "asset": "lightning-rod-suspension",
+  "condition": "rust",
+  "defect": true,
+  "answers": {
+   "component": [
+    "lightning rod suspension",
+    0.96
+   ],
+   "defect": 0.964,
+   "condition": [
+    "rust",
+    0.985
+   ],
+   "judgeable": 0.647
+  },
+  "correct": true
+ },
+ {
+  "image": "supervised_fault_classification/defect_supervised/polymer-insulator-upper-shackle/train/corrosão/01-06-2021_DJI_0512_149_6.jpg",
+  "component": "shackle",
+  "asset": "polymer-insulator-upper-shackle",
+  "condition": "corrosion",
+  "defect": true,
+  "answers": {
+   "component": [
+    "shackle",
+    0.949
+   ],
+   "defect": 0.963,
+   "condition": [
+    "corrosion",
+    0.977
+   ],
+   "judgeable": 0.875
+  },
+  "correct": true
+ },
+ {
+  "image": "supervised_fault_classification/defect_supervised/glass-insulator/train/missing-cap/Fotos 25-11-2020_DJI_0449_cadeia_isolador_vidro_1775_8.jpg",
+  "component": "glass insulator",
+  "asset": "glass-insulator",
+  "condition": "missing cap",
+  "defect": true,
+  "answers": {
+   "component": [
+    "glass insulator",
+    0.959
+   ],
+   "defect": 0.962,
+   "condition": [
+    "missing cap",
+    0.982
+   ],
+   "judgeable": 0.96
+  },
+  "correct": true
+ },
+ {
+  "image": "supervised_fault_classification/defect_supervised/vari-grip/train/bird-nest/Fotos 27-11-2020_DJI_0491_vari_grip_933_6.jpg",
+  "component": "vari-grip clamp",
+  "asset": "vari-grip",
+  "condition": "bird nest",
+  "defect": true,
+  "answers": {
+   "component": [
+    "vari-grip clamp",
+    0.949
+   ],
+   "defect": 0.965,
+   "condition": [
+    "bird nest",
+    0.984
+   ],
+   "judgeable": 0.937
+  },
+  "correct": true
+ },
+ {
+  "image": "unsupervised_anomaly_detection/plate/test/peeling-paint/Fotos 17-11-2020_DJI_0096_placa_117.jpg",
+  "component": "plate",
+  "asset": "plate",
+  "condition": "other defect (torn part or peeling paint)",
+  "defect": true,
+  "answers": {
+   "component": [
+    "lightning rod suspension",
+    0.95
+   ],
+   "defect": 0.045,
+   "condition": [
+    "good, no defect",
+    0.927
+   ],
+   "judgeable": 0.077
+  },
+  "correct": false
+ }
+]

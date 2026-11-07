@@ -2,6 +2,7 @@ import json
 import sys
 from pathlib import Path
 
+import matplotlib.pyplot as plt
 import numpy as np
 
 HERE = Path(__file__).resolve().parent
@@ -151,16 +152,16 @@ def fig_round_b_2col():
               ("full", "fl_fedavg_k6"), ("full, FedProx", "fl_b_full_prox")]
     for name, run in points:
         v, lo, hi = metric(run, "condition", "macro_f1", "condition_macro_f1")
-        x = uplink_gb(run)
+        x = 1000 * uplink_gb(run)
         axes[1].errorbar([x], [v], yerr=[[v - lo], [hi - v]], marker="o", color=PALETTE["blue"], capsize=1.2, lw=0.8, markersize=3)
         dx, dy = {"head": (-4, 2), "LoRA": (3, 6), "last 4": (3, 8), "last 4, FedProx": (3, -10), "full": (3, 7),
                   "full, FedProx": (3, -10), "last 4, 30 rounds": (3, 6), "all layers": (3, -10), "last 4, int8": (3, 9)}[name]
         axes[1].annotate(name, (x, v), xytext=(dx, dy), textcoords="offset points", fontsize=5.5, ha="right" if name == "head" else "left")
     axes[1].axhline(summary("good300_full")["test"]["condition"]["macro_f1"], color=BASELINE, ls="--", lw=0.8)
-    axes[1].text(1.05, 0.71, "central", fontsize=5.5, color=BASELINE)
+    axes[1].text(1050, 0.71, "central", fontsize=5.5, color=BASELINE)
     axes[1].set_xscale("log")
-    axes[1].set_xlim(0.7, 20)
-    axes[1].set_xlabel("Total uplink of the run (GB, fp16 or int8)")
+    axes[1].set_xlim(700, 20000)
+    axes[1].set_xlabel("Total uplink of the run (MB, fp16 or int8)")
     axes[1].set_ylabel("Condition macro F1")
     axes[1].set_ylim(0.2, 0.76)
     panel_labels(axes)
@@ -244,7 +245,7 @@ def fig_round_d_2col():
         t = summary(run)["test"]
         values.append([t["condition"]["per_class"][c]["recall"] for c in conditions] + [t["component"]["accuracy"]])
     values = np.array(values)
-    fig, ax = figure(width=COL2, ratio=1.05)
+    fig, ax = figure(width=COL2, ratio=0.8)
     image = ax.imshow(values, cmap="viridis", vmin=0, vmax=1, aspect="auto")
     for i in range(values.shape[0]):
         for j in range(values.shape[1]):
@@ -290,6 +291,35 @@ def fig_round_c_defects_2col():
     save(fig, str(HERE / "fig2_roundc"))
 
 
+def fig_samples_2col():
+    import json
+    samples = json.loads((HERE / "samples.json").read_text())
+    short = {"good, no defect": "good", "other defect (torn part or peeling paint)": "other defect",
+             "lightning rod suspension": "lightning rod susp.", "glass insulator": "glass insulator", "vari-grip clamp": "vari-grip clamp"}
+    fig, axes = plt.subplots(1, len(samples), figsize=(WIDE2, WIDE2 * 0.27), layout="constrained")
+    for i, (ax, s) in enumerate(zip(axes, samples)):
+        path = HERE / "samples" / f"sample{i}.jpg"
+        if path.exists():
+            ax.imshow(plt.imread(path))
+        else:
+            ax.imshow(np.full((10, 10, 3), 0.85))
+            ax.text(5, 5, "image\n(exported on server)", ha="center", va="center", fontsize=5)
+        ax.set_xticks([])
+        ax.set_yticks([])
+        a = s["answers"]
+        truth = f"Truth: {short.get(s['condition'], s['condition'])}\n{short.get(s['component'], s['component'])}"
+        answer = (f"component: {short.get(a['component'][0], a['component'][0])}\n  p = {a['component'][1]:.2f}\n"
+                  f"defect: P(yes) = {a['defect']:.2f}\n"
+                  f"condition: {short.get(a['condition'][0], a['condition'][0])}\n  p = {a['condition'][1]:.2f}")
+        ax.set_title(truth, fontsize=5.5, loc="left", color="black" if s["correct"] else PALETTE["red"])
+        ax.set_xlabel(answer, fontsize=5, loc="left", multialignment="left", color="black" if s["correct"] else PALETTE["red"])
+        for spine in ax.spines.values():
+            spine.set_visible(True)
+            spine.set_color(MUTED if s["correct"] else PALETTE["red"])
+    fig.get_layout_engine().set(w_pad=0.08)
+    save(fig, str(HERE / "fig2_samples"))
+
+
 if __name__ == "__main__":
     use_style()
     fig_finetune()
@@ -302,3 +332,4 @@ if __name__ == "__main__":
     fig_round_c_defects_2col()
     fig_overview_2col()
     fig_round_d_2col()
+    fig_samples_2col()

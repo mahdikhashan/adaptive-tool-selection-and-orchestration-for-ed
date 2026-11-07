@@ -237,16 +237,9 @@ On the same five fleet drones, the full-model FedAvg reaches a macro F1 of 0.513
 
 \subsection{What each drone sends}\label{sec:comm}
 
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\linewidth]{figs/fig2_roundb.pdf}
-\caption{\textbf{From the published checkpoint, small updates learn slowly under FedAvg.} Six tower drones, 10 rounds unless stated. (a) Validation accuracy on 600 images after each round. (b) Test-tower condition macro F1 against the total uplink of the run in MB (update size $\times$ 6 drones $\times$ rounds, calculated); whiskers are 95\% bootstrap intervals; the dashed line is central training of the full model. One seed per run.}
-\label{fig:roundb}
-\end{figure*}
-
 Each drone sends exactly the part it trains (sizes in Table~\ref{tab:uplink}); the vision encoder (86.4M parameters) is always frozen, and token embeddings make up a quarter of the full update.
 
-Figure~\ref{fig:roundb} shows the learning curves. Trained centrally, the same last-four update reaches 0.637 (Table~\ref{tab:finetune}), so the small update is not the problem in itself; under FedAvg its validation accuracy is still rising after 30 rounds (0.66 after 10, 0.81 after 30). Our reading, supported but not proven, is that averaging six small changes per round moves the shared model slowly, and an update with more parameters moves faster per step.
+Trained centrally, the same last-four update reaches 0.637 (Table~\ref{tab:finetune}), so the small update is not the problem in itself; under FedAvg its validation accuracy is still rising after 30 rounds (0.66 after 10, 0.81 after 30). Our reading, supported but not proven, is that averaging six small changes per round moves the shared model slowly, and an update with more parameters moves faster per step.
 
 Uploading all 4,807 training images once would take only about 180\,MB, so in this fleet federation keeps images on the drones rather than saving bandwidth.
 

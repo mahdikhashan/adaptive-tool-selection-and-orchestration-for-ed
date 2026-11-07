@@ -1,0 +1,34 @@
+fl_e2_balance_n200: fedavg, 5 drones, towers fleet, start fl_server_central, train images [188, 188, 188, 188, 188]
+[transformers] Model config: pad_token_id must be `None` or an integer within the vocabulary (between 0 and 31999), got 128002. This may result in unexpected behavior.
+fl_e2_balance_n200: share last_n, 22623619 parameters, update 22.6 MB for each drone and round
+{"round": -1, "acc": 0.8817, "nll": 0.4852}
+{"round": 0, "loss": 1.8701, "acc": 0.8672, "nll": 0.5008}
+{"round": 1, "loss": 1.4573, "acc": 0.86, "nll": 0.516}
+{"round": 2, "loss": 1.0969, "acc": 0.8578, "nll": 0.4891}
+{"round": 3, "loss": 1.0763, "acc": 0.8528, "nll": 0.5111}
+{"round": 4, "loss": 0.9032, "acc": 0.8667, "nll": 0.4762}
+{"round": 5, "loss": 0.8071, "acc": 0.8667, "nll": 0.4671}
+{"round": 6, "loss": 0.8957, "acc": 0.8694, "nll": 0.4488}
+{"round": 7, "loss": 0.7956, "acc": 0.8633, "nll": 0.4743}
+{"round": 8, "loss": 0.6342, "acc": 0.8672, "nll": 0.4734}
+{"round": 9, "loss": 0.7583, "acc": 0.8678, "nll": 0.4697}
+/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/laya/vlm_train.py:758: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  temps.append(float(torch.clamp(log_t.exp(), 0.1, 10.0)))
+7592 images, 0 done, 7592 to do
+500/7592 images, 71.9 ms each
+1000/7592 images, 71.2 ms each
+1500/7592 images, 71.4 ms each
+2000/7592 images, 70.7 ms each
+2500/7592 images, 70.5 ms each
+3000/7592 images, 71.0 ms each
+3500/7592 images, 70.8 ms each
+4000/7592 images, 70.8 ms each
+4500/7592 images, 71.0 ms each
+5000/7592 images, 71.5 ms each
+5500/7592 images, 72.2 ms each
+6000/7592 images, 72.7 ms each
+6500/7592 images, 73.1 ms each
+7000/7592 images, 73.2 ms each
+7500/7592 images, 72.9 ms each
+fl_e2_balance_n200: done, wrote /system/user/studentwork/khashan/fedorch/results/vision/fl_e2_balance_n200

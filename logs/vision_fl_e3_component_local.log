@@ -1,0 +1,108 @@
+fl_e3_component_local: local, 6 drones, towers fleet, start fl_server_central, train images [498, 447, 439, 301, 303, 412]
+[transformers] Model config: pad_token_id must be `None` or an integer within the vocabulary (between 0 and 31999), got 128002. This may result in unexpected behavior.
+fl_e3_component_local: share last_n, 22623619 parameters, update 22.6 MB for each drone and round
+/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/laya/vlm_train.py:758: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  temps.append(float(torch.clamp(log_t.exp(), 0.1, 10.0)))
+7592 images, 0 done, 7592 to do
+500/7592 images, 108.3 ms each
+1000/7592 images, 108.4 ms each
+1500/7592 images, 108.5 ms each
+2000/7592 images, 106.5 ms each
+2500/7592 images, 105.6 ms each
+3000/7592 images, 105.0 ms each
+3500/7592 images, 104.4 ms each
+4000/7592 images, 104.2 ms each
+4500/7592 images, 103.9 ms each
+5000/7592 images, 103.6 ms each
+5500/7592 images, 103.5 ms each
+6000/7592 images, 103.3 ms each
+6500/7592 images, 103.2 ms each
+7000/7592 images, 103.1 ms each
+7500/7592 images, 103.0 ms each
+fl_e3_component_local_d0: done, wrote /system/user/studentwork/khashan/fedorch/results/vision/fl_e3_component_local_d0
+7592 images, 0 done, 7592 to do
+500/7592 images, 102.2 ms each
+1000/7592 images, 102.1 ms each
+1500/7592 images, 102.0 ms each
+2000/7592 images, 101.9 ms each
+2500/7592 images, 101.9 ms each
+3000/7592 images, 101.7 ms each
+3500/7592 images, 101.8 ms each
+4000/7592 images, 101.8 ms each
+4500/7592 images, 101.8 ms each
+5000/7592 images, 101.7 ms each
+5500/7592 images, 101.6 ms each
+6000/7592 images, 101.6 ms each
+6500/7592 images, 101.6 ms each
+7000/7592 images, 101.6 ms each
+7500/7592 images, 101.5 ms each
+fl_e3_component_local_d1: done, wrote /system/user/studentwork/khashan/fedorch/results/vision/fl_e3_component_local_d1
+7592 images, 0 done, 7592 to do
+500/7592 images, 101.9 ms each
+1000/7592 images, 101.8 ms each
+1500/7592 images, 101.8 ms each
+2000/7592 images, 101.6 ms each
+2500/7592 images, 101.6 ms each
+3000/7592 images, 101.5 ms each
+3500/7592 images, 101.5 ms each
+4000/7592 images, 101.5 ms each
+4500/7592 images, 101.5 ms each
+5000/7592 images, 101.6 ms each
+5500/7592 images, 101.5 ms each
+6000/7592 images, 101.5 ms each
+6500/7592 images, 101.5 ms each
+7000/7592 images, 101.5 ms each
+7500/7592 images, 101.5 ms each
+fl_e3_component_local_d2: done, wrote /system/user/studentwork/khashan/fedorch/results/vision/fl_e3_component_local_d2
+7592 images, 0 done, 7592 to do
+500/7592 images, 101.5 ms each
+1000/7592 images, 102.1 ms each
+1500/7592 images, 102.4 ms each
+2000/7592 images, 102.2 ms each
+2500/7592 images, 102.1 ms each
+3000/7592 images, 101.9 ms each
+3500/7592 images, 101.8 ms each
+4000/7592 images, 102.1 ms each
+4500/7592 images, 101.9 ms each
+5000/7592 images, 101.8 ms each
+5500/7592 images, 101.8 ms each
+6000/7592 images, 102.1 ms each
+6500/7592 images, 102.5 ms each
+7000/7592 images, 102.7 ms each
+7500/7592 images, 102.8 ms each
+fl_e3_component_local_d3: done, wrote /system/user/studentwork/khashan/fedorch/results/vision/fl_e3_component_local_d3
+7592 images, 0 done, 7592 to do
+500/7592 images, 102.8 ms each
+1000/7592 images, 103.0 ms each
+1500/7592 images, 104.5 ms each
+2000/7592 images, 103.5 ms each
+2500/7592 images, 103.1 ms each
+3000/7592 images, 102.9 ms each
+3500/7592 images, 102.9 ms each
+4000/7592 images, 102.7 ms each
+4500/7592 images, 102.7 ms each
+5000/7592 images, 102.5 ms each
+5500/7592 images, 102.5 ms each
+6000/7592 images, 102.4 ms each
+6500/7592 images, 102.4 ms each
+7000/7592 images, 102.3 ms each
+7500/7592 images, 102.3 ms each
+fl_e3_component_local_d4: done, wrote /system/user/studentwork/khashan/fedorch/results/vision/fl_e3_component_local_d4
+7592 images, 0 done, 7592 to do
+500/7592 images, 109.1 ms each
+1000/7592 images, 108.5 ms each
+1500/7592 images, 108.2 ms each
+2000/7592 images, 107.7 ms each
+2500/7592 images, 107.5 ms each
+3000/7592 images, 107.3 ms each
+3500/7592 images, 107.2 ms each
+4000/7592 images, 107.2 ms each
+4500/7592 images, 107.1 ms each
+5000/7592 images, 106.9 ms each
+5500/7592 images, 106.9 ms each
+6000/7592 images, 106.9 ms each
+6500/7592 images, 106.5 ms each
+7000/7592 images, 106.1 ms each
+7500/7592 images, 105.7 ms each
+fl_e3_component_local_d5: done, wrote /system/user/studentwork/khashan/fedorch/results/vision/fl_e3_component_local_d5

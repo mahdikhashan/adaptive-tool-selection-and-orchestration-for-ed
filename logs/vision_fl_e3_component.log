@@ -1,0 +1,12 @@
+fl_e3_component: fedavg, 6 drones, towers fleet, start fl_server_central, train images [498, 447, 439, 301, 303, 412]
+[transformers] Model config: pad_token_id must be `None` or an integer within the vocabulary (between 0 and 31999), got 128002. This may result in unexpected behavior.
+fl_e3_component: share last_n, 22623619 parameters, update 22.6 MB for each drone and round
+{"round": -1, "acc": 0.9033, "nll": 0.39}
+{"round": 0, "loss": 1.6026, "acc": 0.9006, "nll": 0.4076}
+{"round": 1, "loss": 1.5053, "acc": 0.8911, "nll": 0.4188}
+{"round": 2, "loss": 1.1799, "acc": 0.8911, "nll": 0.4244}
+{"round": 3, "loss": 1.1689, "acc": 0.8867, "nll": 0.4346}
+{"round": 4, "loss": 1.1614, "acc": 0.8861, "nll": 0.4346}
+{"round": 5, "loss": 1.1587, "acc": 0.8883, "nll": 0.4335}
+{"round": 6, "loss": 1.3205, "acc": 0.8867, "nll": 0.4276}
+{"round": 7, "loss": 1.2891, "acc": 0.8878, "nll": 0.4307}

@@ -1,0 +1,34 @@
+fl_e1_last4: fedavg, 5 drones, towers fleet, start fl_server_central, train images [1042, 613, 313, 227, 206]
+[transformers] Model config: pad_token_id must be `None` or an integer within the vocabulary (between 0 and 31999), got 128002. This may result in unexpected behavior.
+fl_e1_last4: share last_n, 22623619 parameters, update 22.6 MB for each drone and round
+{"round": -1, "acc": 0.9039, "nll": 0.3911}
+{"round": 0, "loss": 2.0516, "acc": 0.8944, "nll": 0.4246}
+{"round": 1, "loss": 1.4091, "acc": 0.8839, "nll": 0.4443}
+{"round": 2, "loss": 1.16, "acc": 0.8906, "nll": 0.5509}
+{"round": 3, "loss": 0.7781, "acc": 0.875, "nll": 0.7395}
+{"round": 4, "loss": 0.5584, "acc": 0.8844, "nll": 0.6013}
+{"round": 5, "loss": 0.5403, "acc": 0.8917, "nll": 0.577}
+{"round": 6, "loss": 0.6417, "acc": 0.8889, "nll": 0.5814}
+{"round": 7, "loss": 0.49, "acc": 0.8844, "nll": 0.7098}
+{"round": 8, "loss": 0.4151, "acc": 0.8833, "nll": 0.683}
+{"round": 9, "loss": 0.4329, "acc": 0.8822, "nll": 0.687}
+/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/laya/vlm_train.py:758: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  temps.append(float(torch.clamp(log_t.exp(), 0.1, 10.0)))
+7592 images, 0 done, 7592 to do
+500/7592 images, 72.6 ms each
+1000/7592 images, 73.2 ms each
+1500/7592 images, 74.7 ms each
+2000/7592 images, 74.9 ms each
+2500/7592 images, 75.0 ms each
+3000/7592 images, 74.2 ms each
+3500/7592 images, 73.9 ms each
+4000/7592 images, 73.6 ms each
+4500/7592 images, 73.5 ms each
+5000/7592 images, 73.2 ms each
+5500/7592 images, 73.1 ms each
+6000/7592 images, 73.1 ms each
+6500/7592 images, 73.0 ms each
+7000/7592 images, 72.9 ms each
+7500/7592 images, 72.7 ms each
+fl_e1_last4: done, wrote /system/user/studentwork/khashan/fedorch/results/vision/fl_e1_last4

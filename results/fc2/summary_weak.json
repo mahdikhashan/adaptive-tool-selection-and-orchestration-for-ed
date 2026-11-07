@@ -1,0 +1,1249 @@
+{
+  "fed_cloud_oracle_a0.0": {
+    "risk_per_1000": {
+      "mean": 180.138,
+      "std": 1.854
+    },
+    "defect_recall": {
+      "mean": 0.897,
+      "std": 0.008
+    },
+    "false_alarm_rate": {
+      "mean": 0.048,
+      "std": 0.013
+    },
+    "escalation_rate": {
+      "mean": 0.024,
+      "std": 0.015
+    },
+    "uplink_mb_per_1000": {
+      "mean": 0.868,
+      "std": 0.61
+    },
+    "truth_labels": {
+      "mean": 1791,
+      "std": 162.043
+    },
+    "cloud_labels": {
+      "mean": 1756.667,
+      "std": 140.258
+    },
+    "audit_uploads": {
+      "mean": 0,
+      "std": 0.0
+    },
+    "cloud_uploads": {
+      "mean": 3603,
+      "std": 316.077
+    },
+    "upload_mb": {
+      "mean": 145.501,
+      "std": 16.709
+    },
+    "seeds": 3
+  },
+  "fed_cloud_oracle_a0.01": {
+    "risk_per_1000": {
+      "mean": 188.394,
+      "std": 12.294
+    },
+    "defect_recall": {
+      "mean": 0.899,
+      "std": 0.003
+    },
+    "false_alarm_rate": {
+      "mean": 0.06,
+      "std": 0.008
+    },
+    "escalation_rate": {
+      "mean": 0.05,
+      "std": 0.018
+    },
+    "uplink_mb_per_1000": {
+      "mean": 1.776,
+      "std": 0.609
+    },
+    "truth_labels": {
+      "mean": 1856.333,
+      "std": 176.517
+    },
+    "cloud_labels": {
+      "mean": 1566.333,
+      "std": 162.325
+    },
+    "audit_uploads": {
+      "mean": 234,
+      "std": 12.028
+    },
+    "cloud_uploads": {
+      "mean": 3236,
+      "std": 343.794
+    },
+    "upload_mb": {
+      "mean": 138.312,
+      "std": 19.447
+    },
+    "seeds": 3
+  },
+  "fed_cloud_oracle_a0.02": {
+    "risk_per_1000": {
+      "mean": 181.938,
+      "std": 6.438
+    },
+    "defect_recall": {
+      "mean": 0.9,
+      "std": 0.001
+    },
+    "false_alarm_rate": {
+      "mean": 0.053,
+      "std": 0.006
+    },
+    "escalation_rate": {
+      "mean": 0.041,
+      "std": 0.017
+    },
+    "uplink_mb_per_1000": {
+      "mean": 1.464,
+      "std": 0.582
+    },
+    "truth_labels": {
+      "mean": 1920,
+      "std": 164.902
+    },
+    "cloud_labels": {
+      "mean": 1424.667,
+      "std": 161.661
+    },
+    "audit_uploads": {
+      "mean": 478.667,
+      "std": 8.055
+    },
+    "cloud_uploads": {
+      "mean": 2918.333,
+      "std": 328.863
+    },
+    "upload_mb": {
+      "mean": 129.064,
+      "std": 19.012
+    },
+    "seeds": 3
+  },
+  "fed_cloud_oracle_a0.05": {
+    "risk_per_1000": {
+      "mean": 175.67,
+      "std": 2.063
+    },
+    "defect_recall": {
+      "mean": 0.901,
+      "std": 0.005
+    },
+    "false_alarm_rate": {
+      "mean": 0.053,
+      "std": 0.012
+    },
+    "escalation_rate": {
+      "mean": 0.047,
+      "std": 0.029
+    },
+    "uplink_mb_per_1000": {
+      "mean": 1.408,
+      "std": 0.856
+    },
+    "truth_labels": {
+      "mean": 2443.333,
+      "std": 169.749
+    },
+    "cloud_labels": {
+      "mean": 1229,
+      "std": 175.922
+    },
+    "audit_uploads": {
+      "mean": 1185.333,
+      "std": 20.039
+    },
+    "cloud_uploads": {
+      "mean": 2542.667,
+      "std": 362.782
+    },
+    "upload_mb": {
+      "mean": 140.962,
+      "std": 21.407
+    },
+    "seeds": 3
+  },
+  "fed_full_a0.0": {
+    "risk_per_1000": {
+      "mean": 119.725,
+      "std": 4.783
+    },
+    "defect_recall": {
+      "mean": 0.92,
+      "std": 0.002
+    },
+    "false_alarm_rate": {
+      "mean": 0.018,
+      "std": 0.002
+    },
+    "escalation_rate": {
+      "mean": 0.063,
+      "std": 0.008
+    },
+    "uplink_mb_per_1000": {
+      "mean": 0.373,
+      "std": 0.038
+    },
+    "truth_labels": {
+      "mean": 25499,
+      "std": 0.0
+    },
+    "cloud_labels": {
+      "mean": 0,
+      "std": 0.0
+    },
+    "audit_uploads": {
+      "mean": 0,
+      "std": 0.0
+    },
+    "cloud_uploads": {
+      "mean": 778.667,
+      "std": 53.275
+    },
+    "upload_mb": {
+      "mean": 24.74,
+      "std": 2.043
+    },
+    "seeds": 3
+  },
+  "fed_full_a0.01": {
+    "risk_per_1000": {
+      "mean": 119.725,
+      "std": 4.783
+    },
+    "defect_recall": {
+      "mean": 0.92,
+      "std": 0.002
+    },
+    "false_alarm_rate": {
+      "mean": 0.018,
+      "std": 0.002
+    },
+    "escalation_rate": {
+      "mean": 0.063,
+      "std": 0.008
+    },
+    "uplink_mb_per_1000": {
+      "mean": 0.373,
+      "std": 0.038
+    },
+    "truth_labels": {
+      "mean": 25499,
+      "std": 0.0
+    },
+    "cloud_labels": {
+      "mean": 0,
+      "std": 0.0
+    },
+    "audit_uploads": {
+      "mean": 262.333,
+      "std": 13.816
+    },
+    "cloud_uploads": {
+      "mean": 778.667,
+      "std": 53.275
+    },
+    "upload_mb": {
+      "mean": 33.304,
+      "std": 2.342
+    },
+    "seeds": 3
+  },
+  "fed_full_a0.02": {
+    "risk_per_1000": {
+      "mean": 119.725,
+      "std": 4.783
+    },
+    "defect_recall": {
+      "mean": 0.92,
+      "std": 0.002
+    },
+    "false_alarm_rate": {
+      "mean": 0.018,
+      "std": 0.002
+    },
+    "escalation_rate": {
+      "mean": 0.063,
+      "std": 0.008
+    },
+    "uplink_mb_per_1000": {
+      "mean": 0.373,
+      "std": 0.038
+    },
+    "truth_labels": {
+      "mean": 25499,
+      "std": 0.0
+    },
+    "cloud_labels": {
+      "mean": 0,
+      "std": 0.0
+    },
+    "audit_uploads": {
+      "mean": 518.333,
+      "std": 18.264
+    },
+    "cloud_uploads": {
+      "mean": 778.667,
+      "std": 53.275
+    },
+    "upload_mb": {
+      "mean": 41.815,
+      "std": 3.023
+    },
+    "seeds": 3
+  },
+  "fed_full_a0.05": {
+    "risk_per_1000": {
+      "mean": 119.725,
+      "std": 4.783
+    },
+    "defect_recall": {
+      "mean": 0.92,
+      "std": 0.002
+    },
+    "false_alarm_rate": {
+      "mean": 0.018,
+      "std": 0.002
+    },
+    "escalation_rate": {
+      "mean": 0.063,
+      "std": 0.008
+    },
+    "uplink_mb_per_1000": {
+      "mean": 0.373,
+      "std": 0.038
+    },
+    "truth_labels": {
+      "mean": 25499,
+      "std": 0.0
+    },
+    "cloud_labels": {
+      "mean": 0,
+      "std": 0.0
+    },
+    "audit_uploads": {
+      "mean": 1280.667,
+      "std": 19.602
+    },
+    "cloud_uploads": {
+      "mean": 778.667,
+      "std": 53.275
+    },
+    "upload_mb": {
+      "mean": 66.783,
+      "std": 3.087
+    },
+    "seeds": 3
+  },
+  "fed_multifid_a0.0": {
+    "risk_per_1000": {
+      "mean": 160.743,
+      "std": 9.422
+    },
+    "defect_recall": {
+      "mean": 0.896,
+      "std": 0.009
+    },
+    "false_alarm_rate": {
+      "mean": 0.024,
+      "std": 0.005
+    },
+    "escalation_rate": {
+      "mean": 0.038,
+      "std": 0.018
+    },
+    "uplink_mb_per_1000": {
+      "mean": 0.164,
+      "std": 0.102
+    },
+    "truth_labels": {
+      "mean": 699.667,
+      "std": 124.433
+    },
+    "cloud_labels": {
+      "mean": 659,
+      "std": 132.23
+    },
+    "audit_uploads": {
+      "mean": 0,
+      "std": 0.0
+    },
+    "cloud_uploads": {
+      "mean": 1386,
+      "std": 273.785
+    },
+    "upload_mb": {
+      "mean": 57.863,
+      "std": 10.207
+    },
+    "seeds": 3
+  },
+  "fed_multifid_a0.01": {
+    "risk_per_1000": {
+      "mean": 157.442,
+      "std": 7.61
+    },
+    "defect_recall": {
+      "mean": 0.897,
+      "std": 0.01
+    },
+    "false_alarm_rate": {
+      "mean": 0.021,
+      "std": 0.006
+    },
+    "escalation_rate": {
+      "mean": 0.059,
+      "std": 0.031
+    },
+    "uplink_mb_per_1000": {
+      "mean": 0.326,
+      "std": 0.17
+    },
+    "truth_labels": {
+      "mean": 872.333,
+      "std": 141.262
+    },
+    "cloud_labels": {
+      "mean": 559.667,
+      "std": 132.117
+    },
+    "audit_uploads": {
+      "mean": 253.333,
+      "std": 15.151
+    },
+    "cloud_uploads": {
+      "mean": 1221.333,
+      "std": 279.65
+    },
+    "upload_mb": {
+      "mean": 55.484,
+      "std": 11.933
+    },
+    "seeds": 3
+  },
+  "fed_multifid_a0.02": {
+    "risk_per_1000": {
+      "mean": 156.847,
+      "std": 5.29
+    },
+    "defect_recall": {
+      "mean": 0.897,
+      "std": 0.003
+    },
+    "false_alarm_rate": {
+      "mean": 0.022,
+      "std": 0.003
+    },
+    "escalation_rate": {
+      "mean": 0.069,
+      "std": 0.026
+    },
+    "uplink_mb_per_1000": {
+      "mean": 0.588,
+      "std": 0.453
+    },
+    "truth_labels": {
+      "mean": 1052.333,
+      "std": 73.491
+    },
+    "cloud_labels": {
+      "mean": 484,
+      "std": 61.303
+    },
+    "audit_uploads": {
+      "mean": 512.667,
+      "std": 18.838
+    },
+    "cloud_uploads": {
+      "mean": 1051,
+      "std": 148.609
+    },
+    "upload_mb": {
+      "mean": 58.358,
+      "std": 4.776
+    },
+    "seeds": 3
+  },
+  "fed_multifid_a0.05": {
+    "risk_per_1000": {
+      "mean": 159.544,
+      "std": 4.299
+    },
+    "defect_recall": {
+      "mean": 0.898,
+      "std": 0.003
+    },
+    "false_alarm_rate": {
+      "mean": 0.026,
+      "std": 0.004
+    },
+    "escalation_rate": {
+      "mean": 0.048,
+      "std": 0.018
+    },
+    "uplink_mb_per_1000": {
+      "mean": 0.367,
+      "std": 0.21
+    },
+    "truth_labels": {
+      "mean": 1843.667,
+      "std": 123.99
+    },
+    "cloud_labels": {
+      "mean": 545.667,
+      "std": 139.222
+    },
+    "audit_uploads": {
+      "mean": 1259.667,
+      "std": 29.101
+    },
+    "cloud_uploads": {
+      "mean": 1153.667,
+      "std": 291.925
+    },
+    "upload_mb": {
+      "mean": 88.576,
+      "std": 11.209
+    },
+    "seeds": 3
+  },
+  "fed_truth_ipw_a0.0": {
+    "risk_per_1000": {
+      "mean": 162.831,
+      "std": 8.506
+    },
+    "defect_recall": {
+      "mean": 0.892,
+      "std": 0.01
+    },
+    "false_alarm_rate": {
+      "mean": 0.02,
+      "std": 0.005
+    },
+    "escalation_rate": {
+      "mean": 0.064,
+      "std": 0.032
+    },
+    "uplink_mb_per_1000": {
+      "mean": 0.22,
+      "std": 0.241
+    },
+    "truth_labels": {
+      "mean": 372,
+      "std": 68.181
+    },
+    "cloud_labels": {
+      "mean": 0,
+      "std": 0.0
+    },
+    "audit_uploads": {
+      "mean": 0,
+      "std": 0.0
+    },
+    "cloud_uploads": {
+      "mean": 728,
+      "std": 132.272
+    },
+    "upload_mb": {
+      "mean": 27.742,
+      "std": 4.23
+    },
+    "seeds": 3
+  },
+  "fed_truth_ipw_a0.01": {
+    "risk_per_1000": {
+      "mean": 159.761,
+      "std": 5.175
+    },
+    "defect_recall": {
+      "mean": 0.894,
+      "std": 0.007
+    },
+    "false_alarm_rate": {
+      "mean": 0.022,
+      "std": 0.007
+    },
+    "escalation_rate": {
+      "mean": 0.145,
+      "std": 0.077
+    },
+    "uplink_mb_per_1000": {
+      "mean": 1.164,
+      "std": 0.824
+    },
+    "truth_labels": {
+      "mean": 758.667,
+      "std": 35.443
+    },
+    "cloud_labels": {
+      "mean": 0,
+      "std": 0.0
+    },
+    "audit_uploads": {
+      "mean": 259,
+      "std": 15.937
+    },
+    "cloud_uploads": {
+      "mean": 966,
+      "std": 85.514
+    },
+    "upload_mb": {
+      "mean": 41.935,
+      "std": 5.704
+    },
+    "seeds": 3
+  },
+  "fed_truth_ipw_a0.02": {
+    "risk_per_1000": {
+      "mean": 153.328,
+      "std": 3.943
+    },
+    "defect_recall": {
+      "mean": 0.897,
+      "std": 0.004
+    },
+    "false_alarm_rate": {
+      "mean": 0.019,
+      "std": 0.002
+    },
+    "escalation_rate": {
+      "mean": 0.06,
+      "std": 0.01
+    },
+    "uplink_mb_per_1000": {
+      "mean": 0.317,
+      "std": 0.143
+    },
+    "truth_labels": {
+      "mean": 984.667,
+      "std": 42.161
+    },
+    "cloud_labels": {
+      "mean": 0,
+      "std": 0.0
+    },
+    "audit_uploads": {
+      "mean": 515,
+      "std": 20.216
+    },
+    "cloud_uploads": {
+      "mean": 928,
+      "std": 97.081
+    },
+    "upload_mb": {
+      "mean": 52.27,
+      "std": 2.608
+    },
+    "seeds": 3
+  },
+  "fed_truth_ipw_a0.05": {
+    "risk_per_1000": {
+      "mean": 142.388,
+      "std": 3.616
+    },
+    "defect_recall": {
+      "mean": 0.907,
+      "std": 0.002
+    },
+    "false_alarm_rate": {
+      "mean": 0.023,
+      "std": 0.003
+    },
+    "escalation_rate": {
+      "mean": 0.072,
+      "std": 0.008
+    },
+    "uplink_mb_per_1000": {
+      "mean": 0.747,
+      "std": 0.252
+    },
+    "truth_labels": {
+      "mean": 1727.333,
+      "std": 76.648
+    },
+    "cloud_labels": {
+      "mean": 0,
+      "std": 0.0
+    },
+    "audit_uploads": {
+      "mean": 1271.667,
+      "std": 27.047
+    },
+    "cloud_uploads": {
+      "mean": 914.333,
+      "std": 189.16
+    },
+    "upload_mb": {
+      "mean": 75.574,
+      "std": 7.008
+    },
+    "seeds": 3
+  },
+  "fed_truth_naive_a0.0": {
+    "risk_per_1000": {
+      "mean": 149.648,
+      "std": 5.376
+    },
+    "defect_recall": {
+      "mean": 0.901,
+      "std": 0.008
+    },
+    "false_alarm_rate": {
+      "mean": 0.02,
+      "std": 0.006
+    },
+    "escalation_rate": {
+      "mean": 0.12,
+      "std": 0.076
+    },
+    "uplink_mb_per_1000": {
+      "mean": 0.393,
+      "std": 0.226
+    },
+    "truth_labels": {
+      "mean": 386,
+      "std": 68.586
+    },
+    "cloud_labels": {
+      "mean": 0,
+      "std": 0.0
+    },
+    "audit_uploads": {
+      "mean": 0,
+      "std": 0.0
+    },
+    "cloud_uploads": {
+      "mean": 765.333,
+      "std": 132.555
+    },
+    "upload_mb": {
+      "mean": 29.987,
+      "std": 3.022
+    },
+    "seeds": 3
+  },
+  "fed_truth_naive_a0.01": {
+    "risk_per_1000": {
+      "mean": 156.455,
+      "std": 2.45
+    },
+    "defect_recall": {
+      "mean": 0.897,
+      "std": 0.004
+    },
+    "false_alarm_rate": {
+      "mean": 0.021,
+      "std": 0.005
+    },
+    "escalation_rate": {
+      "mean": 0.059,
+      "std": 0.015
+    },
+    "uplink_mb_per_1000": {
+      "mean": 0.207,
+      "std": 0.157
+    },
+    "truth_labels": {
+      "mean": 706.667,
+      "std": 10.209
+    },
+    "cloud_labels": {
+      "mean": 0,
+      "std": 0.0
+    },
+    "audit_uploads": {
+      "mean": 260,
+      "std": 16.753
+    },
+    "cloud_uploads": {
+      "mean": 872.667,
+      "std": 51.803
+    },
+    "upload_mb": {
+      "mean": 38.988,
+      "std": 3.639
+    },
+    "seeds": 3
+  },
+  "fed_truth_naive_a0.02": {
+    "risk_per_1000": {
+      "mean": 154.116,
+      "std": 14.546
+    },
+    "defect_recall": {
+      "mean": 0.898,
+      "std": 0.008
+    },
+    "false_alarm_rate": {
+      "mean": 0.021,
+      "std": 0.003
+    },
+    "escalation_rate": {
+      "mean": 0.112,
+      "std": 0.098
+    },
+    "uplink_mb_per_1000": {
+      "mean": 0.417,
+      "std": 0.376
+    },
+    "truth_labels": {
+      "mean": 943,
+      "std": 21.182
+    },
+    "cloud_labels": {
+      "mean": 0,
+      "std": 0.0
+    },
+    "audit_uploads": {
+      "mean": 516.333,
+      "std": 18.264
+    },
+    "cloud_uploads": {
+      "mean": 833.667,
+      "std": 46.55
+    },
+    "upload_mb": {
+      "mean": 49.406,
+      "std": 0.528
+    },
+    "seeds": 3
+  },
+  "fed_truth_naive_a0.05": {
+    "risk_per_1000": {
+      "mean": 141.642,
+      "std": 11.484
+    },
+    "defect_recall": {
+      "mean": 0.905,
+      "std": 0.006
+    },
+    "false_alarm_rate": {
+      "mean": 0.021,
+      "std": 0.001
+    },
+    "escalation_rate": {
+      "mean": 0.079,
+      "std": 0.005
+    },
+    "uplink_mb_per_1000": {
+      "mean": 0.515,
+      "std": 0.212
+    },
+    "truth_labels": {
+      "mean": 1719,
+      "std": 74.793
+    },
+    "cloud_labels": {
+      "mean": 0,
+      "std": 0.0
+    },
+    "audit_uploads": {
+      "mean": 1276,
+      "std": 27.797
+    },
+    "cloud_uploads": {
+      "mean": 875.667,
+      "std": 182.728
+    },
+    "upload_mb": {
+      "mean": 75.289,
+      "std": 7.216
+    },
+    "seeds": 3
+  },
+  "local_full_a0.01": {
+    "risk_per_1000": {
+      "mean": 155.68,
+      "std": 2.272
+    },
+    "defect_recall": {
+      "mean": 0.897,
+      "std": 0.001
+    },
+    "false_alarm_rate": {
+      "mean": 0.021,
+      "std": 0.001
+    },
+    "escalation_rate": {
+      "mean": 0.044,
+      "std": 0.004
+    },
+    "uplink_mb_per_1000": {
+      "mean": 0.37,
+      "std": 0.049
+    },
+    "truth_labels": {
+      "mean": 25499,
+      "std": 0.0
+    },
+    "cloud_labels": {
+      "mean": 0,
+      "std": 0.0
+    },
+    "audit_uploads": {
+      "mean": 252,
+      "std": 12.247
+    },
+    "cloud_uploads": {
+      "mean": 1571.667,
+      "std": 37.615
+    },
+    "upload_mb": {
+      "mean": 67.808,
+      "std": 3.332
+    },
+    "seeds": 3
+  },
+  "local_full_a0.02": {
+    "risk_per_1000": {
+      "mean": 155.68,
+      "std": 2.272
+    },
+    "defect_recall": {
+      "mean": 0.897,
+      "std": 0.001
+    },
+    "false_alarm_rate": {
+      "mean": 0.021,
+      "std": 0.001
+    },
+    "escalation_rate": {
+      "mean": 0.044,
+      "std": 0.004
+    },
+    "uplink_mb_per_1000": {
+      "mean": 0.37,
+      "std": 0.049
+    },
+    "truth_labels": {
+      "mean": 25499,
+      "std": 0.0
+    },
+    "cloud_labels": {
+      "mean": 0,
+      "std": 0.0
+    },
+    "audit_uploads": {
+      "mean": 501.667,
+      "std": 17.988
+    },
+    "cloud_uploads": {
+      "mean": 1571.667,
+      "std": 37.615
+    },
+    "upload_mb": {
+      "mean": 76.108,
+      "std": 2.808
+    },
+    "seeds": 3
+  },
+  "local_full_a0.05": {
+    "risk_per_1000": {
+      "mean": 155.68,
+      "std": 2.272
+    },
+    "defect_recall": {
+      "mean": 0.897,
+      "std": 0.001
+    },
+    "false_alarm_rate": {
+      "mean": 0.021,
+      "std": 0.001
+    },
+    "escalation_rate": {
+      "mean": 0.044,
+      "std": 0.004
+    },
+    "uplink_mb_per_1000": {
+      "mean": 0.37,
+      "std": 0.049
+    },
+    "truth_labels": {
+      "mean": 25499,
+      "std": 0.0
+    },
+    "cloud_labels": {
+      "mean": 0,
+      "std": 0.0
+    },
+    "audit_uploads": {
+      "mean": 1237.667,
+      "std": 18.209
+    },
+    "cloud_uploads": {
+      "mean": 1571.667,
+      "std": 37.615
+    },
+    "upload_mb": {
+      "mean": 100.006,
+      "std": 2.654
+    },
+    "seeds": 3
+  },
+  "local_multifid_a0.01": {
+    "risk_per_1000": {
+      "mean": 173.116,
+      "std": 2.502
+    },
+    "defect_recall": {
+      "mean": 0.888,
+      "std": 0.001
+    },
+    "false_alarm_rate": {
+      "mean": 0.025,
+      "std": 0.001
+    },
+    "escalation_rate": {
+      "mean": 0.031,
+      "std": 0.019
+    },
+    "uplink_mb_per_1000": {
+      "mean": 0.402,
+      "std": 0.299
+    },
+    "truth_labels": {
+      "mean": 1306.333,
+      "std": 202.406
+    },
+    "cloud_labels": {
+      "mean": 1019.333,
+      "std": 175.788
+    },
+    "audit_uploads": {
+      "mean": 247,
+      "std": 11.225
+    },
+    "cloud_uploads": {
+      "mean": 2121,
+      "std": 373.36
+    },
+    "upload_mb": {
+      "mean": 94.771,
+      "std": 20.351
+    },
+    "seeds": 3
+  },
+  "local_multifid_a0.02": {
+    "risk_per_1000": {
+      "mean": 170.183,
+      "std": 5.616
+    },
+    "defect_recall": {
+      "mean": 0.89,
+      "std": 0.004
+    },
+    "false_alarm_rate": {
+      "mean": 0.025,
+      "std": 0.002
+    },
+    "escalation_rate": {
+      "mean": 0.051,
+      "std": 0.019
+    },
+    "uplink_mb_per_1000": {
+      "mean": 0.654,
+      "std": 0.09
+    },
+    "truth_labels": {
+      "mean": 1460.333,
+      "std": 67.756
+    },
+    "cloud_labels": {
+      "mean": 955.333,
+      "std": 75.411
+    },
+    "audit_uploads": {
+      "mean": 492.333,
+      "std": 13.425
+    },
+    "cloud_uploads": {
+      "mean": 1968,
+      "std": 135.654
+    },
+    "upload_mb": {
+      "mean": 91.856,
+      "std": 4.208
+    },
+    "seeds": 3
+  },
+  "local_multifid_a0.05": {
+    "risk_per_1000": {
+      "mean": 167.294,
+      "std": 3.163
+    },
+    "defect_recall": {
+      "mean": 0.893,
+      "std": 0.001
+    },
+    "false_alarm_rate": {
+      "mean": 0.028,
+      "std": 0.002
+    },
+    "escalation_rate": {
+      "mean": 0.035,
+      "std": 0.015
+    },
+    "uplink_mb_per_1000": {
+      "mean": 0.363,
+      "std": 0.218
+    },
+    "truth_labels": {
+      "mean": 2242.333,
+      "std": 72.039
+    },
+    "cloud_labels": {
+      "mean": 992,
+      "std": 93.138
+    },
+    "audit_uploads": {
+      "mean": 1216.333,
+      "std": 24.418
+    },
+    "cloud_uploads": {
+      "mean": 2069.333,
+      "std": 190.477
+    },
+    "upload_mb": {
+      "mean": 118.869,
+      "std": 9.534
+    },
+    "seeds": 3
+  },
+  "local_truth_ipw_a0.01": {
+    "risk_per_1000": {
+      "mean": 169.176,
+      "std": 1.851
+    },
+    "defect_recall": {
+      "mean": 0.891,
+      "std": 0.001
+    },
+    "false_alarm_rate": {
+      "mean": 0.025,
+      "std": 0.001
+    },
+    "escalation_rate": {
+      "mean": 0.067,
+      "std": 0.027
+    },
+    "uplink_mb_per_1000": {
+      "mean": 0.363,
+      "std": 0.256
+    },
+    "truth_labels": {
+      "mean": 908.667,
+      "std": 102.066
+    },
+    "cloud_labels": {
+      "mean": 0,
+      "std": 0.0
+    },
+    "audit_uploads": {
+      "mean": 255,
+      "std": 11.86
+    },
+    "cloud_uploads": {
+      "mean": 1313.667,
+      "std": 203.628
+    },
+    "upload_mb": {
+      "mean": 56.497,
+      "std": 8.095
+    },
+    "seeds": 3
+  },
+  "local_truth_ipw_a0.02": {
+    "risk_per_1000": {
+      "mean": 168.566,
+      "std": 3.693
+    },
+    "defect_recall": {
+      "mean": 0.892,
+      "std": 0.002
+    },
+    "false_alarm_rate": {
+      "mean": 0.026,
+      "std": 0.003
+    },
+    "escalation_rate": {
+      "mean": 0.072,
+      "std": 0.019
+    },
+    "uplink_mb_per_1000": {
+      "mean": 0.777,
+      "std": 0.483
+    },
+    "truth_labels": {
+      "mean": 1173,
+      "std": 96.895
+    },
+    "cloud_labels": {
+      "mean": 0,
+      "std": 0.0
+    },
+    "audit_uploads": {
+      "mean": 503.667,
+      "std": 14.659
+    },
+    "cloud_uploads": {
+      "mean": 1347.333,
+      "std": 221.453
+    },
+    "upload_mb": {
+      "mean": 67.088,
+      "std": 9.252
+    },
+    "seeds": 3
+  },
+  "local_truth_ipw_a0.05": {
+    "risk_per_1000": {
+      "mean": 157.276,
+      "std": 5.253
+    },
+    "defect_recall": {
+      "mean": 0.898,
+      "std": 0.004
+    },
+    "false_alarm_rate": {
+      "mean": 0.023,
+      "std": 0.001
+    },
+    "escalation_rate": {
+      "mean": 0.06,
+      "std": 0.009
+    },
+    "uplink_mb_per_1000": {
+      "mean": 0.526,
+      "std": 0.224
+    },
+    "truth_labels": {
+      "mean": 2047,
+      "std": 98.411
+    },
+    "cloud_labels": {
+      "mean": 0,
+      "std": 0.0
+    },
+    "audit_uploads": {
+      "mean": 1241,
+      "std": 28.249
+    },
+    "cloud_uploads": {
+      "mean": 1582.667,
+      "std": 263.371
+    },
+    "upload_mb": {
+      "mean": 101.402,
+      "std": 10.337
+    },
+    "seeds": 3
+  }
+}

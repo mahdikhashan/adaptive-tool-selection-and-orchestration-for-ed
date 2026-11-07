@@ -1,5 +1,5 @@
-A one-pass vision decision model reaches 0.948 item accuracy on InsPLAD crops.
-It answers four inspection questions per image in 74 ms on a desktop GPU.
-FedAvg over tower-wise drones loses accuracy as the same data is split further.
-FedAvg with six drones beats the average drone that trains alone.
-A centrally fine-tuned start makes fleet FedAvg close to central training.
+A one-pass vision decision model answers inspection questions without captions.
+Fine-tuned on folder labels, it reaches 0.948 item accuracy on InsPLAD crops.
+Its calibrated defect score passes 15.3% of images and finds 88.5% of defects.
+FedAvg over tower-wise drones beats drones that train alone.
+A server-fine-tuned start brings fleet FedAvg close to central training.

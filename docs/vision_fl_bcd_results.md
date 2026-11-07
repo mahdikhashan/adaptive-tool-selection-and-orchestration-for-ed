@@ -1,14 +1,14 @@
 # Federated rounds B, C and D: results
 
-Date: 2026-11-08. 23 of 25 runs (the 2 round-C runs with 25 labels are not available yet). GPUs: RTX 2080 Ti, Quadro GV100, GTX 1080 Ti, fp32, commit 1269ab8. The plan is in `docs/vision_fl_round_b_plan.md`. All values are on the test towers (6,092 images), with one seed for each run. The values are in `results/vision/fl_{b,c,d}_*/summary.json`.
+Date: 2026-11-08. All 25 runs. The 2 round-C runs with 25 labels came later than the other runs. GPUs: RTX 2080 Ti, Quadro GV100, GTX 1080 Ti, fp32, commit 1269ab8. The plan is in `docs/vision_fl_round_b_plan.md`. All values are on the test towers (6,092 images), with one seed for each run. The values are in `results/vision/fl_{b,c,d}_*/summary.json`.
 
 ## 1. Summary
 
 1. From the published checkpoint, the small updates (head, LoRA, last 4 layers) learn very little in 10 rounds. Only the updates with all language layers or the full model come near round A.
 2. int8 updates and FedProx change nothing that the test can measure.
 3. With 30 rounds, the last-4 update improves much (macro F1 0.281 to 0.488). Thus the small updates need more rounds, not a different method.
-4. Round D shows no difference between the partitions. A drone that trains alone learns the defect type of its own components. FedAvg with the last-4 update loses these defect types for each partition, also for the random partition.
-5. Round C: with few labels, only the fine-tuned start works. With 100 or 200 labels for each drone, FedAvg increases the defect AUROC of the server model from 0.903 to 0.930 and 0.933. The same labels on one server give more (0.958).
+4. Round D shows no difference between the partitions. A drone that trains alone learns the defect type of its own components. FedAvg with the last-4 update loses these defect types for each partition. It also loses them for the random partition.
+5. Round C: with few labels, only the fine-tuned start works. 25 or 50 labels for each drone give 18 or 37 defects in the fleet. With these labels, FedAvg decreases the defect AUROC of the server model (0.903 to 0.856 and 0.836). With 100 or 200 labels (69 or 149 defects), it increases the AUROC to 0.930 and 0.933. The same labels on one server give more (0.958) and never decrease the AUROC.
 
 ## 2. Round B: update size (6 tower drones, start from the published checkpoint)
 
@@ -38,9 +38,11 @@ Values in brackets are 95% bootstrap intervals. The script calculates the uplink
 
 | Labels for each drone | FedAvg, base start | FedAvg, fine-tuned start | Same labels on one server | Each drone alone (mean, min to max) |
 |---|---|---|---|---|
+| Condition macro F1, 25 | 0.159 | 0.565 | — | — |
 | Condition macro F1, 50 | 0.159 | 0.571 | 0.600 | 0.559 (0.519 to 0.582) |
 | Condition macro F1, 100 | 0.162 | 0.582 | — | — |
 | Condition macro F1, 200 | 0.207 | 0.575 | 0.623 | 0.551 (0.528 to 0.576) |
+| Defect AUROC, 25 | 0.721 | 0.856 | — | — |
 | Defect AUROC, 50 | 0.726 | 0.836 | 0.904 | 0.859 (0.831 to 0.940) |
 | Defect AUROC, 100 | 0.767 | 0.930 | — | — |
 | Defect AUROC, 200 | 0.838 | 0.933 | 0.958 | 0.902 (0.840 to 0.951) |
@@ -49,7 +51,11 @@ Reference without fleet labels: the server model `fl_server_central` has a macro
 
 - From the published checkpoint, few labels give almost nothing. With 50 and 100 labels, the macro F1 is near the majority baseline (0.158).
 - From the fine-tuned start, 100 and 200 labels for each drone increase the defect AUROC from 0.903 to 0.930 and 0.933. The macro F1 changes little (0.558 to 0.575 or 0.582, the intervals overlap).
-- With 50 labels, the defect AUROC decreases to 0.836. The defect risk increases from 291 to 331 for each 1,000 images.
+- Defects in the labels of the whole fleet: 18 (25 labels for each drone), 37 (50), 69 (100) and 149 (200). With 25 labels, the drones have 0, 2, 3, 6 and 7 defects.
+- With 25 and 50 labels, the defect AUROC decreases to 0.856 and 0.836. With 50 labels, the defect risk increases from 291 to 331 for each 1,000 images.
+- With few defects, FedAvg makes the model more conservative. With 25 labels, the false-alarm rate at the val threshold decreases from 0.139 to 0.044, and the defect recall decreases from 0.832 to 0.740.
+- The same 37 defects on one server keep the AUROC of the server model (0.904). Thus the decrease comes from the average of drones with 0 to 15 defects each, not from the number of labels.
+- FedAvg starts to help at about 70 defects in the fleet (100 labels for each drone, 6 to 27 defects on each drone).
 - The same labels on one server are better than FedAvg: AUROC 0.958 against 0.933 with 200 labels, risk 181 against 280.
 - FedAvg is better than the mean drone that trains alone with 200 labels: AUROC 0.933 against 0.902, macro F1 0.575 against 0.551.
 

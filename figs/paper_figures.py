@@ -169,7 +169,7 @@ def fig_round_b_2col():
 
 def fig_round_c_2col():
     fig, axes = figure_grid(1, 2, width=COL2, ratio=0.58)
-    budgets = [50, 100, 200]
+    budgets = [25, 50, 100, 200]
     for ax, (label, part, key, ci) in zip(axes, [("Condition macro F1", "condition", "macro_f1", "condition_macro_f1"),
                                                 ("Defect AUROC", "defect_noul", "auroc", "defect_auroc")]):
         for name, prefix, bs, color, marker in [("FedAvg, fine-tuned start", "fl_c_warm", budgets, PALETTE["red"], "o"),

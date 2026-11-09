@@ -7,7 +7,7 @@ from types import SimpleNamespace
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'src'))
 import torch
 from fedorch.ppo_v2_train import (duration_gae, masked_distribution, ppo_clip_loss,
-    audit_cost, preflight_payloads, serialize_delta, fedavg, Rollout, update, metrics, parser, evaluation_missions, mission_items, merge_rollouts)
+    audit_cost, proximal_term, Rollout, update, metrics, parser, evaluation_missions, mission_items, merge_rollouts)
 
 
 class LearnerMathTests(unittest.TestCase):
@@ -38,18 +38,25 @@ class LearnerMathTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'CUDA-only'):
             update(None,None,rollout,1,SimpleNamespace(device='cpu'))
 
-    def test_strict_payload_cap_and_fedavg(self):
-        self.assertEqual(preflight_payloads([b'abc'],1,5),4)
-        with self.assertRaises(ValueError): preflight_payloads([b'abcd'],1,5)
-        result=fedavg({'w':torch.tensor([1.])},[{'w':torch.tensor([2.]).half()}, {'w':torch.tensor([4.]).half()}],[1,3])
-        self.assertAlmostEqual(float(result['w']),4.5)
+    def test_fedprox_proximal_term(self):
+        actor=torch.nn.Linear(1,1,bias=False)
+        with torch.no_grad(): actor.weight.fill_(3.)
+        self.assertAlmostEqual(float(proximal_term(actor,{'weight':torch.tensor([[1.]])},.5)),1.)
 
-    def test_actual_serialized_delta_accounts_for_overhead(self):
-        actor=SimpleNamespace(state_dict=lambda: {'w':torch.tensor([3.,5.])})
-        payload,delta=serialize_delta(actor,{'w':torch.tensor([1.,2.])})
-        self.assertEqual(delta['w'].dtype,torch.float16)
-        self.assertEqual(delta['w'].tolist(),[2.,3.])
-        self.assertGreater(len(payload),delta['w'].numel()*2)
+    def test_flower_delta_and_server_optimizers(self):
+        import numpy as np
+        from fedorch.ppo_v2_flower import encode_delta, _server_step
+        reference=[np.array([1.,2.],dtype=np.float32)]
+        delta=encode_delta({'w':torch.tensor([3.,5.])},reference)
+        self.assertEqual(delta[0].dtype,np.float16)
+        self.assertEqual(delta[0].tolist(),[2.,3.])
+        step=lambda opt,lr: SimpleNamespace(server_opt=opt,server_lr=lr,server_momentum=.5,first_moment=None,second_moment=None)
+        d=[np.array([2.])]
+        self.assertEqual(_server_step(step('none',1.),d)[0].tolist(),[2.])
+        m=step('momentum',1.); _server_step(m,d)
+        self.assertEqual(_server_step(m,d)[0].tolist(),[3.])
+        a=step('adam',.1)
+        self.assertAlmostEqual(float(_server_step(a,d)[0][0]),.1*.2/(np.sqrt(.04)+1e-3),places=6)
 
     def test_supervised_label_guard_known_cost_not_weighted(self):
         self.assertEqual(audit_cost(2,None,False,.05),2)

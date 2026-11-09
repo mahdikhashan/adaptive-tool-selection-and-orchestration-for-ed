@@ -162,7 +162,30 @@ bash scripts/runs/ppo_v2_gpu.sh pilot
 ```
 
 The pilot executes, sequentially, a label-free heuristic, a capability-matched
-central supervised MLP, central PPO, five independent PPO agents, and FedAvg-PPO.
+central supervised MLP, central PPO, five independent PPO agents, FedAvg-PPO and
+FedProx-PPO. Add `--modes ...,fedavgm,fedadam` for the server-optimizer variants.
+
+## Federation with Flower
+
+Federated modes run in the Flower simulation engine (`flwr` 1.43, Ray backend,
+`run_simulation`). Code: `src/fedorch/ppo_v2_flower.py`.
+
+- Each drone is one Flower `NumPyClient` (five virtual SuperNodes). The drone
+  receives the global actor, collects PPO missions on its own partition, trains
+  its actor and its private critic, and returns the FP16 actor delta.
+- The server uses Flower `FedAvg` or `FedProx` (`--flower-strategy`). The
+  strategy averages the deltas, weighted by transitions (`--fed-weighting
+  sample`) or equally (`equal`). FedProx sends `proximal_mu` to the drones. The
+  local PPO loss then adds mu/2 times the squared distance to the received actor.
+- `--server-opt momentum` applies server momentum to the averaged delta
+  (FedAvgM). `--server-opt adam` applies Adam to it (FedAdam). The default is none.
+- `--fraction-fit` samples a share of the five drones in each round (partial
+  participation). Flower selects the drones. The summary records them.
+- Only the actor delta goes up. Critics, optimizer state, rollouts and images
+  stay in `drone-<id>/` folders. Upload size is the Flower `FitRes` protobuf size.
+- The drones run one after another on the one GPU (`num_gpus: 1` per client).
+- Laptop check without a GPU: `--device cpu --allow-synthetic` on a synthetic
+  fixture bundle only. Real bundles still train on CUDA only.
 All have S3/A2 capabilities supported by the current cache, the same audit mask,
 2/6/15-second budgets and nominal mission counts. It uses seed0, 3 rounds,
 64 missions/client/round and validation only. These are early development results,
@@ -262,9 +285,9 @@ measurement. Warm/cold loading, tool/Laya input conditions and processing are
 recorded separately where native APIs expose them. Energy is null when not
 measured; no power/energy claim is fabricated.
 
-Federation serializes FP16 actor deltas and enforces <30,000,000 bytes of
-cumulative actual serialized payload. This includes torch serialization but is
-**not a packet-capture measurement of real network wire bytes**. Deployment
+Federation sends FP16 actor deltas through Flower and enforces <30,000,000 bytes
+of cumulative Flower `FitRes` protobuf payload. One drone update is about
+120 kB. This is **not a packet-capture measurement of real network wire bytes**. Deployment
 transport overhead/retries must be measured before claiming the protocol's
 on-wire success criterion. Downlink/cloud/body traffic are separate. The actor
 is bounded at100k parameters; no payload is inflated to fill a budget.

@@ -6,7 +6,6 @@ on verified error; all observed operational costs remain unweighted.
 """
 from __future__ import annotations
 import argparse
-import io
 import json
 import math
 import random
@@ -23,7 +22,6 @@ from torch.distributions import Categorical
 from .ppo_v2_env import ACTIONS, FEATURES, Bundle, InspectionEnv
 
 SCHEMA = 'fedorch-ppo-v2-actor-v1'
-CAP_BYTES = 30_000_000
 
 
 class Actor(nn.Module):
@@ -88,29 +86,6 @@ def audit_cost(known_cost, verified_error, audited, propensity):
     if not 0 < propensity <= 1:
         raise ValueError('Invalid audit propensity')
     return known_cost + (0. if verified_error is None else verified_error / propensity)
-
-
-def serialize_delta(actor, reference):
-    payload = io.BytesIO()
-    delta = {key: (value.detach().cpu() - reference[key].cpu()).half()
-             for key, value in actor.state_dict().items()}
-    torch.save(delta, payload)
-    return payload.getvalue(), delta
-
-
-def preflight_payloads(payloads, cumulative=0, cap=CAP_BYTES):
-    total = cumulative + sum(len(p) for p in payloads)
-    if total >= cap:
-        raise ValueError(f'Serialized actor payload would reach {total} bytes; strict cap is <{cap}')
-    return total
-
-
-def fedavg(reference, deltas, weights):
-    if not deltas or sum(weights) <= 0:
-        raise ValueError('No participating client weight')
-    return {key: reference[key] + sum(delta[key].float() * (weight / sum(weights))
-                                    for delta, weight in zip(deltas, weights))
-            for key in reference}
 
 
 @dataclass
@@ -247,11 +222,23 @@ def merge_rollouts(batches, version):
     return combined
 
 
-def update(actor, critic, batch, version, args, supervised=False):
-    if batch.version != version:
-        raise ValueError('Stale rollout rejected after actor federation/update')
+def cuda_or_synthetic(args):
+    if getattr(args, 'allow_synthetic', False):
+        return
     if args.device != 'cuda' or not torch.cuda.is_available():
         raise ValueError('Training is CUDA-only; no CPU training is permitted')
+
+
+def proximal_term(actor, anchor, mu):
+    return mu / 2 * sum(((p - anchor[name]) ** 2).sum() for name, p in actor.named_parameters())
+
+
+def update(actor, critic, batch, version, args, supervised=False, proximal_mu=0., anchor=None):
+    if batch.version != version:
+        raise ValueError('Stale rollout rejected after actor federation/update')
+    cuda_or_synthetic(args)
+    if proximal_mu and anchor is None:
+        raise ValueError('FedProx needs the received global actor as anchor')
     if not batch.states:
         return {}
     device = args.device
@@ -285,6 +272,8 @@ def update(actor, critic, batch, version, args, supervised=False):
             else:
                 loss, entropy = ppo_clip_loss(logits, masks[ids], actions[ids], old[ids], advantages[ids])
                 loss = loss - .01 * entropy
+            if proximal_mu:
+                loss = loss + proximal_term(actor, anchor, proximal_mu)
             actor_opt.zero_grad(); loss.backward(); nn.utils.clip_grad_norm_(actor.parameters(), .5); actor_opt.step()
             value_loss = nn.functional.mse_loss(critic(states[ids]), targets[ids])
             critic_opt.zero_grad(); value_loss.backward(); nn.utils.clip_grad_norm_(critic.parameters(), .5); critic_opt.step()
@@ -414,8 +403,8 @@ def train(args):
     if not bundle.manifest.get('cache_complete') and not required <= complete:
         raise ValueError(f'Incomplete replay cache for {required}')
     if args.device == 'cuda' and not torch.cuda.is_available(): raise ValueError('CUDA requested but unavailable')
-    if not args.evaluate_only and args.mode != 'heuristic' and args.device != 'cuda':
-        raise ValueError('Training is CUDA-only by user requirement')
+    if not args.evaluate_only and args.mode != 'heuristic':
+        cuda_or_synthetic(args)
     torch.manual_seed(args.seed); random.seed(args.seed); np.random.seed(args.seed)
     if args.evaluate_only:
         saved = torch.load(args.evaluate_only, map_location='cpu', weights_only=True)
@@ -436,22 +425,23 @@ def train(args):
     training = [x for x in bundle.items if x['split']=='train']
     clients = sorted({int(x['client']) for x in training})
     if not training or clients != list(range(5)): raise ValueError('Expected all five training clients')
+    if args.mode == 'fed':
+        from .ppo_v2_flower import run_flower
+        return run_flower(args, bundle)
     global_actor = Actor().to(args.device)
     initial = {k:v.detach().clone() for k,v in global_actor.state_dict().items()}
     actors = {}; critics = {}
     for client in clients:
         actors[client] = Actor().to(args.device); actors[client].load_state_dict(initial)
         critics[client] = Critic().to(args.device)
-    cumulative = 0; logs = []; started = time.perf_counter()
+    logs = []; started = time.perf_counter()
     for round_id in range(args.rounds):
         version = round_id
-        reference = {k:v.detach().cpu().clone() for k,v in global_actor.state_dict().items()}
-        deltas=[]; payloads=[]; weights=[]; round_logs=[]
+        round_logs=[]
         groups = [(-1,training)] if args.mode in ('central', 'supervised') else [(c,[x for x in training if int(x['client'])==c]) for c in clients]
         for client,pool in groups:
             key = 0 if client == -1 else client
             actor = actors[key]; critic = critics[key]
-            if args.mode == 'fed': actor.load_state_dict(reference)
             if args.mode in ('central', 'supervised'):
                 batches, results = [], []
                 # Hold this shared actor fixed across all five regional draws;
@@ -485,28 +475,15 @@ def train(args):
             details.update(client=client, inspected_items=len(results), audited_items=sum(bool(x.get('audited')) for x in results),
                            audited_unique_items=len({x['item_id'] for x in results if x.get('audited')}))
             round_logs.append(details)
-            if args.mode == 'fed':
-                payload,delta = serialize_delta(actor,reference)
-                payloads.append(payload); deltas.append(delta)
-                weights.append(len(batch.states) if args.fed_weighting=='sample' else 1)
-        if args.mode == 'fed':
-            try: total = preflight_payloads(payloads,cumulative)
-            except ValueError as error:
-                logs.append({'round':round_id,'stopped_before_upload':str(error)}); break
-            for client,payload in zip(clients,payloads): (output/f'delta-r{round_id:02d}-c{client}.pt').write_bytes(payload)
-            cumulative=total; global_actor.load_state_dict(fedavg(reference,deltas,weights))
-            current={-1:global_actor}
-        elif args.mode in ('central', 'supervised'): current={-1:actors[0]}
+        if args.mode in ('central', 'supervised'): current={-1:actors[0]}
         elif args.mode == 'heuristic': current={-1:actors[0]}
         else: current=actors
         metadata={'cache_signature':bundle.manifest.get('provenance', {}).get('tool_cache', {}).get('signature'),
                   'client_role':'drone', 'local_critic_owner':'drone',
-                  'federation_role':'actor-only coordinator; no images or trajectories uploaded',
+                  'federation_role':'none; no federation in this mode',
                   'network_config':args.network, 'mode':args.mode,'feedback':args.feedback,'seed':args.seed,'round':round_id,
-                  'serialized_actor_payload_bytes':cumulative,'transport':'serialized replay payload, not measured network wire bytes',
                   'scope_extension_enhancement':args.enhance,'synthetic_fixture':bool(bundle.manifest.get('synthetic_fixture')),
                   'supervised_method':'observed-action discounted return regression, epsilon=0.2; audit-IPW error only; no counterfactual oracle',
-                  'delta_payload_files': [f'delta-r{round_id:02d}-c{c}.pt' for c in clients] if args.mode=='fed' else [],
                   'actor_parameters':sum(p.numel() for p in global_actor.parameters()),'training_split':'train',
                   'audit_unique_available':sum(bool(v['audited']) for v in bundle.audits.values()),
                   'training_seconds':time.perf_counter()-started,'rss_platform_units':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss}
@@ -520,7 +497,7 @@ def train(args):
     if args.eval_split=='test' and logs and 'metadata' in logs[-1]:
         (output/'final-test.json').write_text(json.dumps(evaluate(bundle,current,args.budgets,'test',args.device,args.enhance,None,args.mode=='heuristic',args.network),indent=2))
     (output/'summary.json').write_text(json.dumps(logs,indent=2))
-    return {'rounds':logs,'serialized_actor_payload_bytes':cumulative}
+    return {'rounds':logs}
 
 
 def parser():
@@ -538,6 +515,13 @@ def parser():
     p.add_argument('--enhance',action='store_true'); p.add_argument('--allow-synthetic',action='store_true')
     p.add_argument('--evaluate-only',metavar='CHECKPOINT')
     p.add_argument('--fed-weighting',choices=['sample','equal'],default='sample')
+    p.add_argument('--flower-strategy',choices=['fedavg','fedprox'],default='fedavg')
+    p.add_argument('--proximal-mu',type=float,default=.01)
+    p.add_argument('--server-opt',choices=['none','momentum','adam'],default='none',
+                   help='Server optimizer on the averaged actor delta: FedAvg, FedAvgM or FedAdam')
+    p.add_argument('--server-lr',type=float)
+    p.add_argument('--server-momentum',type=float,default=.9)
+    p.add_argument('--fraction-fit',type=float,default=1.,help='Share of the five drones sampled per round')
     p.add_argument('--epochs',type=int,default=4); p.add_argument('--learning-rate',type=float,default=3e-4)
     p.add_argument('--kappa',type=float,default=.01)
     p.add_argument('--target-kl',type=float,default=.03)
@@ -548,6 +532,8 @@ def main(argv=None):
     args=parser().parse_args(argv)
     if args.target_kl<=0 or args.epochs<1 or args.rounds<1 or args.episodes_per_client<1 or not args.budgets or any(x<=0 for x in args.budgets):
         raise ValueError('Positive rounds, episode count and budgets required')
+    if not 0 < args.fraction_fit <= 1 or args.proximal_mu < 0 or (args.server_lr is not None and args.server_lr <= 0):
+        raise ValueError('fraction-fit must be in (0,1]; proximal-mu >= 0; server-lr > 0')
     train(args)
 
 

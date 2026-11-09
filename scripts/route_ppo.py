@@ -139,17 +139,27 @@ def collect(env, actor, critic, items, rng, episodes):
     return batch
 
 
-def update(actor, critic, batch, lr=3e-4, epochs=4, clip=.2, entropy=.01):
-    steps, ret = [], []
+def update(actor, critic, batch, lr=3e-4, epochs=4, clip=.2, entropy=.01, gamma=1., gae=None):
+    steps, ret, advs = [], [], []
     for ep in batch:
-        g, tail = 0., []
+        g, a, next_v, tail, tail_a = 0., 0., 0., [], []
         for s in reversed(ep):
-            g += s["r"]
+            g = s["r"] + gamma * g
+            if gae is not None:
+                a = s["r"] + gamma * next_v - s["v"] + gamma * gae * a
+                next_v = s["v"]
             tail.append(g)
+            tail_a.append(a)
         ret.extend(reversed(tail))
+        advs.extend(reversed(tail_a))
         steps.extend(ep)
-    ret = torch.tensor(ret, dtype=torch.float32)
-    adv = ret - torch.tensor([s["v"] for s in steps])
+    values = torch.tensor([s["v"] for s in steps])
+    if gae is None:
+        ret = torch.tensor(ret, dtype=torch.float32)
+        adv = ret - values
+    else:
+        adv = torch.tensor(advs, dtype=torch.float32)
+        ret = adv + values
     adv = (adv - adv.mean()) / adv.std().clamp_min(1e-6)
     x = torch.stack([s["x"] for s in steps])
     m = torch.stack([s["m"] for s in steps])

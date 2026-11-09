@@ -18,6 +18,8 @@ FEATURES = tuple(
     ['laya_entropy', 'laya_margin', 'laya_defect', 'laya_valid', 'laya_duration_s'] +
     ['yolo_' + c for c in CLASSES] +
     ['yolo_entropy', 'yolo_margin', 'yolo_valid', 'yolo_age_s'] +
+    ['yolo_native_entropy', 'yolo_native_margin', 'yolo_native_top1confidence',
+     'yolo_native_valid', 'yolo_native_class_count', 'yolo_native_age_s'] +
     ['smol_ran', 'explanation_length', 'smol_valid'] +
     ['smol_laya_' + c for c in CLASSES] +
     ['last_' + a for a in ACTIONS] +
@@ -70,6 +72,51 @@ def _reject_labels(record):
             _reject_labels(value)
 
 
+def _validate_native(record):
+    """Native class names are model outputs, never controller truth labels."""
+    if 'native_valid' in record and not isinstance(record['native_valid'], bool):
+        raise ValueError('native_valid must be boolean')
+    topk = record.get('native_topk', [])
+    if not isinstance(topk, list):
+        raise ValueError('native_topk must be a list')
+    probabilities = []
+    names, class_ids = {}, set()
+    for entry in topk:
+        if not isinstance(entry, dict) or set(entry) - {'label', 'probability', 'class_id'}:
+            raise ValueError('native_topk accepts model label/probability/class_id only')
+        if not isinstance(entry.get('label'), str) or not entry['label']:
+            raise ValueError('native class names must be nonempty strings')
+        has_id = 'class_id' in entry
+        if has_id:
+            class_id, count = entry['class_id'], record.get('native_class_count')
+            if (isinstance(class_id, bool) or not isinstance(class_id, int) or
+                isinstance(count, bool) or not isinstance(count, int) or
+                not 0 <= class_id < count or class_id in class_ids):
+                raise ValueError('native class_id must be a unique integer in class-count bounds')
+            class_ids.add(class_id)
+        if entry['label'] in names and not (has_id and names[entry['label']]):
+            raise ValueError('duplicate native names require distinct explicit class IDs')
+        names[entry['label']] = has_id
+        probability = _finite(entry['probability'], 'native probability')
+        if probability > 1:
+            raise ValueError('native probability must be <=1')
+        probabilities.append(probability)
+    if probabilities != sorted(probabilities, reverse=True) or sum(probabilities) > 1.0001:
+        raise ValueError('native_topk must be sorted probabilities with total <=1')
+    if record.get('native_valid', False):
+        if record['tool'] not in ('INITIAL', 'YOLO_CLS') or record.get('probs') is not None:
+            raise ValueError('native YOLO output cannot masquerade as six-condition probabilities')
+        count = record.get('native_class_count')
+        if isinstance(count, bool) or not isinstance(count, int) or count < max(1, len(topk)):
+            raise ValueError('native_class_count must cover nonempty native_topk')
+        if not topk:
+            raise ValueError('valid native output needs native_topk')
+        entropy = _finite(record['native_entropy'], 'native entropy')
+        margin = _finite(record['native_margin'], 'native margin')
+        if entropy > math.log(count)+1e-4 or margin > 1:
+            raise ValueError('native entropy/margin outside probability bounds')
+
+
 class Bundle:
     def __init__(self, path, feedback='audit'):
         if feedback not in ('audit', 'full'):
@@ -105,7 +152,9 @@ class Bundle:
                 if not 0 < p <= 1:
                     raise ValueError('audit propensity must be in (0,1]')
         for record in _records(self.path / 'observations.jsonl'):
-            _reject_labels(record)
+            # Only this validated model-output container may use the key 'label'.
+            _reject_labels({k: v for k, v in record.items() if k != 'native_topk'})
+            _validate_native(record)
             key = (record['item_id'], record['view_id'], record['tool'])
             if key in self.observations or key[0] not in by_id:
                 raise ValueError('duplicate or unknown cache observation')
@@ -240,6 +289,8 @@ class InspectionEnv:
         self.roi_proposed = self.enhanced = self.smol_ran = self.smol_valid = False
         self.repeated = self.failed = False
         self.laya = self.yolo = self.smol_laya = None
+        self.native = None
+        self.native_at = 0.
         self.laya_duration_s = self.yolo_at = self.explanation_length = 0.
         self.quality = (0.,)*4
         self._execute('INITIAL', 0)
@@ -293,8 +344,14 @@ class InspectionEnv:
         if valid and record.get('laya_probs') is not None:
             self.laya = record['laya_probs']
             self.laya_duration_s = (record.get('laya_ms') or 0.)/1000.
-        if tool in ('INITIAL', 'YOLO_CLS') and valid and record.get('probs') is not None:
-            self.yolo, self.yolo_at = record['probs'], self.elapsed_s
+        if tool in ('INITIAL', 'YOLO_CLS') and valid:
+            self.yolo_at = self.elapsed_s
+            self.yolo = record.get('probs')
+            self.native = None
+            if record.get('native_valid', False):
+                self.native = (record['native_entropy'], record['native_margin'],
+                               record['native_topk'][0]['probability'], 1., record['native_class_count'])
+                self.native_at = self.elapsed_s
         if tool == 'SMOL_EXPLAIN':
             self.smol_ran, self.smol_valid = True, valid
             self.explanation_length = len(record.get('explanation', ''))
@@ -445,7 +502,8 @@ class InspectionEnv:
         resource = self.bundle.manifest.get('resource_state', {})
         ready = resource.get('model_ready', {})
         values = (z + [ze, zm, 1.-z[0] if self.laya else 0., float(self.laya is not None), self.laya_duration_s] +
-                  y + [ye, ym, float(self.yolo is not None), self.elapsed_s-self.yolo_at if self.yolo else 0.] +
+                  y + [ye, ym, float(self.yolo is not None), self.elapsed_s-self.yolo_at if self.yolo is not None or self.native is not None else 0.] +
+                  (list(self.native) + [self.elapsed_s-self.native_at] if self.native else [0.]*6) +
                   [float(self.smol_ran), self.explanation_length, float(self.smol_valid)] +
                   list(self.smol_laya or (0.,)*6) +
                   [float(self.last_action == a) for a in ACTIONS] +

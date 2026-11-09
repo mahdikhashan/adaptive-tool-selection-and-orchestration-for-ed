@@ -10,7 +10,8 @@ import unittest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'src'))
 from PIL import Image
 from fedorch.ppo_v2_tools import (CLASSES, export_cache, grid_boxes, letterbox,
-                                 normalized, prepare_yolo_dataset, read_jsonl, reorder_probs)
+                                 native_yolo_summary, normalized, prepare_yolo_dataset,
+                                 read_jsonl, reorder_probs, yolo_label_space)
 
 
 def make_bundle(root, duplicate=True):
@@ -77,6 +78,52 @@ class ToolTests(unittest.TestCase):
             reorder_probs([1] * 6, ['a'] * 6)
         with self.assertRaises(ValueError):
             normalized([float('nan')] * 6)
+
+    def test_native_pretrained_summary_never_fabricates_defect_probabilities(self):
+        names = {i: f'ImageNet class{i}' for i in range(1000)}
+        self.assertEqual(yolo_label_space(names), 'imagenet1000')
+        self.assertEqual(yolo_label_space(CLASSES), 'condition6')
+        values = [.6, .3, .1] + [0.] * 997
+        native = native_yolo_summary(values, names)
+        self.assertNotIn('probs', native)
+        self.assertEqual(native['native_class_count'], 1000)
+        self.assertEqual(len(native['native_topk']), 5)
+        self.assertEqual(native['native_topk'][0]['label'], 'ImageNet class0')
+        self.assertEqual([entry['class_id'] for entry in native['native_topk']], [0, 1, 2, 3, 4])
+        self.assertAlmostEqual(native['native_margin'], .3)
+        self.assertGreater(native['native_entropy'], 0)
+        with self.assertRaisesRegex(ValueError, '1000'):
+            yolo_label_space(['arbitrary'] * 10)
+        with self.assertRaises(ValueError):
+            native_yolo_summary([float('nan')] * 1000, names)
+        duplicated_names = ['same descriptive name'] * 1000
+        duplicate_summary = native_yolo_summary(values, duplicated_names)
+        self.assertEqual(len({entry['class_id'] for entry in duplicate_summary['native_topk']}), 5)
+
+    def test_native_pretrained_cache_label_free_evidence_and_initial_fields(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = make_bundle(Path(tmp) / 'bundle', duplicate=False)
+            (root / 'labels.jsonl').unlink()
+            mock = Adapters()
+            def native_yolo(image):
+                return native_yolo_summary([.6, .3, .1] + [0.] * 997,
+                                           [f'ImageNet class{i}' for i in range(1000)])
+            factories = mock.factories()
+            factories['yolo'] = lambda: native_yolo
+            export_cache(args_for(root), factories)
+            rows = [row for row in read_jsonl(root / 'observations.jsonl')
+                    if row['tool'] in ('INITIAL', 'YOLO_CLS')]
+            self.assertTrue(rows)
+            self.assertTrue(all('probs' not in row and len(row['laya_probs']) == 6 for row in rows))
+            self.assertTrue(all(row['native_valid'] and row['native_class_count'] == 1000 for row in rows))
+            self.assertTrue(all(row['native_topk'][0]['label'] == 'ImageNet class0' for row in rows))
+            self.assertTrue(any(evidence and any('native ImageNet visual context' in key for key in evidence)
+                                for evidence in mock.evidence))
+            self.assertFalse(any(evidence and 'YOLO predicted probabilities' in evidence
+                                 for evidence in mock.evidence))
+            manifest = json.loads((root / 'manifest.json').read_text())
+            self.assertEqual(manifest['provenance']['tool_cache']['yolo_label_spaces'], ['imagenet1000'])
+            self.assertTrue(manifest['cache_complete'])
 
     def test_original_only_yolo_dataset_and_split_overlap(self):
         with tempfile.TemporaryDirectory() as tmp:

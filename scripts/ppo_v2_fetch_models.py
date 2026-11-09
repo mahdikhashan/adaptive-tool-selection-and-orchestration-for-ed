@@ -22,7 +22,8 @@ def main():
             YOLO("yolo26n-cls.pt", task="classify")
         finally:
             os.chdir(original_directory)
-        record["yolo_imagenet_initialization"] = str(output / "yolo26n-cls.pt")
+        record["yolo_pretrained_imagenet_classifier"] = str(output / "yolo26n-cls.pt")
+        record["yolo_finetuning_required"] = False
     if args.only in ("all", "laya", "smol", "qwen"):
         from huggingface_hub import HfApi, snapshot_download
         for name, repository, revision in (

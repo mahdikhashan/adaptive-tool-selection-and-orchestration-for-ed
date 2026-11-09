@@ -3,7 +3,7 @@
 Target: FGCS special issue "Agentic Federated Learning for the Edge Intelligence". The deadline is 2027-01-31.
 
 Related documents:
-- `docs/ppo_v2_gpu.md`: new RTX 2080 Ti single-seed frozen-tool PPO pipeline, one YOLO training command, optional ENHANCE and pull/run instructions.
+- `docs/ppo_v2_gpu.md`: RTX 2080 Ti single-seed PPO pipeline, pretrained YOLO by default, optional later fine-tuning/ENHANCE, and pull/run instructions.
 - `docs/federated_learning_design.md`: the design.
 - `docs/novelty_check.md`: the novelty check.
 - `docs/asset_verification.md`: the models and the datasets.

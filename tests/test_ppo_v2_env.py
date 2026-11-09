@@ -252,6 +252,77 @@ class EnvTests(unittest.TestCase):
         self.assertEqual(env.trace[-1]['byte_measurement'], 'nominal simulated payload')
         self.assertFalse(env.mask()[ACTIONS.index('CLOUD_QWEN8B')])
 
+    def native_initial(self):
+        initial = self.observations[0]
+        initial.pop('probs')
+        initial.update(native_topk=[{'label': 'steel_arch_bridge', 'probability': .4},
+                                   {'label': 'electric_pole', 'probability': .2}],
+                       native_entropy=2., native_margin=.2,
+                       native_class_count=1000, native_valid=True)
+        return initial
+
+    def test_native_pretrained_yolo_has_separate_features_no_six_class_fabrication(self):
+        self.native_initial()
+        env = self.env()
+        observation = dict(zip(FEATURES, env.reset()))
+        self.assertEqual([observation['yolo_'+c] for c in CLASSES], [0.]*6)
+        self.assertEqual(observation['yolo_valid'], 0.)
+        self.assertEqual(observation['yolo_native_valid'], 1.)
+        self.assertEqual(observation['yolo_native_class_count'], 1000.)
+        self.assertEqual(observation['yolo_native_entropy'], 2.)
+        self.assertEqual(observation['yolo_native_margin'], .2)
+        self.assertEqual(observation['yolo_native_top1confidence'], .4)
+        self.assertEqual(observation['laya_valid'], 1.)
+        env.step(0)
+        self.assertEqual(env.results[0]['prediction'], 'good')
+
+    def test_native_observation_age_advances_with_tool_and_policy_duration(self):
+        self.native_initial()
+        self.observations += [self.record('0', 'IMAGE_QUALITY', duration=.3,
+                                          quality=[1., 2., 3., 4.])]
+        env = self.env()
+        obs, _, _, _ = env.step(ACTIONS.index('IMAGE_QUALITY'), policy_duration_s=.1)
+        observation = dict(zip(FEATURES, obs))
+        self.assertAlmostEqual(observation['yolo_native_age_s'], .4)
+        self.assertAlmostEqual(observation['yolo_age_s'], .4)
+        self.assertEqual(observation['yolo_native_valid'], 1.)
+
+    def test_native_container_cannot_carry_truth_or_extra_label_fields(self):
+        initial = self.native_initial()
+        initial['native_topk'][0]['ground_truth'] = 'rust'
+        with self.assertRaisesRegex(ValueError, 'model label/probability'):
+            self.bundle()
+        initial['native_topk'][0].pop('ground_truth')
+        initial['probs'] = [1., 0., 0., 0., 0., 0.]
+        with self.assertRaisesRegex(ValueError, 'masquerade'):
+            self.bundle()
+        initial.pop('probs')
+        initial['native_entropy'] = 20.
+        with self.assertRaisesRegex(ValueError, 'bounds'):
+            self.bundle()
+
+    def test_canonical_yolo_native_features_explicitly_invalid(self):
+        env = self.env()
+        observation = dict(zip(FEATURES, env.reset()))
+        self.assertEqual(observation['yolo_valid'], 1.)
+        self.assertEqual(observation['yolo_native_valid'], 0.)
+        self.assertEqual(observation['yolo_native_class_count'], 0.)
+
+    def test_native_duplicate_display_names_allowed_for_distinct_class_ids(self):
+        initial = self.native_initial()
+        initial['native_topk'] = [{'label': 'crane', 'probability': .4, 'class_id': 134},
+                                 {'label': 'crane', 'probability': .2, 'class_id': 517}]
+        env = self.env()
+        self.assertEqual(dict(zip(FEATURES, env.reset()))['yolo_native_valid'], 1.)
+        for invalid in (134, -1, 1000, True, 1.5):
+            with self.subTest(class_id=invalid):
+                initial['native_topk'][1]['class_id'] = invalid
+                with self.assertRaisesRegex(ValueError, 'class_id'):
+                    self.bundle()
+        initial['native_topk'][1].pop('class_id')
+        with self.assertRaisesRegex(ValueError, 'distinct explicit class IDs'):
+            self.bundle()
+
     def test_frozen_audit_repeated_resets(self):
         env = self.env((1,))
         for _ in range(5):

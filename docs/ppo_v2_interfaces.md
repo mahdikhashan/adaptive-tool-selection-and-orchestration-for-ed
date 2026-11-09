@@ -9,6 +9,13 @@ emulates five drones and the actor-only coordinator. Qwen3-VL-8B loads on this V
 in a separate staged cloud-tool pass; NF4/fp16 computation is the11GB2080Ti option.
 Perception weights remain frozen. No training is executed during implementation.
 
+Latest YOLO amendment: use official pretrained YOLO26n-cls AS-IS by default;
+no fine-tuning. Its1000 ImageNet categories are native context, NOT six defect
+classes. Cache native top-k/entropy/margin and feed generic visual evidence to
+frozen Laya; six-condition YOLO probabilities are missing/invalid, never remapped.
+Actor observes explicit native-output flags/statistics. Optional separately trained
+six-class YOLO is retained for a later ablation via an explicit checkpoint override.
+
 Subsequent user amendment: optional ENHANCE denoise/sharpen/deblur extension.
 Default disabled for original A2 pilot, explicitly enabled for an ablation.
 Append ENHANCE_DENOISE, ENHANCE_SHARPEN, ENHANCE_DEBLUR to fixed ACTIONS.

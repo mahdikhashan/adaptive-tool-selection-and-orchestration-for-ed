@@ -3,7 +3,7 @@
 Implementation branch: `agentic-ppo-v2`. This is runnable pipeline code, not a
 completed experiment. No model/controller training was run during implementation.
 Train only on CUDA. The target is one booked RTX 2080 Ti (11 GB), native PyTorch,
-FP32 edge-tool inference, NF4/fp16 Qwen8B inference, one six-class YOLO checkpoint, seed 0. Quantization
+FP32 edge-tool inference, NF4/fp16 Qwen8B inference, one pretrained YOLO checkpoint, seed 0. Quantization
 scripts remain unchanged. Extra seeds come after the pilot.
 
 Federated clients are the **drones themselves**. Each owns its actor, local
@@ -11,6 +11,14 @@ critic, optimizer and trajectories. This VM emulates five drones plus an
 actor-only aggregation coordinator; there are no base stations. Perception
 models remain frozen while drone controller policies learn. The cloud role is
 the larger Qwen model, loaded on this same VM for this simulation.
+
+Latest user decision: **do not fine-tune YOLO now**. The default is official
+pretrained YOLO26n-cls as downloaded, frozen for inference. Its ImageNet outputs
+provide generic visual context to Laya; they are not defect predictions. The
+six-condition classification comes from frozen Laya. Native YOLO top-k labels,
+entropy, margin and validity are recorded; six-way YOLO condition probabilities
+are explicitly missing. A separately fine-tuned six-class checkpoint remains an
+optional later tool comparison, not a prerequisite for this pilot.
 
 ## Pull and provision
 
@@ -53,7 +61,7 @@ uv run --locked --extra gpu-tools python scripts/ppo_v2_fetch_models.py \
 bash scripts/runs/ppo_v2_gpu.sh prepare
 ```
 
-The download command fetches one ImageNet YOLO26n classifier initialization,
+The download command fetches one pretrained ImageNet YOLO26n classifier,
 the pinned published Laya checkpoint, SmolVLM-256M base and Qwen3-VL-8B. It does not train or
 run inference. Your existing fine-tuned Smol LoRA adapter is still required:
 
@@ -67,21 +75,28 @@ HF cache. First-load/download time is outside the declared warm-service mission
 and separately recorded. Frozen checkpoint choice/provenance is recorded; no
 Laya/Smol weights are trained by the controller pipeline.
 
-Preparation writes immutable `full` and `small` bundles under
-`$FEDORCH_WORK/runs/ppo_v2/`. `full` contains all training items for the separate
-YOLO training; `small` retains approximately10% source-grouped training data,
+Preparation writes the immutable `small` bundle under
+`$FEDORCH_WORK/runs/ppo_v2/`, retaining approximately10% source-grouped training data,
 with all validation/test metadata unchanged. The existing five tower-balanced
 partitions are assigned to five simulated drones. The realized audit mask is independent Bernoulli p=.05,
 fixed by seed and item ID, persisted once and reused across all methods.
 
 Source-image questions are sampled together, no source/tower may cross splits,
 and labels are kept separate from tool observations. Privileged class-aware
-sampling and YOLO pretraining can use training labels: **5% is the controller
-feedback budget, not the total label budget of all pretrained tools**. Record
+sampling can use training labels: **5% is the controller feedback budget, not
+the total label budget of all previously trained tools**. No new YOLO fitting
+occurs in this pilot. Record
 the provenance of the existing Smol adapter too; a tool trained on validation
 towers is a development condition, not a clean held-out tool validation claim.
 
-## Train exactly one YOLO classifier
+## Optional later: fine-tune one YOLO classifier
+
+**Skip this section for the current pilot.** The profile/cache stages use the
+downloaded pretrained checkpoint through `PPO_V2_YOLO_BASE` (or an explicit
+`PPO_V2_YOLO_CHECKPOINT` override). Continue to the profiling section below.
+
+If you decide to fine-tune later, the existing optional stage first prepares a
+`full` bundle and then trains one checkpoint:
 
 ```bash
 bash scripts/runs/ppo_v2_gpu.sh yolo
@@ -90,6 +105,8 @@ bash scripts/runs/ppo_v2_gpu.sh yolo
 Equivalent explicit command:
 
 ```bash
+uv run --locked python scripts/ppo_v2_prepare.py \
+  --output "$FEDORCH_WORK/runs/ppo_v2/full" --fraction 1 --seed 0
 uv run --locked --extra gpu-tools python scripts/ppo_v2_yolo.py \
   --bundle "$FEDORCH_WORK/runs/ppo_v2/full" \
   --output "$FEDORCH_WORK/runs/ppo_v2/yolo" \
@@ -98,7 +115,8 @@ uv run --locked --extra gpu-tools python scripts/ppo_v2_yolo.py \
 ```
 
 This produces `frozen_yolo.pt` plus class-order, dataset and checkpoint hashes.
-Reuse that single checkpoint for every controller. It refuses to overwrite an
+To select it later, set `PPO_V2_YOLO_CHECKPOINT` to that file and create a fresh
+tool cache with matched settings for every controller. It refuses to overwrite an
 existing frozen checkpoint. Training and validation use the same deterministic
 whole-image letterbox transform, with no synthetic augmentation/random crop.
 Only train images receive gradient updates; validation selects the epoch; test
@@ -214,7 +232,7 @@ pixels, retain the original, and invoke frozen Laya afterward. At most one
 enhancement per component. Artifact creation/erasure is possible; measure gain
 and harm, not just confidence. No learned restoration model is introduced.
 
-Create a fresh small bundle, reuse the SAME frozen YOLO checkpoint, then run the
+Create a fresh small bundle, reuse the SAME pretrained YOLO checkpoint, then run the
 explicit cache command with `--enhance`, and train with `--enhance`. Keep other
 settings and audit IDs matched. Do not change the portfolio in a populated cache;
 the immutable signature prevents stale reuse.
@@ -259,7 +277,7 @@ claim. Sparse verified labels may make early PPO unstable or inferior to the
 matched supervised baseline.
 
 Runtime cannot be measured on the2080Ti from this laptop. Planning ranges for
-one GPU, already downloaded data/models: one20-epoch YOLO roughly20–90min;
+one GPU, already downloaded data/models: no YOLO training is required;
 train/validation cache with5edge views,32-token Smol and original-only32-token
 Qwen calls roughly3–16h;
 single-seed pilot comparison roughly15–90min after caching. These are unverified

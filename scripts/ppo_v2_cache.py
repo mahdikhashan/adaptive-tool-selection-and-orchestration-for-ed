@@ -11,7 +11,8 @@ from fedorch.ppo_v2_tools import DEFAULT_TOOLS, export_cache
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--bundle', required=True)
-    parser.add_argument('--yolo-checkpoint', required=True, help='ONE frozen six-class native .pt checkpoint')
+    parser.add_argument('--yolo-checkpoint', required=True,
+                        help='Pretrained1000-class .pt as-is; optional separately trained canonical six-class .pt')
     parser.add_argument('--laya-checkpoint', required=True, help='Local frozen Laya-Vision checkpoint')
     parser.add_argument('--smol-base', help='Local SmolVLM-256M base directory')
     parser.add_argument('--smol-adapter', help='Local existing fine-tuned LoRA directory')

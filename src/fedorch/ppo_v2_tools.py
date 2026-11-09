@@ -20,7 +20,7 @@ import time
 CLASSES = ('good', 'rust', 'corrosion', 'missing_cap', 'bird_nest', 'other')
 DESCRIPTIONS = ('good, no defect', 'rust', 'corrosion', 'missing cap', 'bird nest',
                 'other defect (torn part or peeling paint)')
-VERSION = 'ppo-v2-native-4-local-qwen'
+VERSION = 'ppo-v2-native-6-imagenet-yolo-evidence'
 DEFAULT_TOOLS = ('YOLO_CLS', 'ROI_PROPOSE', 'ZOOM_ROI', 'IMAGE_QUALITY')
 ALL_TOOLS = (*DEFAULT_TOOLS, 'SMOL_EXPLAIN', 'CLOUD_QWEN8B', 'ENHANCE')
 
@@ -65,6 +65,33 @@ def reorder_probs(values, names):
     if len(names) != 6 or set(names) != set(CLASSES):
         raise ValueError(f'Checkpoint must have exactly the six protocol classes, got {names}')
     return normalized([values[names.index(name)] for name in CLASSES])
+
+
+def yolo_label_space(names):
+    names = [names[i] for i in range(len(names))] if isinstance(names, dict) else list(names)
+    if len(names) == 6 and set(names) == set(CLASSES):
+        return 'condition6'
+    if len(names) == 1000 and all(isinstance(name, str) and name for name in names):
+        return 'imagenet1000'
+    raise ValueError('YOLO must be the native pretrained 1000-class classifier or an optional canonical six-class checkpoint')
+
+
+def native_yolo_summary(values, names):
+    """Native visual context only; never remap ImageNet outputs into defect classes."""
+    if yolo_label_space(names) != 'imagenet1000':
+        raise ValueError('Native YOLO summary requires exactly1000 ImageNet classes')
+    values = [float(value) for value in values]
+    if len(values) != 1000 or any(not math.isfinite(value) or value < 0 for value in values) or sum(values) <= 0:
+        raise ValueError('Expected1000 finite nonnegative native YOLO probabilities')
+    total = sum(values)
+    probabilities = [value / total for value in values]
+    order = sorted(range(1000), key=lambda index: probabilities[index], reverse=True)
+    return {'native_topk': [{'class_id': index, 'label': names[index], 'probability': probabilities[index]}
+                            for index in order[:5]],
+            'native_entropy': -sum(value * math.log(value) for value in probabilities if value > 0),
+            'native_margin': probabilities[order[0]] - probabilities[order[1]],
+            'native_class_count': 1000, 'native_valid': True,
+            'yolo_label_space': 'imagenet1000', 'yolo_preprocessing': 'ultralytics_official_predict'}
 
 
 def letterbox(image, size=224):
@@ -160,16 +187,29 @@ class YoloAdapter:
         self.model.requires_grad_(False)
         self.device, self.size = device, size
         self.names = self.wrapper.names
-        reorder_probs([1] * 6, self.names)
+        self.label_space = yolo_label_space(self.names)
         self.torch = torch
 
     def __call__(self, image):
+        if self.label_space == 'imagenet1000':
+            # Preserve the official checkpoint's prediction transforms as-is.
+            # The deterministic custom letterbox is only for the optional
+            # separately trained six-class checkpoint, never this native path.
+            with self.torch.inference_mode():
+                result = self.wrapper.predict(source=image, imgsz=self.size, device=self.device,
+                                              half=False, augment=False, verbose=False)[0]
+            native = native_yolo_summary(result.probs.data.float().cpu().tolist(), result.names)
+            native['timing'] = {key + '_s': float(value) / 1000 for key, value in result.speed.items()
+                                if value is not None}
+            return native
         tensor, prep_s = timed_call(lambda: LetterboxTransform(self.size)(image).unsqueeze(0).to(self.device), self.device)
         with self.torch.inference_mode():
             result, model_s = timed_call(lambda: self.model(tensor), self.device)
         probs = result[0] if isinstance(result, tuple) else result
         values, post_s = timed_call(lambda: reorder_probs(probs[0].float().cpu().tolist(), self.names), self.device)
-        return {'probs': values, 'timing': {'preprocess_s': prep_s, 'model_execution_s': model_s,
+        return {'probs': values, 'yolo_label_space': 'condition6',
+                'yolo_preprocessing': 'PIL_bilinear_letterbox_RGB114',
+                'timing': {'preprocess_s': prep_s, 'model_execution_s': model_s,
                                           'postprocess_s': post_s}}
 
 
@@ -579,6 +619,9 @@ def export_cache(args, factories=None):
     signature_data = {'version': VERSION, 'classes': CLASSES, 'weights': weights,
                       'source_hashes': source_hashes, 'tools': tools, 'hardware': hardware,
                       'versions': versions, 'imgsz': args.imgsz, 'edge_dtype': 'fp32',
+                      'yolo_label_space': 'auto:imagenet1000|condition6',
+                      'yolo_preprocessing': {'imagenet1000': 'ultralytics_official_predict',
+                                             'condition6': 'PIL bilinear letterbox RGB114'},
                       'smol_max_tokens': args.smol_max_tokens, 'cloud_url': args.cloud_url,
                       'cloud_model': args.cloud_model, 'cloud_timeout': args.cloud_timeout,
                       'cloud_revision': args.cloud_revision,
@@ -589,7 +632,7 @@ def export_cache(args, factories=None):
                       'cloud_local_preprocessing': 'thumbnail512 then RGB114 pad to multiples32',
                       'enhance': {'median_kernel': 3, 'unsharp': [1, 100, 3],
                                   'wiener_gaussian_sigma': 1, 'wiener_K': .01, 'boundary': 'wrap'},
-                      'preprocessing': 'PIL bilinear letterbox RGB114; original+4 native grid crops',
+                      'preprocessing': 'original+4 native grid crops; YOLO preprocessing chosen by native label space',
                       'laya_condition': 'image + only latest tool evidence; no labels/filenames/history'}
     signature = hashlib.sha256(json.dumps(signature_data, sort_keys=True).encode()).hexdigest()
     staging = bundle / '.ppo_v2_cache'
@@ -697,7 +740,15 @@ def export_cache(args, factories=None):
             laya_entries.append((source, view, 'image', None))
             raw = stages[(source, view, 'yolo')]
             if raw['valid']:
-                laya_entries.append((source, view, 'yolo', {'YOLO predicted probabilities': dict(zip(CLASSES, raw['probs']))}))
+                if raw.get('native_valid'):
+                    # Keep full numeric precision in the journal/observations;
+                    # concise text evidence avoids wasting Laya's context window.
+                    topk = [{**entry, 'probability': round(entry['probability'], 4)}
+                            for entry in raw['native_topk']]
+                    evidence = {'YOLO native ImageNet visual context (prediction, not condition or ground truth)': topk}
+                else:
+                    evidence = {'YOLO predicted probabilities': dict(zip(CLASSES, [round(p, 4) for p in raw['probs']]))}
+                laya_entries.append((source, view, 'yolo', evidence))
             for tool in ('smol', 'cloud'):
                 raw = stages.get((source, view, tool))
                 if raw and raw['valid']:
@@ -793,6 +844,10 @@ def export_cache(args, factories=None):
                           'provenance_signature': signature}
                 if raw.get('probs') is not None:
                     record['probs'] = raw['probs']
+                for field in ('native_topk', 'native_entropy', 'native_margin', 'native_class_count',
+                              'native_valid', 'yolo_label_space', 'yolo_preprocessing'):
+                    if field in raw:
+                        record[field] = raw[field]
                 if raw.get('explanation') is not None:
                     record['explanation'] = raw['explanation']
                 if downstream and downstream.get('probs') is not None:
@@ -888,8 +943,12 @@ def export_cache(args, factories=None):
     manifest.setdefault('provenance', {})['tool_cache'] = {'signature': signature,
         'checkpoint_sha256': weights, 'native_fp32': not bool(local_cloud), 'edge_tools_fp32': True,
         'qwen_runtime_precision': cloud_precision if local_cloud else None, 'tensorRT': False,
+        'yolo_training_performed_by_exporter': False,
         'tool_pretraining_may_use_full_training_labels': True,
-        'cache_preprocessing_version': VERSION, 'details': '.ppo_v2_cache/provenance.json'}
+        'cache_preprocessing_version': VERSION, 'details': '.ppo_v2_cache/provenance.json',
+        'yolo_label_spaces': sorted({row.get('yolo_label_space', 'condition6') for row in stages.values()
+                                     if row['stage'] == 'yolo' and row['valid']}),
+        'yolo_preprocessing_by_space': signature_data['yolo_preprocessing']}
     if mock:
         manifest['synthetic_fixture'] = True
     write_json(manifest_path, manifest)

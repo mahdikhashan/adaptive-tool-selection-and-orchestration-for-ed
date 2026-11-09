@@ -61,7 +61,7 @@ case "$stage" in
     run_python scripts/ppo_v2_compare.py --bundle "$small_bundle" \
       --output "${PPO_V2_OUTPUT:-$task_root/pilot_seed0}" --device cuda \
       --feedback audit --seed 0 --rounds 3 --episodes-per-client 64 \
-      --eval-split val --budgets 2,6,15 --network-config "$network_config" "$@"
+      --eval-split val --budgets 2,6,15,30,60 --network-config "$network_config" "$@"
     ;;
   *)
     echo "Usage: bash scripts/runs/ppo_v2_gpu.sh prepare|yolo|profile|cache|pilot|cache-test [extra CLI flags]"

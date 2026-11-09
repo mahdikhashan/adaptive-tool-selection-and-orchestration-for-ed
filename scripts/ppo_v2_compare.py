@@ -23,7 +23,7 @@ def main(argv=None):
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--device", choices=["cuda"], default="cuda", help="GPU training only")
     parser.add_argument("--feedback", choices=["audit", "full"], default="audit")
-    parser.add_argument("--budgets", default="2,6,15")
+    parser.add_argument("--budgets", default="2,6,15,30,60")
     parser.add_argument("--enhance", action="store_true")
     parser.add_argument("--eval-split", choices=["val", "test"], default="val")
     args, extra = parser.parse_known_args(argv)

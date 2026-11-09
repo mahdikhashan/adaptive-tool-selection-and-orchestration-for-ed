@@ -320,7 +320,7 @@ def metrics(results, labels):
             'energy_per_verified_finding': None}
 
 
-def evaluate(bundle, actors, budgets=(2.,6.,15.), split='val', device='cpu', enhance=False,
+def evaluate(bundle, actors, budgets=(2.,6.,15.,30.,60.), split='val', device='cpu', enhance=False,
              max_eval_items=None, heuristic=False, network=None):
     if split not in ('val', 'test'): raise ValueError('Evaluation must be held-out')
     if len(actors) > 1:
@@ -508,7 +508,7 @@ def parser():
     p.add_argument('--seed',type=int,default=0); p.add_argument('--rounds',type=int,default=3)
     p.add_argument('--episodes-per-client',type=int,default=64)
     p.add_argument('--device',choices=['cpu','cuda'],default='cuda')
-    p.add_argument('--budgets',type=lambda s:[float(x) for x in s.split(',')],default=[2.,6.,15.])
+    p.add_argument('--budgets',type=lambda s:[float(x) for x in s.split(',')],default=[2.,6.,15.,30.,60.])
     p.add_argument('--eval-split',choices=['val','test'],default='val')
     p.add_argument('--max-eval-items',type=int)
     p.add_argument('--network-config',metavar='JSON_FILE', help='Explicit measured network scenario; default disconnected/cloud masked')

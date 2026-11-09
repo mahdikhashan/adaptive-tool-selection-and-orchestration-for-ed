@@ -208,7 +208,7 @@ Federated modes run in the Flower simulation engine (`flwr` 1.43, Ray backend,
 - Laptop check without a GPU: `--device cpu --allow-synthetic` on a synthetic
   fixture bundle only. Real bundles still train on CUDA only.
 All have S3/A2 capabilities supported by the current cache, the same audit mask,
-2/6/15-second budgets and nominal mission counts. It uses seed0, 3 rounds,
+2/6/15/30/60-second budgets and nominal mission counts. It uses seed0, 3 rounds,
 64 missions/client/round and validation only. These are early development results,
 not the final20-round or multiseed estimates. Source/component counts also vary
 with grouped missions/action lengths: report them alongside mission counts.
@@ -239,7 +239,7 @@ uv run --locked --extra gpu-tools python scripts/ppo_v2_compare.py \
   --bundle "$FEDORCH_WORK/runs/ppo_v2/small" \
   --output "$FEDORCH_WORK/runs/ppo_v2/seed0_round20" \
   --device cuda --feedback audit --seed 0 --rounds 20 \
-  --episodes-per-client 256 --budgets 2,6,15 --eval-split val \
+  --episodes-per-client 256 --budgets 2,6,15,30,60 --eval-split val \
   --network-config "$FEDORCH_WORK/runs/ppo_v2/network.json"
 ```
 
@@ -257,7 +257,7 @@ uv run --locked --extra gpu-tools python scripts/ppo_v2_train.py \
   --bundle "$FEDORCH_WORK/runs/ppo_v2/small" \
   --output "$FEDORCH_WORK/runs/ppo_v2/fed_pilot_final_test" \
   --evaluate-only "$FEDORCH_WORK/runs/ppo_v2/pilot_seed0/fed/round-02.pt" \
-  --device cuda --eval-split test --budgets 2,6,15 \
+  --device cuda --eval-split test --budgets 2,6,15,30,60 \
   --network-config "$FEDORCH_WORK/runs/ppo_v2/network.json"
 ```
 

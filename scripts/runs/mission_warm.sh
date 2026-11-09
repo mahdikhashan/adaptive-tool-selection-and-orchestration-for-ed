@@ -9,7 +9,6 @@ seeds="${SEEDS:-0 1 2 3 4}"
 rounds="${ROUNDS:-60}"
 out=results/route/mission_warm
 mkdir -p "$out" logs/mission_warm
-uv sync --locked >/dev/null
 uv run --locked --with scikit-learn python -c "import sklearn, torch; print('ok', torch.__version__)"
 
 common="--budgets .1,.15,.2,.3 --rounds $rounds --eval-every 10 --segments 256 --gamma .98 --gae .9 --lr 1e-4 --warm --warm-segments 2000 --fed"

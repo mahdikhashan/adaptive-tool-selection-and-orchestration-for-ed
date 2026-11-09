@@ -10,6 +10,7 @@ dependencies = [
     "transformers==5.17.0",
     "peft>=0.17",
     "accelerate>=1.0",
+    "bitsandbytes>=0.45; sys_platform == 'linux'",
     "huggingface-hub>=0.34",
     "flwr[simulation]>=1.20",
     "nano-jev>=1.0",

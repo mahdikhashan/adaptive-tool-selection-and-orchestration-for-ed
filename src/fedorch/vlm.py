@@ -21,11 +21,11 @@ def jpeg_bytes(image):
 
 
 class LetterScorer:
-    def __init__(self, model_id, dtype=torch.float32, device="cuda", adapter=None):
+    def __init__(self, model_id, dtype=torch.float32, device="cuda", adapter=None, model=None):
         self.processor = AutoProcessor.from_pretrained(model_id)
-        if "SmolVLM" in model_id:
+        if "SmolVLM" in str(model_id):
             self.processor.image_processor.size = {"longest_edge": MAX_SIDE}
-        self.model = AutoModelForImageTextToText.from_pretrained(model_id, dtype=dtype).to(device).eval()
+        self.model = model or AutoModelForImageTextToText.from_pretrained(model_id, dtype=dtype).to(device).eval()
         if adapter:
             from peft import PeftModel
             self.model = PeftModel.from_pretrained(self.model, adapter).eval()

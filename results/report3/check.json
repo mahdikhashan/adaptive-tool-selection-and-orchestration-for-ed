@@ -1,0 +1,112 @@
+{
+  "images": {
+    "val": 2000,
+    "test": 2000
+  },
+  "component": {
+    "laya alone": {
+      "accuracy": 0.8715,
+      "macro_f1": 0.802
+    },
+    "smolvlm alone": {
+      "accuracy": 0.1405,
+      "macro_f1": 0.045
+    },
+    "qwen alone": {
+      "accuracy": 0.257,
+      "macro_f1": 0.3094
+    },
+    "oracle best-of-tools (labels)": {
+      "accuracy": 0.9245,
+      "macro_f1": 0.92
+    },
+    "static cascade laya->smolvlm (theta 0.5)": {
+      "accuracy": 0.8675,
+      "macro_f1": 0.827
+    },
+    "learned fusion": {
+      "accuracy": 0.9045,
+      "macro_f1": 0.8278
+    },
+    "learned whose-answer selector": {
+      "accuracy": 0.87,
+      "macro_f1": 0.7989
+    }
+  },
+  "defect": {
+    "classifier alone": {
+      "risk_per_1000": 105.5,
+      "recall": 0.9144,
+      "false_alarm": 0.0281
+    },
+    "laya alone": {
+      "risk_per_1000": 162.5,
+      "recall": 0.8717,
+      "false_alarm": 0.0469
+    },
+    "smolvlm alone": {
+      "risk_per_1000": 194.5,
+      "recall": 0.8289,
+      "false_alarm": 0.0381
+    },
+    "qwen alone": {
+      "risk_per_1000": 861.0,
+      "recall": 1.0,
+      "false_alarm": 0.9498
+    },
+    "oracle best-of-tools (labels)": {
+      "risk_per_1000": 2.0,
+      "recall": 1.0,
+      "false_alarm": 0.0022
+    },
+    "static cascade classifier->smolvlm (theta 0.99)": {
+      "risk_per_1000": 171.0,
+      "recall": 0.8396,
+      "false_alarm": 0.0232
+    },
+    "learned fusion (threshold 0.074)": {
+      "risk_per_1000": 119.0,
+      "recall": 0.9091,
+      "false_alarm": 0.0375
+    },
+    "learned whose-answer selector": {
+      "risk_per_1000": 178.0,
+      "recall": 0.8235,
+      "false_alarm": 0.0143
+    }
+  },
+  "condition": {
+    "classifier alone": {
+      "accuracy": 0.9735,
+      "macro_f1": 0.7427
+    },
+    "laya alone": {
+      "accuracy": 0.943,
+      "macro_f1": 0.6634
+    },
+    "smolvlm alone": {
+      "accuracy": 0.3665,
+      "macro_f1": 0.1009
+    },
+    "qwen alone": {
+      "accuracy": 0.798,
+      "macro_f1": 0.2248
+    },
+    "oracle best-of-tools (labels)": {
+      "accuracy": 0.992,
+      "macro_f1": 0.9726
+    },
+    "static cascade classifier->smolvlm (theta 0.5)": {
+      "accuracy": 0.968,
+      "macro_f1": 0.7061
+    },
+    "learned fusion": {
+      "accuracy": 0.9815,
+      "macro_f1": 0.7558
+    },
+    "learned whose-answer selector": {
+      "accuracy": 0.98,
+      "macro_f1": 0.7452
+    }
+  }
+}

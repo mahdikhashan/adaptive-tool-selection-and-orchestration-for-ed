@@ -33,6 +33,11 @@ the latest YOLO, Smol or Qwen output as `evidence`. The fine-tuning did not incl
 component probabilities of each call for later analysis. The controller features
 still use the condition probabilities only.
 
+Quick feasibility check: `bash scripts/runs/ppo_v2_gpu.sh quick`. It builds a
+separate bundle (`runs/ppo_v2/quick`, about 985 images), caches YOLO, SmolVLM and
+the zoom views without the cloud model, and compares three methods with full
+feedback and 10 rounds: the fixed cascade, central PPO and Flower FedAvg-PPO.
+
 Small pilot: set `PPO_V2_TRAIN_FRACTION=0.025` and `PPO_V2_VAL_FRACTION=0.07`
 before `prepare`. The bundle then has 592 train images (633 items, 25 audited)
 and 393 val images (462 items, 9 towers). The val subset is stratified by tower

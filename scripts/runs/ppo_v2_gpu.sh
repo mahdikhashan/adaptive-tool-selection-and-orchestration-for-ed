@@ -27,7 +27,30 @@ cache_args=(--bundle "$small_bundle" --yolo-checkpoint "$yolo_checkpoint"
   --cloud-max-tokens "${PPO_V2_QWEN_TOKENS:-96}" --cloud-views original
   --tools YOLO_CLS,SMOL_EXPLAIN,CLOUD_QWEN8B,ROI_PROPOSE,ZOOM_ROI,IMAGE_QUALITY)
 
+quick_bundle="$task_root/quick"
+quick_args=(--bundle "$quick_bundle" --yolo-checkpoint "$yolo_checkpoint"
+  --laya-checkpoint "$laya_path" --smol-base "$smol_path" ${smol_adapter:+--smol-adapter "$smol_adapter"}
+  --device cuda --smol-max-tokens "${PPO_V2_SMOL_TOKENS:-96}"
+  --tools YOLO_CLS,SMOL_EXPLAIN,ROI_PROPOSE,ZOOM_ROI)
+
 case "$stage" in
+  quick)
+    # Minimal feasibility check: ~1,000 images, no cloud model, full feedback,
+    # three methods (fixed cascade, central PPO, Flower FedAvg-PPO), 10 rounds.
+    require_gpu
+    if [ ! -f "$quick_bundle/manifest.json" ]; then
+      run_python scripts/ppo_v2_prepare.py --output "$quick_bundle" --seed 0 --fraction 0.025 --val-fraction 0.07
+    fi
+    if [ ! -e "$network_config" ]; then
+      mkdir -p "$task_root"
+      run_python -c 'import json,sys; from pathlib import Path; Path(sys.argv[1]).write_text(json.dumps({"available":True,"delay_s":0.0},indent=2)+"\n")' "$network_config"
+    fi
+    run_python scripts/ppo_v2_cache.py "${quick_args[@]}" --splits train,val
+    run_python scripts/ppo_v2_compare.py --bundle "$quick_bundle" \
+      --output "${PPO_V2_OUTPUT:-$task_root/quick_result}" --device cuda \
+      --modes heuristic,central,fed --feedback full --seed 0 --rounds 10 --episodes-per-client 64 \
+      --eval-split val --budgets 2,6,15,30,60 --network-config "$network_config" "$@"
+    ;;
   prepare)
     mkdir -p "$task_root"
     run_python scripts/ppo_v2_prepare.py --output "$small_bundle" --seed 0 \
@@ -65,7 +88,8 @@ case "$stage" in
       --eval-split val --budgets 2,6,15,30,60 --network-config "$network_config" "$@"
     ;;
   *)
-    echo "Usage: bash scripts/runs/ppo_v2_gpu.sh prepare|yolo|profile|cache|pilot|cache-test [extra CLI flags]"
+    echo "Usage: bash scripts/runs/ppo_v2_gpu.sh quick|prepare|yolo|profile|cache|pilot|cache-test [extra CLI flags]"
+    echo "quick: fastest feasibility check (~1,000 images, YOLO+zoom+SmolVLM, no cloud, full feedback, cascade vs central PPO vs FedAvg-PPO)."
     echo "Set CUDA_VISIBLE_DEVICES to your booked 2080 Ti. Default: pretrained YOLO as-is, no fine-tuning, seed0, 10% train, 5% audits."
     echo "Default edge models: laya-vision fine-tuned (good300_full) and SmolVLM-256M fine-tuned (LoRA merged), both nf4 4-bit with fp16 compute."
     echo "For fp32: PPO_V2_LAYA=<laya dir> PPO_V2_SMOL_BASE=<smol base dir> PPO_V2_SMOL_ADAPTER=<lora dir>."

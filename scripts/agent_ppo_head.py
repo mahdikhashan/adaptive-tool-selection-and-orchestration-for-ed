@@ -4,8 +4,11 @@ FedAvg/FedProx over five tower-split drones, int8 update deltas). Train on val i
 """
 import argparse
 import json
+import os
 import time
 from pathlib import Path
+
+os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
 
 import numpy as np
 import torch
@@ -29,7 +32,7 @@ def train_cycles(policy, critic, c, indices, args, cycles, tools=True, rng=None,
     for _ in range(cycles):
         anchor = [p.detach().clone() for p in policy.parameters()]
         episodes, _ = rollout(policy, critic, c, rng.choice(indices, size=args.episodes), args.budgets, rng, tools=tools, device=device)
-        info = update(policy, critic, episodes, c, prox=prox, anchor=anchor, device=device, lr=args.lr)
+        info = update(policy, critic, episodes, c, prox=prox, anchor=anchor, device=device, lr=args.lr, minibatch=args.minibatch)
     return info
 
 
@@ -123,6 +126,7 @@ def main():
     parser.add_argument("--central-cycles", type=int, default=5, help="rollout/update cycles per round, central modes")
     parser.add_argument("--local-cycles", type=int, default=1, help="rollout/update cycles per drone per Flower round")
     parser.add_argument("--lr", type=float, default=5e-5)
+    parser.add_argument("--minibatch", type=int, default=64)
     parser.add_argument("--strategy", choices=["fedavg", "fedprox"], default="fedavg")
     parser.add_argument("--proximal-mu", type=float, default=.01)
     parser.add_argument("--seed", type=int, default=0)
@@ -135,8 +139,10 @@ def main():
     train = [i for i, m in enumerate(c.meta) if m["split"] == "val"]
     test = [i for i, m in enumerate(c.meta) if m["split"] == "test"]
     out = results_dir(f"agent_ppo_head/seed{args.seed}")
-    summary = {"train_images": len(train), "test_images": len(test), "budgets": args.budgets, "rounds": args.rounds,
-               "trainable_parameters": sum(p.numel() for p in HeadPolicy(c.base).parameters())}
+    path = out / "summary.json"
+    summary = json.loads(path.read_text()) if path.exists() else {}
+    summary.update({"train_images": len(train), "test_images": len(test), "budgets": args.budgets, "rounds": args.rounds,
+                    "trainable_parameters": sum(p.numel() for p in HeadPolicy(c.base).parameters())})
     for mode in args.modes.split(","):
         start = time.time()
         if mode == "zeroshot":
@@ -149,10 +155,13 @@ def main():
                 curve.append({"round": r + 1, "test": evaluate(policy, c, test, args.budgets, tools=mode == "central", device=args.device)})
                 print(json.dumps({mode: r + 1, "test": curve[-1]["test"]}), flush=True)
             summary[mode] = curve
+            del policy, critic
         elif mode == "fed":
             summary[mode] = run_fed(c, train, test, args, out)
         summary[f"{mode}_seconds"] = round(time.time() - start, 1)
-        (out / "summary.json").write_text(json.dumps(summary, indent=2))
+        path.write_text(json.dumps(summary, indent=2))
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
     print(f"done, wrote {out / 'summary.json'}", flush=True)
 
 

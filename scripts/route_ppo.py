@@ -35,14 +35,14 @@ class Critic(nn.Module):
 
 
 class Env:
-    def __init__(self, data, rows, table, prior_train, prior_new, budgets, regime, seed, lambda_time):
-        self.data, self.rows, self.table = data, rows, table
+    def __init__(self, data, rows, table, prior_train, prior_new, budgets, regime, seed, lambda_time, defer=False):
+        self.data, self.rows, self.table, self.defer = data, rows, table, defer
         self.prior_train, self.prior_new, self.budgets, self.lambda_time = prior_train, prior_new, budgets, lambda_time
         self.net = Network(regime, seed)
 
     def episode(self, item, budget, mbps=None):
         mbps = self.net.sample() if mbps is None else mbps
-        return Episode(self.data, self.table, item, budget, mbps, self.prior_train, self.prior_new, self.lambda_time)
+        return Episode(self.data, self.table, item, budget, mbps, self.prior_train, self.prior_new, self.lambda_time, self.defer)
 
 
 def run_policy(env, items, budget, choose):
@@ -53,7 +53,7 @@ def run_policy(env, items, budget, choose):
             action = choose(ep)
             _, done, risk = ep.step(action)
             if done:
-                out.append({"risk": risk, "time": ep.elapsed, "called": ep.called, "bytes": ep.bytes})
+                out.append({"risk": risk, "time": ep.elapsed, "called": ep.called, "bytes": ep.bytes, "deferred": action == 4})
                 break
     return out
 
@@ -61,6 +61,7 @@ def run_policy(env, items, budget, choose):
 def summarize(out):
     return {"risk_per_1000": round(1000 * float(np.mean([o["risk"] for o in out])), 1),
             "mean_time_s": round(float(np.mean([o["time"] for o in out])), 3),
+            "deferred": round(float(np.mean([o.get("deferred", False) for o in out])), 3),
             "uplink_kb_per_item": round(float(np.mean([o["bytes"] for o in out])) / 1000, 2),
             **{f"calls_{t}": round(float(np.mean([t in o["called"] for o in out])), 3) for t in EXTRA}}
 
@@ -74,6 +75,17 @@ def cascade(ep):
     if abs(ep.p_now() - BAYES) > .1 or len(ep.called) >= 2:
         return 0
     return all_that_fit(ep)
+
+
+def all_then_defer(ep):
+    a = all_that_fit(ep)
+    return a if a else (4 if ep.report_risk() > .5 else 0)
+
+
+def cascade_defer(ep):
+    if ep.report_risk() <= .5:
+        return 0
+    return all_that_fit(ep) or 4
 
 
 def oracle_choice(env, item, budget, mbps):
@@ -177,32 +189,41 @@ def main():
     parser.add_argument("--fed-rounds", type=int, default=30)
     parser.add_argument("--local-cycles", type=int, default=1)
     parser.add_argument("--oracle-only", action="store_true", help="recompute the oracle into an existing summary")
+    parser.add_argument("--defer", action="store_true", help="add the DEFER action (operator review, risk 0.5)")
+    parser.add_argument("--per-subset", action="store_true", help="fit one fusion model per tool subset")
+    parser.add_argument("--tag", default="")
+    parser.add_argument("--entropy", type=float, default=.01)
+    parser.add_argument("--lr", type=float, default=3e-4)
     args = parser.parse_args()
     data = Data()
     val = [i for i in data.items if i["split"] == "val"]
     test = [i for i in data.items if i["split"] == "test"]
     prior_val = float(np.mean([i["label"] != "good" for i in val]))
-    oof = out_of_fold(data, val)
-    fusion = Fusion(data).fit(val)
+    oof = out_of_fold(data, val, per_subset=args.per_subset)
+    fusion = Fusion(data, per_subset=args.per_subset).fit(val)
     table = fusion.table(test)
     prior_test = em_prior(np.array([table[i["item_id"]][("laya", "smolvlm_local", "cloud")] for i in test]), prior_val)
     print(f"val {len(val)} items, test {len(test)} items | defect share val {prior_val:.3f}, test EM {prior_test:.3f}", flush=True)
     report = {"budgets": args.budgets, "regime": args.regime, "lambda_time": args.lambda_time, "prior_val": prior_val,
               "prior_test_em": prior_test, "methods": {}}
-    test_env = lambda seed: Env(data, test, table, prior_val, prior_test, args.budgets, args.regime, 10_000 + seed, args.lambda_time)
+    test_env = lambda seed: Env(data, test, table, prior_val, prior_test, args.budgets, args.regime, 10_000 + seed, args.lambda_time, args.defer)
     env0 = test_env(0)
-    for name, choose in (("ResNet only", lambda ep: 0), ("all tools that fit", all_that_fit), ("uncertainty cascade", cascade)):
+    baselines = [("ResNet only", lambda ep: 0), ("all tools that fit", all_that_fit), ("uncertainty cascade", cascade)]
+    if args.defer:
+        baselines += [("ResNet, defer if uncertain", lambda ep: 4 if ep.report_risk() > .5 else 0),
+                      ("all tools, defer if uncertain", all_then_defer), ("cascade with defer", cascade_defer)]
+    for name, choose in baselines:
         report["methods"][name] = evaluate(test_env(0), test, args.budgets, choose)
         print(name, json.dumps({b: v["risk_per_1000"] for b, v in report["methods"][name].items()}), flush=True)
     report["methods"]["oracle subset (labels)"] = {str(b): summarize(oracle(test_env(0), test, b)) for b in args.budgets}
     print("oracle", json.dumps({b: (v["risk_per_1000"], v["mean_time_s"]) for b, v in report["methods"]["oracle subset (labels)"].items()}), flush=True)
-    path = results_dir("route") / f"summary_lambda{args.lambda_time}.json"
+    path = results_dir("route") / f"summary_lambda{args.lambda_time}{args.tag}.json"
     if args.oracle_only:
         saved = json.loads(path.read_text())
         saved["methods"]["oracle subset (labels)"] = report["methods"]["oracle subset (labels)"]
         path.write_text(json.dumps(saved, indent=2))
         return
-    train_env = lambda seed: Env(data, val, oof, prior_val, prior_val, args.budgets, args.regime, seed, args.lambda_time)
+    train_env = lambda seed: Env(data, val, oof, prior_val, prior_val, args.budgets, args.regime, seed, args.lambda_time, args.defer)
     dim = len(Episode(data, oof, val[0], 1., 1., prior_val, prior_val).features())
     for seed in args.seeds:
         torch.manual_seed(seed)
@@ -210,11 +231,14 @@ def main():
         actor, critic, env = Actor(dim), Critic(dim), train_env(seed)
         curve = []
         for r in range(args.rounds):
-            update(actor, critic, collect(env, actor, critic, val, rng, args.episodes))
+            update(actor, critic, collect(env, actor, critic, val, rng, args.episodes), lr=args.lr, entropy=args.entropy)
             if (r + 1) % 10 == 0:
                 curve.append({"round": r + 1, "test": evaluate(test_env(seed), test, args.budgets, greedy(actor))})
                 print(f"central seed {seed} round {r + 1}", json.dumps({b: (v["risk_per_1000"], v["mean_time_s"]) for b, v in curve[-1]["test"].items()}), flush=True)
         report["methods"][f"central PPO seed {seed}"] = curve
+        path.write_text(json.dumps(report, indent=2))
+        if not args.fed_rounds:
+            continue
         buckets = tower_buckets(val, 5)
         drones = [[i for i in val if buckets[i["tower"]] == d] for d in range(5)]
         torch.manual_seed(seed)
@@ -237,7 +261,7 @@ def main():
                 print(f"fedavg seed {seed} round {r + 1}", json.dumps({b: (v["risk_per_1000"], v["mean_time_s"]) for b, v in curve[-1]["test"].items()}), flush=True)
         report["methods"][f"FedAvg PPO seed {seed}"] = curve
         report["actor_parameters"] = sum(p.numel() for p in global_actor.parameters())
-        (results_dir("route") / f"summary_lambda{args.lambda_time}.json").write_text(json.dumps(report, indent=2))
+        path.write_text(json.dumps(report, indent=2))
     print("done", flush=True)
 
 

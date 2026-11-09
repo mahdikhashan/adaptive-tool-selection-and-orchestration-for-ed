@@ -20,7 +20,7 @@ from fedorch.network import bandwidth_trace, lte_mbps
 
 TOOLS = ["classifier", "laya", "smolvlm_local", "cloud"]
 EXTRA = ["laya", "smolvlm_local", "cloud"]
-ACTIONS = ["REPORT", "CALL_LAYA", "CALL_SMOLVLM", "CALL_QWEN"]
+ACTIONS = ["REPORT", "CALL_LAYA", "CALL_SMOLVLM", "CALL_QWEN", "DEFER"]
 JETSON, RTT, BAYES = 9.0, .05, 1 / 11
 SUBSETS = [tuple(s) for r in range(4) for s in itertools.combinations(EXTRA, r)]
 
@@ -78,29 +78,35 @@ class Data:
 class Fusion:
     """One logistic model over all tool subsets (missing tools = 0 + flag). Out-of-fold on val towers."""
 
-    def __init__(self, data, C=.03):
-        self.data, self.C = data, C
+    def __init__(self, data, C=.03, per_subset=False):
+        self.data, self.C, self.per_subset = data, C, per_subset
 
     def fit(self, train):
+        y = np.array([i["label"] != "good" for i in train])
+        self.prior_train = float(y.mean())
+        if self.per_subset:
+            self.models = {s: LogisticRegression(max_iter=5000, C=self.C).fit(np.array([self.data.fusion_x(i, s) for i in train]), y) for s in SUBSETS}
+            return self
         X = [self.data.fusion_x(i, s) for i in train for s in SUBSETS]
-        y = [i["label"] != "good" for i in train for _ in SUBSETS]
-        self.model = LogisticRegression(max_iter=5000, C=self.C).fit(np.array(X), np.array(y))
-        self.prior_train = float(np.mean([i["label"] != "good" for i in train]))
+        self.model = LogisticRegression(max_iter=5000, C=self.C).fit(np.array(X), np.repeat(y, len(SUBSETS)))
         return self
 
     def table(self, rows):
-        X = np.array([self.data.fusion_x(i, s) for i in rows for s in SUBSETS])
-        p = self.model.predict_proba(X)[:, 1].reshape(len(rows), len(SUBSETS))
+        if self.per_subset:
+            p = np.stack([self.models[s].predict_proba(np.array([self.data.fusion_x(i, s) for i in rows]))[:, 1] for s in SUBSETS], 1)
+        else:
+            X = np.array([self.data.fusion_x(i, s) for i in rows for s in SUBSETS])
+            p = self.model.predict_proba(X)[:, 1].reshape(len(rows), len(SUBSETS))
         return {i["item_id"]: dict(zip(SUBSETS, p[n])) for n, i in enumerate(rows)}
 
 
-def out_of_fold(data, rows, folds=5):
+def out_of_fold(data, rows, folds=5, per_subset=False):
     towers = sorted({i["tower"] for i in rows})
     table = {}
     for k in range(folds):
         fit = [i for i in rows if towers.index(i["tower"]) % folds != k]
         hold = [i for i in rows if towers.index(i["tower"]) % folds == k]
-        table.update(Fusion(data).fit(fit).table(hold))
+        table.update(Fusion(data, per_subset=per_subset).fit(fit).table(hold))
     return table
 
 
@@ -120,8 +126,8 @@ def corrected(p, prior_train, prior_new):
 
 
 class Episode:
-    def __init__(self, data, table, item, budget, mbps, prior_train, prior_new, lambda_time=1.):
-        self.d, self.table, self.i, self.budget, self.mbps = data, table, item, budget, mbps
+    def __init__(self, data, table, item, budget, mbps, prior_train, prior_new, lambda_time=1., defer=False):
+        self.d, self.table, self.i, self.budget, self.mbps, self.defer = data, table, item, budget, mbps, defer
         self.prior_train, self.prior_new, self.lambda_time = prior_train, prior_new, lambda_time
         self.t = data.time[item["item_id"]]
         self.called, self.elapsed, self.bytes = (), self.t["classifier"], 0
@@ -140,7 +146,11 @@ class Episode:
         m = [True]
         for tool in EXTRA:
             m.append(tool not in self.called and self.elapsed + self.cost(tool) <= self.budget)
-        return np.array(m)
+        return np.array(m + [self.defer])
+
+    def report_risk(self):
+        p = self.p_now()
+        return min(10 * p, 1 - p)
 
     def features(self):
         p = self.p_now()
@@ -149,7 +159,7 @@ class Episode:
             on = tool in self.called
             own += [logit(self.d.p[self.i["item_id"]][tool]) if on else 0., float(on)]
         left = max(0., self.budget - self.elapsed)
-        return np.array([logit(p), abs(p - BAYES), logit(self.d.p[self.i["item_id"]]["classifier"])] + own +
+        return np.array([logit(p), abs(p - BAYES), min(10 * p, 1 - p), logit(self.d.p[self.i["item_id"]]["classifier"])] + own +
                         [left / self.budget, math.log(self.budget), math.log1p(self.mbps), float(self.mbps > 0)] +
                         [math.log1p(self.cost(t)) if math.isfinite(self.cost(t)) else 5. for t in EXTRA] +
                         self.d.state_x(self.i), dtype=np.float32)
@@ -158,8 +168,8 @@ class Episode:
         return self.d.defect_option(self.i) if self.p_now() >= BAYES else "good"
 
     def step(self, action):
-        if action == 0:
-            risk = answer_risk(self.answer(), self.i["label"])
+        if action in (0, 4):
+            risk = answer_risk(self.answer() if action == 0 else "cannot-judge", self.i["label"])
             return -risk - self.lambda_time * self.elapsed / self.budget, True, risk
         tool = EXTRA[action - 1]
         dt = self.cost(tool)

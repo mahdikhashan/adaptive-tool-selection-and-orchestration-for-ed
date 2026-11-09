@@ -63,10 +63,11 @@ def greedy_policy(actor):
     return choose
 
 
-def collect(make, actor, critic, runs, rng, n_segments, length, budgets):
+def collect(make, actor, critic, runs, rng, n_segments, length, budgets, teachers=None):
     batch = []
     for _ in range(n_segments):
-        seg = make(random_segment(runs, length, rng), budgets[rng.integers(len(budgets))], rng)
+        b = budgets[rng.integers(len(budgets))]
+        seg = make(random_segment(runs, length, rng), b, rng)
         steps, done = [], False
         while not done:
             x, m = torch.from_numpy(seg.features()), torch.from_numpy(seg.mask())
@@ -74,10 +75,42 @@ def collect(make, actor, critic, runs, rng, n_segments, length, budgets):
                 dist = torch.distributions.Categorical(logits=actor(x).masked_fill(~m, -1e9))
                 a = int(dist.sample())
                 steps.append(dict(x=x, m=m, a=a, logp=float(dist.log_prob(torch.tensor(a))), v=float(critic(x))))
+            if teachers:
+                steps[-1]["t"] = teachers[b](seg)
             reward, done, _ = seg.step(a)
             steps[-1]["r"] = reward
         batch.append(steps)
     return batch
+
+
+def imitate(make, actor, critic, runs, rng, n_segments, length, budgets, teachers, gamma, epochs=30, lr=1e-3):
+    xs, ms, acts, rets = [], [], [], []
+    for _ in range(n_segments):
+        b = budgets[rng.integers(len(budgets))]
+        seg = make(random_segment(runs, length, rng), b, rng)
+        rewards, done = [], False
+        while not done:
+            xs.append(torch.from_numpy(seg.features()))
+            ms.append(torch.from_numpy(seg.mask()))
+            acts.append(teachers[b](seg))
+            reward, done, _ = seg.step(acts[-1])
+            rewards.append(reward)
+        g, tail = 0., []
+        for r in reversed(rewards):
+            g = r + gamma * g
+            tail.append(g)
+        rets += tail[::-1]
+    x, m, a, ret = torch.stack(xs), torch.stack(ms), torch.tensor(acts), torch.tensor(rets, dtype=torch.float32)
+    opt_a, opt_c = torch.optim.Adam(actor.parameters(), lr=lr), torch.optim.Adam(critic.parameters(), lr=lr)
+    for _ in range(epochs):
+        for ids in torch.randperm(len(a)).split(1024):
+            loss = torch.nn.functional.cross_entropy(actor(x[ids]).masked_fill(~m[ids], -1e9), a[ids])
+            opt_a.zero_grad(); loss.backward(); opt_a.step()
+            vloss = ((critic(x[ids]) - ret[ids]) ** 2).mean()
+            opt_c.zero_grad(); vloss.backward(); opt_c.step()
+    with torch.no_grad():
+        agree = (actor(x).masked_fill(~m, -1e9).argmax(-1) == a).float().mean()
+    return round(float(agree), 4), len(a)
 
 
 def main():
@@ -93,6 +126,12 @@ def main():
     parser.add_argument("--gae", type=float, default=None, help="GAE lambda; default: Monte-Carlo returns")
     parser.add_argument("--seeds", type=lambda s: [int(x) for x in s.split(",")], default=[0, 1, 2])
     parser.add_argument("--fed", action="store_true", help="also train FedAvg PPO over five tower-group drones")
+    parser.add_argument("--central", type=int, default=1, help="0 skips central PPO")
+    parser.add_argument("--warm", action="store_true", help="imitate the tuned paced rule before PPO")
+    parser.add_argument("--warm-segments", type=int, default=2000)
+    parser.add_argument("--anchor", type=float, default=0., help="weight of the rule-imitation term during PPO")
+    parser.add_argument("--lr", type=float, default=3e-4)
+    parser.add_argument("--eval-every", type=int, default=10)
     parser.add_argument("--tag", default="")
     args = parser.parse_args()
     data = Data()
@@ -116,7 +155,7 @@ def main():
     def train_make(items, b, rng):
         return Segment(data, oof, items, b, args.cap, train_trace, rng.integers(len(train_trace)), prior_val, prior_val)
 
-    report = {"budgets_per_item": args.budgets, "cap": args.cap, "length": args.length, "regime": args.regime,
+    report = {"args": vars(args), "budgets_per_item": args.budgets, "cap": args.cap, "length": args.length, "regime": args.regime,
               "test_segments": len(test_segments), "methods": {}}
     m = report["methods"]
     path = results_dir("route") / f"mission{args.tag}.json"
@@ -141,33 +180,66 @@ def main():
     runs = tower_runs(val)
     buckets = tower_buckets(val, 5)
     drone_runs = [[r for r in runs if buckets[r[0]["tower"]] == d] for d in range(5)]
-    for seed in args.seeds:
+    sizes = [sum(len(x) for x in dr) for dr in drone_runs]
+    teachers = {b: paced(*tuned[b]) for b in args.budgets}
+    anchor_teachers = teachers if args.anchor else None
+    ppo = dict(lr=args.lr, entropy=args.entropy, gamma=args.gamma, gae=args.gae, anchor=args.anchor)
+
+    def evaluate(actor):
+        return {str(b): run(test_segments, test_make(b), greedy_policy(actor)) for b in args.budgets}
+
+    def start(seed):
         torch.manual_seed(seed)
-        rng = np.random.default_rng(seed)
         actor, critic = Actor(dim), Critic(dim)
-        for r in range(args.rounds):
-            update(actor, critic, collect(train_make, actor, critic, runs, rng, args.segments, args.length, args.budgets),
-                   entropy=args.entropy, gamma=args.gamma, gae=args.gae)
-        m[f"central PPO seed {seed}"] = {str(b): run(test_segments, test_make(b), greedy_policy(actor)) for b in args.budgets}
-        show(f"central PPO seed {seed}")
-        path.write_text(json.dumps(report, indent=2, default=float))
+        curve = []
+        if args.warm:
+            agree, n = imitate(train_make, actor, critic, runs, np.random.default_rng(10 * seed + 7), args.warm_segments,
+                               args.length, args.budgets, teachers, args.gamma)
+            curve.append({"round": 0, "rule_agreement": agree, "imitation_steps": n, "test": evaluate(actor)})
+            print(f"seed {seed} imitation: agreement {agree} on {n} steps |",
+                  " ".join(f"{b}: {v['risk_per_1000']:.1f}" for b, v in curve[-1]["test"].items()), flush=True)
+        return actor, critic, curve
+
+    for seed in args.seeds:
+        if args.central:
+            actor, critic, curve = start(seed)
+            rng = np.random.default_rng(seed)
+            for r in range(args.rounds):
+                update(actor, critic, collect(train_make, actor, critic, runs, rng, args.segments, args.length, args.budgets, anchor_teachers), **ppo)
+                if (r + 1) % args.eval_every == 0:
+                    curve.append({"round": r + 1, "test": evaluate(actor)})
+                    print(f"central seed {seed} round {r + 1} |", " ".join(f"{b}: {v['risk_per_1000']:.1f}" for b, v in curve[-1]["test"].items()), flush=True)
+            if not curve or curve[-1]["round"] != args.rounds:
+                curve.append({"round": args.rounds, "test": evaluate(actor)})
+            m[f"central PPO seed {seed}"] = curve[-1]["test"]
+            report.setdefault("curves", {})[f"central PPO seed {seed}"] = curve
+            show(f"central PPO seed {seed}")
+            path.write_text(json.dumps(report, indent=2, default=float))
         if not args.fed:
             continue
-        torch.manual_seed(seed)
-        global_actor, critics = Actor(dim), [Critic(dim) for _ in range(5)]
+        global_actor, warm_critic, curve = start(seed)
+        critics = [Critic(dim) for _ in range(5)]
+        if args.warm:
+            for c in critics:
+                c.load_state_dict(warm_critic.state_dict())
         rngs = [np.random.default_rng(100 * seed + d) for d in range(5)]
-        sizes = [sum(len(x) for x in dr) for dr in drone_runs]
         for r in range(args.rounds):
             states = []
             for d in range(5):
                 local = Actor(dim)
                 local.load_state_dict(global_actor.state_dict())
                 update(local, critics[d], collect(train_make, local, critics[d], drone_runs[d], rngs[d],
-                                                  max(8, args.segments * sizes[d] // sum(sizes)), args.length, args.budgets),
-                       entropy=args.entropy, gamma=args.gamma, gae=args.gae)
+                                                  max(8, args.segments * sizes[d] // sum(sizes)), args.length, args.budgets, anchor_teachers), **ppo)
                 states.append(local.state_dict())
             global_actor.load_state_dict({k: sum(s[k] * w for s, w in zip(states, sizes)) / sum(sizes) for k in states[0]})
-        m[f"FedAvg PPO seed {seed}"] = {str(b): run(test_segments, test_make(b), greedy_policy(global_actor)) for b in args.budgets}
+            if (r + 1) % args.eval_every == 0:
+                curve.append({"round": r + 1, "test": evaluate(global_actor)})
+                print(f"fedavg seed {seed} round {r + 1} |", " ".join(f"{b}: {v['risk_per_1000']:.1f}" for b, v in curve[-1]["test"].items()), flush=True)
+        if not curve or curve[-1]["round"] != args.rounds:
+            curve.append({"round": args.rounds, "test": evaluate(global_actor)})
+        m[f"FedAvg PPO seed {seed}"] = curve[-1]["test"]
+        report.setdefault("curves", {})[f"FedAvg PPO seed {seed}"] = curve
+        report["actor_parameters"] = sum(p.numel() for p in global_actor.parameters())
         show(f"FedAvg PPO seed {seed}")
         path.write_text(json.dumps(report, indent=2, default=float))
     print("done", flush=True)

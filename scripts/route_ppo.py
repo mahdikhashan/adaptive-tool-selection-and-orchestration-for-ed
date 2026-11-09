@@ -139,7 +139,7 @@ def collect(env, actor, critic, items, rng, episodes):
     return batch
 
 
-def update(actor, critic, batch, lr=3e-4, epochs=4, clip=.2, entropy=.01, gamma=1., gae=None):
+def update(actor, critic, batch, lr=3e-4, epochs=4, clip=.2, entropy=.01, gamma=1., gae=None, anchor=0.):
     steps, ret, advs = [], [], []
     for ep in batch:
         g, a, next_v, tail, tail_a = 0., 0., 0., [], []
@@ -165,12 +165,15 @@ def update(actor, critic, batch, lr=3e-4, epochs=4, clip=.2, entropy=.01, gamma=
     m = torch.stack([s["m"] for s in steps])
     a = torch.tensor([s["a"] for s in steps])
     old = torch.tensor([s["logp"] for s in steps])
+    teacher = torch.tensor([s.get("t", 0) for s in steps])
     opt_a, opt_c = torch.optim.Adam(actor.parameters(), lr=lr), torch.optim.Adam(critic.parameters(), lr=1e-3)
     for _ in range(epochs):
         for ids in torch.randperm(len(steps)).split(512):
             dist = torch.distributions.Categorical(logits=actor(x[ids]).masked_fill(~m[ids], -1e9))
             ratio = (dist.log_prob(a[ids]) - old[ids]).exp()
             loss = -torch.minimum(ratio * adv[ids], ratio.clamp(1 - clip, 1 + clip) * adv[ids]).mean() - entropy * dist.entropy().mean()
+            if anchor:
+                loss = loss - anchor * dist.log_prob(teacher[ids]).mean()
             opt_a.zero_grad(); loss.backward(); opt_a.step()
             vloss = ((critic(x[ids]) - ret[ids]) ** 2).mean()
             opt_c.zero_grad(); vloss.backward(); opt_c.step()

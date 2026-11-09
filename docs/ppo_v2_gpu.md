@@ -23,6 +23,16 @@ towers in the quantization experiment: laya fine-tuned 4-bit has item accuracy
 0.939 and defect AUROC 0.967. SmolVLM LoRA 4-bit has item accuracy 0.865 and
 answers "good" for 98.4% of items.
 
+Laya query: each laya call asks the three questions of the fine-tuning, with the
+same instructions and the same option text (`LAYA_QUESTIONS` in
+`src/fedorch/ppo_v2_tools.py`, equal to `vision.QUESTIONS`). The options are a
+plain list, as in training. The code maps the six condition answers back to the
+class names. The tool calls do not change: one image-only call, and one call with
+the latest YOLO, Smol or Qwen output as `evidence`. The fine-tuning did not include
+`evidence`. The cache keeps the defect probability (`laya_defect_noul`) and the
+component probabilities of each call for later analysis. The controller features
+still use the condition probabilities only.
+
 Latest user decision: **do not fine-tune YOLO now**. The default is official
 pretrained YOLO26n-cls as downloaded, frozen for inference. Its ImageNet outputs
 provide generic visual context to Laya; they are not defect predictions. The

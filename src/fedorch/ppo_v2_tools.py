@@ -20,7 +20,16 @@ import time
 CLASSES = ('good', 'rust', 'corrosion', 'missing_cap', 'bird_nest', 'other')
 DESCRIPTIONS = ('good, no defect', 'rust', 'corrosion', 'missing cap', 'bird nest',
                 'other defect (torn part or peeling paint)')
-VERSION = 'ppo-v2-native-6-imagenet-yolo-evidence'
+VERSION = 'ppo-v2-native-6-imagenet-yolo-evidence-laya-training-format'
+COMPONENTS = ('stockbridge damper', 'preformed damper', 'glass insulator', 'polymer insulator', 'shackle',
+              'lightning rod suspension', 'vari-grip clamp', 'yoke', 'yoke suspension', 'spacer', 'plate')
+LAYA_QUESTIONS = {
+    'component': {'type': 'choice', 'instructions': 'Which power line component is in this image?',
+                  'criteria': list(COMPONENTS)},
+    'defect': {'type': 'noul', 'instructions': 'Does this power line component have a defect?'},
+    'condition': {'type': 'choice', 'instructions': 'Which condition does this power line component have?',
+                  'criteria': list(DESCRIPTIONS)},
+}
 DEFAULT_TOOLS = ('YOLO_CLS', 'ROI_PROPOSE', 'ZOOM_ROI', 'IMAGE_QUALITY')
 ALL_TOOLS = (*DEFAULT_TOOLS, 'SMOL_EXPLAIN', 'CLOUD_QWEN8B', 'ENHANCE')
 
@@ -244,14 +253,16 @@ class LayaAdapter:
         state = {'image': image}
         if evidence is not None:
             state['evidence'] = evidence
-        questions = {'condition': {'type': 'choice',
-                     'instructions': 'Which condition does this power line component have?',
-                     'criteria': dict(zip(CLASSES, DESCRIPTIONS))}}
         with self.torch.inference_mode():
-            answer = self.agent.predict(state, questions)['answers']['condition']
-        if answer.get('truncated'):
-            raise ValueError('Laya input/evidence truncated: ' + str(answer['truncated']))
-        return {'probs': normalized([answer['probabilities'][c] for c in CLASSES])}
+            answers = self.agent.predict(state, LAYA_QUESTIONS)['answers']
+        truncated = sorted(name for name, answer in answers.items() if answer.get('truncated'))
+        if truncated:
+            raise ValueError('Laya input/evidence truncated: ' + ', '.join(truncated))
+        condition = answers['condition']['probabilities']
+        component = answers['component']['probabilities']
+        return {'probs': normalized([condition[d] for d in DESCRIPTIONS]),
+                'laya_defect_noul': float(answers['defect']['noul']),
+                'laya_component_probs': {name: float(component[name]) for name in COMPONENTS}}
 
 
 class SmolAdapter:
@@ -665,7 +676,8 @@ def export_cache(args, factories=None):
                       'enhance': {'median_kernel': 3, 'unsharp': [1, 100, 3],
                                   'wiener_gaussian_sigma': 1, 'wiener_K': .01, 'boundary': 'wrap'},
                       'preprocessing': 'original+4 native grid crops; YOLO preprocessing chosen by native label space',
-                      'laya_condition': 'image + only latest tool evidence; no labels/filenames/history'}
+                      'laya_condition': 'image + only latest tool evidence; no labels/filenames/history',
+                      'laya_questions': LAYA_QUESTIONS}
     signature = hashlib.sha256(json.dumps(signature_data, sort_keys=True).encode()).hexdigest()
     staging = bundle / '.ppo_v2_cache'
     staging.mkdir(exist_ok=True)

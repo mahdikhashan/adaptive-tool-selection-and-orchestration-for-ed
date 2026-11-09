@@ -1,0 +1,573 @@
+/system/user/studentwork/khashan/fedorch/src/fedorch/laya_head_agent.py:38: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/utils/tensor_numpy.cpp:213.)
+  h[j, :, :hh.shape[1]] = torch.from_numpy(np.asarray(hh))
+{"report_only": 1, "test": {"1.0": {"images": 400, "report_cost_per_1000": 1632.5, "defect_risk_per_1000": 560.0, "defect_recall": 0.6364, "false_alarm": 0.1798, "component_macro_f1": 0.124, "condition_macro_f1": 0.213, "mean_steps": 1.0, "mean_time_s": 0.065, "used_a_tool": 0.0}, "3.0": {"images": 400, "report_cost_per_1000": 1632.5, "defect_risk_per_1000": 560.0, "defect_recall": 0.6364, "false_alarm": 0.1798, "component_macro_f1": 0.124, "condition_macro_f1": 0.213, "mean_steps": 1.0, "mean_time_s": 0.065, "used_a_tool": 0.0}, "6.0": {"images": 400, "report_cost_per_1000": 1632.5, "defect_risk_per_1000": 560.0, "defect_recall": 0.6364, "false_alarm": 0.1798, "component_macro_f1": 0.124, "condition_macro_f1": 0.213, "mean_steps": 1.0, "mean_time_s": 0.065, "used_a_tool": 0.0}}}
+{"report_only": 2, "test": {"1.0": {"images": 400, "report_cost_per_1000": 1637.5, "defect_risk_per_1000": 592.5, "defect_recall": 0.6591, "false_alarm": 0.2444, "component_macro_f1": 0.1233, "condition_macro_f1": 0.2204, "mean_steps": 1.0, "mean_time_s": 0.065, "used_a_tool": 0.0}, "3.0": {"images": 400, "report_cost_per_1000": 1637.5, "defect_risk_per_1000": 592.5, "defect_recall": 0.6591, "false_alarm": 0.2444, "component_macro_f1": 0.1233, "condition_macro_f1": 0.2204, "mean_steps": 1.0, "mean_time_s": 0.065, "used_a_tool": 0.0}, "6.0": {"images": 400, "report_cost_per_1000": 1637.5, "defect_risk_per_1000": 592.5, "defect_recall": 0.6591, "false_alarm": 0.2444, "component_macro_f1": 0.1233, "condition_macro_f1": 0.2204, "mean_steps": 1.0, "mean_time_s": 0.065, "used_a_tool": 0.0}}}
+{"report_only": 3, "test": {"1.0": {"images": 400, "report_cost_per_1000": 1547.5, "defect_risk_per_1000": 552.5, "defect_recall": 0.6591, "false_alarm": 0.1994, "component_macro_f1": 0.1221, "condition_macro_f1": 0.2399, "mean_steps": 1.0, "mean_time_s": 0.065, "used_a_tool": 0.0}, "3.0": {"images": 400, "report_cost_per_1000": 1547.5, "defect_risk_per_1000": 552.5, "defect_recall": 0.6591, "false_alarm": 0.1994, "component_macro_f1": 0.1221, "condition_macro_f1": 0.2399, "mean_steps": 1.0, "mean_time_s": 0.065, "used_a_tool": 0.0}, "6.0": {"images": 400, "report_cost_per_1000": 1547.5, "defect_risk_per_1000": 552.5, "defect_recall": 0.6591, "false_alarm": 0.1994, "component_macro_f1": 0.1221, "condition_macro_f1": 0.2399, "mean_steps": 1.0, "mean_time_s": 0.065, "used_a_tool": 0.0}}}
+{"report_only": 4, "test": {"1.0": {"images": 400, "report_cost_per_1000": 1590.0, "defect_risk_per_1000": 572.5, "defect_recall": 0.6591, "false_alarm": 0.2219, "component_macro_f1": 0.1193, "condition_macro_f1": 0.237, "mean_steps": 1.0, "mean_time_s": 0.065, "used_a_tool": 0.0}, "3.0": {"images": 400, "report_cost_per_1000": 1590.0, "defect_risk_per_1000": 572.5, "defect_recall": 0.6591, "false_alarm": 0.2219, "component_macro_f1": 0.1193, "condition_macro_f1": 0.237, "mean_steps": 1.0, "mean_time_s": 0.065, "used_a_tool": 0.0}, "6.0": {"images": 400, "report_cost_per_1000": 1590.0, "defect_risk_per_1000": 572.5, "defect_recall": 0.6591, "false_alarm": 0.2219, "component_macro_f1": 0.1193, "condition_macro_f1": 0.237, "mean_steps": 1.0, "mean_time_s": 0.065, "used_a_tool": 0.0}}}
+{"report_only": 5, "test": {"1.0": {"images": 400, "report_cost_per_1000": 1550.0, "defect_risk_per_1000": 560.0, "defect_recall": 0.7045, "false_alarm": 0.264, "component_macro_f1": 0.1237, "condition_macro_f1": 0.2284, "mean_steps": 1.0, "mean_time_s": 0.065, "used_a_tool": 0.0}, "3.0": {"images": 400, "report_cost_per_1000": 1550.0, "defect_risk_per_1000": 560.0, "defect_recall": 0.7045, "false_alarm": 0.264, "component_macro_f1": 0.1237, "condition_macro_f1": 0.2284, "mean_steps": 1.0, "mean_time_s": 0.065, "used_a_tool": 0.0}, "6.0": {"images": 400, "report_cost_per_1000": 1550.0, "defect_risk_per_1000": 560.0, "defect_recall": 0.7045, "false_alarm": 0.264, "component_macro_f1": 0.1237, "condition_macro_f1": 0.2284, "mean_steps": 1.0, "mean_time_s": 0.065, "used_a_tool": 0.0}}}
+{"report_only": 6, "test": {"1.0": {"images": 400, "report_cost_per_1000": 1490.0, "defect_risk_per_1000": 512.5, "defect_recall": 0.75, "false_alarm": 0.2669, "component_macro_f1": 0.1297, "condition_macro_f1": 0.207, "mean_steps": 1.0, "mean_time_s": 0.065, "used_a_tool": 0.0}, "3.0": {"images": 400, "report_cost_per_1000": 1490.0, "defect_risk_per_1000": 512.5, "defect_recall": 0.75, "false_alarm": 0.2669, "component_macro_f1": 0.1297, "condition_macro_f1": 0.207, "mean_steps": 1.0, "mean_time_s": 0.065, "used_a_tool": 0.0}, "6.0": {"images": 400, "report_cost_per_1000": 1490.0, "defect_risk_per_1000": 512.5, "defect_recall": 0.75, "false_alarm": 0.2669, "component_macro_f1": 0.1297, "condition_macro_f1": 0.207, "mean_steps": 1.0, "mean_time_s": 0.065, "used_a_tool": 0.0}}}
+{"report_only": 7, "test": {"1.0": {"images": 400, "report_cost_per_1000": 1505.0, "defect_risk_per_1000": 540.0, "defect_recall": 0.6364, "false_alarm": 0.1573, "component_macro_f1": 0.1265, "condition_macro_f1": 0.1777, "mean_steps": 1.0, "mean_time_s": 0.065, "used_a_tool": 0.0}, "3.0": {"images": 400, "report_cost_per_1000": 1505.0, "defect_risk_per_1000": 540.0, "defect_recall": 0.6364, "false_alarm": 0.1573, "component_macro_f1": 0.1265, "condition_macro_f1": 0.1777, "mean_steps": 1.0, "mean_time_s": 0.065, "used_a_tool": 0.0}, "6.0": {"images": 400, "report_cost_per_1000": 1505.0, "defect_risk_per_1000": 540.0, "defect_recall": 0.6364, "false_alarm": 0.1573, "component_macro_f1": 0.1265, "condition_macro_f1": 0.1777, "mean_steps": 1.0, "mean_time_s": 0.065, "used_a_tool": 0.0}}}
+{"report_only": 8, "test": {"1.0": {"images": 400, "report_cost_per_1000": 1497.5, "defect_risk_per_1000": 532.5, "defect_recall": 0.6136, "false_alarm": 0.1208, "component_macro_f1": 0.1271, "condition_macro_f1": 0.1777, "mean_steps": 1.0, "mean_time_s": 0.065, "used_a_tool": 0.0}, "3.0": {"images": 400, "report_cost_per_1000": 1497.5, "defect_risk_per_1000": 532.5, "defect_recall": 0.6136, "false_alarm": 0.1208, "component_macro_f1": 0.1271, "condition_macro_f1": 0.1777, "mean_steps": 1.0, "mean_time_s": 0.065, "used_a_tool": 0.0}, "6.0": {"images": 400, "report_cost_per_1000": 1497.5, "defect_risk_per_1000": 532.5, "defect_recall": 0.6136, "false_alarm": 0.1208, "component_macro_f1": 0.1271, "condition_macro_f1": 0.1777, "mean_steps": 1.0, "mean_time_s": 0.065, "used_a_tool": 0.0}}}
+{"report_only": 9, "test": {"1.0": {"images": 400, "report_cost_per_1000": 1447.5, "defect_risk_per_1000": 497.5, "defect_recall": 0.6591, "false_alarm": 0.1376, "component_macro_f1": 0.1263, "condition_macro_f1": 0.1788, "mean_steps": 1.0, "mean_time_s": 0.065, "used_a_tool": 0.0}, "3.0": {"images": 400, "report_cost_per_1000": 1447.5, "defect_risk_per_1000": 497.5, "defect_recall": 0.6591, "false_alarm": 0.1376, "component_macro_f1": 0.1263, "condition_macro_f1": 0.1788, "mean_steps": 1.0, "mean_time_s": 0.065, "used_a_tool": 0.0}, "6.0": {"images": 400, "report_cost_per_1000": 1447.5, "defect_risk_per_1000": 497.5, "defect_recall": 0.6591, "false_alarm": 0.1376, "component_macro_f1": 0.1263, "condition_macro_f1": 0.1788, "mean_steps": 1.0, "mean_time_s": 0.065, "used_a_tool": 0.0}}}
+{"report_only": 10, "test": {"1.0": {"images": 400, "report_cost_per_1000": 1437.5, "defect_risk_per_1000": 490.0, "defect_recall": 0.6591, "false_alarm": 0.1292, "component_macro_f1": 0.1273, "condition_macro_f1": 0.1713, "mean_steps": 1.0, "mean_time_s": 0.065, "used_a_tool": 0.0}, "3.0": {"images": 400, "report_cost_per_1000": 1437.5, "defect_risk_per_1000": 490.0, "defect_recall": 0.6591, "false_alarm": 0.1292, "component_macro_f1": 0.1273, "condition_macro_f1": 0.1713, "mean_steps": 1.0, "mean_time_s": 0.065, "used_a_tool": 0.0}, "6.0": {"images": 400, "report_cost_per_1000": 1437.5, "defect_risk_per_1000": 490.0, "defect_recall": 0.6591, "false_alarm": 0.1292, "component_macro_f1": 0.1273, "condition_macro_f1": 0.1713, "mean_steps": 1.0, "mean_time_s": 0.065, "used_a_tool": 0.0}}}
+{"central": 1, "test": {"1.0": {"images": 400, "report_cost_per_1000": 1862.5, "defect_risk_per_1000": 877.5, "defect_recall": 0.3182, "false_alarm": 0.1433, "component_macro_f1": 0.1446, "condition_macro_f1": 0.2694, "mean_steps": 6.0, "mean_time_s": 0.383, "used_a_tool": 0.975}, "3.0": {"images": 400, "report_cost_per_1000": 1865.0, "defect_risk_per_1000": 877.5, "defect_recall": 0.3182, "false_alarm": 0.1433, "component_macro_f1": 0.1429, "condition_macro_f1": 0.2694, "mean_steps": 6.0, "mean_time_s": 0.383, "used_a_tool": 0.975}, "6.0": {"images": 400, "report_cost_per_1000": 1862.5, "defect_risk_per_1000": 877.5, "defect_recall": 0.3182, "false_alarm": 0.1433, "component_macro_f1": 0.1469, "condition_macro_f1": 0.2694, "mean_steps": 6.01, "mean_time_s": 0.384, "used_a_tool": 0.975}}}
+{"central": 2, "test": {"1.0": {"images": 400, "report_cost_per_1000": 1857.5, "defect_risk_per_1000": 862.5, "defect_recall": 0.3182, "false_alarm": 0.1264, "component_macro_f1": 0.1297, "condition_macro_f1": 0.2585, "mean_steps": 6.09, "mean_time_s": 0.389, "used_a_tool": 0.965}, "3.0": {"images": 400, "report_cost_per_1000": 1862.5, "defect_risk_per_1000": 862.5, "defect_recall": 0.3182, "false_alarm": 0.1264, "component_macro_f1": 0.1274, "condition_macro_f1": 0.2585, "mean_steps": 6.09, "mean_time_s": 0.389, "used_a_tool": 0.965}, "6.0": {"images": 400, "report_cost_per_1000": 1865.0, "defect_risk_per_1000": 862.5, "defect_recall": 0.3182, "false_alarm": 0.1264, "component_macro_f1": 0.1275, "condition_macro_f1": 0.2576, "mean_steps": 6.12, "mean_time_s": 0.391, "used_a_tool": 0.968}}}
+{"central": 3, "test": {"1.0": {"images": 400, "report_cost_per_1000": 1842.5, "defect_risk_per_1000": 855.0, "defect_recall": 0.2727, "false_alarm": 0.0618, "component_macro_f1": 0.1162, "condition_macro_f1": 0.2841, "mean_steps": 3.23, "mean_time_s": 0.209, "used_a_tool": 0.66}, "3.0": {"images": 400, "report_cost_per_1000": 1855.0, "defect_risk_per_1000": 875.0, "defect_recall": 0.25, "false_alarm": 0.0562, "component_macro_f1": 0.1205, "condition_macro_f1": 0.2841, "mean_steps": 3.35, "mean_time_s": 0.339, "used_a_tool": 0.665}, "6.0": {"images": 400, "report_cost_per_1000": 1855.0, "defect_risk_per_1000": 875.0, "defect_recall": 0.25, "false_alarm": 0.0562, "component_macro_f1": 0.1205, "condition_macro_f1": 0.2841, "mean_steps": 3.38, "mean_time_s": 0.345, "used_a_tool": 0.665}}}
+{"central": 4, "test": {"1.0": {"images": 400, "report_cost_per_1000": 1680.0, "defect_risk_per_1000": 720.0, "defect_recall": 0.4091, "false_alarm": 0.0787, "component_macro_f1": 0.1142, "condition_macro_f1": 0.1818, "mean_steps": 2.14, "mean_time_s": 0.141, "used_a_tool": 0.463}, "3.0": {"images": 400, "report_cost_per_1000": 1760.0, "defect_risk_per_1000": 837.5, "defect_recall": 0.3182, "false_alarm": 0.0983, "component_macro_f1": 0.1362, "condition_macro_f1": 0.2196, "mean_steps": 3.74, "mean_time_s": 1.373, "used_a_tool": 0.698}, "6.0": {"images": 400, "report_cost_per_1000": 1757.5, "defect_risk_per_1000": 835.0, "defect_recall": 0.3182, "false_alarm": 0.0955, "component_macro_f1": 0.1353, "condition_macro_f1": 0.2196, "mean_steps": 3.79, "mean_time_s": 1.389, "used_a_tool": 0.703}}}
+{"central": 5, "test": {"1.0": {"images": 400, "report_cost_per_1000": 1730.0, "defect_risk_per_1000": 767.5, "defect_recall": 0.3636, "false_alarm": 0.0758, "component_macro_f1": 0.1042, "condition_macro_f1": 0.2656, "mean_steps": 2.19, "mean_time_s": 0.144, "used_a_tool": 0.605}, "3.0": {"images": 400, "report_cost_per_1000": 1532.5, "defect_risk_per_1000": 640.0, "defect_recall": 0.4773, "false_alarm": 0.073, "component_macro_f1": 0.1544, "condition_macro_f1": 0.3182, "mean_steps": 3.29, "mean_time_s": 1.765, "used_a_tool": 0.93}, "6.0": {"images": 400, "report_cost_per_1000": 1562.5, "defect_risk_per_1000": 665.0, "defect_recall": 0.4545, "false_alarm": 0.073, "component_macro_f1": 0.1514, "condition_macro_f1": 0.3244, "mean_steps": 3.31, "mean_time_s": 1.771, "used_a_tool": 0.932}}}
+{"central": 6, "test": {"1.0": {"images": 400, "report_cost_per_1000": 1560.0, "defect_risk_per_1000": 602.5, "defect_recall": 0.5227, "false_alarm": 0.0871, "component_macro_f1": 0.1185, "condition_macro_f1": 0.1816, "mean_steps": 1.41, "mean_time_s": 0.093, "used_a_tool": 0.223}, "3.0": {"images": 400, "report_cost_per_1000": 1470.0, "defect_risk_per_1000": 587.5, "defect_recall": 0.5227, "false_alarm": 0.0702, "component_macro_f1": 0.1436, "condition_macro_f1": 0.278, "mean_steps": 2.31, "mean_time_s": 1.62, "used_a_tool": 0.88}, "6.0": {"images": 400, "report_cost_per_1000": 1497.5, "defect_risk_per_1000": 612.5, "defect_recall": 0.5, "false_alarm": 0.0702, "component_macro_f1": 0.1421, "condition_macro_f1": 0.278, "mean_steps": 2.33, "mean_time_s": 1.642, "used_a_tool": 0.892}}}
+{"central": 7, "test": {"1.0": {"images": 400, "report_cost_per_1000": 1515.0, "defect_risk_per_1000": 560.0, "defect_recall": 0.5909, "false_alarm": 0.1236, "component_macro_f1": 0.1151, "condition_macro_f1": 0.17, "mean_steps": 1.54, "mean_time_s": 0.101, "used_a_tool": 0.29}, "3.0": {"images": 400, "report_cost_per_1000": 1390.0, "defect_risk_per_1000": 507.5, "defect_recall": 0.6591, "false_alarm": 0.1489, "component_macro_f1": 0.1441, "condition_macro_f1": 0.2405, "mean_steps": 2.17, "mean_time_s": 1.438, "used_a_tool": 0.79}, "6.0": {"images": 400, "report_cost_per_1000": 1390.0, "defect_risk_per_1000": 507.5, "defect_recall": 0.6591, "false_alarm": 0.1489, "component_macro_f1": 0.1441, "condition_macro_f1": 0.2405, "mean_steps": 2.17, "mean_time_s": 1.442, "used_a_tool": 0.792}}}
+{"central": 8, "test": {"1.0": {"images": 400, "report_cost_per_1000": 1485.0, "defect_risk_per_1000": 532.5, "defect_recall": 0.5909, "false_alarm": 0.0927, "component_macro_f1": 0.1131, "condition_macro_f1": 0.1702, "mean_steps": 1.19, "mean_time_s": 0.078, "used_a_tool": 0.105}, "3.0": {"images": 400, "report_cost_per_1000": 1515.0, "defect_risk_per_1000": 627.5, "defect_recall": 0.5, "false_alarm": 0.0871, "component_macro_f1": 0.157, "condition_macro_f1": 0.1567, "mean_steps": 1.94, "mean_time_s": 1.182, "used_a_tool": 0.637}, "6.0": {"images": 400, "report_cost_per_1000": 1515.0, "defect_risk_per_1000": 627.5, "defect_recall": 0.5, "false_alarm": 0.0871, "component_macro_f1": 0.1564, "condition_macro_f1": 0.1567, "mean_steps": 1.95, "mean_time_s": 1.195, "used_a_tool": 0.642}}}
+{"central": 9, "test": {"1.0": {"images": 400, "report_cost_per_1000": 1500.0, "defect_risk_per_1000": 552.5, "defect_recall": 0.5455, "false_alarm": 0.059, "component_macro_f1": 0.1081, "condition_macro_f1": 0.1828, "mean_steps": 1.05, "mean_time_s": 0.069, "used_a_tool": 0.052}, "3.0": {"images": 400, "report_cost_per_1000": 1590.0, "defect_risk_per_1000": 692.5, "defect_recall": 0.4091, "false_alarm": 0.0478, "component_macro_f1": 0.1439, "condition_macro_f1": 0.2202, "mean_steps": 1.6, "mean_time_s": 0.947, "used_a_tool": 0.5}, "6.0": {"images": 400, "report_cost_per_1000": 1562.5, "defect_risk_per_1000": 667.5, "defect_recall": 0.4318, "false_alarm": 0.0478, "component_macro_f1": 0.1454, "condition_macro_f1": 0.2202, "mean_steps": 1.61, "mean_time_s": 0.964, "used_a_tool": 0.51}}}
+{"central": 10, "test": {"1.0": {"images": 400, "report_cost_per_1000": 1570.0, "defect_risk_per_1000": 625.0, "defect_recall": 0.4773, "false_alarm": 0.0562, "component_macro_f1": 0.111, "condition_macro_f1": 0.1893, "mean_steps": 1.21, "mean_time_s": 0.08, "used_a_tool": 0.133}, "3.0": {"images": 400, "report_cost_per_1000": 1612.5, "defect_risk_per_1000": 722.5, "defect_recall": 0.3864, "false_alarm": 0.0534, "component_macro_f1": 0.15, "condition_macro_f1": 0.2012, "mean_steps": 2.0, "mean_time_s": 1.385, "used_a_tool": 0.76}, "6.0": {"images": 400, "report_cost_per_1000": 1612.5, "defect_risk_per_1000": 722.5, "defect_recall": 0.3864, "false_alarm": 0.0534, "component_macro_f1": 0.15, "condition_macro_f1": 0.2012, "mean_steps": 2.0, "mean_time_s": 1.385, "used_a_tool": 0.76}}}
+[93mWARNING [0m:   DEPRECATED FEATURE: The `run_simulation` function is deprecated and will be removed in a future version of Flower. Please use `flwr run` in the CLI instead to run your simulation. Refer to the Flower Tutorials for more details: https://flower.ai/docs/framework/tutorial-quickstart-pytorch.html
+
+            This is a deprecated feature. It will be removed
+            entirely in future versions of Flower.
+        
+[92mINFO [0m:      Starting Flower ServerApp, config: num_rounds=10, no round_timeout
+[92mINFO [0m:      
+[92mINFO [0m:      [INIT]
+[92mINFO [0m:      Using initial global parameters provided by strategy
+[92mINFO [0m:      Starting evaluation of initial global parameters
+[92mINFO [0m:      Evaluation returned no results (`None`)
+[92mINFO [0m:      
+[92mINFO [0m:      [ROUND 1]
+[92mINFO [0m:      configure_fit: strategy sampled 5 clients (out of 5)
+/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/ray/_private/worker.py:2051: FutureWarning: Tip: In future versions of Ray, Ray will no longer override accelerator visible devices env var if num_gpus=0 or num_gpus=None (default). To enable this behavior and turn off this error message, set RAY_ACCEL_ENV_VAR_OVERRIDE_ON_ZERO=0
+  warnings.warn(
+[36m(ClientAppActor pid=1975988)[0m /system/user/studentwork/khashan/fedorch/src/fedorch/laya_head_agent.py:39: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/utils/tensor_numpy.cpp:213.)
+[36m(ClientAppActor pid=1975988)[0m   mask[j, :, :hh.shape[1]] = torch.from_numpy(a["mask"])
+[36m(ClientAppActor pid=1975988)[0m [W1109 19:41:29.397811778 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 480247808 bytes (free: 393347072, total: 11346575360).
+[36m(ClientAppActor pid=1975988)[0m [W1109 19:41:29.472239721 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 480247808 bytes (free: 414318592, total: 11346575360).
+[91mERROR [0m:     An exception was raised when processing a message by RayBackend
+[91mERROR [0m:     [36mray::ClientAppActor.run()[39m (pid=1975988, ip=192.168.4.47, actor_id=3cfec08a8eb8b3506d5adfc101000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7f742f533a10>)
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/flwr/clientapp/client_app.py", line 144, in __call__
+    return self._call(message, context)
+           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/flwr/clientapp/client_app.py", line 128, in ffn
+    out_message = handle_legacy_message_from_msgtype(
+        client_fn=client_fn, message=message, context=context
+    )
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/flwr/client/message_handler/message_handler.py", line 130, in handle_legacy_message_from_msgtype
+    fit_res = maybe_call_fit(
+        client=client,
+        fit_ins=recorddict_to_fitins(message.content, keep_input=True),
+    )
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/flwr/compat/client/client.py", line 224, in maybe_call_fit
+    return client.fit(fit_ins)
+           ~~~~~~~~~~^^^^^^^^^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/flwr/compat/client/numpy_client.py", line 224, in _fit
+    results = self.numpy_client.fit(parameters, ins.config)  # type: ignore
+  File "/system/user/studentwork/khashan/fedorch/scripts/agent_ppo_head.py", line 77, in fit
+    info = train_cycles(policy, critic, local, parts[self.d], args, args.local_cycles, rng=rng,
+                        prox=float(config.get("proximal_mu", 0.)))
+  File "/system/user/studentwork/khashan/fedorch/scripts/agent_ppo_head.py", line 32, in train_cycles
+    info = update(policy, critic, episodes, c, prox=prox, anchor=anchor, device=device, lr=args.lr)
+  File "/system/user/studentwork/khashan/fedorch/src/fedorch/laya_head_agent.py", line 140, in update
+    action_logits, report_logits, pooled = policy.logits(cache.batch([s["key"] for s in chunk], device), x)
+                                           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/system/user/studentwork/khashan/fedorch/src/fedorch/laya_head_agent.py", line 74, in logits
+    m = self.markers(h, mask, pos, mmask, qtype)
+  File "/system/user/studentwork/khashan/fedorch/src/fedorch/laya_head_agent.py", line 68, in markers
+    x = self.head(x, src_key_padding_mask=~mask.reshape(n * rows, length))
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1783, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1794, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/transformer.py", line 542, in forward
+    output = mod(
+        output,
+    ...<2 lines>...
+        src_key_padding_mask=src_key_padding_mask_for_layers,
+    )
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1783, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1794, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/transformer.py", line 947, in forward
+    x = x + self._sa_block(
+            ~~~~~~~~~~~~~~^
+        self.norm1(x), src_mask, src_key_padding_mask, is_causal=is_causal
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/transformer.py", line 968, in _sa_block
+    x = self.self_attn(
+        ~~~~~~~~~~~~~~^
+        x,
+        ^^
+    ...<5 lines>...
+        is_causal=is_causal,
+        ^^^^^^^^^^^^^^^^^^^^
+    )[0]
+    ^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1783, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1794, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/activation.py", line 1495, in forward
+    attn_output, attn_output_weights = F.multi_head_attention_forward(
+                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        query,
+        ^^^^^^
+    ...<17 lines>...
+        is_causal=is_causal,
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/functional.py", line 6898, in multi_head_attention_forward
+    q, k, v = _in_projection_packed(query, key, value, in_proj_weight, in_proj_bias)
+              ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/functional.py", line 6262, in _in_projection_packed
+    .contiguous()
+     ~~~~~~~~~~^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 458.00 MiB. GPU 0 has a total capacity of 10.57 GiB of which 395.12 MiB is free. Process 1971511 has 6.83 GiB memory in use. Including non-PyTorch memory, this process has 3.35 GiB memory in use. Of the allocated memory 2.98 GiB is allocated by PyTorch, and 181.60 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+
+The above exception was the direct cause of the following exception:
+
+[36mray::ClientAppActor.run()[39m (pid=1975988, ip=192.168.4.47, actor_id=3cfec08a8eb8b3506d5adfc101000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7f742f533a10>)
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 65, in run
+    raise ClientAppException(str(ex)) from ex
+flwr.clientapp.client_app.ClientAppException: 
+Exception ClientAppException occurred. Message: CUDA out of memory. Tried to allocate 458.00 MiB. GPU 0 has a total capacity of 10.57 GiB of which 395.12 MiB is free. Process 1971511 has 6.83 GiB memory in use. Including non-PyTorch memory, this process has 3.35 GiB memory in use. Of the allocated memory 2.98 GiB is allocated by PyTorch, and 181.60 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+[91mERROR [0m:     Traceback (most recent call last):
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/flwr/server/superlink/fleet/vce/vce_api.py", line 132, in worker
+    out_mssg, updated_context = backend.process_message(message, context)
+                                ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/flwr/server/superlink/fleet/vce/backend/raybackend.py", line 195, in process_message
+    raise ex
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/flwr/server/superlink/fleet/vce/backend/raybackend.py", line 182, in process_message
+    ) = self.pool.fetch_result_and_return_actor_to_pool(future)
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 481, in fetch_result_and_return_actor_to_pool
+    _, out_mssg, updated_context = ray.get(future)
+                                   ~~~~~~~^^^^^^^^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/ray/_private/auto_init_hook.py", line 22, in auto_init_wrapper
+    return fn(*args, **kwargs)
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/ray/_private/client_mode_hook.py", line 107, in wrapper
+    return func(*args, **kwargs)
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/ray/_private/worker.py", line 2980, in get
+    values, debugger_breakpoint = worker.get_objects(
+                                  ~~~~~~~~~~~~~~~~~~^
+        object_refs, timeout, use_object_store=_use_object_store
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/ray/_private/worker.py", line 1023, in get_objects
+    raise value.as_instanceof_cause()
+ray.exceptions.RayTaskError(ClientAppException): [36mray::ClientAppActor.run()[39m (pid=1975988, ip=192.168.4.47, actor_id=3cfec08a8eb8b3506d5adfc101000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7f742f533a10>)
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/flwr/clientapp/client_app.py", line 144, in __call__
+    return self._call(message, context)
+           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/flwr/clientapp/client_app.py", line 128, in ffn
+    out_message = handle_legacy_message_from_msgtype(
+        client_fn=client_fn, message=message, context=context
+    )
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/flwr/client/message_handler/message_handler.py", line 130, in handle_legacy_message_from_msgtype
+    fit_res = maybe_call_fit(
+        client=client,
+        fit_ins=recorddict_to_fitins(message.content, keep_input=True),
+    )
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/flwr/compat/client/client.py", line 224, in maybe_call_fit
+    return client.fit(fit_ins)
+           ~~~~~~~~~~^^^^^^^^^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/flwr/compat/client/numpy_client.py", line 224, in _fit
+    results = self.numpy_client.fit(parameters, ins.config)  # type: ignore
+  File "/system/user/studentwork/khashan/fedorch/scripts/agent_ppo_head.py", line 77, in fit
+    info = train_cycles(policy, critic, local, parts[self.d], args, args.local_cycles, rng=rng,
+                        prox=float(config.get("proximal_mu", 0.)))
+  File "/system/user/studentwork/khashan/fedorch/scripts/agent_ppo_head.py", line 32, in train_cycles
+    info = update(policy, critic, episodes, c, prox=prox, anchor=anchor, device=device, lr=args.lr)
+  File "/system/user/studentwork/khashan/fedorch/src/fedorch/laya_head_agent.py", line 140, in update
+    action_logits, report_logits, pooled = policy.logits(cache.batch([s["key"] for s in chunk], device), x)
+                                           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/system/user/studentwork/khashan/fedorch/src/fedorch/laya_head_agent.py", line 74, in logits
+    m = self.markers(h, mask, pos, mmask, qtype)
+  File "/system/user/studentwork/khashan/fedorch/src/fedorch/laya_head_agent.py", line 68, in markers
+    x = self.head(x, src_key_padding_mask=~mask.reshape(n * rows, length))
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1783, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1794, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/transformer.py", line 542, in forward
+    output = mod(
+        output,
+    ...<2 lines>...
+        src_key_padding_mask=src_key_padding_mask_for_layers,
+    )
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1783, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1794, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/transformer.py", line 947, in forward
+    x = x + self._sa_block(
+            ~~~~~~~~~~~~~~^
+        self.norm1(x), src_mask, src_key_padding_mask, is_causal=is_causal
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/transformer.py", line 968, in _sa_block
+    x = self.self_attn(
+        ~~~~~~~~~~~~~~^
+        x,
+        ^^
+    ...<5 lines>...
+        is_causal=is_causal,
+        ^^^^^^^^^^^^^^^^^^^^
+    )[0]
+    ^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1783, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1794, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/activation.py", line 1495, in forward
+    attn_output, attn_output_weights = F.multi_head_attention_forward(
+                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        query,
+        ^^^^^^
+    ...<17 lines>...
+        is_causal=is_causal,
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/functional.py", line 6898, in multi_head_attention_forward
+    q, k, v = _in_projection_packed(query, key, value, in_proj_weight, in_proj_bias)
+              ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/functional.py", line 6262, in _in_projection_packed
+    .contiguous()
+     ~~~~~~~~~~^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 458.00 MiB. GPU 0 has a total capacity of 10.57 GiB of which 395.12 MiB is free. Process 1971511 has 6.83 GiB memory in use. Including non-PyTorch memory, this process has 3.35 GiB memory in use. Of the allocated memory 2.98 GiB is allocated by PyTorch, and 181.60 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+
+The above exception was the direct cause of the following exception:
+
+[36mray::ClientAppActor.run()[39m (pid=1975988, ip=192.168.4.47, actor_id=3cfec08a8eb8b3506d5adfc101000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7f742f533a10>)
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 65, in run
+    raise ClientAppException(str(ex)) from ex
+flwr.clientapp.client_app.ClientAppException: 
+Exception ClientAppException occurred. Message: CUDA out of memory. Tried to allocate 458.00 MiB. GPU 0 has a total capacity of 10.57 GiB of which 395.12 MiB is free. Process 1971511 has 6.83 GiB memory in use. Including non-PyTorch memory, this process has 3.35 GiB memory in use. Of the allocated memory 2.98 GiB is allocated by PyTorch, and 181.60 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+
+[36m(ClientAppActor pid=1975988)[0m [W1109 19:43:30.856140541 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 641728512 bytes (free: 414318592, total: 11346575360).
+[36m(ClientAppActor pid=1975988)[0m [W1109 19:43:30.910518907 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 482344960 bytes (free: 250740736, total: 11346575360).
+[36m(ClientAppActor pid=1975988)[0m [W1109 19:43:30.910616238 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 482344960 bytes (free: 250740736, total: 11346575360).
+[91mERROR [0m:     An exception was raised when processing a message by RayBackend
+[91mERROR [0m:     [36mray::ClientAppActor.run()[39m (pid=1975988, ip=192.168.4.47, actor_id=3cfec08a8eb8b3506d5adfc101000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7f742f533a10>)
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/flwr/clientapp/client_app.py", line 144, in __call__
+    return self._call(message, context)
+           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/flwr/clientapp/client_app.py", line 128, in ffn
+    out_message = handle_legacy_message_from_msgtype(
+        client_fn=client_fn, message=message, context=context
+    )
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/flwr/client/message_handler/message_handler.py", line 130, in handle_legacy_message_from_msgtype
+    fit_res = maybe_call_fit(
+        client=client,
+        fit_ins=recorddict_to_fitins(message.content, keep_input=True),
+    )
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/flwr/compat/client/client.py", line 224, in maybe_call_fit
+    return client.fit(fit_ins)
+           ~~~~~~~~~~^^^^^^^^^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/flwr/compat/client/numpy_client.py", line 224, in _fit
+    results = self.numpy_client.fit(parameters, ins.config)  # type: ignore
+  File "/system/user/studentwork/khashan/fedorch/scripts/agent_ppo_head.py", line 77, in fit
+    info = train_cycles(policy, critic, local, parts[self.d], args, args.local_cycles, rng=rng,
+                        prox=float(config.get("proximal_mu", 0.)))
+  File "/system/user/studentwork/khashan/fedorch/scripts/agent_ppo_head.py", line 32, in train_cycles
+    info = update(policy, critic, episodes, c, prox=prox, anchor=anchor, device=device, lr=args.lr)
+  File "/system/user/studentwork/khashan/fedorch/src/fedorch/laya_head_agent.py", line 140, in update
+    action_logits, report_logits, pooled = policy.logits(cache.batch([s["key"] for s in chunk], device), x)
+                                           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/system/user/studentwork/khashan/fedorch/src/fedorch/laya_head_agent.py", line 74, in logits
+    m = self.markers(h, mask, pos, mmask, qtype)
+  File "/system/user/studentwork/khashan/fedorch/src/fedorch/laya_head_agent.py", line 68, in markers
+    x = self.head(x, src_key_padding_mask=~mask.reshape(n * rows, length))
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1783, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1794, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/transformer.py", line 542, in forward
+    output = mod(
+        output,
+    ...<2 lines>...
+        src_key_padding_mask=src_key_padding_mask_for_layers,
+    )
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1783, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1794, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/transformer.py", line 947, in forward
+    x = x + self._sa_block(
+            ~~~~~~~~~~~~~~^
+        self.norm1(x), src_mask, src_key_padding_mask, is_causal=is_causal
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/transformer.py", line 968, in _sa_block
+    x = self.self_attn(
+        ~~~~~~~~~~~~~~^
+        x,
+        ^^
+    ...<5 lines>...
+        is_causal=is_causal,
+        ^^^^^^^^^^^^^^^^^^^^
+    )[0]
+    ^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1783, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1794, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/activation.py", line 1495, in forward
+    attn_output, attn_output_weights = F.multi_head_attention_forward(
+                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        query,
+        ^^^^^^
+    ...<17 lines>...
+        is_causal=is_causal,
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/functional.py", line 6898, in multi_head_attention_forward
+    q, k, v = _in_projection_packed(query, key, value, in_proj_weight, in_proj_bias)
+              ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/functional.py", line 6255, in _in_projection_packed
+    proj = linear(q, w, b)
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 460.00 MiB. GPU 0 has a total capacity of 10.57 GiB of which 239.12 MiB is free. Process 1971511 has 6.83 GiB memory in use. Including non-PyTorch memory, this process has 3.50 GiB memory in use. Of the allocated memory 2.55 GiB is allocated by PyTorch, and 784.81 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+
+The above exception was the direct cause of the following exception:
+
+[36mray::ClientAppActor.run()[39m (pid=1975988, ip=192.168.4.47, actor_id=3cfec08a8eb8b3506d5adfc101000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7f742f533a10>)
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 65, in run
+    raise ClientAppException(str(ex)) from ex
+flwr.clientapp.client_app.ClientAppException: 
+Exception ClientAppException occurred. Message: CUDA out of memory. Tried to allocate 460.00 MiB. GPU 0 has a total capacity of 10.57 GiB of which 239.12 MiB is free. Process 1971511 has 6.83 GiB memory in use. Including non-PyTorch memory, this process has 3.50 GiB memory in use. Of the allocated memory 2.55 GiB is allocated by PyTorch, and 784.81 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+[91mERROR [0m:     Traceback (most recent call last):
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/flwr/server/superlink/fleet/vce/vce_api.py", line 132, in worker
+    out_mssg, updated_context = backend.process_message(message, context)
+                                ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/flwr/server/superlink/fleet/vce/backend/raybackend.py", line 195, in process_message
+    raise ex
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/flwr/server/superlink/fleet/vce/backend/raybackend.py", line 182, in process_message
+    ) = self.pool.fetch_result_and_return_actor_to_pool(future)
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 481, in fetch_result_and_return_actor_to_pool
+    _, out_mssg, updated_context = ray.get(future)
+                                   ~~~~~~~^^^^^^^^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/ray/_private/auto_init_hook.py", line 22, in auto_init_wrapper
+    return fn(*args, **kwargs)
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/ray/_private/client_mode_hook.py", line 107, in wrapper
+    return func(*args, **kwargs)
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/ray/_private/worker.py", line 2980, in get
+    values, debugger_breakpoint = worker.get_objects(
+                                  ~~~~~~~~~~~~~~~~~~^
+        object_refs, timeout, use_object_store=_use_object_store
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/ray/_private/worker.py", line 1023, in get_objects
+    raise value.as_instanceof_cause()
+ray.exceptions.RayTaskError(ClientAppException): [36mray::ClientAppActor.run()[39m (pid=1975988, ip=192.168.4.47, actor_id=3cfec08a8eb8b3506d5adfc101000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7f742f533a10>)
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/flwr/clientapp/client_app.py", line 144, in __call__
+    return self._call(message, context)
+           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/flwr/clientapp/client_app.py", line 128, in ffn
+    out_message = handle_legacy_message_from_msgtype(
+        client_fn=client_fn, message=message, context=context
+    )
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/flwr/client/message_handler/message_handler.py", line 130, in handle_legacy_message_from_msgtype
+    fit_res = maybe_call_fit(
+        client=client,
+        fit_ins=recorddict_to_fitins(message.content, keep_input=True),
+    )
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/flwr/compat/client/client.py", line 224, in maybe_call_fit
+    return client.fit(fit_ins)
+           ~~~~~~~~~~^^^^^^^^^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/flwr/compat/client/numpy_client.py", line 224, in _fit
+    results = self.numpy_client.fit(parameters, ins.config)  # type: ignore
+  File "/system/user/studentwork/khashan/fedorch/scripts/agent_ppo_head.py", line 77, in fit
+    info = train_cycles(policy, critic, local, parts[self.d], args, args.local_cycles, rng=rng,
+                        prox=float(config.get("proximal_mu", 0.)))
+  File "/system/user/studentwork/khashan/fedorch/scripts/agent_ppo_head.py", line 32, in train_cycles
+    info = update(policy, critic, episodes, c, prox=prox, anchor=anchor, device=device, lr=args.lr)
+  File "/system/user/studentwork/khashan/fedorch/src/fedorch/laya_head_agent.py", line 140, in update
+    action_logits, report_logits, pooled = policy.logits(cache.batch([s["key"] for s in chunk], device), x)
+                                           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/system/user/studentwork/khashan/fedorch/src/fedorch/laya_head_agent.py", line 74, in logits
+    m = self.markers(h, mask, pos, mmask, qtype)
+  File "/system/user/studentwork/khashan/fedorch/src/fedorch/laya_head_agent.py", line 68, in markers
+    x = self.head(x, src_key_padding_mask=~mask.reshape(n * rows, length))
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1783, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1794, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/transformer.py", line 542, in forward
+    output = mod(
+        output,
+    ...<2 lines>...
+        src_key_padding_mask=src_key_padding_mask_for_layers,
+    )
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1783, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1794, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/transformer.py", line 947, in forward
+    x = x + self._sa_block(
+            ~~~~~~~~~~~~~~^
+        self.norm1(x), src_mask, src_key_padding_mask, is_causal=is_causal
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/transformer.py", line 968, in _sa_block
+    x = self.self_attn(
+        ~~~~~~~~~~~~~~^
+        x,
+        ^^
+    ...<5 lines>...
+        is_causal=is_causal,
+        ^^^^^^^^^^^^^^^^^^^^
+    )[0]
+    ^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1783, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1794, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/modules/activation.py", line 1495, in forward
+    attn_output, attn_output_weights = F.multi_head_attention_forward(
+                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        query,
+        ^^^^^^
+    ...<17 lines>...
+        is_causal=is_causal,
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/functional.py", line 6898, in multi_head_attention_forward
+    q, k, v = _in_projection_packed(query, key, value, in_proj_weight, in_proj_bias)
+              ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/torch/nn/functional.py", line 6255, in _in_projection_packed
+    proj = linear(q, w, b)
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 460.00 MiB. GPU 0 has a total capacity of 10.57 GiB of which 239.12 MiB is free. Process 1971511 has 6.83 GiB memory in use. Including non-PyTorch memory, this process has 3.50 GiB memory in use. Of the allocated memory 2.55 GiB is allocated by PyTorch, and 784.81 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+
+The above exception was the direct cause of the following exception:
+
+[36mray::ClientAppActor.run()[39m (pid=1975988, ip=192.168.4.47, actor_id=3cfec08a8eb8b3506d5adfc101000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7f742f533a10>)
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 65, in run
+    raise ClientAppException(str(ex)) from ex
+flwr.clientapp.client_app.ClientAppException: 
+Exception ClientAppException occurred. Message: CUDA out of memory. Tried to allocate 460.00 MiB. GPU 0 has a total capacity of 10.57 GiB of which 239.12 MiB is free. Process 1971511 has 6.83 GiB memory in use. Including non-PyTorch memory, this process has 3.50 GiB memory in use. Of the allocated memory 2.55 GiB is allocated by PyTorch, and 784.81 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+
+[93mWARNING [0m:   DEPRECATED FEATURE: The `run_simulation` function is deprecated and will be removed in a future version of Flower. Please use `flwr run` in the CLI instead to run your simulation. Refer to the Flower Tutorials for more details: https://flower.ai/docs/framework/tutorial-quickstart-pytorch.html
+
+            This is a deprecated feature. It will be removed
+            entirely in future versions of Flower.
+        
+[92mINFO [0m:      Starting Flower ServerApp, config: num_rounds=10, no round_timeout
+[92mINFO [0m:      
+[92mINFO [0m:      [INIT]
+[92mINFO [0m:      Using initial global parameters provided by strategy
+[92mINFO [0m:      Starting evaluation of initial global parameters
+[92mINFO [0m:      Evaluation returned no results (`None`)
+[92mINFO [0m:      
+[92mINFO [0m:      [ROUND 1]
+[92mINFO [0m:      configure_fit: strategy sampled 5 clients (out of 5)
+/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/ray/_private/worker.py:2051: FutureWarning: Tip: In future versions of Ray, Ray will no longer override accelerator visible devices env var if num_gpus=0 or num_gpus=None (default). To enable this behavior and turn off this error message, set RAY_ACCEL_ENV_VAR_OVERRIDE_ON_ZERO=0
+  warnings.warn(
+[36m(ClientAppActor pid=1979306)[0m /system/user/studentwork/khashan/fedorch/src/fedorch/laya_head_agent.py:39: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/utils/tensor_numpy.cpp:213.)
+[36m(ClientAppActor pid=1979306)[0m   mask[j, :, :hh.shape[1]] = torch.from_numpy(a["mask"])
+[92mINFO [0m:      aggregate_fit: received 5 results and 0 failures
+/system/user/studentwork/khashan/fedorch/src/fedorch/laya_head_agent.py:38: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/utils/tensor_numpy.cpp:213.)
+  h[j, :, :hh.shape[1]] = torch.from_numpy(np.asarray(hh))
+{"fed_round": 1, "test": {"1.0": {"images": 400, "report_cost_per_1000": 1707.5, "defect_risk_per_1000": 695.0, "defect_recall": 0.4773, "false_alarm": 0.1348, "component_macro_f1": 0.1366, "condition_macro_f1": 0.2479, "mean_steps": 6.17, "mean_time_s": 0.394, "used_a_tool": 0.973}, "3.0": {"images": 400, "report_cost_per_1000": 1707.5, "defect_risk_per_1000": 695.0, "defect_recall": 0.4773, "false_alarm": 0.1348, "component_macro_f1": 0.1366, "condition_macro_f1": 0.2479, "mean_steps": 6.17, "mean_time_s": 0.394, "used_a_tool": 0.973}, "6.0": {"images": 400, "report_cost_per_1000": 1707.5, "defect_risk_per_1000": 695.0, "defect_recall": 0.4773, "false_alarm": 0.1348, "component_macro_f1": 0.1366, "condition_macro_f1": 0.2479, "mean_steps": 6.17, "mean_time_s": 0.394, "used_a_tool": 0.973}}}
+[92mINFO [0m:      fit progress: (1, 0.0, {}, 1324.5847837859765)
+[92mINFO [0m:      configure_evaluate: no clients selected, skipping evaluation
+[92mINFO [0m:      
+[92mINFO [0m:      [ROUND 2]
+[92mINFO [0m:      configure_fit: strategy sampled 5 clients (out of 5)
+[92mINFO [0m:      aggregate_fit: received 5 results and 0 failures
+{"fed_round": 2, "test": {"1.0": {"images": 400, "report_cost_per_1000": 1665.0, "defect_risk_per_1000": 670.0, "defect_recall": 0.4773, "false_alarm": 0.1067, "component_macro_f1": 0.1354, "condition_macro_f1": 0.2507, "mean_steps": 6.09, "mean_time_s": 0.389, "used_a_tool": 0.97}, "3.0": {"images": 400, "report_cost_per_1000": 1665.0, "defect_risk_per_1000": 670.0, "defect_recall": 0.4773, "false_alarm": 0.1067, "component_macro_f1": 0.1354, "condition_macro_f1": 0.2507, "mean_steps": 6.09, "mean_time_s": 0.389, "used_a_tool": 0.97}, "6.0": {"images": 400, "report_cost_per_1000": 1665.0, "defect_risk_per_1000": 670.0, "defect_recall": 0.4773, "false_alarm": 0.1067, "component_macro_f1": 0.1354, "condition_macro_f1": 0.2507, "mean_steps": 6.09, "mean_time_s": 0.389, "used_a_tool": 0.97}}}
+[92mINFO [0m:      fit progress: (2, 0.0, {}, 1735.8988735929597)
+[92mINFO [0m:      configure_evaluate: no clients selected, skipping evaluation
+[92mINFO [0m:      
+[92mINFO [0m:      [ROUND 3]
+[92mINFO [0m:      configure_fit: strategy sampled 5 clients (out of 5)
+[92mINFO [0m:      aggregate_fit: received 5 results and 0 failures
+{"fed_round": 3, "test": {"1.0": {"images": 400, "report_cost_per_1000": 1755.0, "defect_risk_per_1000": 757.5, "defect_recall": 0.4318, "false_alarm": 0.1489, "component_macro_f1": 0.1357, "condition_macro_f1": 0.2484, "mean_steps": 5.62, "mean_time_s": 0.36, "used_a_tool": 0.938}, "3.0": {"images": 400, "report_cost_per_1000": 1752.5, "defect_risk_per_1000": 757.5, "defect_recall": 0.4318, "false_alarm": 0.1489, "component_macro_f1": 0.1368, "condition_macro_f1": 0.2484, "mean_steps": 5.63, "mean_time_s": 0.36, "used_a_tool": 0.938}, "6.0": {"images": 400, "report_cost_per_1000": 1752.5, "defect_risk_per_1000": 757.5, "defect_recall": 0.4318, "false_alarm": 0.1489, "component_macro_f1": 0.1368, "condition_macro_f1": 0.2484, "mean_steps": 5.63, "mean_time_s": 0.361, "used_a_tool": 0.94}}}
+[92mINFO [0m:      fit progress: (3, 0.0, {}, 2108.066807687981)
+[92mINFO [0m:      configure_evaluate: no clients selected, skipping evaluation
+[92mINFO [0m:      
+[92mINFO [0m:      [ROUND 4]
+[92mINFO [0m:      configure_fit: strategy sampled 5 clients (out of 5)
+[92mINFO [0m:      aggregate_fit: received 5 results and 0 failures
+{"fed_round": 4, "test": {"1.0": {"images": 400, "report_cost_per_1000": 1747.5, "defect_risk_per_1000": 755.0, "defect_recall": 0.4091, "false_alarm": 0.118, "component_macro_f1": 0.14, "condition_macro_f1": 0.2518, "mean_steps": 5.52, "mean_time_s": 0.354, "used_a_tool": 0.927}, "3.0": {"images": 400, "report_cost_per_1000": 1747.5, "defect_risk_per_1000": 755.0, "defect_recall": 0.4091, "false_alarm": 0.118, "component_macro_f1": 0.1399, "condition_macro_f1": 0.2518, "mean_steps": 5.52, "mean_time_s": 0.354, "used_a_tool": 0.93}, "6.0": {"images": 400, "report_cost_per_1000": 1747.5, "defect_risk_per_1000": 755.0, "defect_recall": 0.4091, "false_alarm": 0.118, "component_macro_f1": 0.14, "condition_macro_f1": 0.2518, "mean_steps": 5.53, "mean_time_s": 0.354, "used_a_tool": 0.932}}}
+[92mINFO [0m:      fit progress: (4, 0.0, {}, 2520.0949534790125)
+[92mINFO [0m:      configure_evaluate: no clients selected, skipping evaluation
+[92mINFO [0m:      
+[92mINFO [0m:      [ROUND 5]
+[92mINFO [0m:      configure_fit: strategy sampled 5 clients (out of 5)
+[92mINFO [0m:      aggregate_fit: received 5 results and 0 failures
+{"fed_round": 5, "test": {"1.0": {"images": 400, "report_cost_per_1000": 1795.0, "defect_risk_per_1000": 792.5, "defect_recall": 0.3636, "false_alarm": 0.1039, "component_macro_f1": 0.1344, "condition_macro_f1": 0.2468, "mean_steps": 5.17, "mean_time_s": 0.332, "used_a_tool": 0.89}, "3.0": {"images": 400, "report_cost_per_1000": 1797.5, "defect_risk_per_1000": 795.0, "defect_recall": 0.3636, "false_alarm": 0.1067, "component_macro_f1": 0.1346, "condition_macro_f1": 0.2465, "mean_steps": 5.17, "mean_time_s": 0.332, "used_a_tool": 0.89}, "6.0": {"images": 400, "report_cost_per_1000": 1800.0, "defect_risk_per_1000": 795.0, "defect_recall": 0.3636, "false_alarm": 0.1067, "component_macro_f1": 0.1328, "condition_macro_f1": 0.2465, "mean_steps": 5.19, "mean_time_s": 0.333, "used_a_tool": 0.89}}}
+[92mINFO [0m:      fit progress: (5, 0.0, {}, 2843.9734548489796)
+[92mINFO [0m:      configure_evaluate: no clients selected, skipping evaluation
+[92mINFO [0m:      
+[92mINFO [0m:      [ROUND 6]
+[92mINFO [0m:      configure_fit: strategy sampled 5 clients (out of 5)
+[92mINFO [0m:      aggregate_fit: received 5 results and 0 failures
+{"fed_round": 6, "test": {"1.0": {"images": 400, "report_cost_per_1000": 1760.0, "defect_risk_per_1000": 775.0, "defect_recall": 0.3636, "false_alarm": 0.0843, "component_macro_f1": 0.1461, "condition_macro_f1": 0.2589, "mean_steps": 4.86, "mean_time_s": 0.312, "used_a_tool": 0.853}, "3.0": {"images": 400, "report_cost_per_1000": 1765.0, "defect_risk_per_1000": 777.5, "defect_recall": 0.3636, "false_alarm": 0.0871, "component_macro_f1": 0.1458, "condition_macro_f1": 0.2575, "mean_steps": 4.86, "mean_time_s": 0.312, "used_a_tool": 0.853}, "6.0": {"images": 400, "report_cost_per_1000": 1762.5, "defect_risk_per_1000": 777.5, "defect_recall": 0.3636, "false_alarm": 0.0871, "component_macro_f1": 0.1471, "condition_macro_f1": 0.2575, "mean_steps": 4.86, "mean_time_s": 0.312, "used_a_tool": 0.853}}}
+[92mINFO [0m:      fit progress: (6, 0.0, {}, 3175.125064966036)
+[92mINFO [0m:      configure_evaluate: no clients selected, skipping evaluation
+[92mINFO [0m:      
+[92mINFO [0m:      [ROUND 7]
+[92mINFO [0m:      configure_fit: strategy sampled 5 clients (out of 5)
+[92mINFO [0m:      aggregate_fit: received 5 results and 0 failures
+{"fed_round": 7, "test": {"1.0": {"images": 400, "report_cost_per_1000": 1797.5, "defect_risk_per_1000": 807.5, "defect_recall": 0.3409, "false_alarm": 0.0927, "component_macro_f1": 0.1437, "condition_macro_f1": 0.1878, "mean_steps": 4.47, "mean_time_s": 0.287, "used_a_tool": 0.787}, "3.0": {"images": 400, "report_cost_per_1000": 1797.5, "defect_risk_per_1000": 807.5, "defect_recall": 0.3409, "false_alarm": 0.0927, "component_macro_f1": 0.1442, "condition_macro_f1": 0.1878, "mean_steps": 4.48, "mean_time_s": 0.288, "used_a_tool": 0.79}, "6.0": {"images": 400, "report_cost_per_1000": 1800.0, "defect_risk_per_1000": 807.5, "defect_recall": 0.3409, "false_alarm": 0.0927, "component_macro_f1": 0.1429, "condition_macro_f1": 0.1878, "mean_steps": 4.48, "mean_time_s": 0.288, "used_a_tool": 0.79}}}
+[92mINFO [0m:      fit progress: (7, 0.0, {}, 3502.1428479419556)
+[92mINFO [0m:      configure_evaluate: no clients selected, skipping evaluation
+[92mINFO [0m:      
+[92mINFO [0m:      [ROUND 8]
+[92mINFO [0m:      configure_fit: strategy sampled 5 clients (out of 5)
+[92mINFO [0m:      aggregate_fit: received 5 results and 0 failures
+{"fed_round": 8, "test": {"1.0": {"images": 400, "report_cost_per_1000": 1722.5, "defect_risk_per_1000": 730.0, "defect_recall": 0.3864, "false_alarm": 0.0618, "component_macro_f1": 0.1372, "condition_macro_f1": 0.2113, "mean_steps": 4.25, "mean_time_s": 0.274, "used_a_tool": 0.772}, "3.0": {"images": 400, "report_cost_per_1000": 1725.0, "defect_risk_per_1000": 732.5, "defect_recall": 0.3864, "false_alarm": 0.0646, "component_macro_f1": 0.1373, "condition_macro_f1": 0.2113, "mean_steps": 4.25, "mean_time_s": 0.274, "used_a_tool": 0.772}, "6.0": {"images": 400, "report_cost_per_1000": 1725.0, "defect_risk_per_1000": 732.5, "defect_recall": 0.3864, "false_alarm": 0.0646, "component_macro_f1": 0.1373, "condition_macro_f1": 0.2113, "mean_steps": 4.26, "mean_time_s": 0.274, "used_a_tool": 0.772}}}
+[92mINFO [0m:      fit progress: (8, 0.0, {}, 3811.1325912340544)
+[92mINFO [0m:      configure_evaluate: no clients selected, skipping evaluation
+[92mINFO [0m:      
+[92mINFO [0m:      [ROUND 9]
+[92mINFO [0m:      configure_fit: strategy sampled 5 clients (out of 5)
+[92mINFO [0m:      aggregate_fit: received 5 results and 0 failures
+{"fed_round": 9, "test": {"1.0": {"images": 400, "report_cost_per_1000": 1687.5, "defect_risk_per_1000": 687.5, "defect_recall": 0.4318, "false_alarm": 0.0702, "component_macro_f1": 0.1344, "condition_macro_f1": 0.1913, "mean_steps": 3.92, "mean_time_s": 0.253, "used_a_tool": 0.728}, "3.0": {"images": 400, "report_cost_per_1000": 1687.5, "defect_risk_per_1000": 687.5, "defect_recall": 0.4318, "false_alarm": 0.0702, "component_macro_f1": 0.1344, "condition_macro_f1": 0.1913, "mean_steps": 3.92, "mean_time_s": 0.253, "used_a_tool": 0.728}, "6.0": {"images": 400, "report_cost_per_1000": 1687.5, "defect_risk_per_1000": 687.5, "defect_recall": 0.4318, "false_alarm": 0.0702, "component_macro_f1": 0.1344, "condition_macro_f1": 0.1913, "mean_steps": 3.92, "mean_time_s": 0.253, "used_a_tool": 0.728}}}
+[92mINFO [0m:      fit progress: (9, 0.0, {}, 4123.595668570022)
+[92mINFO [0m:      configure_evaluate: no clients selected, skipping evaluation
+[92mINFO [0m:      
+[92mINFO [0m:      [ROUND 10]
+[92mINFO [0m:      configure_fit: strategy sampled 5 clients (out of 5)
+[92mINFO [0m:      aggregate_fit: received 5 results and 0 failures
+{"fed_round": 10, "test": {"1.0": {"images": 400, "report_cost_per_1000": 1725.0, "defect_risk_per_1000": 725.0, "defect_recall": 0.4091, "false_alarm": 0.0843, "component_macro_f1": 0.1267, "condition_macro_f1": 0.2775, "mean_steps": 3.76, "mean_time_s": 0.243, "used_a_tool": 0.708}, "3.0": {"images": 400, "report_cost_per_1000": 1725.0, "defect_risk_per_1000": 725.0, "defect_recall": 0.4091, "false_alarm": 0.0843, "component_macro_f1": 0.1267, "condition_macro_f1": 0.2775, "mean_steps": 3.76, "mean_time_s": 0.243, "used_a_tool": 0.708}, "6.0": {"images": 400, "report_cost_per_1000": 1725.0, "defect_risk_per_1000": 725.0, "defect_recall": 0.4091, "false_alarm": 0.0843, "component_macro_f1": 0.1267, "condition_macro_f1": 0.2775, "mean_steps": 3.76, "mean_time_s": 0.243, "used_a_tool": 0.708}}}
+[92mINFO [0m:      fit progress: (10, 0.0, {}, 4431.230890757055)
+[92mINFO [0m:      configure_evaluate: no clients selected, skipping evaluation
+[92mINFO [0m:      
+[92mINFO [0m:      [SUMMARY]
+[92mINFO [0m:      Run finished 10 round(s) in 4431.23s
+[92mINFO [0m:      	History (loss, centralized):
+[92mINFO [0m:      		round 1: 0.0
+[92mINFO [0m:      		round 2: 0.0
+[92mINFO [0m:      		round 3: 0.0
+[92mINFO [0m:      		round 4: 0.0
+[92mINFO [0m:      		round 5: 0.0
+[92mINFO [0m:      		round 6: 0.0
+[92mINFO [0m:      		round 7: 0.0
+[92mINFO [0m:      		round 8: 0.0
+[92mINFO [0m:      		round 9: 0.0
+[92mINFO [0m:      		round 10: 0.0
+[92mINFO [0m:      
+[36m(ClientAppActor pid=1979306)[0m [93mWARNING [0m:   Manually terminating ClientAppActor
+done, wrote /system/user/studentwork/khashan/fedorch/results/agent_ppo_head/seed0/summary.json

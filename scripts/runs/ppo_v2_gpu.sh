@@ -24,7 +24,7 @@ cache_args=(--bundle "$small_bundle" --yolo-checkpoint "$yolo_checkpoint"
   --laya-checkpoint "$laya_path" --smol-base "$smol_path" ${smol_adapter:+--smol-adapter "$smol_adapter"}
   --device cuda --smol-max-tokens "${PPO_V2_SMOL_TOKENS:-96}"
   --cloud-local-checkpoint "$qwen_path" --cloud-precision nf4
-  --cloud-max-tokens "${PPO_V2_QWEN_TOKENS:-32}" --cloud-views original
+  --cloud-max-tokens "${PPO_V2_QWEN_TOKENS:-96}" --cloud-views original
   --tools YOLO_CLS,SMOL_EXPLAIN,CLOUD_QWEN8B,ROI_PROPOSE,ZOOM_ROI,IMAGE_QUALITY)
 
 case "$stage" in

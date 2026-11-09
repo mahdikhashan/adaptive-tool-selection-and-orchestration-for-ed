@@ -103,10 +103,9 @@ class Rollout:
 
 
 def heuristic_action(state, mask):
-    # Label-free fixed cascade: optional explanation once, then accept; masking
-    # prevents repeats. Never reads labels or assessment of correctness.
-    for name in ('SMOL_EXPLAIN', 'ACCEPT', 'ABSTAIN'):
-        if name in ACTIONS and mask[ACTIONS.index(name)]:
+    # Laya-only baseline: accept laya's first answer, call no further tool.
+    for name in ('ACCEPT', 'ABSTAIN'):
+        if mask[ACTIONS.index(name)]:
             return ACTIONS.index(name)
     return int(np.flatnonzero(mask)[0])
 

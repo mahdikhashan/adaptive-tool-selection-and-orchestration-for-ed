@@ -36,7 +36,8 @@ still use the condition probabilities only.
 Quick feasibility check: `bash scripts/runs/ppo_v2_gpu.sh quick`. It builds a
 separate bundle (`runs/ppo_v2/quick`, about 985 images), caches YOLO, SmolVLM and
 the zoom views without the cloud model, and compares three methods with full
-feedback and 10 rounds: the fixed cascade, central PPO and Flower FedAvg-PPO.
+feedback and 10 rounds: laya only (accept the first laya answer, no tool), central
+PPO and Flower FedAvg-PPO. The `heuristic` mode is this laya-only baseline.
 
 Small pilot: set `PPO_V2_TRAIN_FRACTION=0.025` and `PPO_V2_VAL_FRACTION=0.07`
 before `prepare`. The bundle then has 592 train images (633 items, 25 audited)

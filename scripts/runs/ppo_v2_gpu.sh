@@ -36,7 +36,7 @@ quick_args=(--bundle "$quick_bundle" --yolo-checkpoint "$yolo_checkpoint"
 case "$stage" in
   quick)
     # Minimal feasibility check: ~1,000 images, no cloud model, full feedback,
-    # three methods (fixed cascade, central PPO, Flower FedAvg-PPO), 10 rounds.
+    # three methods (laya only, central PPO, Flower FedAvg-PPO), 10 rounds.
     require_gpu
     if [ ! -f "$quick_bundle/manifest.json" ]; then
       run_python scripts/ppo_v2_prepare.py --output "$quick_bundle" --seed 0 --fraction 0.025 --val-fraction 0.07
@@ -89,7 +89,7 @@ case "$stage" in
     ;;
   *)
     echo "Usage: bash scripts/runs/ppo_v2_gpu.sh quick|prepare|yolo|profile|cache|pilot|cache-test [extra CLI flags]"
-    echo "quick: fastest feasibility check (~1,000 images, YOLO+zoom+SmolVLM, no cloud, full feedback, cascade vs central PPO vs FedAvg-PPO)."
+    echo "quick: fastest feasibility check (~1,000 images, YOLO+zoom+SmolVLM, no cloud, full feedback, laya only vs central PPO vs FedAvg-PPO)."
     echo "Set CUDA_VISIBLE_DEVICES to your booked 2080 Ti. Default: pretrained YOLO as-is, no fine-tuning, seed0, 10% train, 5% audits."
     echo "Default edge models: laya-vision fine-tuned (good300_full) and SmolVLM-256M fine-tuned (LoRA merged), both nf4 4-bit with fp16 compute."
     echo "For fp32: PPO_V2_LAYA=<laya dir> PPO_V2_SMOL_BASE=<smol base dir> PPO_V2_SMOL_ADAPTER=<lora dir>."

@@ -12,6 +12,17 @@ actor-only aggregation coordinator; there are no base stations. Perception
 models remain frozen while drone controller policies learn. The cloud role is
 the larger Qwen model, loaded on this same VM for this simulation.
 
+Edge models (user decision): **laya-vision base, not fine-tuned, 4-bit** and
+**SmolVLM-256M fine-tuned (LoRA merged), 4-bit**. Both are nf4 weights with fp16
+compute, from the quantization experiment (`scripts/quant_laya.py --model base`,
+`scripts/quant_smolvlm.py --model lora`). The run script reads them from
+`$FEDORCH_WORK/models/quantized/laya_base_nf4_fp16` and
+`$FEDORCH_WORK/models/quantized/smolvlm_lora_nf4_fp16`. The loaders find the 4-bit
+format automatically. The laya decision head stays fp32. Measured on the test
+towers in the quantization experiment: laya base 4-bit has condition macro F1
+0.180, and SmolVLM LoRA 4-bit has item accuracy 0.865 and answers "good" for
+98.4% of items.
+
 Latest user decision: **do not fine-tune YOLO now**. The default is official
 pretrained YOLO26n-cls as downloaded, frozen for inference. Its ImageNet outputs
 provide generic visual context to Laya; they are not defect predictions. The

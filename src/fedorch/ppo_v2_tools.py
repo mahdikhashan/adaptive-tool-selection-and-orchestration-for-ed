@@ -213,12 +213,30 @@ class YoloAdapter:
                                           'postprocess_s': post_s}}
 
 
+def four_bit(checkpoint):
+    path = Path(checkpoint)
+    if (path / 'backbone_quantized').is_dir():
+        return True
+    config = path / 'config.json'
+    return config.is_file() and 'quantization_config' in json.loads(config.read_text())
+
+
 class LayaAdapter:
+    """fp32 checkpoint, or a quant_laya.py folder: nf4 backbone, fp16 compute, fp32 decision head."""
+
     def __init__(self, checkpoint, device='cuda'):
         import torch
         from laya.vlm import load_vlm
         Path(checkpoint).resolve(strict=True)
+        self.precision = 'nf4/fp16' if four_bit(checkpoint) else 'fp32'
         self.agent = load_vlm(str(checkpoint), device=device, dtype='fp32')
+        if self.precision == 'nf4/fp16':
+            from transformers import AutoModel
+            from fedorch import quant
+            self.agent.model.encoder = quant.load(AutoModel, Path(checkpoint) / 'backbone_quantized',
+                                                  attn_implementation='sdpa')
+            self.agent._torch_dtype = lambda: torch.float16
+            torch.cuda.empty_cache()
         self.agent.model.eval().requires_grad_(False)
         self.torch = torch
 
@@ -237,17 +255,27 @@ class LayaAdapter:
 
 
 class SmolAdapter:
+    """fp32 base + LoRA adapter, or a quant_smolvlm.py folder (LoRA merged, nf4, fp16 compute)."""
+
     def __init__(self, base, adapter, device='cuda', max_new_tokens=96):
         import torch
         from transformers import AutoModelForImageTextToText, AutoProcessor
-        from peft import PeftModel
         Path(base).resolve(strict=True)
-        Path(adapter).resolve(strict=True)
         self.processor = AutoProcessor.from_pretrained(base, local_files_only=True)
         self.processor.image_processor.size = {'longest_edge': 512}
-        model = AutoModelForImageTextToText.from_pretrained(base, dtype=torch.float32,
-                                                          local_files_only=True)
-        self.model = PeftModel.from_pretrained(model, adapter, local_files_only=True).to(device).eval()
+        self.precision = 'nf4/fp16' if four_bit(base) else 'fp32'
+        if self.precision == 'nf4/fp16':
+            if adapter:
+                raise ValueError('The 4-bit SmolVLM folder already holds the merged fine-tuned weights; give no adapter')
+            from fedorch import quant
+            self.model = quant.load(AutoModelForImageTextToText, base)
+            self.dtype = torch.float16
+        else:
+            from peft import PeftModel
+            Path(adapter).resolve(strict=True)
+            model = AutoModelForImageTextToText.from_pretrained(base, dtype=torch.float32, local_files_only=True)
+            self.model = PeftModel.from_pretrained(model, adapter, local_files_only=True).to(device).eval()
+            self.dtype = torch.float32
         self.model.requires_grad_(False)
         self.device, self.max_new_tokens, self.torch = device, max_new_tokens, torch
 
@@ -260,7 +288,7 @@ class SmolAdapter:
                     {'type': 'text', 'text': prompt}]}]
         inputs = self.processor.apply_chat_template(messages, add_generation_prompt=True, tokenize=True,
                                                      return_dict=True, return_tensors='pt')
-        inputs = {k: v.to(self.device, self.torch.float32) if v.is_floating_point() else v.to(self.device)
+        inputs = {k: v.to(self.device, self.dtype) if v.is_floating_point() else v.to(self.device)
                   for k, v in inputs.items()}
         synchronize(self.device)
         prep_s = time.perf_counter() - started
@@ -567,9 +595,11 @@ def export_cache(args, factories=None):
     tools = sorted(requested)
     checkpoints = {'yolo': args.yolo_checkpoint, 'laya': args.laya_checkpoint}
     if 'SMOL_EXPLAIN' in requested:
-        if not args.smol_base or not args.smol_adapter:
-            raise ValueError('Requested SMOL_EXPLAIN needs both --smol-base and --smol-adapter')
-        checkpoints.update(smol_base=args.smol_base, smol_adapter=args.smol_adapter)
+        if not args.smol_base or not (args.smol_adapter or four_bit(args.smol_base)):
+            raise ValueError('SMOL_EXPLAIN needs --smol-base plus --smol-adapter, or a merged 4-bit --smol-base')
+        checkpoints['smol_base'] = args.smol_base
+        if args.smol_adapter:
+            checkpoints['smol_adapter'] = args.smol_adapter
     local_cloud = getattr(args, 'cloud_local_checkpoint', None)
     cloud_precision = getattr(args, 'cloud_precision', 'nf4')
     cloud_max_tokens = getattr(args, 'cloud_max_tokens', 64)
@@ -616,9 +646,11 @@ def export_cache(args, factories=None):
                 versions[package] = importlib.metadata.version(package)
             except importlib.metadata.PackageNotFoundError:
                 versions[package] = None
+    edge_dtype = {'yolo': 'fp32', 'laya': 'nf4/fp16' if four_bit(args.laya_checkpoint) else 'fp32',
+                  'smol': 'nf4/fp16' if args.smol_base and four_bit(args.smol_base) else 'fp32'}
     signature_data = {'version': VERSION, 'classes': CLASSES, 'weights': weights,
                       'source_hashes': source_hashes, 'tools': tools, 'hardware': hardware,
-                      'versions': versions, 'imgsz': args.imgsz, 'edge_dtype': 'fp32',
+                      'versions': versions, 'imgsz': args.imgsz, 'edge_dtype': edge_dtype,
                       'yolo_label_space': 'auto:imagenet1000|condition6',
                       'yolo_preprocessing': {'imagenet1000': 'ultralytics_official_predict',
                                              'condition6': 'PIL bilinear letterbox RGB114'},
@@ -941,7 +973,7 @@ def export_cache(args, factories=None):
                     enhance='ENHANCE' in requested, tool_latency_profiles=latency_profiles,
                     latency_profile_source_ids=sorted(train_sources & ready_sources))
     manifest.setdefault('provenance', {})['tool_cache'] = {'signature': signature,
-        'checkpoint_sha256': weights, 'native_fp32': not bool(local_cloud), 'edge_tools_fp32': True,
+        'checkpoint_sha256': weights, 'edge_tool_precision': edge_dtype,
         'qwen_runtime_precision': cloud_precision if local_cloud else None, 'tensorRT': False,
         'yolo_training_performed_by_exporter': False,
         'tool_pretraining_may_use_full_training_labels': True,

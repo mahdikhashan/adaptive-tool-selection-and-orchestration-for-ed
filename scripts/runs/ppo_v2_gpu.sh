@@ -10,9 +10,9 @@ task_root="${PPO_V2_ROOT:-$FEDORCH_WORK/runs/ppo_v2}"
 full_bundle="$task_root/full"
 small_bundle="$task_root/small"
 yolo_output="$task_root/yolo"
-laya_path="${PPO_V2_LAYA:-$FEDORCH_WORK/models/ppo_v2/laya_base}"
-smol_path="${PPO_V2_SMOL_BASE:-$FEDORCH_WORK/models/ppo_v2/smol_base}"
-smol_adapter="${PPO_V2_SMOL_ADAPTER:-$FEDORCH_WORK/runs/step2/smolvlm_lora_full}"
+laya_path="${PPO_V2_LAYA:-$FEDORCH_WORK/models/quantized/laya_base_nf4_fp16}"
+smol_path="${PPO_V2_SMOL_BASE:-$FEDORCH_WORK/models/quantized/smolvlm_lora_nf4_fp16}"
+smol_adapter="${PPO_V2_SMOL_ADAPTER:-}"
 qwen_path="${PPO_V2_QWEN:-$FEDORCH_WORK/models/ppo_v2/qwen8b}"
 yolo_checkpoint="${PPO_V2_YOLO_CHECKPOINT:-${PPO_V2_YOLO_BASE:-$FEDORCH_WORK/models/ppo_v2/yolo26n-cls.pt}}"
 network_config="${PPO_V2_NETWORK_CONFIG:-$task_root/network.json}"
@@ -21,7 +21,7 @@ require_gpu() {
   run_python -c 'import torch; assert torch.cuda.is_available(), "A CUDA GPU is required; refusing CPU training"; print(torch.cuda.get_device_name(0), torch.cuda.get_device_capability(0))'
 }
 cache_args=(--bundle "$small_bundle" --yolo-checkpoint "$yolo_checkpoint"
-  --laya-checkpoint "$laya_path" --smol-base "$smol_path" --smol-adapter "$smol_adapter"
+  --laya-checkpoint "$laya_path" --smol-base "$smol_path" ${smol_adapter:+--smol-adapter "$smol_adapter"}
   --device cuda --smol-max-tokens "${PPO_V2_SMOL_TOKENS:-96}"
   --cloud-local-checkpoint "$qwen_path" --cloud-precision nf4
   --cloud-max-tokens "${PPO_V2_QWEN_TOKENS:-32}" --cloud-views original
@@ -66,6 +66,8 @@ case "$stage" in
   *)
     echo "Usage: bash scripts/runs/ppo_v2_gpu.sh prepare|yolo|profile|cache|pilot|cache-test [extra CLI flags]"
     echo "Set CUDA_VISIBLE_DEVICES to your booked 2080 Ti. Default: pretrained YOLO as-is, no fine-tuning, seed0, 10% train, 5% audits."
+    echo "Default edge models: laya-vision base (not fine-tuned) and SmolVLM-256M fine-tuned (LoRA merged), both nf4 4-bit with fp16 compute."
+    echo "For fp32: PPO_V2_LAYA=<laya dir> PPO_V2_SMOL_BASE=<smol base dir> PPO_V2_SMOL_ADAPTER=<lora dir>."
     echo "The yolo stage is OPTIONAL future fine-tuning only; set PPO_V2_YOLO_CHECKPOINT to use its frozen result."
     echo "Existing local checkpoints required. See docs/ppo_v2_gpu.md for downloads and commands."
     echo "Qwen8B loads locally, NF4, separately from edge-tool stages. Drone clients are simulated on this VM."

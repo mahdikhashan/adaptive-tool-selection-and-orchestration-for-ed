@@ -2,8 +2,8 @@
 
 This is an inference-only, provisional UI for trying a sample image and a separate
 controller. It does not train PPO, perform federation, quantize, fine-tune Laya,
-or download checkpoints. Federated controller/PPO training belongs at regional
-base stations; the drone/Mac runs frozen inference. The proposed state/action
+or download checkpoints. Federated controller/PPO clients are drones themselves;
+the VM can emulate their GPU training. This Mac demo runs inference only. The proposed state/action
 schema below awaits the user's selection and is not a final experimental contract.
 
 From the repository root, using its existing locked environment:

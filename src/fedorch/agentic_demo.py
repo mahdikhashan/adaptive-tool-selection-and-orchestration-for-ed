@@ -304,7 +304,7 @@ def run_mission(payload, adapters, emit):
 HTML = r'''<!doctype html><html><head><meta charset="utf-8"><title>Local tool orchestration demo</title>
 <style>body{font:16px system-ui;max-width:1100px;margin:30px auto;padding:0 20px;background:#f6f7fa;color:#192231}label{display:inline-block;margin:10px}button,select,input{font:inherit;padding:6px}#trace{background:#172232;color:#e9f2ff;padding:16px;white-space:pre-wrap;overflow-wrap:anywhere;max-height:600px;overflow:auto}img{max-width:360px;max-height:280px} .notice{background:#fff0ce;padding:15px}h1{font-size:26px}</style></head><body>
 <h1>Adaptive tool selection · local image demo</h1>
-<p class="notice">Inference only · provisional state/action schema. Default: <b>rule controller + simulated model outputs</b>, not trained PPO. No models are downloaded. Federated/PPO training belongs at regional base stations; Laya stays frozen.</p>
+<p class="notice">Inference only · provisional state/action schema. Default: <b>rule controller + simulated model outputs</b>, not trained PPO. No models are downloaded. Federated PPO clients are drones; the VM can emulate their training. Laya stays frozen.</p>
 <label>Image <input id="image" type="file" accept="image/*"></label>
 <label>Controller JSON (optional) <input id="policy" type="file" accept=".json,application/json"></label><br>
 <label>Mode <select id="mode"><option value="demo">DEMO — simulated model outputs</option><option value="real">REAL — configured local adapters</option></select></label>

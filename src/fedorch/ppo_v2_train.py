@@ -500,6 +500,8 @@ def train(args):
         elif args.mode == 'heuristic': current={-1:actors[0]}
         else: current=actors
         metadata={'cache_signature':bundle.manifest.get('provenance', {}).get('tool_cache', {}).get('signature'),
+                  'client_role':'drone', 'local_critic_owner':'drone',
+                  'federation_role':'actor-only coordinator; no images or trajectories uploaded',
                   'network_config':args.network, 'mode':args.mode,'feedback':args.feedback,'seed':args.seed,'round':round_id,
                   'serialized_actor_payload_bytes':cumulative,'transport':'serialized replay payload, not measured network wire bytes',
                   'scope_extension_enhancement':args.enhance,'synthetic_fixture':bool(bundle.manifest.get('synthetic_fixture')),

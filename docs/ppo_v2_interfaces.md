@@ -3,6 +3,12 @@
 Internal interface shared by the data exporter, replay environment and learner.
 The user's protocol in msg_33ff2172 is the design of record. Single seed (0) first.
 
+Latest architecture amendment: clients are drones themselves, not base stations.
+Each drone owns its actor/local critic/optimizer and local trajectories. The VM
+emulates five drones and the actor-only coordinator. Qwen3-VL-8B loads on this VM
+in a separate staged cloud-tool pass; NF4/fp16 computation is the11GB2080Ti option.
+Perception weights remain frozen. No training is executed during implementation.
+
 Subsequent user amendment: optional ENHANCE denoise/sharpen/deblur extension.
 Default disabled for original A2 pilot, explicitly enabled for an ablation.
 Append ENHANCE_DENOISE, ENHANCE_SHARPEN, ENHANCE_DEBLUR to fixed ACTIONS.
@@ -102,6 +108,7 @@ audited states as label-dependent targets; document chosen method precisely.
 `scripts/ppo_v2_yolo.py`: native inference, no TensorRT, no quantization jobs.
 YOLO classifier training is separate full-label tool pretraining and versioned;
 5% applies ONLY controller feedback. Train-only towers; never train on val/test.
-Sequential tool loading on 11GB2080Ti. Cloud Qwen8B endpoint only, never local
-FP16 loading of Qwen8B into11GB. Checkpoints specified, never pretend absent.
+Sequential tool loading on 11GB2080Ti. Cloud Qwen8B loads locally on the VM,
+NF4/fp16 compute on11GB; FP16 option requires more memory. HTTP endpoint remains
+optional. Checkpoints specified, never pretend absent.
 Root owns manifest/data generation and launcher/docs/dependencies/integration.

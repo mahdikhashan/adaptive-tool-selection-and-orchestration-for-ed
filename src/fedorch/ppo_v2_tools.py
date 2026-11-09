@@ -20,7 +20,7 @@ import time
 CLASSES = ('good', 'rust', 'corrosion', 'missing_cap', 'bird_nest', 'other')
 DESCRIPTIONS = ('good, no defect', 'rust', 'corrosion', 'missing cap', 'bird nest',
                 'other defect (torn part or peeling paint)')
-VERSION = 'ppo-v2-native-3'
+VERSION = 'ppo-v2-native-4-local-qwen'
 DEFAULT_TOOLS = ('YOLO_CLS', 'ROI_PROPOSE', 'ZOOM_ROI', 'IMAGE_QUALITY')
 ALL_TOOLS = (*DEFAULT_TOOLS, 'SMOL_EXPLAIN', 'CLOUD_QWEN8B', 'ENHANCE')
 
@@ -238,17 +238,18 @@ class SmolAdapter:
 
 class CloudAdapter:
     """OpenAI-compatible endpoint, Qwen3-VL-8B only; never loads weights locally."""
-    def __init__(self, url, model='Qwen/Qwen3-VL-8B-Instruct', timeout=60):
+    def __init__(self, url, model='Qwen/Qwen3-VL-8B-Instruct', timeout=60, max_new_tokens=64):
         if 'qwen3-vl-8b' not in model.lower():
             raise ValueError('Cloud model must be Qwen3-VL-8B')
         self.url, self.model, self.timeout = url, model, timeout
+        self.max_new_tokens = max_new_tokens
 
     def __call__(self, image):
         import requests
         buffer = io.BytesIO()
         image.save(buffer, format='PNG')
         data = base64.b64encode(buffer.getvalue()).decode()
-        body = {'model': self.model, 'temperature': 0, 'max_tokens': 128,
+        body = {'model': self.model, 'temperature': 0, 'max_tokens': self.max_new_tokens,
                 'messages': [{'role': 'user', 'content': [
                     {'type': 'image_url', 'image_url': {'url': 'data:image/png;base64,' + data}},
                     {'type': 'text', 'text': 'Assess the visible power-line component condition. '
@@ -264,6 +265,87 @@ class CloudAdapter:
             raise ValueError('Empty cloud assessment')
         return {'explanation': text, 'bytes_up': len(payload), 'bytes_down': len(response.content),
                 'byte_measurement': 'HTTP body payload only, excludes protocol overhead'}
+
+
+class LocalQwenAdapter:
+    """Frozen Qwen3-VL-8B on the VM, sequential with the other model families.
+
+    NF4 is an explicitly requested cloud-runtime amendment, with FP16 compute;
+    Laya and Smol remain FP32. No CPU/disk offload, network traffic, or updates.
+    Byte fields describe nominal PNG/text serialization for network simulation,
+    never measured network-wire traffic. Actual local network bytes are zero.
+    """
+    def __init__(self, checkpoint, precision='nf4', device='cuda', max_side=512, max_new_tokens=64):
+        import torch
+        from transformers import AutoModelForImageTextToText, AutoProcessor, BitsAndBytesConfig
+        checkpoint = Path(checkpoint).resolve(strict=True)
+        config = json.loads((checkpoint / 'config.json').read_text())
+        text_config = config.get('text_config', {})
+        if (config.get('model_type') != 'qwen3_vl' or text_config.get('hidden_size') != 4096
+                or text_config.get('num_hidden_layers') != 36):
+            raise ValueError('Local cloud checkpoint must be dense Qwen3-VL-8B (hidden4096, layers36)')
+        if str(device) not in ('cuda', 'cuda:0') or not torch.cuda.is_available():
+            raise RuntimeError('Local Qwen requires CUDA GPU0; CPU inference/offload is disabled')
+        if precision not in ('nf4', 'fp16'):
+            raise ValueError('Qwen precision must be nf4 or fp16')
+        if precision == 'fp16' and torch.cuda.get_device_properties(0).total_memory < 22 * 1024**3:
+            raise RuntimeError('Qwen8B FP16 requires a larger GPU (at least22GiB); use nf4 on2080Ti')
+        kwargs = {'dtype': torch.float16, 'device_map': {'': 0},
+                  'local_files_only': True, 'attn_implementation': 'sdpa'}
+        if precision == 'nf4':
+            kwargs['quantization_config'] = BitsAndBytesConfig(
+                load_in_4bit=True, bnb_4bit_quant_type='nf4',
+                bnb_4bit_compute_dtype=torch.float16, bnb_4bit_use_double_quant=True,
+                llm_int8_enable_fp32_cpu_offload=False)
+        self.processor = AutoProcessor.from_pretrained(str(checkpoint), local_files_only=True,
+                                                       min_pixels=32 * 32, max_pixels=max_side**2)
+        self.model = AutoModelForImageTextToText.from_pretrained(str(checkpoint), **kwargs).eval()
+        self.model.requires_grad_(False)
+        # Explicit mapping prevents automatic placement; verify no loader changed it.
+        if any(parameter.device.type != 'cuda' for parameter in self.model.parameters()):
+            raise RuntimeError('Local Qwen contains non-CUDA parameters; refusing CPU/disk offload')
+        self.torch, self.device, self.max_side = torch, device, max_side
+        self.max_new_tokens = max_new_tokens
+
+    def __call__(self, image):
+        from PIL import Image
+        synchronize(self.device)
+        started = time.perf_counter()
+        image = image.convert('RGB').copy()
+        image.thumbnail((self.max_side, self.max_side), Image.Resampling.BILINEAR)
+        # Qwen smart-resize rounds to 32-pixel patch/merge boundaries. Pad to
+        # those boundaries first so even very narrow crops stay <=512 per side.
+        size = tuple(max(32, math.ceil(side / 32) * 32) for side in image.size)
+        if image.size != size:
+            padded = Image.new('RGB', size, (114, 114, 114))
+            padded.paste(image, ((size[0] - image.width) // 2, (size[1] - image.height) // 2))
+            image = padded
+        prompt = ('Assess only visible evidence about this power-line component. Allowed conditions: '
+                  + ', '.join(CLASSES) + '. State uncertainty and explain briefly. Do not infer invisible details.')
+        messages = [{'role': 'user', 'content': [{'type': 'image', 'image': image},
+                                                {'type': 'text', 'text': prompt}]}]
+        inputs = self.processor.apply_chat_template(messages, add_generation_prompt=True, tokenize=True,
+                                                     return_dict=True, return_tensors='pt')
+        inputs = {key: value.to(self.device, self.torch.float16) if value.is_floating_point()
+                  else value.to(self.device) for key, value in inputs.items()}
+        synchronize(self.device)
+        prep_s = time.perf_counter() - started
+        with self.torch.inference_mode():
+            output, model_s = timed_call(lambda: self.model.generate(
+                **inputs, max_new_tokens=self.max_new_tokens, do_sample=False), self.device)
+        started = time.perf_counter()
+        text = self.processor.batch_decode(output[:, inputs['input_ids'].shape[1]:],
+                                            skip_special_tokens=True)[0].strip()
+        if not text:
+            raise ValueError('Empty local Qwen assessment')
+        buffer = io.BytesIO()
+        image.save(buffer, format='PNG')
+        return {'explanation': text, 'bytes_up': buffer.tell() + len(prompt.encode('utf8')),
+                'bytes_down': len(text.encode('utf8')), 'actual_network_bytes': 0,
+                'byte_measurement': 'nominal bounded PNG+UTF8 prompt/response payload, simulated transport only',
+                'timing': {'preprocess_s': prep_s, 'model_execution_s': model_s,
+                           'postprocess_s': time.perf_counter() - started,
+                           'transport_s': 0., 'remote_wall_includes_transport': False}}
 
 
 def resolve_image(bundle, item):
@@ -448,8 +530,19 @@ def export_cache(args, factories=None):
         if not args.smol_base or not args.smol_adapter:
             raise ValueError('Requested SMOL_EXPLAIN needs both --smol-base and --smol-adapter')
         checkpoints.update(smol_base=args.smol_base, smol_adapter=args.smol_adapter)
-    if 'CLOUD_QWEN8B' in requested and not args.cloud_url:
-        raise ValueError('Requested cloud needs --cloud-url; omit cloud tool when disconnected')
+    local_cloud = getattr(args, 'cloud_local_checkpoint', None)
+    cloud_precision = getattr(args, 'cloud_precision', 'nf4')
+    cloud_max_tokens = getattr(args, 'cloud_max_tokens', 64)
+    cloud_views = getattr(args, 'cloud_views', 'original')
+    if local_cloud and args.cloud_url:
+        raise ValueError('Use either --cloud-local-checkpoint or --cloud-url, not both')
+    if cloud_views not in ('original', 'all') or cloud_max_tokens < 1:
+        raise ValueError('cloud-views must be original|all and cloud-max-tokens positive')
+    if 'CLOUD_QWEN8B' in requested:
+        if not args.cloud_url and not local_cloud:
+            raise ValueError('Requested cloud needs --cloud-local-checkpoint or --cloud-url')
+        if local_cloud:
+            checkpoints['qwen3_vl_8b'] = local_cloud
     weights = {name: fingerprint(path) for name, path in checkpoints.items()}
     yolo_manifest = Path(args.yolo_checkpoint).with_suffix('.json')
     if yolo_manifest.exists():
@@ -478,17 +571,22 @@ def export_cache(args, factories=None):
         import torch
         hardware.update(gpu=torch.cuda.get_device_name(args.device) if str(args.device).startswith('cuda') else None,
                         torch=str(torch.__version__), cuda=torch.version.cuda)
-        for package in ('ultralytics', 'transformers', 'pillow', 'peft', 'laya'):
+        for package in ('ultralytics', 'transformers', 'pillow', 'peft', 'laya', 'bitsandbytes', 'accelerate'):
             try:
                 versions[package] = importlib.metadata.version(package)
             except importlib.metadata.PackageNotFoundError:
                 versions[package] = None
     signature_data = {'version': VERSION, 'classes': CLASSES, 'weights': weights,
                       'source_hashes': source_hashes, 'tools': tools, 'hardware': hardware,
-                      'versions': versions, 'imgsz': args.imgsz, 'dtype': 'fp32',
+                      'versions': versions, 'imgsz': args.imgsz, 'edge_dtype': 'fp32',
                       'smol_max_tokens': args.smol_max_tokens, 'cloud_url': args.cloud_url,
                       'cloud_model': args.cloud_model, 'cloud_timeout': args.cloud_timeout,
                       'cloud_revision': args.cloud_revision,
+                      'cloud_backend': 'vm_local' if local_cloud else 'http',
+                      'cloud_precision': cloud_precision if local_cloud else 'endpoint-declared',
+                      'cloud_max_tokens': cloud_max_tokens, 'cloud_views': cloud_views,
+                      'cloud_max_side': 512, 'cloud_compute_dtype': 'float16' if local_cloud else None,
+                      'cloud_local_preprocessing': 'thumbnail512 then RGB114 pad to multiples32',
                       'enhance': {'median_kernel': 3, 'unsharp': [1, 100, 3],
                                   'wiener_gaussian_sigma': 1, 'wiener_K': .01, 'boundary': 'wrap'},
                       'preprocessing': 'PIL bilinear letterbox RGB114; original+4 native grid crops',
@@ -516,7 +614,10 @@ def export_cache(args, factories=None):
                      'smol': lambda: SmolAdapter(args.smol_base, args.smol_adapter, args.device,
                                                 args.smol_max_tokens),
                      'laya': lambda: LayaAdapter(args.laya_checkpoint, args.device),
-                     'cloud': lambda: CloudAdapter(args.cloud_url, args.cloud_model, args.cloud_timeout)}
+                     'cloud': (lambda: LocalQwenAdapter(local_cloud, cloud_precision, args.device,
+                                                       max_new_tokens=cloud_max_tokens)) if local_cloud else
+                              (lambda: CloudAdapter(args.cloud_url, args.cloud_model,
+                                                    args.cloud_timeout, cloud_max_tokens))}
     mock = bool(getattr(args, 'synthetic_fixture', False))
     stages_path = staging / 'stages.jsonl'
     stages = {}
@@ -546,13 +647,14 @@ def export_cache(args, factories=None):
         todo = [(s, v, evidence) for s, v, evidence in entries if (s, v, name) not in stages]
         if not todo:
             return
-        adapter, load_s = timed_call(factories[name], args.device if name != 'cloud' else 'cpu')
+        stage_device = args.device if name != 'cloud' or local_cloud else 'cpu'
+        adapter, load_s = timed_call(factories[name], stage_device)
         loads[name] = {'model_load_s': load_s}
         # Real-input warmup; separate timing, never substitute its output for a cached row.
         warm = _attempt(lambda: adapter(first_image) if name != 'laya' else adapter(first_image, None),
-                        args.device if name != 'cloud' else 'cpu')
+                        stage_device)
         loads[name].update(warmup_s=warm['duration_s'], warmup_valid=warm['valid'])
-        if not warm['valid'] and name != 'cloud':
+        if not warm['valid'] and (name != 'cloud' or local_cloud):
             raise RuntimeError(f'{name} warmup failed: {warm["error"]}')
         stage_start = time.perf_counter()
         with stages_path.open('a') as output:
@@ -561,7 +663,7 @@ def export_cache(args, factories=None):
                 if name == 'laya':
                     result = _attempt(lambda: adapter(image, evidence), args.device)
                 else:
-                    result = _attempt(lambda: adapter(image), args.device if name != 'cloud' else 'cpu')
+                    result = _attempt(lambda: adapter(image), stage_device)
                 row = {**result, 'source_id': source, 'view_id': view, 'stage': name,
                        'view_processing_s': view_s, 'signature': signature}
                 # Laya has multiple evidence conditions keyed by the internal stage key below.
@@ -574,7 +676,7 @@ def export_cache(args, factories=None):
                                       'observed_wall_s': elapsed,
                                       'stage_eta_s': elapsed / index * (len(todo) - index)}), flush=True)
         counters[name] = {'new_calls': len(todo), 'wall_s': time.perf_counter() - stage_start}
-        if str(args.device).startswith('cuda') and not mock and name != 'cloud':
+        if str(stage_device).startswith('cuda') and not mock:
             import torch
             loads[name]['gpu_memory'] = {'allocated_bytes': torch.cuda.memory_allocated(args.device),
                                          'reserved_bytes': torch.cuda.memory_reserved(args.device),
@@ -587,7 +689,7 @@ def export_cache(args, factories=None):
     if 'SMOL_EXPLAIN' in requested:
         run_stage('smol', entries)
     if 'CLOUD_QWEN8B' in requested:
-        run_stage('cloud', entries)
+        run_stage('cloud', entries if cloud_views == 'all' else [entry for entry in entries if entry[1] == 0])
     # Laya loaded once; evidence-conditioned passes are independent and disk-resumable.
     laya_entries = []
     for source in selected:
@@ -638,6 +740,8 @@ def export_cache(args, factories=None):
         needed = [(source, view, stage) for view in views for stage in ('yolo', 'laya_image')]
         for view in views:
             for name in ('yolo', 'smol', 'cloud'):
+                if name == 'cloud' and view > 0 and cloud_views == 'original':
+                    continue
                 if name != 'yolo' and {'smol': 'SMOL_EXPLAIN', 'cloud': 'CLOUD_QWEN8B'}[name] not in requested:
                     continue
                 raw = stages.get((source, view, name))
@@ -671,6 +775,9 @@ def export_cache(args, factories=None):
                           'laya_ms': downstream['duration_s'] * 1000 if downstream else 0.,
                           'bytes_up': raw.get('bytes_up', 0), 'bytes_down': raw.get('bytes_down', 0),
                           'bytes_measurement_valid': stage != 'cloud' or 'bytes_up' in raw,
+                          'byte_measurement': raw.get('byte_measurement', 'no network traffic'),
+                          'actual_network_bytes': raw.get('actual_network_bytes'),
+                          'wire_bytes_measured': False,
                           'timing': {'tool_s': raw['duration_s'],
                                      'tool_breakdown': raw.get('timing'),
                                      'tool_started_unix_s': raw.get('started_unix_s'),
@@ -680,7 +787,8 @@ def export_cache(args, factories=None):
                                      'laya_ended_unix_s': downstream.get('ended_unix_s') if downstream else None,
                                      'laya_includes_preprocessing': True,
                                      'laya_input_condition': stage,
-                                     'remote_wall_includes_transport': stage == 'cloud',
+                                     'remote_wall_includes_transport': stage == 'cloud' and not bool(local_cloud),
+                                     'cloud_backend': ('vm_local' if local_cloud else 'http') if stage == 'cloud' else None,
                                      'model_start': 'warm', 'energy_j': None},
                           'provenance_signature': signature}
                 if raw.get('probs') is not None:
@@ -736,7 +844,8 @@ def export_cache(args, factories=None):
     total_estimate = 0.
     for name, stats in durations.items():
         multiplier = 3 if name == 'laya_image' and 'ENHANCE' in requested else 0
-        total_estimate += stats['mean_s'] * len(sources) * (5 + multiplier)
+        call_views = 1 if name in ('cloud', 'laya_cloud') and cloud_views == 'original' else 5 + multiplier
+        total_estimate += stats['mean_s'] * len(sources) * call_views
     invalid = sum(not row['valid'] for row in observations)
     profile = {'signature': signature, 'synthetic_fixture': mock,
                'items_exported': len(chosen_items), 'unique_images_exported': len(ready_sources),
@@ -769,12 +878,16 @@ def export_cache(args, factories=None):
                                   'observations': len(observations), 'invalid': invalid,
                                   'mandatory_initial_failures': len(initial_invalid_ids)},
                     cache_profile='cache_profile.json', timing_hardware=hardware,
-                    cloud_transport_in_duration='CLOUD_QWEN8B' in requested,
+                    cloud_transport_in_duration='CLOUD_QWEN8B' in requested and not bool(local_cloud),
+                    cloud_backend='vm_local' if local_cloud else ('http' if 'CLOUD_QWEN8B' in requested else None),
+                    cloud_views=cloud_views,
+                    cloud_byte_accounting='nominal simulated serialization, no network transfer' if local_cloud else 'HTTP body payload only',
                     profile_only=bool(profile_limit), controller_only_audit_budget=True,
                     enhance='ENHANCE' in requested, tool_latency_profiles=latency_profiles,
                     latency_profile_source_ids=sorted(train_sources & ready_sources))
     manifest.setdefault('provenance', {})['tool_cache'] = {'signature': signature,
-        'checkpoint_sha256': weights, 'native_fp32': True, 'tensorRT': False,
+        'checkpoint_sha256': weights, 'native_fp32': not bool(local_cloud), 'edge_tools_fp32': True,
+        'qwen_runtime_precision': cloud_precision if local_cloud else None, 'tensorRT': False,
         'tool_pretraining_may_use_full_training_labels': True,
         'cache_preprocessing_version': VERSION, 'details': '.ppo_v2_cache/provenance.json'}
     if mock:

@@ -240,6 +240,18 @@ class EnvTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'traffic is unknown'):
             priced.step(ACTIONS.index('CLOUD_QWEN8B'))
 
+    def test_local_cloud_cache_preserves_nominal_vs_actual_network_bytes(self):
+        self.manifest['cloud_transport_in_duration'] = False
+        self.observations += [self.record('0', 'CLOUD_QWEN8B', bytes_up=1000,
+                                          actual_network_bytes=0,
+                                          byte_measurement='nominal simulated payload')]
+        env = self.env(network={'available': True, 'delay_s': .25})
+        _, _, _, info = env.step(ACTIONS.index('CLOUD_QWEN8B'))
+        self.assertAlmostEqual(info['duration_s'], .55)
+        self.assertEqual(env.trace[-1]['actual_network_bytes'], 0)
+        self.assertEqual(env.trace[-1]['byte_measurement'], 'nominal simulated payload')
+        self.assertFalse(env.mask()[ACTIONS.index('CLOUD_QWEN8B')])
+
     def test_frozen_audit_repeated_resets(self):
         env = self.env((1,))
         for _ in range(5):

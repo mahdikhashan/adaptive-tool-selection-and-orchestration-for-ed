@@ -185,6 +185,44 @@ class ToolTests(unittest.TestCase):
             self.assertTrue(all(r['tool'] == 'SMOL_EXPLAIN' and r['duration_s'] > 0 for r in failed))
             self.assertTrue(all(r['laya_ms'] == 0 and 'laya_probs' not in r for r in failed))
 
+    def test_local_qwen_original_scope_nominal_bytes_and_no_transport(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = make_bundle(Path(tmp) / 'bundle', duplicate=False)
+            qwen = root / 'local_qwen'
+            qwen.mkdir()
+            (qwen / 'config.json').write_text(json.dumps({'model_type': 'qwen3_vl',
+                'text_config': {'hidden_size': 4096, 'num_hidden_layers': 36}}))
+            (qwen / 'weights.mock').write_text('Mock only, never loaded')
+            mock = Adapters()
+            calls = [0]
+            def cloud(image):
+                calls[0] += 1
+                return {'explanation': 'Visible condition evidence, uncertain.', 'bytes_up': 123,
+                        'bytes_down': 42, 'actual_network_bytes': 0,
+                        'byte_measurement': 'nominal simulated serialization'}
+            factories = mock.factories()
+            factories['cloud'] = lambda: cloud
+            args = args_for(root, tools='YOLO_CLS,SMOL_EXPLAIN,CLOUD_QWEN8B,ZOOM_ROI',
+                            cloud_local_checkpoint=str(qwen), cloud_precision='nf4',
+                            cloud_max_tokens=32, cloud_views='original')
+            export_cache(args, factories)
+            self.assertEqual(calls[0], 4)  # One warmup, original only for three sources.
+            rows = [r for r in read_jsonl(root / 'observations.jsonl') if r['tool'] == 'CLOUD_QWEN8B']
+            self.assertEqual(len(rows), 3)
+            self.assertTrue(all(row['view_id'] == 0 and row['actual_network_bytes'] == 0 for row in rows))
+            self.assertTrue(all(not row['timing']['remote_wall_includes_transport'] for row in rows))
+            self.assertTrue(all(row['bytes_up'] == 123 and row['bytes_down'] == 42 for row in rows))
+            self.assertTrue(all('laya_probs' in row and row['duration_s'] > 0 for row in rows))
+            manifest = json.loads((root / 'manifest.json').read_text())
+            self.assertTrue(manifest['cache_complete'])
+            self.assertFalse(manifest['cloud_transport_in_duration'])
+            self.assertEqual(manifest['cloud_backend'], 'vm_local')
+            self.assertEqual(manifest['provenance']['tool_cache']['qwen_runtime_precision'], 'nf4')
+            self.assertIn('qwen3_vl_8b', manifest['provenance']['tool_cache']['checkpoint_sha256'])
+            args.cloud_precision = 'fp16'
+            with self.assertRaisesRegex(ValueError, 'provenance'):
+                export_cache(args, factories)
+
     def test_letterbox_keeps_whole_image(self):
         image = Image.new('RGB', (40, 10), 'white')
         output = letterbox(image, 40)

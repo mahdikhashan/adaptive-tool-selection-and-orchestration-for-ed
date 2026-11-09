@@ -3,8 +3,14 @@
 Implementation branch: `agentic-ppo-v2`. This is runnable pipeline code, not a
 completed experiment. No model/controller training was run during implementation.
 Train only on CUDA. The target is one booked RTX 2080 Ti (11 GB), native PyTorch,
-FP32 frozen-tool inference, one six-class YOLO checkpoint, seed 0. Quantization
+FP32 edge-tool inference, NF4/fp16 Qwen8B inference, one six-class YOLO checkpoint, seed 0. Quantization
 scripts remain unchanged. Extra seeds come after the pilot.
+
+Federated clients are the **drones themselves**. Each owns its actor, local
+critic, optimizer and trajectories. This VM emulates five drones plus an
+actor-only aggregation coordinator; there are no base stations. Perception
+models remain frozen while drone controller policies learn. The cloud role is
+the larger Qwen model, loaded on this same VM for this simulation.
 
 ## Pull and provision
 
@@ -48,7 +54,7 @@ bash scripts/runs/ppo_v2_gpu.sh prepare
 ```
 
 The download command fetches one ImageNet YOLO26n classifier initialization,
-the pinned published Laya checkpoint, and SmolVLM-256M base. It does not train or
+the pinned published Laya checkpoint, SmolVLM-256M base and Qwen3-VL-8B. It does not train or
 run inference. Your existing fine-tuned Smol LoRA adapter is still required:
 
 ```bash
@@ -64,8 +70,8 @@ Laya/Smol weights are trained by the controller pipeline.
 Preparation writes immutable `full` and `small` bundles under
 `$FEDORCH_WORK/runs/ppo_v2/`. `full` contains all training items for the separate
 YOLO training; `small` retains approximately10% source-grouped training data,
-with all validation/test metadata unchanged. Existing five tower-balanced region
-assignments are used. The realized audit mask is independent Bernoulli p=.05,
+with all validation/test metadata unchanged. The existing five tower-balanced
+partitions are assigned to five simulated drones. The realized audit mask is independent Bernoulli p=.05,
 fixed by seed and item ID, persisted once and reused across all methods.
 
 Source-image questions are sampled together, no source/tower may cross splits,
@@ -115,10 +121,20 @@ forecast. Keep the same token bound, checkpoints, portfolio and image processing
 for the subsequent cache so profiling work resumes. Default without the variable
 is96 tokens; changing32→96 requires a new bundle because the tool changes.
 
-Actual frozen tool families are loaded sequentially to limit GPU memory. Qwen8B
-is not loaded in FP16 on the11GB2080Ti. Cloud is omitted/masked in the first
-**edge-only pilot** unless an external Qwen3-VL-8B endpoint is explicitly supplied.
-This reduced portfolio is not the complete cloud-enabled A2 main comparison.
+Frozen tool families load sequentially to limit GPU memory. The launcher loads
+Qwen3-VL-8B **locally on the VM** in4-bit NF4 with FP16 computation, releases it,
+then runs the Laya-conditioned cache pass. Its weights remain frozen. This is
+runtime loading of the cloud tool, not the deferred Laya/Smol quantization study.
+Memory fit and kernel compatibility still require the user's GPU profile; there
+is no CPU fallback. FP16 Qwen is available only on a sufficiently larger GPU.
+For the first pilot, Qwen has a32-token output bound and original-image calls
+only; ROI-specific Qwen calls are masked. `--cloud-views all` builds the expanded
+cache in a fresh bundle. This declared restriction limits expensive8B cache work.
+
+The generated `network.json` is explicitly an **idealized zero-added-transport
+VM scenario**, not measured drone networking. It enables cloud selection without
+inventing a measured bandwidth. Replace it using `PPO_V2_NETWORK_CONFIG` for a
+measured/specified network scenario. All comparators use the same configuration.
 
 ## Cache train/validation, then run the pilot
 
@@ -145,7 +161,7 @@ Outputs are in `$FEDORCH_WORK/runs/ppo_v2/pilot_seed0/`: per-method logs, per-ro
 validation summaries, actors, private rollouts/critics, and fed actor-delta files.
 No images/trajectories/critics are part of federation. Local agents are evaluated
 separately on the common held-out set; they are not combined into an ensemble.
-Held-out operator ownership is not inferred from a fabricated geographic map.
+Held-out drone ownership is not inferred from a fabricated geographic map.
 
 For a quicker validation execution check (clearly incomplete held-out coverage):
 
@@ -161,7 +177,8 @@ uv run --locked --extra gpu-tools python scripts/ppo_v2_compare.py \
   --bundle "$FEDORCH_WORK/runs/ppo_v2/small" \
   --output "$FEDORCH_WORK/runs/ppo_v2/seed0_round20" \
   --device cuda --feedback audit --seed 0 --rounds 20 \
-  --episodes-per-client 256 --budgets 2,6,15 --eval-split val
+  --episodes-per-client 256 --budgets 2,6,15 --eval-split val \
+  --network-config "$FEDORCH_WORK/runs/ppo_v2/network.json"
 ```
 
 Use fresh output directories. Full-feedback upper bounds use an explicit
@@ -178,7 +195,8 @@ uv run --locked --extra gpu-tools python scripts/ppo_v2_train.py \
   --bundle "$FEDORCH_WORK/runs/ppo_v2/small" \
   --output "$FEDORCH_WORK/runs/ppo_v2/fed_pilot_final_test" \
   --evaluate-only "$FEDORCH_WORK/runs/ppo_v2/pilot_seed0/fed/round-02.pt" \
-  --device cuda --eval-split test --budgets 2,6,15
+  --device cuda --eval-split test --budgets 2,6,15 \
+  --network-config "$FEDORCH_WORK/runs/ppo_v2/network.json"
 ```
 
 Use the checkpoint selected under your validation-only rule. Evaluate all
@@ -201,13 +219,15 @@ explicit cache command with `--enhance`, and train with `--enhance`. Keep other
 settings and audit IDs matched. Do not change the portfolio in a populated cache;
 the immutable signature prevents stale reuse.
 
-For cloud, likewise build an explicitly cloud-enabled bundle, include
-`CLOUD_QWEN8B` in `--tools`, and pass `--cloud-url` (exact chat-completions endpoint)
-plus `--cloud-revision`. Only Qwen3-VL-8B is accepted. Set `PPO_V2_CLOUD_API_KEY` if
-the endpoint requires authorization. The endpoint must already exist on suitable
-hardware; no cloud model server is provisioned by this pipeline. Logged HTTP wall
-time includes transport and must not receive another copy of RTT during replay.
-Known byte-body counts and unknown failed-call traffic are distinguished.
+The default launcher already includes cloud Qwen loaded locally. The direct
+cache command uses `--cloud-local-checkpoint PATH --cloud-precision nf4
+--cloud-max-tokens 32 --cloud-views original` with `CLOUD_QWEN8B` in `--tools`.
+Only Qwen3-VL-8B is accepted. Local Qwen computation contains no network transfer;
+nominal request/response sizes for a simulated link must not be presented as
+actual uploaded network bytes. If a network service is desired later, the
+optional `--cloud-url` plus `--cloud-revision` path supports it; set
+`PPO_V2_CLOUD_API_KEY` for endpoint authorization. HTTP wall time already includes
+transport, so replay must not add it twice. Failed-call traffic can be unknown.
 
 For cloud-enabled controller runs, also pass `--network-config` with a JSON file
 containing the observed network configuration, for example `available`, `rtt_s`,
@@ -240,7 +260,8 @@ matched supervised baseline.
 
 Runtime cannot be measured on the2080Ti from this laptop. Planning ranges for
 one GPU, already downloaded data/models: one20-epoch YOLO roughly20–90min;
-train/validation cache with5views and32-token Smol explanations roughly1–8h;
+train/validation cache with5edge views,32-token Smol and original-only32-token
+Qwen calls roughly3–16h;
 single-seed pilot comparison roughly15–90min after caching. These are unverified
 estimates and can be exceeded.96-token explanations/full test caching can take
 substantially longer. Use the20-image profile's measured rates to replace these

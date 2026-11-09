@@ -312,6 +312,7 @@ class InspectionEnv:
                                bytes_up=record.get('bytes_up', 0), bytes_down=record.get('bytes_down', 0),
                                bytes_measurement_valid=record.get('bytes_measurement_valid', True),
                                byte_measurement=record.get('byte_measurement'),
+                               actual_network_bytes=record.get('actual_network_bytes'),
                                energy_j=record.get('energy_j'), policy_version=self.policy_version))
         return valid
 

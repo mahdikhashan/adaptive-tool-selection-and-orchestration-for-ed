@@ -1,0 +1,36 @@
+
+[anchor_cap025] cap 0.025 | 5 seeds | risk per 1,000 test items at 0.1 s, 0.15 s, 0.2 s, 0.3 s
+ResNet only                                   129.2 |  129.2 |  129.2 |  129.2
+greedy cascade with defer                     121.0 |  114.1 |  109.6 |   99.1
+paced cascade, tuned on val                   112.9 |  113.4 |  108.2 |   97.2
+central PPO (n=5)                             113.7 ±  0.5 (defer 0.023) |  116.0 ±  0.9 (defer 0.022) |  107.6 ±  1.4 (defer 0.021) |   98.8 ±  1.0 (defer 0.020)
+  central PPO after imitation only            114.5 |  115.8 |  109.8 |   99.8
+FedAvg PPO (n=5)                              114.9 ±  0.9 (defer 0.023) |  115.2 ±  0.5 (defer 0.022) |  109.3 ±  0.5 (defer 0.021) |   99.2 ±  0.6 (defer 0.020)
+  FedAvg PPO after imitation only             114.5 |  115.8 |  109.8 |   99.8
+
+[anchor_cap05] cap 0.05 | 5 seeds | risk per 1,000 test items at 0.1 s, 0.15 s, 0.2 s, 0.3 s
+ResNet only                                   129.2 |  129.2 |  129.2 |  129.2
+greedy cascade with defer                     117.8 |  109.5 |  108.8 |   96.9
+paced cascade, tuned on val                   108.8 |  106.1 |  106.0 |  100.5
+central PPO (n=5)                             111.5 ±  0.7 (defer 0.043) |  105.3 ±  0.5 (defer 0.039) |  102.8 ±  1.3 (defer 0.036) |   97.4 ±  1.6 (defer 0.037)
+  central PPO after imitation only            112.3 |  107.6 |  104.0 |   97.9
+FedAvg PPO (n=5)                              112.7 ±  1.6 (defer 0.043) |  106.5 ±  0.5 (defer 0.039) |  102.9 ±  0.8 (defer 0.036) |   98.3 ±  1.8 (defer 0.037)
+  FedAvg PPO after imitation only             112.3 |  107.6 |  104.0 |   97.9
+
+[warm_cap025] cap 0.025 | 5 seeds | risk per 1,000 test items at 0.1 s, 0.15 s, 0.2 s, 0.3 s
+ResNet only                                   129.2 |  129.2 |  129.2 |  129.2
+greedy cascade with defer                     121.0 |  114.1 |  109.6 |   99.1
+paced cascade, tuned on val                   112.9 |  113.4 |  108.2 |   97.2
+central PPO (n=5)                             117.1 ±  3.2 (defer 0.023) |  114.7 ±  2.2 (defer 0.022) |  112.1 ±  2.7 (defer 0.021) |  102.9 ±  1.2 (defer 0.020)
+  central PPO after imitation only            114.5 |  115.8 |  109.8 |   99.8
+FedAvg PPO (n=5)                              118.0 ±  2.1 (defer 0.023) |  113.5 ±  1.1 (defer 0.022) |  112.3 ±  1.1 (defer 0.021) |  103.9 ±  1.5 (defer 0.020)
+  FedAvg PPO after imitation only             114.5 |  115.8 |  109.8 |   99.8
+
+[warm_cap05] cap 0.05 | 5 seeds | risk per 1,000 test items at 0.1 s, 0.15 s, 0.2 s, 0.3 s
+ResNet only                                   129.2 |  129.2 |  129.2 |  129.2
+greedy cascade with defer                     117.8 |  109.5 |  108.8 |   96.9
+paced cascade, tuned on val                   108.8 |  106.1 |  106.0 |  100.5
+central PPO (n=5)                             112.5 ±  2.0 (defer 0.044) |  109.5 ±  2.1 (defer 0.041) |  107.0 ±  2.0 (defer 0.038) |   99.7 ±  1.4 (defer 0.034)
+  central PPO after imitation only            112.3 |  107.6 |  104.0 |   97.9
+FedAvg PPO (n=5)                              117.1 ±  2.3 (defer 0.045) |  111.8 ±  1.6 (defer 0.043) |  107.5 ±  1.7 (defer 0.040) |  101.0 ±  1.2 (defer 0.038)
+  FedAvg PPO after imitation only             112.3 |  107.6 |  104.0 |   97.9

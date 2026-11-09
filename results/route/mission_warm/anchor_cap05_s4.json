@@ -1,0 +1,872 @@
+{
+  "args": {
+    "budgets": [
+      0.1,
+      0.15,
+      0.2,
+      0.3
+    ],
+    "cap": 0.05,
+    "length": 40,
+    "regime": "weak",
+    "rounds": 60,
+    "segments": 256,
+    "gamma": 0.98,
+    "entropy": 0.01,
+    "gae": 0.9,
+    "seeds": [
+      4
+    ],
+    "fed": true,
+    "central": 1,
+    "warm": true,
+    "warm_segments": 2000,
+    "anchor": 0.5,
+    "lr": 0.0001,
+    "eval_every": 10,
+    "tag": "_warm/anchor_cap05_s4"
+  },
+  "budgets_per_item": [
+    0.1,
+    0.15,
+    0.2,
+    0.3
+  ],
+  "cap": 0.05,
+  "length": 40,
+  "regime": "weak",
+  "test_segments": 184,
+  "methods": {
+    "ResNet only": {
+      "0.1": {
+        "risk_per_1000": 129.2,
+        "mean_time_s": 0.066,
+        "deferred": 0.0,
+        "budget_used": 0.656,
+        "calls_laya": 0.0,
+        "calls_smolvlm_local": 0.0,
+        "calls_cloud": 0.0
+      },
+      "0.15": {
+        "risk_per_1000": 129.2,
+        "mean_time_s": 0.066,
+        "deferred": 0.0,
+        "budget_used": 0.437,
+        "calls_laya": 0.0,
+        "calls_smolvlm_local": 0.0,
+        "calls_cloud": 0.0
+      },
+      "0.2": {
+        "risk_per_1000": 129.2,
+        "mean_time_s": 0.066,
+        "deferred": 0.0,
+        "budget_used": 0.328,
+        "calls_laya": 0.0,
+        "calls_smolvlm_local": 0.0,
+        "calls_cloud": 0.0
+      },
+      "0.3": {
+        "risk_per_1000": 129.2,
+        "mean_time_s": 0.066,
+        "deferred": 0.0,
+        "budget_used": 0.219,
+        "calls_laya": 0.0,
+        "calls_smolvlm_local": 0.0,
+        "calls_cloud": 0.0
+      }
+    },
+    "greedy: defer if uncertain": {
+      "0.1": {
+        "risk_per_1000": 119.8,
+        "mean_time_s": 0.066,
+        "deferred": 0.0486,
+        "budget_used": 0.656,
+        "calls_laya": 0.0,
+        "calls_smolvlm_local": 0.0,
+        "calls_cloud": 0.0
+      },
+      "0.15": {
+        "risk_per_1000": 119.8,
+        "mean_time_s": 0.066,
+        "deferred": 0.0486,
+        "budget_used": 0.437,
+        "calls_laya": 0.0,
+        "calls_smolvlm_local": 0.0,
+        "calls_cloud": 0.0
+      },
+      "0.2": {
+        "risk_per_1000": 119.8,
+        "mean_time_s": 0.066,
+        "deferred": 0.0486,
+        "budget_used": 0.328,
+        "calls_laya": 0.0,
+        "calls_smolvlm_local": 0.0,
+        "calls_cloud": 0.0
+      },
+      "0.3": {
+        "risk_per_1000": 119.8,
+        "mean_time_s": 0.066,
+        "deferred": 0.0486,
+        "budget_used": 0.219,
+        "calls_laya": 0.0,
+        "calls_smolvlm_local": 0.0,
+        "calls_cloud": 0.0
+      }
+    },
+    "greedy cascade with defer": {
+      "0.1": {
+        "risk_per_1000": 117.8,
+        "mean_time_s": 0.097,
+        "deferred": 0.0465,
+        "budget_used": 0.958,
+        "calls_laya": 0.028,
+        "calls_smolvlm_local": 0.006,
+        "calls_cloud": 0.023
+      },
+      "0.15": {
+        "risk_per_1000": 109.5,
+        "mean_time_s": 0.143,
+        "deferred": 0.0449,
+        "budget_used": 0.947,
+        "calls_laya": 0.059,
+        "calls_smolvlm_local": 0.033,
+        "calls_cloud": 0.034
+      },
+      "0.2": {
+        "risk_per_1000": 108.8,
+        "mean_time_s": 0.184,
+        "deferred": 0.0427,
+        "budget_used": 0.911,
+        "calls_laya": 0.089,
+        "calls_smolvlm_local": 0.051,
+        "calls_cloud": 0.044
+      },
+      "0.3": {
+        "risk_per_1000": 96.9,
+        "mean_time_s": 0.235,
+        "deferred": 0.0418,
+        "budget_used": 0.775,
+        "calls_laya": 0.121,
+        "calls_smolvlm_local": 0.075,
+        "calls_cloud": 0.059
+      }
+    },
+    "paced cascade, tuned on val": {
+      "0.1": {
+        "risk_per_1000": 108.8,
+        "mean_time_s": 0.085,
+        "deferred": 0.0425,
+        "budget_used": 0.84,
+        "calls_laya": 0.012,
+        "calls_smolvlm_local": 0.001,
+        "calls_cloud": 0.037
+      },
+      "0.15": {
+        "risk_per_1000": 106.1,
+        "mean_time_s": 0.143,
+        "deferred": 0.0398,
+        "budget_used": 0.947,
+        "calls_laya": 0.059,
+        "calls_smolvlm_local": 0.033,
+        "calls_cloud": 0.034
+      },
+      "0.2": {
+        "risk_per_1000": 106.0,
+        "mean_time_s": 0.184,
+        "deferred": 0.0315,
+        "budget_used": 0.911,
+        "calls_laya": 0.089,
+        "calls_smolvlm_local": 0.051,
+        "calls_cloud": 0.044
+      },
+      "0.3": {
+        "risk_per_1000": 100.5,
+        "mean_time_s": 0.203,
+        "deferred": 0.0387,
+        "budget_used": 0.673,
+        "calls_laya": 0.133,
+        "calls_smolvlm_local": 0.037,
+        "calls_cloud": 0.044
+      }
+    },
+    "central PPO seed 4": {
+      "0.1": {
+        "risk_per_1000": 111.5,
+        "mean_time_s": 0.086,
+        "deferred": 0.0422,
+        "budget_used": 0.85,
+        "calls_laya": 0.014,
+        "calls_smolvlm_local": 0.001,
+        "calls_cloud": 0.036
+      },
+      "0.15": {
+        "risk_per_1000": 105.3,
+        "mean_time_s": 0.143,
+        "deferred": 0.0377,
+        "budget_used": 0.932,
+        "calls_laya": 0.057,
+        "calls_smolvlm_local": 0.032,
+        "calls_cloud": 0.038
+      },
+      "0.2": {
+        "risk_per_1000": 101.7,
+        "mean_time_s": 0.183,
+        "deferred": 0.036,
+        "budget_used": 0.901,
+        "calls_laya": 0.09,
+        "calls_smolvlm_local": 0.05,
+        "calls_cloud": 0.043
+      },
+      "0.3": {
+        "risk_per_1000": 97.6,
+        "mean_time_s": 0.209,
+        "deferred": 0.0387,
+        "budget_used": 0.693,
+        "calls_laya": 0.134,
+        "calls_smolvlm_local": 0.041,
+        "calls_cloud": 0.042
+      }
+    },
+    "FedAvg PPO seed 4": {
+      "0.1": {
+        "risk_per_1000": 113.4,
+        "mean_time_s": 0.086,
+        "deferred": 0.0419,
+        "budget_used": 0.856,
+        "calls_laya": 0.016,
+        "calls_smolvlm_local": 0.002,
+        "calls_cloud": 0.031
+      },
+      "0.15": {
+        "risk_per_1000": 105.9,
+        "mean_time_s": 0.142,
+        "deferred": 0.039,
+        "budget_used": 0.932,
+        "calls_laya": 0.057,
+        "calls_smolvlm_local": 0.033,
+        "calls_cloud": 0.036
+      },
+      "0.2": {
+        "risk_per_1000": 102.7,
+        "mean_time_s": 0.183,
+        "deferred": 0.0363,
+        "budget_used": 0.903,
+        "calls_laya": 0.09,
+        "calls_smolvlm_local": 0.05,
+        "calls_cloud": 0.043
+      },
+      "0.3": {
+        "risk_per_1000": 96.6,
+        "mean_time_s": 0.207,
+        "deferred": 0.0377,
+        "budget_used": 0.687,
+        "calls_laya": 0.132,
+        "calls_smolvlm_local": 0.043,
+        "calls_cloud": 0.037
+      }
+    }
+  },
+  "tuned_rule": {
+    "0.1": [
+      4.0,
+      0.7
+    ],
+    "0.15": [
+      Infinity,
+      0.7
+    ],
+    "0.2": [
+      Infinity,
+      0.8
+    ],
+    "0.3": [
+      4.0,
+      0.7
+    ]
+  },
+  "curves": {
+    "central PPO seed 4": [
+      {
+        "round": 0,
+        "rule_agreement": 0.9825,
+        "imitation_steps": 89112,
+        "test": {
+          "0.1": {
+            "risk_per_1000": 111.0,
+            "mean_time_s": 0.084,
+            "deferred": 0.0417,
+            "budget_used": 0.835,
+            "calls_laya": 0.01,
+            "calls_smolvlm_local": 0.002,
+            "calls_cloud": 0.038
+          },
+          "0.15": {
+            "risk_per_1000": 105.3,
+            "mean_time_s": 0.142,
+            "deferred": 0.0366,
+            "budget_used": 0.929,
+            "calls_laya": 0.056,
+            "calls_smolvlm_local": 0.032,
+            "calls_cloud": 0.037
+          },
+          "0.2": {
+            "risk_per_1000": 102.2,
+            "mean_time_s": 0.183,
+            "deferred": 0.0347,
+            "budget_used": 0.897,
+            "calls_laya": 0.089,
+            "calls_smolvlm_local": 0.05,
+            "calls_cloud": 0.044
+          },
+          "0.3": {
+            "risk_per_1000": 96.2,
+            "mean_time_s": 0.214,
+            "deferred": 0.0354,
+            "budget_used": 0.705,
+            "calls_laya": 0.129,
+            "calls_smolvlm_local": 0.049,
+            "calls_cloud": 0.045
+          }
+        }
+      },
+      {
+        "round": 10,
+        "test": {
+          "0.1": {
+            "risk_per_1000": 111.4,
+            "mean_time_s": 0.084,
+            "deferred": 0.0428,
+            "budget_used": 0.838,
+            "calls_laya": 0.011,
+            "calls_smolvlm_local": 0.002,
+            "calls_cloud": 0.036
+          },
+          "0.15": {
+            "risk_per_1000": 107.8,
+            "mean_time_s": 0.142,
+            "deferred": 0.0387,
+            "budget_used": 0.932,
+            "calls_laya": 0.057,
+            "calls_smolvlm_local": 0.031,
+            "calls_cloud": 0.037
+          },
+          "0.2": {
+            "risk_per_1000": 104.7,
+            "mean_time_s": 0.183,
+            "deferred": 0.036,
+            "budget_used": 0.9,
+            "calls_laya": 0.09,
+            "calls_smolvlm_local": 0.049,
+            "calls_cloud": 0.044
+          },
+          "0.3": {
+            "risk_per_1000": 96.1,
+            "mean_time_s": 0.218,
+            "deferred": 0.037,
+            "budget_used": 0.722,
+            "calls_laya": 0.135,
+            "calls_smolvlm_local": 0.05,
+            "calls_cloud": 0.042
+          }
+        }
+      },
+      {
+        "round": 20,
+        "test": {
+          "0.1": {
+            "risk_per_1000": 109.0,
+            "mean_time_s": 0.085,
+            "deferred": 0.0427,
+            "budget_used": 0.845,
+            "calls_laya": 0.015,
+            "calls_smolvlm_local": 0.003,
+            "calls_cloud": 0.027
+          },
+          "0.15": {
+            "risk_per_1000": 106.5,
+            "mean_time_s": 0.142,
+            "deferred": 0.039,
+            "budget_used": 0.93,
+            "calls_laya": 0.056,
+            "calls_smolvlm_local": 0.032,
+            "calls_cloud": 0.038
+          },
+          "0.2": {
+            "risk_per_1000": 103.8,
+            "mean_time_s": 0.184,
+            "deferred": 0.0361,
+            "budget_used": 0.904,
+            "calls_laya": 0.089,
+            "calls_smolvlm_local": 0.051,
+            "calls_cloud": 0.043
+          },
+          "0.3": {
+            "risk_per_1000": 96.9,
+            "mean_time_s": 0.216,
+            "deferred": 0.0368,
+            "budget_used": 0.716,
+            "calls_laya": 0.132,
+            "calls_smolvlm_local": 0.05,
+            "calls_cloud": 0.043
+          }
+        }
+      },
+      {
+        "round": 30,
+        "test": {
+          "0.1": {
+            "risk_per_1000": 111.9,
+            "mean_time_s": 0.085,
+            "deferred": 0.0425,
+            "budget_used": 0.84,
+            "calls_laya": 0.012,
+            "calls_smolvlm_local": 0.002,
+            "calls_cloud": 0.035
+          },
+          "0.15": {
+            "risk_per_1000": 106.2,
+            "mean_time_s": 0.143,
+            "deferred": 0.0393,
+            "budget_used": 0.933,
+            "calls_laya": 0.057,
+            "calls_smolvlm_local": 0.032,
+            "calls_cloud": 0.037
+          },
+          "0.2": {
+            "risk_per_1000": 101.5,
+            "mean_time_s": 0.184,
+            "deferred": 0.0366,
+            "budget_used": 0.904,
+            "calls_laya": 0.09,
+            "calls_smolvlm_local": 0.05,
+            "calls_cloud": 0.043
+          },
+          "0.3": {
+            "risk_per_1000": 95.5,
+            "mean_time_s": 0.209,
+            "deferred": 0.038,
+            "budget_used": 0.692,
+            "calls_laya": 0.134,
+            "calls_smolvlm_local": 0.043,
+            "calls_cloud": 0.039
+          }
+        }
+      },
+      {
+        "round": 40,
+        "test": {
+          "0.1": {
+            "risk_per_1000": 111.7,
+            "mean_time_s": 0.083,
+            "deferred": 0.0434,
+            "budget_used": 0.819,
+            "calls_laya": 0.011,
+            "calls_smolvlm_local": 0.002,
+            "calls_cloud": 0.029
+          },
+          "0.15": {
+            "risk_per_1000": 104.2,
+            "mean_time_s": 0.142,
+            "deferred": 0.0387,
+            "budget_used": 0.929,
+            "calls_laya": 0.057,
+            "calls_smolvlm_local": 0.032,
+            "calls_cloud": 0.036
+          },
+          "0.2": {
+            "risk_per_1000": 99.1,
+            "mean_time_s": 0.183,
+            "deferred": 0.0361,
+            "budget_used": 0.901,
+            "calls_laya": 0.09,
+            "calls_smolvlm_local": 0.051,
+            "calls_cloud": 0.042
+          },
+          "0.3": {
+            "risk_per_1000": 95.8,
+            "mean_time_s": 0.209,
+            "deferred": 0.0383,
+            "budget_used": 0.692,
+            "calls_laya": 0.134,
+            "calls_smolvlm_local": 0.043,
+            "calls_cloud": 0.039
+          }
+        }
+      },
+      {
+        "round": 50,
+        "test": {
+          "0.1": {
+            "risk_per_1000": 112.2,
+            "mean_time_s": 0.085,
+            "deferred": 0.0435,
+            "budget_used": 0.84,
+            "calls_laya": 0.012,
+            "calls_smolvlm_local": 0.001,
+            "calls_cloud": 0.036
+          },
+          "0.15": {
+            "risk_per_1000": 105.4,
+            "mean_time_s": 0.142,
+            "deferred": 0.0398,
+            "budget_used": 0.933,
+            "calls_laya": 0.057,
+            "calls_smolvlm_local": 0.032,
+            "calls_cloud": 0.037
+          },
+          "0.2": {
+            "risk_per_1000": 103.9,
+            "mean_time_s": 0.183,
+            "deferred": 0.0366,
+            "budget_used": 0.903,
+            "calls_laya": 0.091,
+            "calls_smolvlm_local": 0.049,
+            "calls_cloud": 0.043
+          },
+          "0.3": {
+            "risk_per_1000": 98.7,
+            "mean_time_s": 0.209,
+            "deferred": 0.0381,
+            "budget_used": 0.693,
+            "calls_laya": 0.136,
+            "calls_smolvlm_local": 0.039,
+            "calls_cloud": 0.043
+          }
+        }
+      },
+      {
+        "round": 60,
+        "test": {
+          "0.1": {
+            "risk_per_1000": 111.5,
+            "mean_time_s": 0.086,
+            "deferred": 0.0422,
+            "budget_used": 0.85,
+            "calls_laya": 0.014,
+            "calls_smolvlm_local": 0.001,
+            "calls_cloud": 0.036
+          },
+          "0.15": {
+            "risk_per_1000": 105.3,
+            "mean_time_s": 0.143,
+            "deferred": 0.0377,
+            "budget_used": 0.932,
+            "calls_laya": 0.057,
+            "calls_smolvlm_local": 0.032,
+            "calls_cloud": 0.038
+          },
+          "0.2": {
+            "risk_per_1000": 101.7,
+            "mean_time_s": 0.183,
+            "deferred": 0.036,
+            "budget_used": 0.901,
+            "calls_laya": 0.09,
+            "calls_smolvlm_local": 0.05,
+            "calls_cloud": 0.043
+          },
+          "0.3": {
+            "risk_per_1000": 97.6,
+            "mean_time_s": 0.209,
+            "deferred": 0.0387,
+            "budget_used": 0.693,
+            "calls_laya": 0.134,
+            "calls_smolvlm_local": 0.041,
+            "calls_cloud": 0.042
+          }
+        }
+      }
+    ],
+    "FedAvg PPO seed 4": [
+      {
+        "round": 0,
+        "rule_agreement": 0.9825,
+        "imitation_steps": 89112,
+        "test": {
+          "0.1": {
+            "risk_per_1000": 111.0,
+            "mean_time_s": 0.084,
+            "deferred": 0.0417,
+            "budget_used": 0.835,
+            "calls_laya": 0.01,
+            "calls_smolvlm_local": 0.002,
+            "calls_cloud": 0.038
+          },
+          "0.15": {
+            "risk_per_1000": 105.3,
+            "mean_time_s": 0.142,
+            "deferred": 0.0366,
+            "budget_used": 0.929,
+            "calls_laya": 0.056,
+            "calls_smolvlm_local": 0.032,
+            "calls_cloud": 0.037
+          },
+          "0.2": {
+            "risk_per_1000": 102.2,
+            "mean_time_s": 0.183,
+            "deferred": 0.0347,
+            "budget_used": 0.897,
+            "calls_laya": 0.089,
+            "calls_smolvlm_local": 0.05,
+            "calls_cloud": 0.044
+          },
+          "0.3": {
+            "risk_per_1000": 96.2,
+            "mean_time_s": 0.214,
+            "deferred": 0.0354,
+            "budget_used": 0.705,
+            "calls_laya": 0.129,
+            "calls_smolvlm_local": 0.049,
+            "calls_cloud": 0.045
+          }
+        }
+      },
+      {
+        "round": 10,
+        "test": {
+          "0.1": {
+            "risk_per_1000": 111.4,
+            "mean_time_s": 0.085,
+            "deferred": 0.0425,
+            "budget_used": 0.842,
+            "calls_laya": 0.012,
+            "calls_smolvlm_local": 0.002,
+            "calls_cloud": 0.036
+          },
+          "0.15": {
+            "risk_per_1000": 106.3,
+            "mean_time_s": 0.143,
+            "deferred": 0.0385,
+            "budget_used": 0.934,
+            "calls_laya": 0.056,
+            "calls_smolvlm_local": 0.032,
+            "calls_cloud": 0.038
+          },
+          "0.2": {
+            "risk_per_1000": 103.6,
+            "mean_time_s": 0.183,
+            "deferred": 0.0357,
+            "budget_used": 0.9,
+            "calls_laya": 0.089,
+            "calls_smolvlm_local": 0.05,
+            "calls_cloud": 0.043
+          },
+          "0.3": {
+            "risk_per_1000": 95.2,
+            "mean_time_s": 0.214,
+            "deferred": 0.0371,
+            "budget_used": 0.709,
+            "calls_laya": 0.133,
+            "calls_smolvlm_local": 0.046,
+            "calls_cloud": 0.044
+          }
+        }
+      },
+      {
+        "round": 20,
+        "test": {
+          "0.1": {
+            "risk_per_1000": 110.0,
+            "mean_time_s": 0.085,
+            "deferred": 0.0428,
+            "budget_used": 0.843,
+            "calls_laya": 0.013,
+            "calls_smolvlm_local": 0.002,
+            "calls_cloud": 0.031
+          },
+          "0.15": {
+            "risk_per_1000": 107.1,
+            "mean_time_s": 0.142,
+            "deferred": 0.0387,
+            "budget_used": 0.933,
+            "calls_laya": 0.056,
+            "calls_smolvlm_local": 0.032,
+            "calls_cloud": 0.038
+          },
+          "0.2": {
+            "risk_per_1000": 103.5,
+            "mean_time_s": 0.183,
+            "deferred": 0.0364,
+            "budget_used": 0.9,
+            "calls_laya": 0.089,
+            "calls_smolvlm_local": 0.05,
+            "calls_cloud": 0.043
+          },
+          "0.3": {
+            "risk_per_1000": 96.1,
+            "mean_time_s": 0.213,
+            "deferred": 0.0377,
+            "budget_used": 0.706,
+            "calls_laya": 0.134,
+            "calls_smolvlm_local": 0.045,
+            "calls_cloud": 0.042
+          }
+        }
+      },
+      {
+        "round": 30,
+        "test": {
+          "0.1": {
+            "risk_per_1000": 110.3,
+            "mean_time_s": 0.085,
+            "deferred": 0.0427,
+            "budget_used": 0.839,
+            "calls_laya": 0.013,
+            "calls_smolvlm_local": 0.002,
+            "calls_cloud": 0.031
+          },
+          "0.15": {
+            "risk_per_1000": 106.6,
+            "mean_time_s": 0.142,
+            "deferred": 0.0385,
+            "budget_used": 0.932,
+            "calls_laya": 0.056,
+            "calls_smolvlm_local": 0.032,
+            "calls_cloud": 0.037
+          },
+          "0.2": {
+            "risk_per_1000": 101.7,
+            "mean_time_s": 0.183,
+            "deferred": 0.0361,
+            "budget_used": 0.9,
+            "calls_laya": 0.088,
+            "calls_smolvlm_local": 0.051,
+            "calls_cloud": 0.043
+          },
+          "0.3": {
+            "risk_per_1000": 96.2,
+            "mean_time_s": 0.213,
+            "deferred": 0.0374,
+            "budget_used": 0.705,
+            "calls_laya": 0.134,
+            "calls_smolvlm_local": 0.046,
+            "calls_cloud": 0.042
+          }
+        }
+      },
+      {
+        "round": 40,
+        "test": {
+          "0.1": {
+            "risk_per_1000": 111.6,
+            "mean_time_s": 0.085,
+            "deferred": 0.0429,
+            "budget_used": 0.845,
+            "calls_laya": 0.014,
+            "calls_smolvlm_local": 0.002,
+            "calls_cloud": 0.032
+          },
+          "0.15": {
+            "risk_per_1000": 108.0,
+            "mean_time_s": 0.142,
+            "deferred": 0.0393,
+            "budget_used": 0.932,
+            "calls_laya": 0.057,
+            "calls_smolvlm_local": 0.032,
+            "calls_cloud": 0.037
+          },
+          "0.2": {
+            "risk_per_1000": 102.9,
+            "mean_time_s": 0.183,
+            "deferred": 0.0361,
+            "budget_used": 0.899,
+            "calls_laya": 0.09,
+            "calls_smolvlm_local": 0.05,
+            "calls_cloud": 0.042
+          },
+          "0.3": {
+            "risk_per_1000": 97.1,
+            "mean_time_s": 0.207,
+            "deferred": 0.0383,
+            "budget_used": 0.688,
+            "calls_laya": 0.134,
+            "calls_smolvlm_local": 0.041,
+            "calls_cloud": 0.039
+          }
+        }
+      },
+      {
+        "round": 50,
+        "test": {
+          "0.1": {
+            "risk_per_1000": 113.4,
+            "mean_time_s": 0.086,
+            "deferred": 0.0414,
+            "budget_used": 0.856,
+            "calls_laya": 0.014,
+            "calls_smolvlm_local": 0.002,
+            "calls_cloud": 0.035
+          },
+          "0.15": {
+            "risk_per_1000": 108.0,
+            "mean_time_s": 0.142,
+            "deferred": 0.0383,
+            "budget_used": 0.933,
+            "calls_laya": 0.056,
+            "calls_smolvlm_local": 0.032,
+            "calls_cloud": 0.038
+          },
+          "0.2": {
+            "risk_per_1000": 102.8,
+            "mean_time_s": 0.184,
+            "deferred": 0.0361,
+            "budget_used": 0.903,
+            "calls_laya": 0.089,
+            "calls_smolvlm_local": 0.051,
+            "calls_cloud": 0.044
+          },
+          "0.3": {
+            "risk_per_1000": 96.9,
+            "mean_time_s": 0.21,
+            "deferred": 0.0371,
+            "budget_used": 0.697,
+            "calls_laya": 0.133,
+            "calls_smolvlm_local": 0.043,
+            "calls_cloud": 0.043
+          }
+        }
+      },
+      {
+        "round": 60,
+        "test": {
+          "0.1": {
+            "risk_per_1000": 113.4,
+            "mean_time_s": 0.086,
+            "deferred": 0.0419,
+            "budget_used": 0.856,
+            "calls_laya": 0.016,
+            "calls_smolvlm_local": 0.002,
+            "calls_cloud": 0.031
+          },
+          "0.15": {
+            "risk_per_1000": 105.9,
+            "mean_time_s": 0.142,
+            "deferred": 0.039,
+            "budget_used": 0.932,
+            "calls_laya": 0.057,
+            "calls_smolvlm_local": 0.033,
+            "calls_cloud": 0.036
+          },
+          "0.2": {
+            "risk_per_1000": 102.7,
+            "mean_time_s": 0.183,
+            "deferred": 0.0363,
+            "budget_used": 0.903,
+            "calls_laya": 0.09,
+            "calls_smolvlm_local": 0.05,
+            "calls_cloud": 0.043
+          },
+          "0.3": {
+            "risk_per_1000": 96.6,
+            "mean_time_s": 0.207,
+            "deferred": 0.0377,
+            "budget_used": 0.687,
+            "calls_laya": 0.132,
+            "calls_smolvlm_local": 0.043,
+            "calls_cloud": 0.037
+          }
+        }
+      }
+    ]
+  },
+  "actor_parameters": 7621
+}

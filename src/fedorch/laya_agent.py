@@ -28,20 +28,30 @@ class Cache:
         self.scorer = torch.load(root / "base_scorer.pt", map_location="cpu")
 
 
+def scorer(state):
+    d = 576
+    net = nn.Sequential(nn.LayerNorm(d), nn.Linear(d, d), nn.GELU(), nn.Linear(d, 1))
+    net.load_state_dict(state)
+    return net
+
+
 class Policy(nn.Module):
-    def __init__(self, scorer_state):
+    """Two copies of base laya's scorer: one for the next-action question, one for the report questions."""
+
+    def __init__(self, scorer_state, split=True):
         super().__init__()
-        d = 576
-        self.scorer = nn.Sequential(nn.LayerNorm(d), nn.Linear(d, d), nn.GELU(), nn.Linear(d, 1))
-        self.scorer.load_state_dict(scorer_state)
+        self.split = split
+        self.action_scorer = scorer(scorer_state)
+        self.report_scorer = scorer(scorer_state) if split else self.action_scorer
         self.state = nn.Sequential(nn.Linear(STATE, 32), nn.Tanh(), nn.Linear(32, ACTIONS))
         nn.init.zeros_(self.state[2].weight)
         nn.init.zeros_(self.state[2].bias)
 
     def logits(self, vectors, state):
-        raw = self.scorer(vectors.float()).squeeze(-1)
-        action = raw[..., OFFSETS[0]:OFFSETS[1]] + self.state(state)
-        return action, [raw[..., OFFSETS[q]:OFFSETS[q + 1]] for q in (1, 2, 3)]
+        vectors = vectors.float()
+        action = self.action_scorer(vectors[..., OFFSETS[0]:OFFSETS[1], :]).squeeze(-1) + self.state(state)
+        report = self.report_scorer(vectors[..., OFFSETS[1]:, :]).squeeze(-1)
+        return action, [report[..., OFFSETS[q] - OFFSETS[1]:OFFSETS[q + 1] - OFFSETS[1]] for q in (1, 2, 3)]
 
 
 class Critic(nn.Module):
@@ -197,6 +207,11 @@ def update(policy, critic, batch, epochs=4, lr=3e-4, clip=.2, entropy=.01, prox=
     return {"policy_loss": float(loss), "value_loss": float(value_loss), "transitions": len(steps)}
 
 
+def macro_f1(y, p, k):
+    scores = [2 * np.sum((p == c) & (y == c)) / max(1, np.sum(p == c) + np.sum(y == c)) for c in range(k) if np.any(y == c)]
+    return float(np.mean(scores))
+
+
 def evaluate(policy, cache, indices, budgets, tools=True, device="cpu"):
     out = {}
     critic = Critic().to(device)
@@ -214,6 +229,8 @@ def evaluate(policy, cache, indices, budgets, tools=True, device="cpu"):
                             "false_alarm": round(float(np.mean(pred[~defects, 1] == 1)), 4),
                             "component_acc": round(float(np.mean(pred[:, 0] == truth[:, 0])), 4),
                             "condition_acc": round(float(np.mean(pred[:, 2] == truth[:, 2])), 4),
+                            "condition_macro_f1": round(macro_f1(truth[:, 2], pred[:, 2], 6), 4),
+                            "component_macro_f1": round(macro_f1(truth[:, 0], pred[:, 0], 11), 4),
                             "mean_steps": round(float(np.mean([r["steps"] for r in results])), 2),
                             "mean_time_s": round(float(np.mean([r["elapsed"] for r in results])), 3),
                             "deadline_met": round(float(np.mean([r["elapsed"] <= r["budget"] for r in results])), 4)}

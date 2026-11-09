@@ -31,7 +31,7 @@ def run_fed(cache, train, test, args, out):
     from flwr.server.strategy import FedAvg, FedProx
     from flwr.simulation import run_simulation
     parts = drones(cache, train)
-    base = Policy(cache.scorer)
+    base = Policy(cache.scorer, split=not args.shared_scorer)
     history = []
 
     class Drone(NumPyClient):
@@ -39,7 +39,7 @@ def run_fed(cache, train, test, args, out):
             self.d = d
 
         def fit(self, parameters, config):
-            policy = Policy(cache.scorer)
+            policy = Policy(cache.scorer, split=not args.shared_scorer)
             set_params(policy, parameters)
             critic_path = out / f"critic-drone{self.d}.pt"
             critic = Critic()
@@ -54,7 +54,7 @@ def run_fed(cache, train, test, args, out):
     def evaluate_fn(server_round, arrays, config):
         if server_round == 0:
             return None
-        policy = Policy(cache.scorer)
+        policy = Policy(cache.scorer, split=not args.shared_scorer)
         set_params(policy, arrays)
         report = evaluate(policy, cache, test, args.budgets)
         history.append({"round": server_round, "test": report})
@@ -92,6 +92,7 @@ def main():
     parser.add_argument("--strategy", choices=["fedavg", "fedprox"], default="fedavg")
     parser.add_argument("--proximal-mu", type=float, default=.01)
     parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument("--shared-scorer", action="store_true", help="one scorer for action and report (first run)")
     parser.add_argument("--cache", default=str(runs_dir("agent_cache")))
     args = parser.parse_args()
     torch.manual_seed(args.seed)
@@ -99,14 +100,14 @@ def main():
     cache = Cache(Path(args.cache))
     train = [i for i, m in enumerate(cache.meta) if m["split"] == "val"]
     test = [i for i, m in enumerate(cache.meta) if m["split"] == "test"]
-    out = results_dir(f"agent_ppo/seed{args.seed}")
+    out = results_dir(f"agent_ppo/{'shared' if args.shared_scorer else 'split'}_seed{args.seed}")
     summary = {"train_images": len(train), "test_images": len(test), "budgets": args.budgets, "rounds": args.rounds}
     for mode in args.modes.split(","):
         start = time.time()
         if mode == "zeroshot":
-            summary[mode] = evaluate(Policy(cache.scorer), cache, test, args.budgets, tools=False)
+            summary[mode] = evaluate(Policy(cache.scorer, split=not args.shared_scorer), cache, test, args.budgets, tools=False)
         elif mode in ("report_only", "central"):
-            policy, critic, rng = Policy(cache.scorer), Critic(), np.random.default_rng(args.seed)
+            policy, critic, rng = Policy(cache.scorer, split=not args.shared_scorer), Critic(), np.random.default_rng(args.seed)
             curve = []
             for r in range(args.rounds):
                 train_local(policy, critic, cache, train, args, args.local_rounds * 5, tools=mode == "central", rng=rng)

@@ -1,6 +1,7 @@
 import argparse
 import json
 import math
+import random
 import time
 
 import numpy as np
@@ -22,7 +23,7 @@ def arguments():
     parser.add_argument("--model", required=True, choices=["base", "lora"])
     parser.add_argument("--format", required=True, choices=quant.FORMATS)
     parser.add_argument("--warmup", type=int, default=10)
-    parser.add_argument("--limit", type=int, default=0)
+    parser.add_argument("--sample", type=int, default=150)
     return parser.parse_args()
 
 
@@ -82,9 +83,9 @@ def main():
     model = quant.load(AutoModelForImageTextToText, out, args.format)
     torch.cuda.reset_peak_memory_stats()
     scorer = LetterScorer(str(out), dtype=torch.float16 if args.format == "fp16" else torch.float32, device="cuda", model=model)
-    items = load_items(("test",))
-    if args.limit:
-        items = items[: args.limit]
+    test = load_items(("test",))
+    rng = random.Random(0)
+    items = sum((rng.sample([i for i in test if (i["label"] == "good") == g], args.sample // 2) for g in (True, False)), [])
     print(f"{name}: {quant.quantized_layers(model)} bitsandbytes layers, weights {quant.weight_mb(model)} MB, "
           f"stored {quant.folder_mb(out)} MB at {out}, {len(items)} test items", flush=True)
     res = results_dir(f"quant/{name}")

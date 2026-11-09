@@ -1,6 +1,6 @@
 # Plan: quantized laya-vision and SmolVLM-256M
 
-Date: 2026-11-09. Branch: `vision-quant` (from `vision-fl`). Status: code complete, not run on the GPU.
+Date: 2026-11-09. Branch: `vision-quant` (from `vision-fl`). Status: code complete, not run on the GPU. Short version: only `int8` and `nf4`, on a small sample, for a direction.
 
 ## 1. Goal
 
@@ -37,22 +37,24 @@ Each model goes to `$FEDORCH_WORK/models/quantized/<family>_<model>_<format>/`:
 
 Each run loads the model again from this folder before the evaluation. Thus the evaluation tests the stored model.
 
-## 5. Evaluation
+## 5. Evaluation (short version)
+
+The runs use only the quantized formats `int8` and `nf4`. The reference is the earlier fp32 predictions for the same images or items. Thus the runs do not run fp32 again.
 
 | Family | Data | Metrics |
 |---|---|---|
-| laya-vision | 1,500 validation images and the 6,092 test-tower images | Condition macro F1, component accuracy, defect AUROC, ElecVQA-Bench test item accuracy and risk, latency for each image (4 questions) |
-| SmolVLM | The 7,057 ElecVQA-Bench test items | Item accuracy, risk, values that are not finite, latency for each item (1 question) |
+| laya-vision | 300 test-tower images: 150 with a defect, 150 good (seed 0) | Condition accuracy, component accuracy, defect AUROC, agreement with fp32, mean change of P(defect), latency for each image (4 questions) |
+| SmolVLM | 150 ElecVQA-Bench test items: 75 good, 75 not good (seed 0) | Item accuracy, agreement with fp32, values that are not finite, latency for each item (1 question) |
 
-Both families also record the size on disk, the weight memory and the peak GPU memory. The item accuracy is the common metric. The fp32 runs must give the earlier values: 0.948 (laya-vision fine-tuned), 0.956 (SmolVLM with LoRA) and 0.830 (SmolVLM base).
+Both families also record the size on disk, the weight memory and the peak GPU memory. The fp32 latency of laya-vision comes from an RTX 2080 Ti. The fp32 latency of SmolVLM comes from the GV100. Thus run laya-vision on the RTX 2080 Ti and SmolVLM on the GV100.
 
 ## 6. Scripts
 
 - `scripts/quant_laya.py --model <base|good300_full> --format <fp32|fp16|int8|nf4>`
 - `scripts/quant_smolvlm.py --model <base|lora> --format <fp32|fp16|int8|nf4>`
-- `scripts/quant_summarize.py` writes `results/quant/summary.json` and prints a table.
-- `scripts/runs/q_*.sh`: one script for each of the 16 runs.
+- `scripts/quant_compare.py` writes `results/quant/compare.json`.
+- `scripts/runs/q_*.sh`: one script for each of the 8 runs.
 
 ## 7. GPU time (estimate)
 
-A laya-vision run has 7,592 images at about 75 ms, thus about 10 minutes, plus the latency test. A SmolVLM run has 7,057 items, thus about 10 to 20 minutes. The 16 runs need about 4 GPU-hours. The 4-bit format can be slower than fp32.
+Each run takes about 1 to 2 minutes, with the conversion. On 2 GPUs, the 8 runs take about 5 minutes.

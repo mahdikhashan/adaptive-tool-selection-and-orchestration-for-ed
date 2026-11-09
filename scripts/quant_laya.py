@@ -15,9 +15,7 @@ def arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", required=True)
     parser.add_argument("--format", required=True, choices=quant.FORMATS)
-    parser.add_argument("--val-images", type=int, default=1500)
-    parser.add_argument("--latency-frames", type=int, default=100)
-    parser.add_argument("--limit", type=int, default=0)
+    parser.add_argument("--sample", type=int, default=300)
     return parser.parse_args()
 
 
@@ -48,11 +46,9 @@ def main():
         build(args.model, args.format, out)
     agent = load(out, args.format)
     torch.cuda.reset_peak_memory_stats()
-    rows = vision.images(load_items(("val", "test")))
-    val = [r for r in rows if r["split"] == "val"]
-    held = random.Random(0).sample(val, min(args.val_images, len(val))) + [r for r in rows if r["split"] == "test"]
-    if args.limit:
-        held = held[: args.limit // 2] + held[-(args.limit // 2):]
+    rows = vision.images(load_items(("test",)))
+    rng = random.Random(0)
+    held = sum((rng.sample([r for r in rows if r["defect"] == d], args.sample // 2) for d in (True, False)), [])
     print(f"{name}: {quant.quantized_layers(agent.model)} bitsandbytes layers, weights {quant.weight_mb(agent.model)} MB, "
           f"stored {quant.folder_mb(out)} MB at {out}", flush=True)
     res = results_dir(f"vision/{name}")
@@ -63,8 +59,7 @@ def main():
                                   "stored_mb": quant.folder_mb(out), "weight_mb": quant.weight_mb(agent.model),
                                   "bitsandbytes_layers": quant.quantized_layers(agent.model), "images": len(held),
                                   "seconds": round(time.time() - start, 1), "device": "cuda", "gpu": vision.gpu_name(),
-                                  "precision": args.format, "peak_gpu_mb": vision.peak_mb(),
-                                  **vision.timing(agent, [r for r in held if r["split"] == "test"] or held, args.latency_frames)})
+                                  "precision": args.format, "peak_gpu_mb": vision.peak_mb()})
     print(f"{name}: done, wrote {res}", flush=True)
 
 

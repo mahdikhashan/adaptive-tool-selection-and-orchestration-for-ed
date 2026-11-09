@@ -1,10 +1,10 @@
-# Plan: quantized laya-vision and SmolVLM-256M
+# Plan: 4-bit laya-vision and SmolVLM-256M
 
-Date: 2026-11-09. Branch: `vision-quant` (from `vision-fl`). Status: code complete, not run on the GPU. Short version: only `int8` and `nf4`, on a small sample, for a direction.
+Date: 2026-11-09. Branch: `vision-quant` (from `vision-fl`). Status: code complete, not run on the GPU.
 
 ## 1. Goal
 
-Measure the accuracy, the latency and the memory of 2 models in 4 numeric formats. Keep each quantized model on the server, so that we can push it to Hugging Face later.
+Measure the accuracy, the GPU memory, the model size and the latency of 4 models in 4-bit format on 1 GPU (RTX 2080 Ti). Keep each 4-bit model on the server, so that we can push it to Hugging Face later. The results go into the paper.
 
 ## 2. Models
 
@@ -15,46 +15,47 @@ Measure the accuracy, the latency and the memory of 2 models in 4 numeric format
 | SmolVLM-256M | `base` | `HuggingFaceTB/SmolVLM-256M-Instruct` |
 | SmolVLM-256M | `lora` | The step 2 LoRA adapter `$FEDORCH_WORK/runs/step2/smolvlm_lora_full`, merged into the base weights |
 
-## 3. Formats
+## 3. Format
 
-| Format | Weights | Computation |
-|---|---|---|
-| `fp32` | 32-bit float | fp32 (reference) |
-| `fp16` | 16-bit float | fp16 |
-| `int8` | bitsandbytes LLM.int8 | int8 matrix multiplication, outliers in fp16 |
-| `nf4` | bitsandbytes 4-bit NormalFloat | fp32 |
+All linear layers use bitsandbytes 4-bit NormalFloat (nf4) weights with fp16 computation. The layers that are not linear (embeddings, normalization) use fp16. The script converts the weights to fp16 before the 4-bit conversion. No run uses fp32 weights in the backbone.
 
-The 4-bit format uses fp32 computation, because the GPUs have no bfloat16, and fp16 can give values that are not finite.
+Exceptions:
 
-For laya-vision, the format applies to the backbone (vision encoder, connector, 20 language layers). The decision head stays in fp32, except in the `fp16` format. For SmolVLM, the format applies to all linear layers except `lm_head`.
+- SmolVLM: bitsandbytes keeps `lm_head` in fp16, not in 4-bit.
+- laya-vision: the decision head (8.5M parameters, outside the backbone) stays in fp32. The laya library changes the input of this head to fp32 (`h.float()` in `_readout`). Thus fp16 is not possible for the head without a change to the library. `run.json` records the data types of the backbone and of the head.
 
 ## 4. Storage
 
-Each model goes to `$FEDORCH_WORK/models/quantized/<family>_<model>_<format>/`:
+Each model goes to `$FEDORCH_WORK/models/quantized/<family>_<model>_nf4_fp16/`:
 
 - laya-vision: `vlm_agent_config.json`, `processor/`, `head.safetensors` and `backbone_quantized/` (a Hugging Face model folder).
 - SmolVLM: a Hugging Face model folder with the processor.
 
 Each run loads the model again from this folder before the evaluation. Thus the evaluation tests the stored model.
 
-## 5. Evaluation (short version)
-
-The runs use only the quantized formats `int8` and `nf4`. The reference is the earlier fp32 predictions for the same images or items. Thus the runs do not run fp32 again.
+## 5. Evaluation
 
 | Family | Data | Metrics |
 |---|---|---|
-| laya-vision | 300 test-tower images: 150 with a defect, 150 good (seed 0) | Condition accuracy, component accuracy, defect AUROC, agreement with fp32, mean change of P(defect), latency for each image (4 questions) |
-| SmolVLM | 150 ElecVQA-Bench test items: 75 good, 75 not good (seed 0) | Item accuracy, agreement with fp32, values that are not finite, latency for each item (1 question) |
+| laya-vision | 1,500 validation images (for the defect threshold) and all 6,092 test-tower images | Condition macro F1, component accuracy, defect AUROC (with 95% bootstrap intervals), ElecVQA-Bench test item accuracy and risk, latency for each image (4 questions) |
+| SmolVLM | All 7,057 ElecVQA-Bench test items | Item accuracy (with a 95% bootstrap interval), risk, accuracy for each task, latency for each item (1 question) |
 
-Both families also record the size on disk, the weight memory and the peak GPU memory. The fp32 latency of laya-vision comes from an RTX 2080 Ti. The fp32 latency of SmolVLM comes from the GV100. Thus run laya-vision on the RTX 2080 Ti and SmolVLM on the GV100.
+Both families record:
+
+- the size on disk,
+- the weight memory,
+- the GPU memory after the load and the peak GPU memory during the evaluation,
+- the number of predictions that are not finite.
+
+`scripts/quant_table.py` writes `results/quant/q4_table.json` and `results/quant/q4_table.md`.
 
 ## 6. Scripts
 
-- `scripts/quant_laya.py --model <base|good300_full> --format <fp32|fp16|int8|nf4>`
-- `scripts/quant_smolvlm.py --model <base|lora> --format <fp32|fp16|int8|nf4>`
-- `scripts/quant_compare.py` writes `results/quant/compare.json`.
-- `scripts/runs/q_*.sh`: one script for each of the 8 runs.
+- `scripts/quant_laya.py --model <base|good300_full>`
+- `scripts/quant_smolvlm.py --model <base|lora>`
+- `scripts/quant_table.py`
+- `scripts/runs/q4_*.sh`: one script for each of the 4 runs.
 
 ## 7. GPU time (estimate)
 
-Each run takes about 1 to 2 minutes, with the conversion. On 2 GPUs, the 8 runs take about 5 minutes.
+A laya-vision run has 7,592 images, thus about 10 to 15 minutes. A SmolVLM run has 7,057 items, thus about 10 to 25 minutes. The 4 runs take about 1 to 1.5 hours on the RTX 2080 Ti.

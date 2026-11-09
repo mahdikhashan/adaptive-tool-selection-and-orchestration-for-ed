@@ -1,0 +1,111 @@
+{
+  "laya_predictions": "good300_full",
+  "chosen": {
+    "rich_features": false,
+    "C": 0.03,
+    "val_cv_risk": 103.6
+  },
+  "val_defect_share": 0.1959,
+  "test_defect_share_true": 0.1513,
+  "test_defect_share_em": 0.1543,
+  "region_defect_share_em": {
+    "0": 0.1378,
+    "1": 0.196,
+    "2": 0.2263,
+    "3": 0.0447,
+    "4": 0.1128
+  },
+  "test_auroc": 0.9914,
+  "methods": {
+    "classifier alone": {
+      "risk_per_1000": 177.0,
+      "ci95": [
+        148.1,
+        205.6
+      ],
+      "misses": 109,
+      "false_alarms": 159
+    },
+    "smolvlm_local alone": {
+      "risk_per_1000": 184.9,
+      "ci95": [
+        157.1,
+        211.3
+      ],
+      "misses": 112,
+      "false_alarms": 185
+    },
+    "cloud alone": {
+      "risk_per_1000": 625.8,
+      "ci95": [
+        575.0,
+        679.2
+      ],
+      "misses": 352,
+      "false_alarms": 896
+    },
+    "laya alone": {
+      "risk_per_1000": 261.0,
+      "ci95": [
+        225.2,
+        293.8
+      ],
+      "misses": 166,
+      "false_alarms": 182
+    },
+    "tuned on val (CV)": {
+      "risk_per_1000": 115.8,
+      "ci95": [
+        99.8,
+        133.3
+      ],
+      "misses": 31,
+      "false_alarms": 507
+    },
+    "Bayes 1/11, no correction": {
+      "risk_per_1000": 113.8,
+      "ci95": [
+        98.8,
+        130.4
+      ],
+      "misses": 27,
+      "false_alarms": 533
+    },
+    "Bayes 1/11 after EM prior correction, all test": {
+      "risk_per_1000": 107.1,
+      "ci95": [
+        90.8,
+        124.4
+      ],
+      "misses": 34,
+      "false_alarms": 416
+    },
+    "Bayes 1/11 after EM prior correction, per region": {
+      "risk_per_1000": 117.5,
+      "ci95": [
+        100.0,
+        136.7
+      ],
+      "misses": 41,
+      "false_alarms": 419
+    },
+    "test-optimal threshold (uses test labels)": {
+      "risk_per_1000": 105.4,
+      "ci95": [
+        88.7,
+        124.3
+      ],
+      "misses": 38,
+      "false_alarms": 364
+    },
+    "oracle best tool (labels)": {
+      "risk_per_1000": 44.8,
+      "ci95": [
+        29.5,
+        60.1
+      ],
+      "misses": 31,
+      "false_alarms": 6
+    }
+  }
+}

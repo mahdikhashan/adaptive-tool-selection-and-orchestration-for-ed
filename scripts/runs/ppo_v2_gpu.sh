@@ -30,7 +30,8 @@ cache_args=(--bundle "$small_bundle" --yolo-checkpoint "$yolo_checkpoint"
 case "$stage" in
   prepare)
     mkdir -p "$task_root"
-    run_python scripts/ppo_v2_prepare.py --output "$small_bundle" --fraction 0.1 --seed 0
+    run_python scripts/ppo_v2_prepare.py --output "$small_bundle" --seed 0 \
+      --fraction "${PPO_V2_TRAIN_FRACTION:-0.1}" --val-fraction "${PPO_V2_VAL_FRACTION:-1}"
     if [ ! -e "$network_config" ]; then
       run_python -c 'import json,sys; from pathlib import Path; Path(sys.argv[1]).write_text(json.dumps({"available":True,"delay_s":0.0},indent=2)+"\n")' "$network_config"
     fi

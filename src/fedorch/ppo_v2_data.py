@@ -71,9 +71,19 @@ def select_training(items, fraction, seed):
     return [item for item in items if item["image"] in chosen]
 
 
-def prepare(items, output, image_root, fraction=.1, seed=0, check_images=True):
-    if not 0 < fraction <= 1:
-        raise ValueError("fraction must be in (0,1]")
+def select_validation(items, fraction, seed):
+    """Stratified val subset; towers left with fewer than two source images are dropped,
+    because multi-component missions need two distinct sources from one tower."""
+    chosen = select_training(items, fraction, seed)
+    sources = defaultdict(set)
+    for item in chosen:
+        sources[str(item["tower"])].add(item["image"])
+    return [item for item in chosen if len(sources[str(item["tower"])]) >= 2]
+
+
+def prepare(items, output, image_root, fraction=.1, seed=0, check_images=True, val_fraction=1.):
+    if not 0 < fraction <= 1 or not 0 < val_fraction <= 1:
+        raise ValueError("fraction and val_fraction must be in (0,1]")
     output = Path(output)
     if output.exists() and any(output.iterdir()):
         raise ValueError("Output must be empty: immutable bundle, choose a new directory")
@@ -94,8 +104,10 @@ def prepare(items, output, image_root, fraction=.1, seed=0, check_images=True):
     train = [i for i in all_items if i["split"] == "train"]
     clients = tower_buckets(train, 5)
     selected = select_training(train, fraction, seed)
+    if val_fraction < 1:
+        selected += select_validation([i for i in all_items if i["split"] == "val"], val_fraction, seed)
     selected_ids = {i["item_id"] for i in selected}
-    effective = [i for i in all_items if i["split"] != "train" or i["item_id"] in selected_ids]
+    effective = [i for i in all_items if i["split"] == "test" or i["item_id"] in selected_ids]
     public, labels, audits = [], [], {}
     for item in effective:
         image_path = Path(image_root) / item["image"]
@@ -115,7 +127,7 @@ def prepare(items, output, image_root, fraction=.1, seed=0, check_images=True):
     json_write(output / "audits.json", audits)
     (output / "observations.jsonl").touch()
     manifest = {"schema": "fedorch-ppo-v2", "classes": CLASSES, "clients": 5, "seed": seed,
-                "fraction": fraction, "audit_rate": .05, "available_tools": [],
+                "fraction": fraction, "val_fraction": val_fraction, "audit_rate": .05, "available_tools": [],
                 "cache_complete": False, "controller_only_audit_budget": True,
                 "image_root": str(Path(image_root).resolve()), "provenance": {},
                 "timing_hardware": None, "counts": {}, "synthetic_fixture": False,
@@ -141,11 +153,14 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description="Prepare immutable tower14 S3/A2 bundle; no models/train/downloads")
     parser.add_argument("--output", required=True)
     parser.add_argument("--fraction", type=float, default=.1)
+    parser.add_argument("--val-fraction", type=float, default=1.,
+                        help="Share of val source images, stratified by tower and class; test stays complete")
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--skip-image-check", action="store_true", help="Metadata only; cache still requires actual images")
     args = parser.parse_args(argv)
     from fedorch.items import INSPLAD, load_items
-    result = prepare(load_items(), args.output, INSPLAD, args.fraction, args.seed, not args.skip_image_check)
+    result = prepare(load_items(), args.output, INSPLAD, args.fraction, args.seed, not args.skip_image_check,
+                     args.val_fraction)
     print(json.dumps(result["counts"], indent=2))
 
 

@@ -33,6 +33,13 @@ the latest YOLO, Smol or Qwen output as `evidence`. The fine-tuning did not incl
 component probabilities of each call for later analysis. The controller features
 still use the condition probabilities only.
 
+Small pilot: set `PPO_V2_TRAIN_FRACTION=0.025` and `PPO_V2_VAL_FRACTION=0.07`
+before `prepare`. The bundle then has 592 train images (633 items, 25 audited)
+and 393 val images (462 items, 9 towers). The val subset is stratified by tower
+and class. Towers with fewer than two val images are removed, because
+multi-component missions need two source images from one tower. The test split
+stays complete.
+
 Latest user decision: **do not fine-tune YOLO now**. The default is official
 pretrained YOLO26n-cls as downloaded, frozen for inference. Its ImageNet outputs
 provide generic visual context to Laya; they are not defect predictions. The

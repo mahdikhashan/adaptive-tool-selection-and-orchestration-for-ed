@@ -1,0 +1,4046 @@
+{
+  "split": "components",
+  "regimes": [
+    "poor",
+    "good",
+    "weak",
+    "poor",
+    "good"
+  ],
+  "budgets": [
+    0.25,
+    0.75,
+    1.5,
+    3.0
+  ],
+  "lambda_time": 0.01,
+  "prior_val": 0.19589328537170264,
+  "prior_test_fleet_em": 0.1517502460717933,
+  "drones": [
+    {
+      "val": 1487,
+      "test": 1212
+    },
+    {
+      "val": 1437,
+      "test": 1603
+    },
+    {
+      "val": 1041,
+      "test": 1139
+    },
+    {
+      "val": 1912,
+      "test": 2271
+    },
+    {
+      "val": 795,
+      "test": 832
+    }
+  ],
+  "methods": {
+    "ResNet only": {
+      "0.25": {
+        "fleet": {
+          "risk_per_1000": 146.95,
+          "mean_time_s": 0.066,
+          "uplink_kb_per_item": 0.0,
+          "calls_laya": 0.0,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.0
+        },
+        "drones": [
+          {
+            "risk_per_1000": 369.6,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 225.2,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 93.1,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 9.7,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 120.2,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          }
+        ]
+      },
+      "0.75": {
+        "fleet": {
+          "risk_per_1000": 146.95,
+          "mean_time_s": 0.066,
+          "uplink_kb_per_item": 0.0,
+          "calls_laya": 0.0,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.0
+        },
+        "drones": [
+          {
+            "risk_per_1000": 369.6,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 225.2,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 93.1,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 9.7,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 120.2,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          }
+        ]
+      },
+      "1.5": {
+        "fleet": {
+          "risk_per_1000": 146.95,
+          "mean_time_s": 0.066,
+          "uplink_kb_per_item": 0.0,
+          "calls_laya": 0.0,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.0
+        },
+        "drones": [
+          {
+            "risk_per_1000": 369.6,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 225.2,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 93.1,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 9.7,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 120.2,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          }
+        ]
+      },
+      "3.0": {
+        "fleet": {
+          "risk_per_1000": 146.95,
+          "mean_time_s": 0.066,
+          "uplink_kb_per_item": 0.0,
+          "calls_laya": 0.0,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.0
+        },
+        "drones": [
+          {
+            "risk_per_1000": 369.6,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 225.2,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 93.1,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 9.7,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 120.2,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          }
+        ]
+      }
+    },
+    "all tools that fit": {
+      "0.25": {
+        "fleet": {
+          "risk_per_1000": 148.507,
+          "mean_time_s": 0.087,
+          "uplink_kb_per_item": 1.54,
+          "calls_laya": 0.0,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.127
+        },
+        "drones": [
+          {
+            "risk_per_1000": 369.6,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 235.2,
+            "mean_time_s": 0.118,
+            "uplink_kb_per_item": 3.75,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.326
+          },
+          {
+            "risk_per_1000": 91.3,
+            "mean_time_s": 0.107,
+            "uplink_kb_per_item": 2.86,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.241
+          },
+          {
+            "risk_per_1000": 9.7,
+            "mean_time_s": 0.067,
+            "uplink_kb_per_item": 0.03,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.006
+          },
+          {
+            "risk_per_1000": 116.6,
+            "mean_time_s": 0.082,
+            "uplink_kb_per_item": 1.84,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.102
+          }
+        ]
+      },
+      "0.75": {
+        "fleet": {
+          "risk_per_1000": 126.539,
+          "mean_time_s": 0.534,
+          "uplink_kb_per_item": 9.211,
+          "calls_laya": 0.644,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.203
+        },
+        "drones": [
+          {
+            "risk_per_1000": 359.7,
+            "mean_time_s": 0.338,
+            "uplink_kb_per_item": 3.16,
+            "calls_laya": 0.354,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.079
+          },
+          {
+            "risk_per_1000": 164.7,
+            "mean_time_s": 0.518,
+            "uplink_kb_per_item": 19.36,
+            "calls_laya": 0.56,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.429
+          },
+          {
+            "risk_per_1000": 92.2,
+            "mean_time_s": 0.628,
+            "uplink_kb_per_item": 8.36,
+            "calls_laya": 0.808,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.162
+          },
+          {
+            "risk_per_1000": 7.5,
+            "mean_time_s": 0.598,
+            "uplink_kb_per_item": 1.84,
+            "calls_laya": 0.792,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.057
+          },
+          {
+            "risk_per_1000": 85.3,
+            "mean_time_s": 0.544,
+            "uplink_kb_per_item": 19.76,
+            "calls_laya": 0.596,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.399
+          }
+        ]
+      },
+      "1.5": {
+        "fleet": {
+          "risk_per_1000": 108.274,
+          "mean_time_s": 1.315,
+          "uplink_kb_per_item": 7.087,
+          "calls_laya": 1.0,
+          "calls_smolvlm_local": 0.708,
+          "calls_cloud": 0.154
+        },
+        "drones": [
+          {
+            "risk_per_1000": 273.1,
+            "mean_time_s": 1.151,
+            "uplink_kb_per_item": 1.94,
+            "calls_laya": 1.0,
+            "calls_smolvlm_local": 0.408,
+            "calls_cloud": 0.052
+          },
+          {
+            "risk_per_1000": 192.8,
+            "mean_time_s": 1.301,
+            "uplink_kb_per_item": 16.64,
+            "calls_laya": 1.0,
+            "calls_smolvlm_local": 0.626,
+            "calls_cloud": 0.362
+          },
+          {
+            "risk_per_1000": 51.8,
+            "mean_time_s": 1.377,
+            "uplink_kb_per_item": 6.81,
+            "calls_laya": 1.0,
+            "calls_smolvlm_local": 0.824,
+            "calls_cloud": 0.137
+          },
+          {
+            "risk_per_1000": 5.3,
+            "mean_time_s": 1.368,
+            "uplink_kb_per_item": 1.01,
+            "calls_laya": 1.0,
+            "calls_smolvlm_local": 0.854,
+            "calls_cloud": 0.033
+          },
+          {
+            "risk_per_1000": 63.7,
+            "mean_time_s": 1.348,
+            "uplink_kb_per_item": 13.15,
+            "calls_laya": 1.0,
+            "calls_smolvlm_local": 0.744,
+            "calls_cloud": 0.254
+          }
+        ]
+      },
+      "3.0": {
+        "fleet": {
+          "risk_per_1000": 107.27,
+          "mean_time_s": 1.812,
+          "uplink_kb_per_item": 28.069,
+          "calls_laya": 1.0,
+          "calls_smolvlm_local": 1.0,
+          "calls_cloud": 0.815
+        },
+        "drones": [
+          {
+            "risk_per_1000": 259.9,
+            "mean_time_s": 1.963,
+            "uplink_kb_per_item": 24.99,
+            "calls_laya": 1.0,
+            "calls_smolvlm_local": 1.0,
+            "calls_cloud": 0.512
+          },
+          {
+            "risk_per_1000": 197.8,
+            "mean_time_s": 1.693,
+            "uplink_kb_per_item": 32.2,
+            "calls_laya": 1.0,
+            "calls_smolvlm_local": 1.0,
+            "calls_cloud": 0.975
+          },
+          {
+            "risk_per_1000": 38.6,
+            "mean_time_s": 1.721,
+            "uplink_kb_per_item": 24.8,
+            "calls_laya": 1.0,
+            "calls_smolvlm_local": 1.0,
+            "calls_cloud": 0.929
+          },
+          {
+            "risk_per_1000": 6.6,
+            "mean_time_s": 1.904,
+            "uplink_kb_per_item": 23.04,
+            "calls_laya": 1.0,
+            "calls_smolvlm_local": 1.0,
+            "calls_cloud": 0.743
+          },
+          {
+            "risk_per_1000": 79.3,
+            "mean_time_s": 1.695,
+            "uplink_kb_per_item": 42.8,
+            "calls_laya": 1.0,
+            "calls_smolvlm_local": 1.0,
+            "calls_cloud": 0.988
+          }
+        ]
+      }
+    },
+    "fixed cascade": {
+      "0.25": {
+        "fleet": {
+          "risk_per_1000": 148.507,
+          "mean_time_s": 0.085,
+          "uplink_kb_per_item": 1.356,
+          "calls_laya": 0.0,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.117
+        },
+        "drones": [
+          {
+            "risk_per_1000": 369.6,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 235.2,
+            "mean_time_s": 0.113,
+            "uplink_kb_per_item": 3.16,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.293
+          },
+          {
+            "risk_per_1000": 91.3,
+            "mean_time_s": 0.107,
+            "uplink_kb_per_item": 2.86,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.241
+          },
+          {
+            "risk_per_1000": 9.7,
+            "mean_time_s": 0.067,
+            "uplink_kb_per_item": 0.03,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.006
+          },
+          {
+            "risk_per_1000": 116.6,
+            "mean_time_s": 0.079,
+            "uplink_kb_per_item": 1.42,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.084
+          }
+        ]
+      },
+      "0.75": {
+        "fleet": {
+          "risk_per_1000": 126.539,
+          "mean_time_s": 0.473,
+          "uplink_kb_per_item": 6.383,
+          "calls_laya": 0.567,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.154
+        },
+        "drones": [
+          {
+            "risk_per_1000": 359.7,
+            "mean_time_s": 0.283,
+            "uplink_kb_per_item": 2.91,
+            "calls_laya": 0.275,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.074
+          },
+          {
+            "risk_per_1000": 164.7,
+            "mean_time_s": 0.435,
+            "uplink_kb_per_item": 13.0,
+            "calls_laya": 0.47,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.318
+          },
+          {
+            "risk_per_1000": 92.2,
+            "mean_time_s": 0.623,
+            "uplink_kb_per_item": 8.12,
+            "calls_laya": 0.802,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.158
+          },
+          {
+            "risk_per_1000": 7.5,
+            "mean_time_s": 0.561,
+            "uplink_kb_per_item": 1.77,
+            "calls_laya": 0.736,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.056
+          },
+          {
+            "risk_per_1000": 85.3,
+            "mean_time_s": 0.375,
+            "uplink_kb_per_item": 8.91,
+            "calls_laya": 0.4,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.22
+          }
+        ]
+      },
+      "1.5": {
+        "fleet": {
+          "risk_per_1000": 109.255,
+          "mean_time_s": 1.104,
+          "uplink_kb_per_item": 4.967,
+          "calls_laya": 0.824,
+          "calls_smolvlm_local": 0.609,
+          "calls_cloud": 0.119
+        },
+        "drones": [
+          {
+            "risk_per_1000": 283.8,
+            "mean_time_s": 0.801,
+            "uplink_kb_per_item": 1.85,
+            "calls_laya": 0.662,
+            "calls_smolvlm_local": 0.309,
+            "calls_cloud": 0.05
+          },
+          {
+            "risk_per_1000": 180.3,
+            "mean_time_s": 1.043,
+            "uplink_kb_per_item": 11.34,
+            "calls_laya": 0.798,
+            "calls_smolvlm_local": 0.497,
+            "calls_cloud": 0.274
+          },
+          {
+            "risk_per_1000": 53.6,
+            "mean_time_s": 1.364,
+            "uplink_kb_per_item": 6.55,
+            "calls_laya": 0.991,
+            "calls_smolvlm_local": 0.817,
+            "calls_cloud": 0.132
+          },
+          {
+            "risk_per_1000": 6.6,
+            "mean_time_s": 1.264,
+            "uplink_kb_per_item": 0.96,
+            "calls_laya": 0.917,
+            "calls_smolvlm_local": 0.792,
+            "calls_cloud": 0.033
+          },
+          {
+            "risk_per_1000": 74.5,
+            "mean_time_s": 0.868,
+            "uplink_kb_per_item": 6.0,
+            "calls_laya": 0.624,
+            "calls_smolvlm_local": 0.478,
+            "calls_cloud": 0.142
+          }
+        ]
+      },
+      "3.0": {
+        "fleet": {
+          "risk_per_1000": 106.267,
+          "mean_time_s": 1.225,
+          "uplink_kb_per_item": 0.0,
+          "calls_laya": 0.824,
+          "calls_smolvlm_local": 0.818,
+          "calls_cloud": 0.0
+        },
+        "drones": [
+          {
+            "risk_per_1000": 273.9,
+            "mean_time_s": 1.028,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.662,
+            "calls_smolvlm_local": 0.658,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 176.5,
+            "mean_time_s": 1.19,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.798,
+            "calls_smolvlm_local": 0.781,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 54.4,
+            "mean_time_s": 1.453,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.991,
+            "calls_smolvlm_local": 0.989,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 6.2,
+            "mean_time_s": 1.344,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.917,
+            "calls_smolvlm_local": 0.915,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 70.9,
+            "mean_time_s": 0.945,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.624,
+            "calls_smolvlm_local": 0.623,
+            "calls_cloud": 0.0
+          }
+        ]
+      }
+    },
+    "cascade tuned, one rule": {
+      "0.25": {
+        "fleet": {
+          "risk_per_1000": 145.241,
+          "mean_time_s": 0.067,
+          "uplink_kb_per_item": 0.058,
+          "calls_laya": 0.0,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.006
+        },
+        "drones": [
+          {
+            "risk_per_1000": 369.6,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 220.2,
+            "mean_time_s": 0.069,
+            "uplink_kb_per_item": 0.18,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.019
+          },
+          {
+            "risk_per_1000": 91.3,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.03,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.004
+          },
+          {
+            "risk_per_1000": 9.7,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 117.8,
+            "mean_time_s": 0.067,
+            "uplink_kb_per_item": 0.1,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.006
+          }
+        ]
+      },
+      "0.75": {
+        "fleet": {
+          "risk_per_1000": 126.539,
+          "mean_time_s": 0.479,
+          "uplink_kb_per_item": 6.468,
+          "calls_laya": 0.576,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.156
+        },
+        "drones": [
+          {
+            "risk_per_1000": 359.7,
+            "mean_time_s": 0.298,
+            "uplink_kb_per_item": 3.11,
+            "calls_laya": 0.293,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.078
+          },
+          {
+            "risk_per_1000": 164.7,
+            "mean_time_s": 0.441,
+            "uplink_kb_per_item": 13.06,
+            "calls_laya": 0.478,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.319
+          },
+          {
+            "risk_per_1000": 92.2,
+            "mean_time_s": 0.627,
+            "uplink_kb_per_item": 8.24,
+            "calls_laya": 0.807,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.16
+          },
+          {
+            "risk_per_1000": 7.5,
+            "mean_time_s": 0.562,
+            "uplink_kb_per_item": 1.77,
+            "calls_laya": 0.738,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.056
+          },
+          {
+            "risk_per_1000": 85.3,
+            "mean_time_s": 0.389,
+            "uplink_kb_per_item": 9.06,
+            "calls_laya": 0.421,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.225
+          }
+        ]
+      },
+      "1.5": {
+        "fleet": {
+          "risk_per_1000": 108.274,
+          "mean_time_s": 1.151,
+          "uplink_kb_per_item": 5.023,
+          "calls_laya": 0.864,
+          "calls_smolvlm_local": 0.633,
+          "calls_cloud": 0.12
+        },
+        "drones": [
+          {
+            "risk_per_1000": 273.1,
+            "mean_time_s": 0.946,
+            "uplink_kb_per_item": 1.94,
+            "calls_laya": 0.804,
+            "calls_smolvlm_local": 0.356,
+            "calls_cloud": 0.052
+          },
+          {
+            "risk_per_1000": 192.8,
+            "mean_time_s": 1.09,
+            "uplink_kb_per_item": 11.37,
+            "calls_laya": 0.829,
+            "calls_smolvlm_local": 0.532,
+            "calls_cloud": 0.274
+          },
+          {
+            "risk_per_1000": 51.8,
+            "mean_time_s": 1.376,
+            "uplink_kb_per_item": 6.73,
+            "calls_laya": 0.999,
+            "calls_smolvlm_local": 0.824,
+            "calls_cloud": 0.134
+          },
+          {
+            "risk_per_1000": 5.3,
+            "mean_time_s": 1.275,
+            "uplink_kb_per_item": 0.96,
+            "calls_laya": 0.927,
+            "calls_smolvlm_local": 0.797,
+            "calls_cloud": 0.033
+          },
+          {
+            "risk_per_1000": 63.7,
+            "mean_time_s": 0.923,
+            "uplink_kb_per_item": 6.04,
+            "calls_laya": 0.663,
+            "calls_smolvlm_local": 0.518,
+            "calls_cloud": 0.143
+          }
+        ]
+      },
+      "3.0": {
+        "fleet": {
+          "risk_per_1000": 107.27,
+          "mean_time_s": 1.566,
+          "uplink_kb_per_item": 21.977,
+          "calls_laya": 0.864,
+          "calls_smolvlm_local": 0.858,
+          "calls_cloud": 0.709
+        },
+        "drones": [
+          {
+            "risk_per_1000": 259.9,
+            "mean_time_s": 1.593,
+            "uplink_kb_per_item": 20.79,
+            "calls_laya": 0.804,
+            "calls_smolvlm_local": 0.795,
+            "calls_cloud": 0.46
+          },
+          {
+            "risk_per_1000": 197.8,
+            "mean_time_s": 1.395,
+            "uplink_kb_per_item": 23.21,
+            "calls_laya": 0.829,
+            "calls_smolvlm_local": 0.817,
+            "calls_cloud": 0.788
+          },
+          {
+            "risk_per_1000": 38.6,
+            "mean_time_s": 1.719,
+            "uplink_kb_per_item": 24.73,
+            "calls_laya": 0.999,
+            "calls_smolvlm_local": 0.999,
+            "calls_cloud": 0.928
+          },
+          {
+            "risk_per_1000": 6.6,
+            "mean_time_s": 1.752,
+            "uplink_kb_per_item": 20.14,
+            "calls_laya": 0.927,
+            "calls_smolvlm_local": 0.921,
+            "calls_cloud": 0.697
+          },
+          {
+            "risk_per_1000": 79.3,
+            "mean_time_s": 1.137,
+            "uplink_kb_per_item": 22.58,
+            "calls_laya": 0.663,
+            "calls_smolvlm_local": 0.663,
+            "calls_cloud": 0.653
+          }
+        ]
+      }
+    },
+    "cascade tuned per drone": {
+      "0.25": {
+        "fleet": {
+          "risk_per_1000": 145.531,
+          "mean_time_s": 0.067,
+          "uplink_kb_per_item": 0.053,
+          "calls_laya": 0.0,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.005
+        },
+        "drones": [
+          {
+            "risk_per_1000": 369.6,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 220.2,
+            "mean_time_s": 0.069,
+            "uplink_kb_per_item": 0.18,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.019
+          },
+          {
+            "risk_per_1000": 93.1,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 9.7,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 117.8,
+            "mean_time_s": 0.067,
+            "uplink_kb_per_item": 0.1,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.006
+          }
+        ]
+      },
+      "0.75": {
+        "fleet": {
+          "risk_per_1000": 127.405,
+          "mean_time_s": 0.225,
+          "uplink_kb_per_item": 9.445,
+          "calls_laya": 0.137,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.296
+        },
+        "drones": [
+          {
+            "risk_per_1000": 344.1,
+            "mean_time_s": 0.138,
+            "uplink_kb_per_item": 1.7,
+            "calls_laya": 0.076,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.04
+          },
+          {
+            "risk_per_1000": 164.7,
+            "mean_time_s": 0.441,
+            "uplink_kb_per_item": 13.06,
+            "calls_laya": 0.478,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.319
+          },
+          {
+            "risk_per_1000": 91.3,
+            "mean_time_s": 0.334,
+            "uplink_kb_per_item": 22.67,
+            "calls_laya": 0.068,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.892
+          },
+          {
+            "risk_per_1000": 7.5,
+            "mean_time_s": 0.075,
+            "uplink_kb_per_item": 0.03,
+            "calls_laya": 0.013,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.001
+          },
+          {
+            "risk_per_1000": 116.6,
+            "mean_time_s": 0.197,
+            "uplink_kb_per_item": 21.36,
+            "calls_laya": 0.005,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.615
+          }
+        ]
+      },
+      "1.5": {
+        "fleet": {
+          "risk_per_1000": 120.194,
+          "mean_time_s": 0.674,
+          "uplink_kb_per_item": 6.484,
+          "calls_laya": 0.446,
+          "calls_smolvlm_local": 0.362,
+          "calls_cloud": 0.162
+        },
+        "drones": [
+          {
+            "risk_per_1000": 314.4,
+            "mean_time_s": 0.596,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.724,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 192.8,
+            "mean_time_s": 1.076,
+            "uplink_kb_per_item": 11.37,
+            "calls_laya": 0.819,
+            "calls_smolvlm_local": 0.522,
+            "calls_cloud": 0.274
+          },
+          {
+            "risk_per_1000": 52.7,
+            "mean_time_s": 1.366,
+            "uplink_kb_per_item": 7.71,
+            "calls_laya": 0.825,
+            "calls_smolvlm_local": 0.995,
+            "calls_cloud": 0.142
+          },
+          {
+            "risk_per_1000": 7.5,
+            "mean_time_s": 0.084,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.004,
+            "calls_smolvlm_local": 0.022,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 97.4,
+            "mean_time_s": 0.672,
+            "uplink_kb_per_item": 22.54,
+            "calls_laya": 0.008,
+            "calls_smolvlm_local": 0.641,
+            "calls_cloud": 0.651
+          }
+        ]
+      },
+      "3.0": {
+        "fleet": {
+          "risk_per_1000": 117.065,
+          "mean_time_s": 0.855,
+          "uplink_kb_per_item": 11.95,
+          "calls_laya": 0.551,
+          "calls_smolvlm_local": 0.426,
+          "calls_cloud": 0.405
+        },
+        "drones": [
+          {
+            "risk_per_1000": 314.4,
+            "mean_time_s": 0.596,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.724,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 197.8,
+            "mean_time_s": 1.379,
+            "uplink_kb_per_item": 22.88,
+            "calls_laya": 0.819,
+            "calls_smolvlm_local": 0.807,
+            "calls_cloud": 0.772
+          },
+          {
+            "risk_per_1000": 39.5,
+            "mean_time_s": 1.725,
+            "uplink_kb_per_item": 25.31,
+            "calls_laya": 0.993,
+            "calls_smolvlm_local": 0.978,
+            "calls_cloud": 0.942
+          },
+          {
+            "risk_per_1000": 7.5,
+            "mean_time_s": 0.086,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.006,
+            "calls_smolvlm_local": 0.022,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 79.3,
+            "mean_time_s": 1.134,
+            "uplink_kb_per_item": 22.63,
+            "calls_laya": 0.663,
+            "calls_smolvlm_local": 0.661,
+            "calls_cloud": 0.654
+          }
+        ]
+      }
+    },
+    "oracle subset (labels)": {
+      "0.25": {
+        "fleet": {
+          "risk_per_1000": 141.423,
+          "mean_time_s": 0.066,
+          "uplink_kb_per_item": 0.038,
+          "calls_laya": 0.0,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.003
+        },
+        "drones": [
+          {
+            "risk_per_1000": 369.6,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 205.9,
+            "mean_time_s": 0.067,
+            "uplink_kb_per_item": 0.1,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.008
+          },
+          {
+            "risk_per_1000": 90.4,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.02,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.003
+          },
+          {
+            "risk_per_1000": 9.7,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 114.2,
+            "mean_time_s": 0.067,
+            "uplink_kb_per_item": 0.1,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.006
+          }
+        ]
+      },
+      "0.75": {
+        "fleet": {
+          "risk_per_1000": 105.145,
+          "mean_time_s": 0.077,
+          "uplink_kb_per_item": 0.278,
+          "calls_laya": 0.013,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.009
+        },
+        "drones": [
+          {
+            "risk_per_1000": 323.4,
+            "mean_time_s": 0.095,
+            "uplink_kb_per_item": 0.47,
+            "calls_laya": 0.035,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.012
+          },
+          {
+            "risk_per_1000": 125.4,
+            "mean_time_s": 0.076,
+            "uplink_kb_per_item": 0.27,
+            "calls_laya": 0.012,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.015
+          },
+          {
+            "risk_per_1000": 64.1,
+            "mean_time_s": 0.072,
+            "uplink_kb_per_item": 0.27,
+            "calls_laya": 0.007,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.006
+          },
+          {
+            "risk_per_1000": 7.5,
+            "mean_time_s": 0.067,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.002,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 70.9,
+            "mean_time_s": 0.086,
+            "uplink_kb_per_item": 0.78,
+            "calls_laya": 0.024,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.025
+          }
+        ]
+      },
+      "1.5": {
+        "fleet": {
+          "risk_per_1000": 73.556,
+          "mean_time_s": 0.1,
+          "uplink_kb_per_item": 0.423,
+          "calls_laya": 0.025,
+          "calls_smolvlm_local": 0.017,
+          "calls_cloud": 0.012
+        },
+        "drones": [
+          {
+            "risk_per_1000": 231.0,
+            "mean_time_s": 0.175,
+            "uplink_kb_per_item": 1.09,
+            "calls_laya": 0.075,
+            "calls_smolvlm_local": 0.054,
+            "calls_cloud": 0.022
+          },
+          {
+            "risk_per_1000": 106.1,
+            "mean_time_s": 0.078,
+            "uplink_kb_per_item": 0.34,
+            "calls_laya": 0.014,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.017
+          },
+          {
+            "risk_per_1000": 22.8,
+            "mean_time_s": 0.098,
+            "uplink_kb_per_item": 0.32,
+            "calls_laya": 0.013,
+            "calls_smolvlm_local": 0.028,
+            "calls_cloud": 0.007
+          },
+          {
+            "risk_per_1000": 3.1,
+            "mean_time_s": 0.071,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.004,
+            "calls_smolvlm_local": 0.004,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 43.3,
+            "mean_time_s": 0.115,
+            "uplink_kb_per_item": 0.91,
+            "calls_laya": 0.046,
+            "calls_smolvlm_local": 0.018,
+            "calls_cloud": 0.03
+          }
+        ]
+      },
+      "3.0": {
+        "fleet": {
+          "risk_per_1000": 66.755,
+          "mean_time_s": 0.112,
+          "uplink_kb_per_item": 0.571,
+          "calls_laya": 0.031,
+          "calls_smolvlm_local": 0.023,
+          "calls_cloud": 0.014
+        },
+        "drones": [
+          {
+            "risk_per_1000": 191.4,
+            "mean_time_s": 0.244,
+            "uplink_kb_per_item": 1.95,
+            "calls_laya": 0.113,
+            "calls_smolvlm_local": 0.088,
+            "calls_cloud": 0.034
+          },
+          {
+            "risk_per_1000": 106.1,
+            "mean_time_s": 0.078,
+            "uplink_kb_per_item": 0.34,
+            "calls_laya": 0.014,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.017
+          },
+          {
+            "risk_per_1000": 22.8,
+            "mean_time_s": 0.098,
+            "uplink_kb_per_item": 0.32,
+            "calls_laya": 0.013,
+            "calls_smolvlm_local": 0.028,
+            "calls_cloud": 0.007
+          },
+          {
+            "risk_per_1000": 3.1,
+            "mean_time_s": 0.071,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.004,
+            "calls_smolvlm_local": 0.004,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 43.3,
+            "mean_time_s": 0.115,
+            "uplink_kb_per_item": 0.91,
+            "calls_laya": 0.046,
+            "calls_smolvlm_local": 0.018,
+            "calls_cloud": 0.03
+          }
+        ]
+      }
+    },
+    "central PPO seed 0": {
+      "0.25": {
+        "fleet": {
+          "risk_per_1000": 148.507,
+          "mean_time_s": 0.087,
+          "uplink_kb_per_item": 1.538,
+          "calls_laya": 0.0,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.127
+        },
+        "drones": [
+          {
+            "risk_per_1000": 369.6,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 235.2,
+            "mean_time_s": 0.118,
+            "uplink_kb_per_item": 3.75,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.326
+          },
+          {
+            "risk_per_1000": 91.3,
+            "mean_time_s": 0.107,
+            "uplink_kb_per_item": 2.85,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.24
+          },
+          {
+            "risk_per_1000": 9.7,
+            "mean_time_s": 0.067,
+            "uplink_kb_per_item": 0.03,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.006
+          },
+          {
+            "risk_per_1000": 116.6,
+            "mean_time_s": 0.082,
+            "uplink_kb_per_item": 1.84,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.102
+          }
+        ]
+      },
+      "0.75": {
+        "fleet": {
+          "risk_per_1000": 142.132,
+          "mean_time_s": 0.45,
+          "uplink_kb_per_item": 14.303,
+          "calls_laya": 0.462,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.367
+        },
+        "drones": [
+          {
+            "risk_per_1000": 359.7,
+            "mean_time_s": 0.334,
+            "uplink_kb_per_item": 3.28,
+            "calls_laya": 0.344,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.083
+          },
+          {
+            "risk_per_1000": 215.2,
+            "mean_time_s": 0.316,
+            "uplink_kb_per_item": 30.31,
+            "calls_laya": 0.114,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.875
+          },
+          {
+            "risk_per_1000": 97.5,
+            "mean_time_s": 0.615,
+            "uplink_kb_per_item": 8.96,
+            "calls_laya": 0.781,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.176
+          },
+          {
+            "risk_per_1000": 7.5,
+            "mean_time_s": 0.572,
+            "uplink_kb_per_item": 2.05,
+            "calls_laya": 0.748,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.059
+          },
+          {
+            "risk_per_1000": 113.0,
+            "mean_time_s": 0.319,
+            "uplink_kb_per_item": 40.28,
+            "calls_laya": 0.09,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.905
+          }
+        ]
+      },
+      "1.5": {
+        "fleet": {
+          "risk_per_1000": 120.993,
+          "mean_time_s": 1.25,
+          "uplink_kb_per_item": 11.489,
+          "calls_laya": 0.604,
+          "calls_smolvlm_local": 0.997,
+          "calls_cloud": 0.264
+        },
+        "drones": [
+          {
+            "risk_per_1000": 293.7,
+            "mean_time_s": 1.098,
+            "uplink_kb_per_item": 3.55,
+            "calls_laya": 0.401,
+            "calls_smolvlm_local": 0.997,
+            "calls_cloud": 0.085
+          },
+          {
+            "risk_per_1000": 217.7,
+            "mean_time_s": 1.179,
+            "uplink_kb_per_item": 23.16,
+            "calls_laya": 0.405,
+            "calls_smolvlm_local": 0.999,
+            "calls_cloud": 0.586
+          },
+          {
+            "risk_per_1000": 53.6,
+            "mean_time_s": 1.367,
+            "uplink_kb_per_item": 7.95,
+            "calls_laya": 0.823,
+            "calls_smolvlm_local": 0.997,
+            "calls_cloud": 0.145
+          },
+          {
+            "risk_per_1000": 4.8,
+            "mean_time_s": 1.359,
+            "uplink_kb_per_item": 1.57,
+            "calls_laya": 0.846,
+            "calls_smolvlm_local": 0.996,
+            "calls_cloud": 0.042
+          },
+          {
+            "risk_per_1000": 92.5,
+            "mean_time_s": 1.152,
+            "uplink_kb_per_item": 32.49,
+            "calls_laya": 0.326,
+            "calls_smolvlm_local": 0.996,
+            "calls_cloud": 0.674
+          }
+        ]
+      },
+      "3.0": {
+        "fleet": {
+          "risk_per_1000": 107.562,
+          "mean_time_s": 1.682,
+          "uplink_kb_per_item": 22.061,
+          "calls_laya": 0.986,
+          "calls_smolvlm_local": 1.0,
+          "calls_cloud": 0.538
+        },
+        "drones": [
+          {
+            "risk_per_1000": 261.6,
+            "mean_time_s": 1.895,
+            "uplink_kb_per_item": 25.23,
+            "calls_laya": 0.95,
+            "calls_smolvlm_local": 1.0,
+            "calls_cloud": 0.405
+          },
+          {
+            "risk_per_1000": 197.8,
+            "mean_time_s": 1.69,
+            "uplink_kb_per_item": 32.07,
+            "calls_laya": 0.999,
+            "calls_smolvlm_local": 1.0,
+            "calls_cloud": 0.971
+          },
+          {
+            "risk_per_1000": 38.6,
+            "mean_time_s": 1.593,
+            "uplink_kb_per_item": 15.07,
+            "calls_laya": 0.999,
+            "calls_smolvlm_local": 1.0,
+            "calls_cloud": 0.445
+          },
+          {
+            "risk_per_1000": 6.6,
+            "mean_time_s": 1.603,
+            "uplink_kb_per_item": 9.26,
+            "calls_laya": 0.985,
+            "calls_smolvlm_local": 1.0,
+            "calls_cloud": 0.187
+          },
+          {
+            "risk_per_1000": 79.3,
+            "mean_time_s": 1.694,
+            "uplink_kb_per_item": 42.67,
+            "calls_laya": 1.0,
+            "calls_smolvlm_local": 1.0,
+            "calls_cloud": 0.986
+          }
+        ]
+      }
+    },
+    "local PPO seed 0": {
+      "0.25": {
+        "fleet": {
+          "risk_per_1000": 148.507,
+          "mean_time_s": 0.086,
+          "uplink_kb_per_item": 1.469,
+          "calls_laya": 0.0,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.12
+        },
+        "drones": [
+          {
+            "risk_per_1000": 369.6,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 235.2,
+            "mean_time_s": 0.118,
+            "uplink_kb_per_item": 3.75,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.326
+          },
+          {
+            "risk_per_1000": 91.3,
+            "mean_time_s": 0.102,
+            "uplink_kb_per_item": 2.48,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.211
+          },
+          {
+            "risk_per_1000": 9.7,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 116.6,
+            "mean_time_s": 0.082,
+            "uplink_kb_per_item": 1.84,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.102
+          }
+        ]
+      },
+      "0.75": {
+        "fleet": {
+          "risk_per_1000": 126.523,
+          "mean_time_s": 0.321,
+          "uplink_kb_per_item": 10.642,
+          "calls_laya": 0.283,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.287
+        },
+        "drones": [
+          {
+            "risk_per_1000": 359.7,
+            "mean_time_s": 0.338,
+            "uplink_kb_per_item": 3.16,
+            "calls_laya": 0.354,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.079
+          },
+          {
+            "risk_per_1000": 164.7,
+            "mean_time_s": 0.518,
+            "uplink_kb_per_item": 19.36,
+            "calls_laya": 0.56,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.429
+          },
+          {
+            "risk_per_1000": 91.3,
+            "mean_time_s": 0.291,
+            "uplink_kb_per_item": 20.79,
+            "calls_laya": 0.035,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.794
+          },
+          {
+            "risk_per_1000": 7.9,
+            "mean_time_s": 0.105,
+            "uplink_kb_per_item": 0.05,
+            "calls_laya": 0.059,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.001
+          },
+          {
+            "risk_per_1000": 85.3,
+            "mean_time_s": 0.544,
+            "uplink_kb_per_item": 19.76,
+            "calls_laya": 0.596,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.399
+          }
+        ]
+      },
+      "1.5": {
+        "fleet": {
+          "risk_per_1000": 107.998,
+          "mean_time_s": 0.876,
+          "uplink_kb_per_item": 8.29,
+          "calls_laya": 0.524,
+          "calls_smolvlm_local": 0.539,
+          "calls_cloud": 0.193
+        },
+        "drones": [
+          {
+            "risk_per_1000": 286.3,
+            "mean_time_s": 1.106,
+            "uplink_kb_per_item": 6.02,
+            "calls_laya": 1.0,
+            "calls_smolvlm_local": 0.242,
+            "calls_cloud": 0.205
+          },
+          {
+            "risk_per_1000": 182.2,
+            "mean_time_s": 1.28,
+            "uplink_kb_per_item": 16.91,
+            "calls_laya": 0.628,
+            "calls_smolvlm_local": 0.999,
+            "calls_cloud": 0.364
+          },
+          {
+            "risk_per_1000": 45.7,
+            "mean_time_s": 1.128,
+            "uplink_kb_per_item": 11.64,
+            "calls_laya": 0.569,
+            "calls_smolvlm_local": 0.839,
+            "calls_cloud": 0.28
+          },
+          {
+            "risk_per_1000": 7.5,
+            "mean_time_s": 0.171,
+            "uplink_kb_per_item": 0.02,
+            "calls_laya": 0.092,
+            "calls_smolvlm_local": 0.056,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 64.9,
+            "mean_time_s": 1.341,
+            "uplink_kb_per_item": 12.98,
+            "calls_laya": 0.75,
+            "calls_smolvlm_local": 0.994,
+            "calls_cloud": 0.25
+          }
+        ]
+      },
+      "3.0": {
+        "fleet": {
+          "risk_per_1000": 107.989,
+          "mean_time_s": 1.24,
+          "uplink_kb_per_item": 21.172,
+          "calls_laya": 0.688,
+          "calls_smolvlm_local": 0.656,
+          "calls_cloud": 0.526
+        },
+        "drones": [
+          {
+            "risk_per_1000": 262.4,
+            "mean_time_s": 2.087,
+            "uplink_kb_per_item": 35.69,
+            "calls_laya": 1.0,
+            "calls_smolvlm_local": 0.827,
+            "calls_cloud": 0.658
+          },
+          {
+            "risk_per_1000": 197.8,
+            "mean_time_s": 1.693,
+            "uplink_kb_per_item": 32.2,
+            "calls_laya": 1.0,
+            "calls_smolvlm_local": 1.0,
+            "calls_cloud": 0.975
+          },
+          {
+            "risk_per_1000": 38.6,
+            "mean_time_s": 1.461,
+            "uplink_kb_per_item": 16.36,
+            "calls_laya": 0.876,
+            "calls_smolvlm_local": 0.89,
+            "calls_cloud": 0.466
+          },
+          {
+            "risk_per_1000": 7.5,
+            "mean_time_s": 0.192,
+            "uplink_kb_per_item": 0.31,
+            "calls_laya": 0.092,
+            "calls_smolvlm_local": 0.078,
+            "calls_cloud": 0.005
+          },
+          {
+            "risk_per_1000": 79.3,
+            "mean_time_s": 1.693,
+            "uplink_kb_per_item": 42.31,
+            "calls_laya": 1.0,
+            "calls_smolvlm_local": 1.0,
+            "calls_cloud": 0.977
+          }
+        ]
+      }
+    },
+    "FedAvg PPO seed 0": {
+      "0.25": {
+        "fleet": {
+          "risk_per_1000": 148.507,
+          "mean_time_s": 0.073,
+          "uplink_kb_per_item": 0.587,
+          "calls_laya": 0.0,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.047
+        },
+        "drones": [
+          {
+            "risk_per_1000": 369.6,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 235.2,
+            "mean_time_s": 0.093,
+            "uplink_kb_per_item": 1.97,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.17
+          },
+          {
+            "risk_per_1000": 91.3,
+            "mean_time_s": 0.067,
+            "uplink_kb_per_item": 0.07,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.008
+          },
+          {
+            "risk_per_1000": 9.7,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 116.6,
+            "mean_time_s": 0.075,
+            "uplink_kb_per_item": 1.09,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.059
+          }
+        ]
+      },
+      "0.75": {
+        "fleet": {
+          "risk_per_1000": 126.539,
+          "mean_time_s": 0.385,
+          "uplink_kb_per_item": 5.663,
+          "calls_laya": 0.451,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.115
+        },
+        "drones": [
+          {
+            "risk_per_1000": 359.7,
+            "mean_time_s": 0.282,
+            "uplink_kb_per_item": 1.86,
+            "calls_laya": 0.296,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.043
+          },
+          {
+            "risk_per_1000": 164.7,
+            "mean_time_s": 0.445,
+            "uplink_kb_per_item": 11.32,
+            "calls_laya": 0.508,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.253
+          },
+          {
+            "risk_per_1000": 92.2,
+            "mean_time_s": 0.363,
+            "uplink_kb_per_item": 6.16,
+            "calls_laya": 0.416,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.095
+          },
+          {
+            "risk_per_1000": 7.5,
+            "mean_time_s": 0.364,
+            "uplink_kb_per_item": 0.12,
+            "calls_laya": 0.465,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.002
+          },
+          {
+            "risk_per_1000": 85.3,
+            "mean_time_s": 0.507,
+            "uplink_kb_per_item": 14.75,
+            "calls_laya": 0.578,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.288
+          }
+        ]
+      },
+      "1.5": {
+        "fleet": {
+          "risk_per_1000": 120.58,
+          "mean_time_s": 0.694,
+          "uplink_kb_per_item": 3.498,
+          "calls_laya": 0.773,
+          "calls_smolvlm_local": 0.093,
+          "calls_cloud": 0.074
+        },
+        "drones": [
+          {
+            "risk_per_1000": 313.5,
+            "mean_time_s": 0.829,
+            "uplink_kb_per_item": 0.19,
+            "calls_laya": 0.936,
+            "calls_smolvlm_local": 0.058,
+            "calls_cloud": 0.006
+          },
+          {
+            "risk_per_1000": 194.6,
+            "mean_time_s": 0.851,
+            "uplink_kb_per_item": 7.27,
+            "calls_laya": 0.926,
+            "calls_smolvlm_local": 0.143,
+            "calls_cloud": 0.166
+          },
+          {
+            "risk_per_1000": 60.6,
+            "mean_time_s": 0.498,
+            "uplink_kb_per_item": 3.86,
+            "calls_laya": 0.582,
+            "calls_smolvlm_local": 0.014,
+            "calls_cloud": 0.068
+          },
+          {
+            "risk_per_1000": 9.7,
+            "mean_time_s": 0.517,
+            "uplink_kb_per_item": 0.28,
+            "calls_laya": 0.599,
+            "calls_smolvlm_local": 0.063,
+            "calls_cloud": 0.01
+          },
+          {
+            "risk_per_1000": 81.7,
+            "mean_time_s": 0.95,
+            "uplink_kb_per_item": 9.34,
+            "calls_laya": 0.98,
+            "calls_smolvlm_local": 0.238,
+            "calls_cloud": 0.177
+          }
+        ]
+      },
+      "3.0": {
+        "fleet": {
+          "risk_per_1000": 117.327,
+          "mean_time_s": 0.807,
+          "uplink_kb_per_item": 8.17,
+          "calls_laya": 0.773,
+          "calls_smolvlm_local": 0.189,
+          "calls_cloud": 0.16
+        },
+        "drones": [
+          {
+            "risk_per_1000": 312.7,
+            "mean_time_s": 1.029,
+            "uplink_kb_per_item": 6.09,
+            "calls_laya": 0.936,
+            "calls_smolvlm_local": 0.219,
+            "calls_cloud": 0.082
+          },
+          {
+            "risk_per_1000": 193.4,
+            "mean_time_s": 0.962,
+            "uplink_kb_per_item": 11.43,
+            "calls_laya": 0.927,
+            "calls_smolvlm_local": 0.259,
+            "calls_cloud": 0.296
+          },
+          {
+            "risk_per_1000": 55.3,
+            "mean_time_s": 0.574,
+            "uplink_kb_per_item": 5.15,
+            "calls_laya": 0.581,
+            "calls_smolvlm_local": 0.104,
+            "calls_cloud": 0.083
+          },
+          {
+            "risk_per_1000": 8.8,
+            "mean_time_s": 0.582,
+            "uplink_kb_per_item": 3.23,
+            "calls_laya": 0.598,
+            "calls_smolvlm_local": 0.092,
+            "calls_cloud": 0.056
+          },
+          {
+            "risk_per_1000": 67.3,
+            "mean_time_s": 1.115,
+            "uplink_kb_per_item": 22.54,
+            "calls_laya": 0.98,
+            "calls_smolvlm_local": 0.391,
+            "calls_cloud": 0.405
+          }
+        ]
+      }
+    },
+    "FedAvg + local fine-tune seed 0": {
+      "0.25": {
+        "fleet": {
+          "risk_per_1000": 148.507,
+          "mean_time_s": 0.077,
+          "uplink_kb_per_item": 0.936,
+          "calls_laya": 0.0,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.072
+        },
+        "drones": [
+          {
+            "risk_per_1000": 369.6,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 235.2,
+            "mean_time_s": 0.106,
+            "uplink_kb_per_item": 3.03,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.251
+          },
+          {
+            "risk_per_1000": 91.3,
+            "mean_time_s": 0.069,
+            "uplink_kb_per_item": 0.19,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.018
+          },
+          {
+            "risk_per_1000": 9.7,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 116.6,
+            "mean_time_s": 0.082,
+            "uplink_kb_per_item": 1.84,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.102
+          }
+        ]
+      },
+      "0.75": {
+        "fleet": {
+          "risk_per_1000": 126.539,
+          "mean_time_s": 0.385,
+          "uplink_kb_per_item": 7.657,
+          "calls_laya": 0.426,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.166
+        },
+        "drones": [
+          {
+            "risk_per_1000": 359.7,
+            "mean_time_s": 0.31,
+            "uplink_kb_per_item": 4.16,
+            "calls_laya": 0.278,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.123
+          },
+          {
+            "risk_per_1000": 164.7,
+            "mean_time_s": 0.5,
+            "uplink_kb_per_item": 15.18,
+            "calls_laya": 0.559,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.351
+          },
+          {
+            "risk_per_1000": 92.2,
+            "mean_time_s": 0.578,
+            "uplink_kb_per_item": 7.06,
+            "calls_laya": 0.748,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.112
+          },
+          {
+            "risk_per_1000": 7.5,
+            "mean_time_s": 0.188,
+            "uplink_kb_per_item": 0.08,
+            "calls_laya": 0.188,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.001
+          },
+          {
+            "risk_per_1000": 85.3,
+            "mean_time_s": 0.544,
+            "uplink_kb_per_item": 19.76,
+            "calls_laya": 0.596,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.399
+          }
+        ]
+      },
+      "1.5": {
+        "fleet": {
+          "risk_per_1000": 114.503,
+          "mean_time_s": 0.728,
+          "uplink_kb_per_item": 7.469,
+          "calls_laya": 0.74,
+          "calls_smolvlm_local": 0.128,
+          "calls_cloud": 0.176
+        },
+        "drones": [
+          {
+            "risk_per_1000": 303.6,
+            "mean_time_s": 0.928,
+            "uplink_kb_per_item": 4.78,
+            "calls_laya": 0.925,
+            "calls_smolvlm_local": 0.091,
+            "calls_cloud": 0.138
+          },
+          {
+            "risk_per_1000": 192.8,
+            "mean_time_s": 0.965,
+            "uplink_kb_per_item": 11.14,
+            "calls_laya": 0.999,
+            "calls_smolvlm_local": 0.205,
+            "calls_cloud": 0.24
+          },
+          {
+            "risk_per_1000": 51.8,
+            "mean_time_s": 0.762,
+            "uplink_kb_per_item": 5.15,
+            "calls_laya": 0.941,
+            "calls_smolvlm_local": 0.054,
+            "calls_cloud": 0.088
+          },
+          {
+            "risk_per_1000": 5.3,
+            "mean_time_s": 0.298,
+            "uplink_kb_per_item": 0.05,
+            "calls_laya": 0.262,
+            "calls_smolvlm_local": 0.072,
+            "calls_cloud": 0.001
+          },
+          {
+            "risk_per_1000": 72.1,
+            "mean_time_s": 1.106,
+            "uplink_kb_per_item": 27.74,
+            "calls_laya": 1.0,
+            "calls_smolvlm_local": 0.284,
+            "calls_cloud": 0.704
+          }
+        ]
+      },
+      "3.0": {
+        "fleet": {
+          "risk_per_1000": 108.254,
+          "mean_time_s": 0.936,
+          "uplink_kb_per_item": 14.714,
+          "calls_laya": 0.742,
+          "calls_smolvlm_local": 0.289,
+          "calls_cloud": 0.313
+        },
+        "drones": [
+          {
+            "risk_per_1000": 269.0,
+            "mean_time_s": 1.441,
+            "uplink_kb_per_item": 24.54,
+            "calls_laya": 0.941,
+            "calls_smolvlm_local": 0.314,
+            "calls_cloud": 0.403
+          },
+          {
+            "risk_per_1000": 197.8,
+            "mean_time_s": 1.144,
+            "uplink_kb_per_item": 14.88,
+            "calls_laya": 0.999,
+            "calls_smolvlm_local": 0.406,
+            "calls_cloud": 0.418
+          },
+          {
+            "risk_per_1000": 38.6,
+            "mean_time_s": 0.866,
+            "uplink_kb_per_item": 7.74,
+            "calls_laya": 0.942,
+            "calls_smolvlm_local": 0.169,
+            "calls_cloud": 0.124
+          },
+          {
+            "risk_per_1000": 4.8,
+            "mean_time_s": 0.352,
+            "uplink_kb_per_item": 2.63,
+            "calls_laya": 0.259,
+            "calls_smolvlm_local": 0.095,
+            "calls_cloud": 0.041
+          },
+          {
+            "risk_per_1000": 79.3,
+            "mean_time_s": 1.486,
+            "uplink_kb_per_item": 42.61,
+            "calls_laya": 1.0,
+            "calls_smolvlm_local": 0.718,
+            "calls_cloud": 0.981
+          }
+        ]
+      }
+    },
+    "central PPO seed 1": {
+      "0.25": {
+        "fleet": {
+          "risk_per_1000": 148.507,
+          "mean_time_s": 0.087,
+          "uplink_kb_per_item": 1.54,
+          "calls_laya": 0.0,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.127
+        },
+        "drones": [
+          {
+            "risk_per_1000": 369.6,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 235.2,
+            "mean_time_s": 0.118,
+            "uplink_kb_per_item": 3.75,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.326
+          },
+          {
+            "risk_per_1000": 91.3,
+            "mean_time_s": 0.107,
+            "uplink_kb_per_item": 2.86,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.241
+          },
+          {
+            "risk_per_1000": 9.7,
+            "mean_time_s": 0.067,
+            "uplink_kb_per_item": 0.03,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.006
+          },
+          {
+            "risk_per_1000": 116.6,
+            "mean_time_s": 0.082,
+            "uplink_kb_per_item": 1.84,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.102
+          }
+        ]
+      },
+      "0.75": {
+        "fleet": {
+          "risk_per_1000": 145.676,
+          "mean_time_s": 0.302,
+          "uplink_kb_per_item": 18.766,
+          "calls_laya": 0.086,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.646
+        },
+        "drones": [
+          {
+            "risk_per_1000": 371.3,
+            "mean_time_s": 0.258,
+            "uplink_kb_per_item": 5.89,
+            "calls_laya": 0.141,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.202
+          },
+          {
+            "risk_per_1000": 222.7,
+            "mean_time_s": 0.293,
+            "uplink_kb_per_item": 29.73,
+            "calls_laya": 0.067,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.914
+          },
+          {
+            "risk_per_1000": 91.3,
+            "mean_time_s": 0.297,
+            "uplink_kb_per_item": 23.09,
+            "calls_laya": 0.006,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.9
+          },
+          {
+            "risk_per_1000": 9.7,
+            "mean_time_s": 0.317,
+            "uplink_kb_per_item": 10.31,
+            "calls_laya": 0.084,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.497
+          },
+          {
+            "risk_per_1000": 114.2,
+            "mean_time_s": 0.346,
+            "uplink_kb_per_item": 33.56,
+            "calls_laya": 0.157,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.834
+          }
+        ]
+      },
+      "1.5": {
+        "fleet": {
+          "risk_per_1000": 119.74,
+          "mean_time_s": 1.04,
+          "uplink_kb_per_item": 18.682,
+          "calls_laya": 0.103,
+          "calls_smolvlm_local": 0.977,
+          "calls_cloud": 0.648
+        },
+        "drones": [
+          {
+            "risk_per_1000": 306.9,
+            "mean_time_s": 0.998,
+            "uplink_kb_per_item": 7.06,
+            "calls_laya": 0.171,
+            "calls_smolvlm_local": 0.955,
+            "calls_cloud": 0.224
+          },
+          {
+            "risk_per_1000": 204.0,
+            "mean_time_s": 1.03,
+            "uplink_kb_per_item": 28.74,
+            "calls_laya": 0.089,
+            "calls_smolvlm_local": 0.996,
+            "calls_cloud": 0.892
+          },
+          {
+            "risk_per_1000": 45.7,
+            "mean_time_s": 1.029,
+            "uplink_kb_per_item": 23.19,
+            "calls_laya": 0.004,
+            "calls_smolvlm_local": 0.991,
+            "calls_cloud": 0.905
+          },
+          {
+            "risk_per_1000": 5.7,
+            "mean_time_s": 1.052,
+            "uplink_kb_per_item": 11.38,
+            "calls_laya": 0.082,
+            "calls_smolvlm_local": 0.964,
+            "calls_cloud": 0.53
+          },
+          {
+            "risk_per_1000": 97.4,
+            "mean_time_s": 1.103,
+            "uplink_kb_per_item": 29.99,
+            "calls_laya": 0.228,
+            "calls_smolvlm_local": 0.993,
+            "calls_cloud": 0.769
+          }
+        ]
+      },
+      "3.0": {
+        "fleet": {
+          "risk_per_1000": 109.4,
+          "mean_time_s": 1.394,
+          "uplink_kb_per_item": 30.003,
+          "calls_laya": 0.294,
+          "calls_smolvlm_local": 0.995,
+          "calls_cloud": 0.848
+        },
+        "drones": [
+          {
+            "risk_per_1000": 272.3,
+            "mean_time_s": 1.773,
+            "uplink_kb_per_item": 31.81,
+            "calls_laya": 0.474,
+            "calls_smolvlm_local": 0.998,
+            "calls_cloud": 0.62
+          },
+          {
+            "risk_per_1000": 197.8,
+            "mean_time_s": 1.26,
+            "uplink_kb_per_item": 32.22,
+            "calls_laya": 0.374,
+            "calls_smolvlm_local": 1.0,
+            "calls_cloud": 0.976
+          },
+          {
+            "risk_per_1000": 38.6,
+            "mean_time_s": 1.197,
+            "uplink_kb_per_item": 25.41,
+            "calls_laya": 0.146,
+            "calls_smolvlm_local": 0.997,
+            "calls_cloud": 0.944
+          },
+          {
+            "risk_per_1000": 6.6,
+            "mean_time_s": 1.384,
+            "uplink_kb_per_item": 25.07,
+            "calls_laya": 0.116,
+            "calls_smolvlm_local": 0.987,
+            "calls_cloud": 0.781
+          },
+          {
+            "risk_per_1000": 79.3,
+            "mean_time_s": 1.398,
+            "uplink_kb_per_item": 42.85,
+            "calls_laya": 0.566,
+            "calls_smolvlm_local": 1.0,
+            "calls_cloud": 0.989
+          }
+        ]
+      }
+    },
+    "local PPO seed 1": {
+      "0.25": {
+        "fleet": {
+          "risk_per_1000": 148.507,
+          "mean_time_s": 0.085,
+          "uplink_kb_per_item": 1.413,
+          "calls_laya": 0.0,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.116
+        },
+        "drones": [
+          {
+            "risk_per_1000": 369.6,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 235.2,
+            "mean_time_s": 0.118,
+            "uplink_kb_per_item": 3.75,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.326
+          },
+          {
+            "risk_per_1000": 91.3,
+            "mean_time_s": 0.097,
+            "uplink_kb_per_item": 2.13,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.183
+          },
+          {
+            "risk_per_1000": 9.7,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 116.6,
+            "mean_time_s": 0.082,
+            "uplink_kb_per_item": 1.84,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.102
+          }
+        ]
+      },
+      "0.75": {
+        "fleet": {
+          "risk_per_1000": 141.414,
+          "mean_time_s": 0.265,
+          "uplink_kb_per_item": 12.686,
+          "calls_laya": 0.193,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.348
+        },
+        "drones": [
+          {
+            "risk_per_1000": 369.6,
+            "mean_time_s": 0.293,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.354,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 222.7,
+            "mean_time_s": 0.272,
+            "uplink_kb_per_item": 32.01,
+            "calls_laya": 0.016,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.972
+          },
+          {
+            "risk_per_1000": 92.2,
+            "mean_time_s": 0.392,
+            "uplink_kb_per_item": 12.14,
+            "calls_laya": 0.357,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.374
+          },
+          {
+            "risk_per_1000": 7.5,
+            "mean_time_s": 0.106,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.063,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 85.3,
+            "mean_time_s": 0.472,
+            "uplink_kb_per_item": 29.31,
+            "calls_laya": 0.431,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.564
+          }
+        ]
+      },
+      "1.5": {
+        "fleet": {
+          "risk_per_1000": 112.658,
+          "mean_time_s": 0.756,
+          "uplink_kb_per_item": 11.656,
+          "calls_laya": 0.31,
+          "calls_smolvlm_local": 0.55,
+          "calls_cloud": 0.3
+        },
+        "drones": [
+          {
+            "risk_per_1000": 273.9,
+            "mean_time_s": 1.123,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 1.0,
+            "calls_smolvlm_local": 0.408,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 204.0,
+            "mean_time_s": 1.002,
+            "uplink_kb_per_item": 32.05,
+            "calls_laya": 0.019,
+            "calls_smolvlm_local": 0.999,
+            "calls_cloud": 0.972
+          },
+          {
+            "risk_per_1000": 52.7,
+            "mean_time_s": 0.917,
+            "uplink_kb_per_item": 6.93,
+            "calls_laya": 0.13,
+            "calls_smolvlm_local": 0.992,
+            "calls_cloud": 0.111
+          },
+          {
+            "risk_per_1000": 7.5,
+            "mean_time_s": 0.135,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.099,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 70.9,
+            "mean_time_s": 1.219,
+            "uplink_kb_per_item": 27.63,
+            "calls_laya": 0.689,
+            "calls_smolvlm_local": 0.785,
+            "calls_cloud": 0.523
+          }
+        ]
+      },
+      "3.0": {
+        "fleet": {
+          "risk_per_1000": 103.867,
+          "mean_time_s": 1.065,
+          "uplink_kb_per_item": 13.734,
+          "calls_laya": 0.592,
+          "calls_smolvlm_local": 0.678,
+          "calls_cloud": 0.361
+        },
+        "drones": [
+          {
+            "risk_per_1000": 238.4,
+            "mean_time_s": 1.555,
+            "uplink_kb_per_item": 0.2,
+            "calls_laya": 1.0,
+            "calls_smolvlm_local": 1.0,
+            "calls_cloud": 0.003
+          },
+          {
+            "risk_per_1000": 197.8,
+            "mean_time_s": 1.693,
+            "uplink_kb_per_item": 32.22,
+            "calls_laya": 0.998,
+            "calls_smolvlm_local": 1.0,
+            "calls_cloud": 0.976
+          },
+          {
+            "risk_per_1000": 38.6,
+            "mean_time_s": 1.054,
+            "uplink_kb_per_item": 8.27,
+            "calls_laya": 0.27,
+            "calls_smolvlm_local": 0.996,
+            "calls_cloud": 0.14
+          },
+          {
+            "risk_per_1000": 7.5,
+            "mean_time_s": 0.136,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.101,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 79.3,
+            "mean_time_s": 1.694,
+            "uplink_kb_per_item": 42.8,
+            "calls_laya": 0.999,
+            "calls_smolvlm_local": 1.0,
+            "calls_cloud": 0.988
+          }
+        ]
+      }
+    },
+    "FedAvg PPO seed 1": {
+      "0.25": {
+        "fleet": {
+          "risk_per_1000": 148.507,
+          "mean_time_s": 0.084,
+          "uplink_kb_per_item": 1.347,
+          "calls_laya": 0.0,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.11
+        },
+        "drones": [
+          {
+            "risk_per_1000": 369.6,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 235.2,
+            "mean_time_s": 0.116,
+            "uplink_kb_per_item": 3.66,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.314
+          },
+          {
+            "risk_per_1000": 91.3,
+            "mean_time_s": 0.094,
+            "uplink_kb_per_item": 1.91,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.164
+          },
+          {
+            "risk_per_1000": 9.7,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.02,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.004
+          },
+          {
+            "risk_per_1000": 116.6,
+            "mean_time_s": 0.081,
+            "uplink_kb_per_item": 1.7,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.091
+          }
+        ]
+      },
+      "0.75": {
+        "fleet": {
+          "risk_per_1000": 126.539,
+          "mean_time_s": 0.402,
+          "uplink_kb_per_item": 11.128,
+          "calls_laya": 0.393,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.301
+        },
+        "drones": [
+          {
+            "risk_per_1000": 359.7,
+            "mean_time_s": 0.304,
+            "uplink_kb_per_item": 3.46,
+            "calls_laya": 0.291,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.092
+          },
+          {
+            "risk_per_1000": 164.7,
+            "mean_time_s": 0.465,
+            "uplink_kb_per_item": 21.5,
+            "calls_laya": 0.45,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.516
+          },
+          {
+            "risk_per_1000": 92.2,
+            "mean_time_s": 0.366,
+            "uplink_kb_per_item": 12.37,
+            "calls_laya": 0.313,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.376
+          },
+          {
+            "risk_per_1000": 7.5,
+            "mean_time_s": 0.387,
+            "uplink_kb_per_item": 3.68,
+            "calls_laya": 0.396,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.173
+          },
+          {
+            "risk_per_1000": 85.3,
+            "mean_time_s": 0.512,
+            "uplink_kb_per_item": 20.94,
+            "calls_laya": 0.536,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.438
+          }
+        ]
+      },
+      "1.5": {
+        "fleet": {
+          "risk_per_1000": 109.386,
+          "mean_time_s": 0.882,
+          "uplink_kb_per_item": 14.267,
+          "calls_laya": 0.809,
+          "calls_smolvlm_local": 0.158,
+          "calls_cloud": 0.454
+        },
+        "drones": [
+          {
+            "risk_per_1000": 282.2,
+            "mean_time_s": 0.973,
+            "uplink_kb_per_item": 4.17,
+            "calls_laya": 0.936,
+            "calls_smolvlm_local": 0.164,
+            "calls_cloud": 0.127
+          },
+          {
+            "risk_per_1000": 185.9,
+            "mean_time_s": 1.031,
+            "uplink_kb_per_item": 24.95,
+            "calls_laya": 0.954,
+            "calls_smolvlm_local": 0.211,
+            "calls_cloud": 0.714
+          },
+          {
+            "risk_per_1000": 52.7,
+            "mean_time_s": 0.704,
+            "uplink_kb_per_item": 15.22,
+            "calls_laya": 0.677,
+            "calls_smolvlm_local": 0.037,
+            "calls_cloud": 0.577
+          },
+          {
+            "risk_per_1000": 7.0,
+            "mean_time_s": 0.737,
+            "uplink_kb_per_item": 8.09,
+            "calls_laya": 0.652,
+            "calls_smolvlm_local": 0.104,
+            "calls_cloud": 0.339
+          },
+          {
+            "risk_per_1000": 67.3,
+            "mean_time_s": 1.103,
+            "uplink_kb_per_item": 23.95,
+            "calls_laya": 0.956,
+            "calls_smolvlm_local": 0.356,
+            "calls_cloud": 0.579
+          }
+        ]
+      },
+      "3.0": {
+        "fleet": {
+          "risk_per_1000": 107.699,
+          "mean_time_s": 1.233,
+          "uplink_kb_per_item": 25.454,
+          "calls_laya": 0.834,
+          "calls_smolvlm_local": 0.402,
+          "calls_cloud": 0.691
+        },
+        "drones": [
+          {
+            "risk_per_1000": 262.4,
+            "mean_time_s": 1.718,
+            "uplink_kb_per_item": 25.51,
+            "calls_laya": 0.946,
+            "calls_smolvlm_local": 0.653,
+            "calls_cloud": 0.488
+          },
+          {
+            "risk_per_1000": 197.8,
+            "mean_time_s": 1.33,
+            "uplink_kb_per_item": 31.31,
+            "calls_laya": 0.958,
+            "calls_smolvlm_local": 0.55,
+            "calls_cloud": 0.943
+          },
+          {
+            "risk_per_1000": 38.6,
+            "mean_time_s": 0.887,
+            "uplink_kb_per_item": 19.6,
+            "calls_laya": 0.698,
+            "calls_smolvlm_local": 0.198,
+            "calls_cloud": 0.685
+          },
+          {
+            "risk_per_1000": 6.6,
+            "mean_time_s": 1.022,
+            "uplink_kb_per_item": 18.18,
+            "calls_laya": 0.708,
+            "calls_smolvlm_local": 0.181,
+            "calls_cloud": 0.528
+          },
+          {
+            "risk_per_1000": 79.3,
+            "mean_time_s": 1.392,
+            "uplink_kb_per_item": 41.96,
+            "calls_laya": 0.959,
+            "calls_smolvlm_local": 0.631,
+            "calls_cloud": 0.956
+          }
+        ]
+      }
+    },
+    "FedAvg + local fine-tune seed 1": {
+      "0.25": {
+        "fleet": {
+          "risk_per_1000": 148.507,
+          "mean_time_s": 0.084,
+          "uplink_kb_per_item": 1.38,
+          "calls_laya": 0.0,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.113
+        },
+        "drones": [
+          {
+            "risk_per_1000": 369.6,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 235.2,
+            "mean_time_s": 0.118,
+            "uplink_kb_per_item": 3.75,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.326
+          },
+          {
+            "risk_per_1000": 91.3,
+            "mean_time_s": 0.094,
+            "uplink_kb_per_item": 1.93,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.166
+          },
+          {
+            "risk_per_1000": 9.7,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 116.6,
+            "mean_time_s": 0.082,
+            "uplink_kb_per_item": 1.84,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.102
+          }
+        ]
+      },
+      "0.75": {
+        "fleet": {
+          "risk_per_1000": 126.694,
+          "mean_time_s": 0.304,
+          "uplink_kb_per_item": 10.866,
+          "calls_laya": 0.256,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.288
+        },
+        "drones": [
+          {
+            "risk_per_1000": 360.6,
+            "mean_time_s": 0.317,
+            "uplink_kb_per_item": 4.08,
+            "calls_laya": 0.29,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.127
+          },
+          {
+            "risk_per_1000": 164.7,
+            "mean_time_s": 0.518,
+            "uplink_kb_per_item": 19.36,
+            "calls_laya": 0.56,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.429
+          },
+          {
+            "risk_per_1000": 92.2,
+            "mean_time_s": 0.256,
+            "uplink_kb_per_item": 16.73,
+            "calls_laya": 0.048,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.614
+          },
+          {
+            "risk_per_1000": 7.5,
+            "mean_time_s": 0.113,
+            "uplink_kb_per_item": 0.08,
+            "calls_laya": 0.072,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.001
+          },
+          {
+            "risk_per_1000": 85.3,
+            "mean_time_s": 0.458,
+            "uplink_kb_per_item": 25.8,
+            "calls_laya": 0.406,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.589
+          }
+        ]
+      },
+      "1.5": {
+        "fleet": {
+          "risk_per_1000": 113.08,
+          "mean_time_s": 0.69,
+          "uplink_kb_per_item": 13.206,
+          "calls_laya": 0.572,
+          "calls_smolvlm_local": 0.155,
+          "calls_cloud": 0.391
+        },
+        "drones": [
+          {
+            "risk_per_1000": 288.8,
+            "mean_time_s": 0.983,
+            "uplink_kb_per_item": 6.91,
+            "calls_laya": 0.949,
+            "calls_smolvlm_local": 0.093,
+            "calls_cloud": 0.224
+          },
+          {
+            "risk_per_1000": 191.5,
+            "mean_time_s": 1.118,
+            "uplink_kb_per_item": 25.6,
+            "calls_laya": 1.0,
+            "calls_smolvlm_local": 0.287,
+            "calls_cloud": 0.701
+          },
+          {
+            "risk_per_1000": 51.8,
+            "mean_time_s": 0.474,
+            "uplink_kb_per_item": 16.57,
+            "calls_laya": 0.177,
+            "calls_smolvlm_local": 0.145,
+            "calls_cloud": 0.633
+          },
+          {
+            "risk_per_1000": 5.3,
+            "mean_time_s": 0.199,
+            "uplink_kb_per_item": 0.05,
+            "calls_laya": 0.113,
+            "calls_smolvlm_local": 0.074,
+            "calls_cloud": 0.001
+          },
+          {
+            "risk_per_1000": 84.1,
+            "mean_time_s": 1.076,
+            "uplink_kb_per_item": 29.8,
+            "calls_laya": 0.995,
+            "calls_smolvlm_local": 0.23,
+            "calls_cloud": 0.768
+          }
+        ]
+      },
+      "3.0": {
+        "fleet": {
+          "risk_per_1000": 108.683,
+          "mean_time_s": 1.047,
+          "uplink_kb_per_item": 21.895,
+          "calls_laya": 0.592,
+          "calls_smolvlm_local": 0.46,
+          "calls_cloud": 0.574
+        },
+        "drones": [
+          {
+            "risk_per_1000": 271.5,
+            "mean_time_s": 1.659,
+            "uplink_kb_per_item": 31.43,
+            "calls_laya": 0.969,
+            "calls_smolvlm_local": 0.351,
+            "calls_cloud": 0.619
+          },
+          {
+            "risk_per_1000": 197.8,
+            "mean_time_s": 1.693,
+            "uplink_kb_per_item": 32.22,
+            "calls_laya": 1.0,
+            "calls_smolvlm_local": 0.998,
+            "calls_cloud": 0.976
+          },
+          {
+            "risk_per_1000": 38.6,
+            "mean_time_s": 0.681,
+            "uplink_kb_per_item": 20.48,
+            "calls_laya": 0.269,
+            "calls_smolvlm_local": 0.276,
+            "calls_cloud": 0.727
+          },
+          {
+            "risk_per_1000": 4.8,
+            "mean_time_s": 0.257,
+            "uplink_kb_per_item": 2.55,
+            "calls_laya": 0.118,
+            "calls_smolvlm_local": 0.097,
+            "calls_cloud": 0.039
+          },
+          {
+            "risk_per_1000": 79.3,
+            "mean_time_s": 1.566,
+            "uplink_kb_per_item": 42.85,
+            "calls_laya": 0.995,
+            "calls_smolvlm_local": 0.829,
+            "calls_cloud": 0.989
+          }
+        ]
+      }
+    },
+    "central PPO seed 2": {
+      "0.25": {
+        "fleet": {
+          "risk_per_1000": 148.507,
+          "mean_time_s": 0.082,
+          "uplink_kb_per_item": 1.221,
+          "calls_laya": 0.0,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.099
+        },
+        "drones": [
+          {
+            "risk_per_1000": 369.6,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 235.2,
+            "mean_time_s": 0.115,
+            "uplink_kb_per_item": 3.61,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.308
+          },
+          {
+            "risk_per_1000": 91.3,
+            "mean_time_s": 0.084,
+            "uplink_kb_per_item": 1.23,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.111
+          },
+          {
+            "risk_per_1000": 9.7,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 116.6,
+            "mean_time_s": 0.081,
+            "uplink_kb_per_item": 1.72,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.093
+          }
+        ]
+      },
+      "0.75": {
+        "fleet": {
+          "risk_per_1000": 126.539,
+          "mean_time_s": 0.353,
+          "uplink_kb_per_item": 8.711,
+          "calls_laya": 0.365,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.195
+        },
+        "drones": [
+          {
+            "risk_per_1000": 359.7,
+            "mean_time_s": 0.289,
+            "uplink_kb_per_item": 3.11,
+            "calls_laya": 0.278,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.077
+          },
+          {
+            "risk_per_1000": 164.7,
+            "mean_time_s": 0.475,
+            "uplink_kb_per_item": 18.73,
+            "calls_laya": 0.485,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.458
+          },
+          {
+            "risk_per_1000": 92.2,
+            "mean_time_s": 0.318,
+            "uplink_kb_per_item": 7.69,
+            "calls_laya": 0.327,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.131
+          },
+          {
+            "risk_per_1000": 7.5,
+            "mean_time_s": 0.255,
+            "uplink_kb_per_item": 0.97,
+            "calls_laya": 0.273,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.024
+          },
+          {
+            "risk_per_1000": 85.3,
+            "mean_time_s": 0.524,
+            "uplink_kb_per_item": 20.09,
+            "calls_laya": 0.561,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.413
+          }
+        ]
+      },
+      "1.5": {
+        "fleet": {
+          "risk_per_1000": 107.544,
+          "mean_time_s": 0.797,
+          "uplink_kb_per_item": 8.551,
+          "calls_laya": 0.647,
+          "calls_smolvlm_local": 0.299,
+          "calls_cloud": 0.198
+        },
+        "drones": [
+          {
+            "risk_per_1000": 279.7,
+            "mean_time_s": 0.989,
+            "uplink_kb_per_item": 2.42,
+            "calls_laya": 0.91,
+            "calls_smolvlm_local": 0.255,
+            "calls_cloud": 0.068
+          },
+          {
+            "risk_per_1000": 180.3,
+            "mean_time_s": 1.09,
+            "uplink_kb_per_item": 19.71,
+            "calls_laya": 0.836,
+            "calls_smolvlm_local": 0.449,
+            "calls_cloud": 0.497
+          },
+          {
+            "risk_per_1000": 52.7,
+            "mean_time_s": 0.558,
+            "uplink_kb_per_item": 6.45,
+            "calls_laya": 0.45,
+            "calls_smolvlm_local": 0.187,
+            "calls_cloud": 0.119
+          },
+          {
+            "risk_per_1000": 7.0,
+            "mean_time_s": 0.448,
+            "uplink_kb_per_item": 0.97,
+            "calls_laya": 0.363,
+            "calls_smolvlm_local": 0.162,
+            "calls_cloud": 0.024
+          },
+          {
+            "risk_per_1000": 66.1,
+            "mean_time_s": 1.236,
+            "uplink_kb_per_item": 19.55,
+            "calls_laya": 0.944,
+            "calls_smolvlm_local": 0.6,
+            "calls_cloud": 0.394
+          }
+        ]
+      },
+      "3.0": {
+        "fleet": {
+          "risk_per_1000": 105.989,
+          "mean_time_s": 1.062,
+          "uplink_kb_per_item": 13.862,
+          "calls_laya": 0.629,
+          "calls_smolvlm_local": 0.572,
+          "calls_cloud": 0.286
+        },
+        "drones": [
+          {
+            "risk_per_1000": 261.6,
+            "mean_time_s": 1.628,
+            "uplink_kb_per_item": 19.72,
+            "calls_laya": 0.904,
+            "calls_smolvlm_local": 0.755,
+            "calls_cloud": 0.298
+          },
+          {
+            "risk_per_1000": 191.5,
+            "mean_time_s": 1.409,
+            "uplink_kb_per_item": 17.49,
+            "calls_laya": 0.838,
+            "calls_smolvlm_local": 0.894,
+            "calls_cloud": 0.484
+          },
+          {
+            "risk_per_1000": 38.6,
+            "mean_time_s": 0.648,
+            "uplink_kb_per_item": 8.13,
+            "calls_laya": 0.4,
+            "calls_smolvlm_local": 0.334,
+            "calls_cloud": 0.138
+          },
+          {
+            "risk_per_1000": 6.6,
+            "mean_time_s": 0.542,
+            "uplink_kb_per_item": 4.94,
+            "calls_laya": 0.334,
+            "calls_smolvlm_local": 0.224,
+            "calls_cloud": 0.08
+          },
+          {
+            "risk_per_1000": 78.1,
+            "mean_time_s": 1.558,
+            "uplink_kb_per_item": 30.54,
+            "calls_laya": 0.947,
+            "calls_smolvlm_local": 0.957,
+            "calls_cloud": 0.648
+          }
+        ]
+      }
+    },
+    "local PPO seed 2": {
+      "0.25": {
+        "fleet": {
+          "risk_per_1000": 148.507,
+          "mean_time_s": 0.08,
+          "uplink_kb_per_item": 1.06,
+          "calls_laya": 0.0,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.085
+        },
+        "drones": [
+          {
+            "risk_per_1000": 369.6,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 235.2,
+            "mean_time_s": 0.09,
+            "uplink_kb_per_item": 1.68,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.15
+          },
+          {
+            "risk_per_1000": 91.3,
+            "mean_time_s": 0.107,
+            "uplink_kb_per_item": 2.86,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.241
+          },
+          {
+            "risk_per_1000": 9.7,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 116.6,
+            "mean_time_s": 0.082,
+            "uplink_kb_per_item": 1.84,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.102
+          }
+        ]
+      },
+      "0.75": {
+        "fleet": {
+          "risk_per_1000": 127.247,
+          "mean_time_s": 0.345,
+          "uplink_kb_per_item": 7.211,
+          "calls_laya": 0.366,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.17
+        },
+        "drones": [
+          {
+            "risk_per_1000": 359.7,
+            "mean_time_s": 0.338,
+            "uplink_kb_per_item": 3.16,
+            "calls_laya": 0.354,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.079
+          },
+          {
+            "risk_per_1000": 164.7,
+            "mean_time_s": 0.47,
+            "uplink_kb_per_item": 9.97,
+            "calls_laya": 0.56,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.216
+          },
+          {
+            "risk_per_1000": 92.2,
+            "mean_time_s": 0.546,
+            "uplink_kb_per_item": 12.85,
+            "calls_laya": 0.599,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.371
+          },
+          {
+            "risk_per_1000": 9.7,
+            "mean_time_s": 0.088,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.035,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 85.3,
+            "mean_time_s": 0.544,
+            "uplink_kb_per_item": 19.76,
+            "calls_laya": 0.596,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.399
+          }
+        ]
+      },
+      "1.5": {
+        "fleet": {
+          "risk_per_1000": 109.396,
+          "mean_time_s": 0.866,
+          "uplink_kb_per_item": 7.237,
+          "calls_laya": 0.483,
+          "calls_smolvlm_local": 0.555,
+          "calls_cloud": 0.211
+        },
+        "drones": [
+          {
+            "risk_per_1000": 285.5,
+            "mean_time_s": 1.114,
+            "uplink_kb_per_item": 5.82,
+            "calls_laya": 0.993,
+            "calls_smolvlm_local": 0.267,
+            "calls_cloud": 0.2
+          },
+          {
+            "risk_per_1000": 182.2,
+            "mean_time_s": 1.232,
+            "uplink_kb_per_item": 7.41,
+            "calls_laya": 0.628,
+            "calls_smolvlm_local": 0.999,
+            "calls_cloud": 0.15
+          },
+          {
+            "risk_per_1000": 52.7,
+            "mean_time_s": 1.15,
+            "uplink_kb_per_item": 18.61,
+            "calls_laya": 0.274,
+            "calls_smolvlm_local": 0.997,
+            "calls_cloud": 0.696
+          },
+          {
+            "risk_per_1000": 9.2,
+            "mean_time_s": 0.157,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.047,
+            "calls_smolvlm_local": 0.083,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 63.7,
+            "mean_time_s": 1.345,
+            "uplink_kb_per_item": 13.15,
+            "calls_laya": 0.938,
+            "calls_smolvlm_local": 0.806,
+            "calls_cloud": 0.254
+          }
+        ]
+      },
+      "3.0": {
+        "fleet": {
+          "risk_per_1000": 109.378,
+          "mean_time_s": 1.248,
+          "uplink_kb_per_item": 17.697,
+          "calls_laya": 0.699,
+          "calls_smolvlm_local": 0.688,
+          "calls_cloud": 0.47
+        },
+        "drones": [
+          {
+            "risk_per_1000": 263.2,
+            "mean_time_s": 2.066,
+            "uplink_kb_per_item": 31.11,
+            "calls_laya": 1.0,
+            "calls_smolvlm_local": 0.899,
+            "calls_cloud": 0.613
+          },
+          {
+            "risk_per_1000": 200.9,
+            "mean_time_s": 1.58,
+            "uplink_kb_per_item": 14.41,
+            "calls_laya": 1.0,
+            "calls_smolvlm_local": 1.0,
+            "calls_cloud": 0.427
+          },
+          {
+            "risk_per_1000": 38.6,
+            "mean_time_s": 1.726,
+            "uplink_kb_per_item": 24.94,
+            "calls_laya": 0.99,
+            "calls_smolvlm_local": 1.0,
+            "calls_cloud": 0.936
+          },
+          {
+            "risk_per_1000": 9.2,
+            "mean_time_s": 0.175,
+            "uplink_kb_per_item": 0.03,
+            "calls_laya": 0.069,
+            "calls_smolvlm_local": 0.083,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 79.3,
+            "mean_time_s": 1.695,
+            "uplink_kb_per_item": 42.8,
+            "calls_laya": 1.0,
+            "calls_smolvlm_local": 1.0,
+            "calls_cloud": 0.988
+          }
+        ]
+      }
+    },
+    "FedAvg PPO seed 2": {
+      "0.25": {
+        "fleet": {
+          "risk_per_1000": 148.507,
+          "mean_time_s": 0.075,
+          "uplink_kb_per_item": 0.681,
+          "calls_laya": 0.0,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.054
+        },
+        "drones": [
+          {
+            "risk_per_1000": 369.6,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 235.2,
+            "mean_time_s": 0.097,
+            "uplink_kb_per_item": 2.26,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.192
+          },
+          {
+            "risk_per_1000": 91.3,
+            "mean_time_s": 0.068,
+            "uplink_kb_per_item": 0.17,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.017
+          },
+          {
+            "risk_per_1000": 9.7,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 116.6,
+            "mean_time_s": 0.077,
+            "uplink_kb_per_item": 1.19,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.067
+          }
+        ]
+      },
+      "0.75": {
+        "fleet": {
+          "risk_per_1000": 126.539,
+          "mean_time_s": 0.516,
+          "uplink_kb_per_item": 6.789,
+          "calls_laya": 0.642,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.144
+        },
+        "drones": [
+          {
+            "risk_per_1000": 359.7,
+            "mean_time_s": 0.336,
+            "uplink_kb_per_item": 3.07,
+            "calls_laya": 0.354,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.075
+          },
+          {
+            "risk_per_1000": 164.7,
+            "mean_time_s": 0.491,
+            "uplink_kb_per_item": 13.56,
+            "calls_laya": 0.557,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.314
+          },
+          {
+            "risk_per_1000": 92.2,
+            "mean_time_s": 0.614,
+            "uplink_kb_per_item": 7.13,
+            "calls_laya": 0.805,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.115
+          },
+          {
+            "risk_per_1000": 7.5,
+            "mean_time_s": 0.577,
+            "uplink_kb_per_item": 0.44,
+            "calls_laya": 0.792,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.012
+          },
+          {
+            "risk_per_1000": 85.3,
+            "mean_time_s": 0.526,
+            "uplink_kb_per_item": 16.02,
+            "calls_laya": 0.596,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.316
+          }
+        ]
+      },
+      "1.5": {
+        "fleet": {
+          "risk_per_1000": 108.972,
+          "mean_time_s": 1.291,
+          "uplink_kb_per_item": 5.283,
+          "calls_laya": 0.906,
+          "calls_smolvlm_local": 0.791,
+          "calls_cloud": 0.11
+        },
+        "drones": [
+          {
+            "risk_per_1000": 273.1,
+            "mean_time_s": 1.149,
+            "uplink_kb_per_item": 1.86,
+            "calls_laya": 0.997,
+            "calls_smolvlm_local": 0.411,
+            "calls_cloud": 0.049
+          },
+          {
+            "risk_per_1000": 193.4,
+            "mean_time_s": 1.252,
+            "uplink_kb_per_item": 11.6,
+            "calls_laya": 0.731,
+            "calls_smolvlm_local": 0.875,
+            "calls_cloud": 0.265
+          },
+          {
+            "risk_per_1000": 54.4,
+            "mean_time_s": 1.345,
+            "uplink_kb_per_item": 6.59,
+            "calls_laya": 0.951,
+            "calls_smolvlm_local": 0.843,
+            "calls_cloud": 0.105
+          },
+          {
+            "risk_per_1000": 5.3,
+            "mean_time_s": 1.353,
+            "uplink_kb_per_item": 0.2,
+            "calls_laya": 0.988,
+            "calls_smolvlm_local": 0.863,
+            "calls_cloud": 0.006
+          },
+          {
+            "risk_per_1000": 64.9,
+            "mean_time_s": 1.328,
+            "uplink_kb_per_item": 10.18,
+            "calls_laya": 0.829,
+            "calls_smolvlm_local": 0.911,
+            "calls_cloud": 0.189
+          }
+        ]
+      },
+      "3.0": {
+        "fleet": {
+          "risk_per_1000": 107.27,
+          "mean_time_s": 1.609,
+          "uplink_kb_per_item": 14.313,
+          "calls_laya": 0.993,
+          "calls_smolvlm_local": 0.99,
+          "calls_cloud": 0.309
+        },
+        "drones": [
+          {
+            "risk_per_1000": 259.9,
+            "mean_time_s": 1.871,
+            "uplink_kb_per_item": 20.32,
+            "calls_laya": 1.0,
+            "calls_smolvlm_local": 1.0,
+            "calls_cloud": 0.366
+          },
+          {
+            "risk_per_1000": 197.8,
+            "mean_time_s": 1.582,
+            "uplink_kb_per_item": 17.46,
+            "calls_laya": 0.978,
+            "calls_smolvlm_local": 0.998,
+            "calls_cloud": 0.497
+          },
+          {
+            "risk_per_1000": 38.6,
+            "mean_time_s": 1.489,
+            "uplink_kb_per_item": 8.98,
+            "calls_laya": 0.989,
+            "calls_smolvlm_local": 0.957,
+            "calls_cloud": 0.158
+          },
+          {
+            "risk_per_1000": 6.6,
+            "mean_time_s": 1.543,
+            "uplink_kb_per_item": 5.62,
+            "calls_laya": 1.0,
+            "calls_smolvlm_local": 0.993,
+            "calls_cloud": 0.098
+          },
+          {
+            "risk_per_1000": 79.3,
+            "mean_time_s": 1.62,
+            "uplink_kb_per_item": 30.53,
+            "calls_laya": 0.994,
+            "calls_smolvlm_local": 1.0,
+            "calls_cloud": 0.647
+          }
+        ]
+      }
+    },
+    "FedAvg + local fine-tune seed 2": {
+      "0.25": {
+        "fleet": {
+          "risk_per_1000": 148.507,
+          "mean_time_s": 0.082,
+          "uplink_kb_per_item": 1.201,
+          "calls_laya": 0.0,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.097
+        },
+        "drones": [
+          {
+            "risk_per_1000": 369.6,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 235.2,
+            "mean_time_s": 0.116,
+            "uplink_kb_per_item": 3.68,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.313
+          },
+          {
+            "risk_per_1000": 91.3,
+            "mean_time_s": 0.08,
+            "uplink_kb_per_item": 0.92,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.086
+          },
+          {
+            "risk_per_1000": 9.7,
+            "mean_time_s": 0.066,
+            "uplink_kb_per_item": 0.0,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.0
+          },
+          {
+            "risk_per_1000": 116.6,
+            "mean_time_s": 0.082,
+            "uplink_kb_per_item": 1.84,
+            "calls_laya": 0.0,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.102
+          }
+        ]
+      },
+      "0.75": {
+        "fleet": {
+          "risk_per_1000": 126.539,
+          "mean_time_s": 0.366,
+          "uplink_kb_per_item": 8.559,
+          "calls_laya": 0.395,
+          "calls_smolvlm_local": 0.0,
+          "calls_cloud": 0.179
+        },
+        "drones": [
+          {
+            "risk_per_1000": 359.7,
+            "mean_time_s": 0.337,
+            "uplink_kb_per_item": 3.1,
+            "calls_laya": 0.354,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.076
+          },
+          {
+            "risk_per_1000": 164.7,
+            "mean_time_s": 0.517,
+            "uplink_kb_per_item": 19.36,
+            "calls_laya": 0.558,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.428
+          },
+          {
+            "risk_per_1000": 92.2,
+            "mean_time_s": 0.313,
+            "uplink_kb_per_item": 7.89,
+            "calls_laya": 0.317,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.134
+          },
+          {
+            "risk_per_1000": 7.5,
+            "mean_time_s": 0.237,
+            "uplink_kb_per_item": 0.08,
+            "calls_laya": 0.266,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.001
+          },
+          {
+            "risk_per_1000": 85.3,
+            "mean_time_s": 0.544,
+            "uplink_kb_per_item": 19.76,
+            "calls_laya": 0.596,
+            "calls_smolvlm_local": 0.0,
+            "calls_cloud": 0.399
+          }
+        ]
+      },
+      "1.5": {
+        "fleet": {
+          "risk_per_1000": 108.416,
+          "mean_time_s": 0.851,
+          "uplink_kb_per_item": 7.242,
+          "calls_laya": 0.668,
+          "calls_smolvlm_local": 0.37,
+          "calls_cloud": 0.168
+        },
+        "drones": [
+          {
+            "risk_per_1000": 273.1,
+            "mean_time_s": 1.151,
+            "uplink_kb_per_item": 1.93,
+            "calls_laya": 1.0,
+            "calls_smolvlm_local": 0.408,
+            "calls_cloud": 0.051
+          },
+          {
+            "risk_per_1000": 192.8,
+            "mean_time_s": 1.287,
+            "uplink_kb_per_item": 16.61,
+            "calls_laya": 0.992,
+            "calls_smolvlm_local": 0.612,
+            "calls_cloud": 0.368
+          },
+          {
+            "risk_per_1000": 51.8,
+            "mean_time_s": 0.523,
+            "uplink_kb_per_item": 9.77,
+            "calls_laya": 0.46,
+            "calls_smolvlm_local": 0.074,
+            "calls_cloud": 0.281
+          },
+          {
+            "risk_per_1000": 5.3,
+            "mean_time_s": 0.367,
+            "uplink_kb_per_item": 0.05,
+            "calls_laya": 0.339,
+            "calls_smolvlm_local": 0.098,
+            "calls_cloud": 0.001
+          },
+          {
+            "risk_per_1000": 64.9,
+            "mean_time_s": 1.341,
+            "uplink_kb_per_item": 13.1,
+            "calls_laya": 0.746,
+            "calls_smolvlm_local": 0.996,
+            "calls_cloud": 0.252
+          }
+        ]
+      },
+      "3.0": {
+        "fleet": {
+          "risk_per_1000": 106.691,
+          "mean_time_s": 1.155,
+          "uplink_kb_per_item": 18.902,
+          "calls_laya": 0.691,
+          "calls_smolvlm_local": 0.594,
+          "calls_cloud": 0.465
+        },
+        "drones": [
+          {
+            "risk_per_1000": 259.9,
+            "mean_time_s": 1.946,
+            "uplink_kb_per_item": 24.21,
+            "calls_laya": 1.0,
+            "calls_smolvlm_local": 1.0,
+            "calls_cloud": 0.478
+          },
+          {
+            "risk_per_1000": 197.8,
+            "mean_time_s": 1.664,
+            "uplink_kb_per_item": 29.03,
+            "calls_laya": 0.994,
+            "calls_smolvlm_local": 0.992,
+            "calls_cloud": 0.873
+          },
+          {
+            "risk_per_1000": 38.6,
+            "mean_time_s": 0.665,
+            "uplink_kb_per_item": 13.47,
+            "calls_laya": 0.442,
+            "calls_smolvlm_local": 0.239,
+            "calls_cloud": 0.333
+          },
+          {
+            "risk_per_1000": 4.8,
+            "mean_time_s": 0.421,
+            "uplink_kb_per_item": 2.9,
+            "calls_laya": 0.325,
+            "calls_smolvlm_local": 0.125,
+            "calls_cloud": 0.046
+          },
+          {
+            "risk_per_1000": 79.3,
+            "mean_time_s": 1.694,
+            "uplink_kb_per_item": 42.77,
+            "calls_laya": 0.999,
+            "calls_smolvlm_local": 1.0,
+            "calls_cloud": 0.984
+          }
+        ]
+      }
+    }
+  },
+  "tuned_rules": {
+    "one": {
+      "0.25": [
+        [
+          1,
+          2,
+          3
+        ],
+        0.02,
+        1
+      ],
+      "0.75": [
+        [
+          1,
+          2,
+          3
+        ],
+        0.2,
+        1
+      ],
+      "1.5": [
+        [
+          1,
+          2,
+          3
+        ],
+        0.45,
+        2
+      ],
+      "3.0": [
+        [
+          1,
+          2,
+          3
+        ],
+        0.45,
+        3
+      ]
+    },
+    "per_drone": {
+      "0@0.25": [
+        [
+          1,
+          2,
+          3
+        ],
+        0.0,
+        1
+      ],
+      "0@0.75": [
+        [
+          1,
+          2,
+          3
+        ],
+        0.05,
+        1
+      ],
+      "0@1.5": [
+        [
+          1,
+          2,
+          3
+        ],
+        0.2,
+        1
+      ],
+      "0@3.0": [
+        [
+          1,
+          2,
+          3
+        ],
+        0.2,
+        1
+      ],
+      "1@0.25": [
+        [
+          1,
+          2,
+          3
+        ],
+        0.02,
+        1
+      ],
+      "1@0.75": [
+        [
+          1,
+          2,
+          3
+        ],
+        0.2,
+        1
+      ],
+      "1@1.5": [
+        [
+          1,
+          2,
+          3
+        ],
+        0.3,
+        2
+      ],
+      "1@3.0": [
+        [
+          1,
+          2,
+          3
+        ],
+        0.3,
+        3
+      ],
+      "2@0.25": [
+        [
+          1,
+          2,
+          3
+        ],
+        0.0,
+        1
+      ],
+      "2@0.75": [
+        [
+          2,
+          3,
+          1
+        ],
+        0.1,
+        1
+      ],
+      "2@1.5": [
+        [
+          2,
+          1,
+          3
+        ],
+        0.2,
+        2
+      ],
+      "2@3.0": [
+        [
+          3,
+          1,
+          2
+        ],
+        0.2,
+        3
+      ],
+      "3@0.25": [
+        [
+          1,
+          2,
+          3
+        ],
+        0.0,
+        1
+      ],
+      "3@0.75": [
+        [
+          1,
+          2,
+          3
+        ],
+        0.05,
+        1
+      ],
+      "3@1.5": [
+        [
+          2,
+          1,
+          3
+        ],
+        0.05,
+        2
+      ],
+      "3@3.0": [
+        [
+          2,
+          1,
+          3
+        ],
+        0.05,
+        2
+      ],
+      "4@0.25": [
+        [
+          1,
+          2,
+          3
+        ],
+        0.02,
+        1
+      ],
+      "4@0.75": [
+        [
+          2,
+          3,
+          1
+        ],
+        0.1,
+        1
+      ],
+      "4@1.5": [
+        [
+          3,
+          2,
+          1
+        ],
+        0.3,
+        2
+      ],
+      "4@3.0": [
+        [
+          1,
+          3,
+          2
+        ],
+        0.45,
+        3
+      ]
+    }
+  },
+  "actor_parameters": 6916
+}

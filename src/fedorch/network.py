@@ -1,3 +1,4 @@
+import functools
 import random
 
 from fedorch.items import DATA
@@ -9,6 +10,7 @@ REGIMES = {
 }
 
 
+@functools.cache
 def lte_mbps():
     series = []
     for log in sorted((DATA / "lte4g").glob("**/*.log")):
@@ -16,7 +18,7 @@ def lte_mbps():
             cols = line.split()
             if len(cols) == 6 and int(cols[5]) > 0:
                 series.append(int(cols[4]) * 8 / int(cols[5]) / 1000)
-    return series
+    return tuple(series)
 
 
 def bandwidth_trace(regime, seconds, seed, base=None):

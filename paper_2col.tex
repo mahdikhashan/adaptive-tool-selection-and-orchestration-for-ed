@@ -14,188 +14,265 @@
 
 \begin{frontmatter}
 
-\title{Federate the Decision, Not the Model: Learning Tool-Routing Controllers for Inspection Drone Fleets under One-Sided Feedback}
+\title{What Should an Inspection Drone Fleet Learn? Tool Selection, Answer Fusion and Federated Reinforcement Learning under Time Budgets}
 
 \author{Mahdi Khashan}
 \ead{mahdikhashan1@gmail.com}
 \affiliation{organization={[Affiliation to be added]}}
 
 \begin{abstract}
-An inspection drone has to decide for every frame whether to trust its onboard classifier, run a slower onboard vision-language model (VLM), or send the frame to a cloud VLM over a weak link. A small learned controller can make this decision far better than a fixed confidence cascade, but one drone collects too few informative frames to train it, and the obvious way to pool a fleet's knowledge, federated fine-tuning of the perception model, is expensive: across 42 federated configurations of a 201M-parameter vision-language decision model on power-line images, the fleet sends 425 to 41,310\,MB and small updates double the calibration error. We instead federate the controller. Operators in five regions, each holding its own towers and labels, train a 29\,KB multilayer perceptron with FedAvg in a replay of 25,499 frames with LTE uplink traces, a 4\,s deadline and an onboard queue. With full labels, the federated controller reaches a mission risk of 115.4 $\pm$ 1.6 per 1,000 test frames (3 seeds), equal to central training (114.6) and well below the static cascade (155.7) and regions training alone (157.9 $\pm$ 20.4), with about 7\,MB of total uplink. In deployment the feedback is one-sided: accepting an onboard answer reveals nothing, the cloud VLM is a noisy teacher (accuracy 0.79), and operator labels arrive only for frames that are sent and reviewed. Under this feedback, learning from cloud answers makes the controller worse than the cascade (175.7--188.4), and only federated learning from operator labels with a 5\% audit of accepted frames beats it (142.4 $\pm$ 3.6), at about 76\,MB of audit and escalation uploads. Regions alone with the same audit do not (157.3). The decision layer, not the perception model, is where a fleet gains most per transmitted byte; what limits it is the feedback.
+An inspection drone can ask several perception tools about a frame: a fast onboard classifier, onboard vision-language models (VLMs), or a large VLM in the cloud over a weak link. Agentic designs let a VLM decide which tool to call and read the results, and a fleet could train this behaviour with federated reinforcement learning. We test this design and its simpler alternatives on 13,729 power-line component items from ElecVQA-Bench (InsPLAD), with measured tool times, LTE uplink traces and a cost of 10 per missed defect and 1 per false alarm. Three findings stand out. First, a VLM agent does not benefit from its tools: with a 201M-parameter vision-language decision model (laya-vision) reading zoom, classifier and cloud outputs, PPO training of its scorer or of its 8.65M-parameter decision head leaves the report worse with tools than without. Second, most of the value lies in fusing the tools' own answers: a logistic fusion with a label-free threshold from EM prior correction lowers the test risk from 177.0 for the best single tool to 107.1 per 1,000 items. Third, a PPO policy that chooses which tool to call next under a time budget reaches the risk of calling every tool (105.9 $\pm$ 1.5 against 105.4, 3 seeds) in 30\% less time, and FedAvg over five drones matches central training with 28\,KB per update and lower seed variance at tight budgets. The policy does not, however, beat a one-line uncertainty cascade (106.3), also not when drones differ in components and network quality, where FedAvg with local fine-tuning is the most stable learned method. An oracle that knows the best tool subset per item reaches 65.0; this gap lies in the state the policy sees, not in the learning algorithm. A routing controller federated across operator regions under one-sided feedback, and federated fine-tuning of the perception model (0.4--41\,GB per run), complete the picture of what a fleet can learn per transmitted byte.
 \end{abstract}
 
 \begin{keyword}
-drone fleets \sep federated learning \sep edge AI \sep tool routing \sep partial feedback \sep vision-language model \sep infrastructure inspection
+drone fleets \sep federated learning \sep reinforcement learning \sep tool selection \sep vision-language model \sep edge AI \sep infrastructure inspection
 \end{keyword}
 
 \end{frontmatter}
 
 \section{Introduction}
 
-Infrastructure inspection is moving from drones that record video for later analysis to fleets that interpret what they see on board and act on it~\cite{p2s}. On each frame, a drone chooses among perception tools of different cost: a fast onboard classifier, a slower onboard VLM, or a larger VLM in the cloud reached over a link that is often weak or down. Farahani et al.\ run a fine-tuned SmolVLM-256M on a Jetson in 1.4--6.4\,s per segment~\cite{evlm}, and profile whether such a model should run on board, at the edge or split~\cite{splitvlm}; both name an adaptive runtime orchestrator as future work.
+Infrastructure inspection is moving from drones that record video for later analysis to fleets that interpret what they see on board~\cite{p2s}. For each frame, a drone can ask perception tools of very different cost: a fast onboard classifier, a slower onboard VLM, or a larger VLM in the cloud reached over a link that is often weak or down. Farahani et al.\ run a fine-tuned SmolVLM-256M on a Jetson in 1.4--6.4\,s per segment~\cite{evlm} and profile whether such a model should run on board, at the edge or split~\cite{splitvlm}; both name an adaptive runtime orchestrator as future work.
 
-In our replay of a power-line mission, the choice of tool matters more than any single tool. A static cascade that escalates low-confidence frames to the onboard VLM has a risk of 155.7 per 1,000 frames; an oracle that knows which tool is right needs only 62.9 and escalates 3.1\% of frames. A small learned controller closes part of this gap, but it needs about 1,300--5,100 labelled frames before it beats the cascade, more than one drone or one operator collects quickly. Pooling across the fleet is therefore attractive.
+Two designs for such an orchestrator are popular. In the \emph{agentic} design, a VLM is the agent: it looks at the frame, decides to zoom or to ask another model, reads the result and writes the report. Reinforcement learning can train this behaviour, and a fleet can share it through federated learning. In the \emph{routing} design, a small policy only decides which tool to call next; the report is computed from the tools' answers. Both designs promise budget-aware behaviour, and both are cheap to federate compared with the perception models themselves.
 
-The common way to pool a fleet's experience is to federate the perception model~\cite{fedavg}. We did this for laya-vision~\cite{layavision}, a 201M-parameter vision-language \emph{decision model}, over 42 configurations. It works, but it costs 425--41,310\,MB of uplink per training run, and the cheaper updates lift defect ranking while doubling the calibration error the controller relies on. This paper therefore asks a different question: what does a fleet gain if it federates the \emph{decision} instead, a controller of 29\,KB?
+This paper tests these designs on cached tool outputs for power-line inspection, with measured tool times, LTE uplink traces and a cost that weights a missed defect ten times a false alarm. We ask what a fleet should learn: the agent, the policy that selects tools, the controller that routes frames, or the perception model. Our answer is partly negative, and we report it as such.
 
-Two properties of deployment make this non-trivial. First, operators keep their images and labels; we model each client as an operator region (cross-silo), so central training is not available. Second, the controller's own choices decide which of its mistakes it ever sees. Accepting an onboard answer reveals nothing; escalating to the cloud returns an answer from a model that is right only 79\% of the time; operator labels arrive only for frames that are sent and reviewed. Zhang et al.~\cite{zhang2026hi} study this policy-dependent feedback for hierarchical inference with a ground-truth oracle at the top. Here the top layer is noisy, labels are selective, and the learners are federated.
-
-We contribute (i) a replay benchmark for federated tool routing on 25,499 training and 7,057 test frames with LTE traces, a deadline and an onboard queue; (ii) evidence that a federated 29\,KB controller matches central training and beats the static cascade by 26\% at about 7\,MB of uplink, while regions alone do not; (iii) a feedback model with unobserved accepts, noisy cloud answers and audited operator labels, under which we compare five learners locally and federated; and (iv) a comparison with federating the perception model, which costs two to four orders of magnitude more uplink.
+We contribute:
+\begin{itemize}
+\item evidence that a vision-language decision model used as an agent does not profit from its tools, across six PPO configurations that train its scorer or its 8.65M-parameter head, centrally and with FedAvg (Section~\ref{sec:agent});
+\item a fusion of tool answers with a label-free threshold from EM prior correction~\cite{saerens2002}, which lowers the test risk from 177.0 to 107.1 per 1,000 items and is the largest single gain we measured (Section~\ref{sec:fusion});
+\item a tool-selection environment with time budgets and an uplink model, in which PPO~\cite{ppo} and FedAvg-PPO learn budget-aware policies that match calling every tool in 30\% less time, but do not beat a tuned uncertainty cascade, also for drones that differ in components and network (Section~\ref{sec:route});
+\item a federated routing controller under one-sided feedback and a comparison with federated fine-tuning of the perception model, which together give the cost of each option in transmitted bytes (Sections~\ref{sec:controller} and~\ref{sec:perception}).
+\end{itemize}
 
 \section{Related work}
 
-\paragraph{Edge VLMs for inspection drones} EVLM~\cite{evlm} runs a LoRA-tuned SmolVLM-256M on a Jetson and cuts the uplink of a 4\,s segment from 485\,kB to 25\,kB; \cite{splitvlm} profiles on-board, edge and split deployment, and INAR-VL~\cite{inarvl} routes requests between edge and cloud with a bandwidth guard. All use fixed rules. Laya~\cite{laya} and laya-vision~\cite{layavision} answer typed questions in one forward pass with calibrated probabilities, which we use as the federated perception model in Section~\ref{sec:perception}.
+\paragraph{Edge VLMs for inspection drones} EVLM~\cite{evlm} runs a LoRA-tuned SmolVLM-256M on a Jetson and cuts the uplink of a 4\,s segment from 485\,kB to 25\,kB; \cite{splitvlm} profiles on-board, edge and split deployment, and INAR-VL~\cite{inarvl} routes requests between edge and cloud with a bandwidth guard. All use fixed rules. Laya~\cite{laya} and laya-vision~\cite{layavision} answer typed questions in one forward pass with calibrated probabilities instead of generating text; we use laya-vision both as a tool and as an agent.
 
-\paragraph{Routing, cascades and partial feedback} Federate the Router~\cite{fedrouter} learns language-model routers with FedAvg from offline evaluations and leaves online routing as future work; FedHLM~\cite{fedhlm} federates escalation thresholds. BaRP~\cite{barp} trains a router from bandit feedback, where only the chosen model's outcome is observed. Zhang et al.~\cite{zhang2026hi} show that importance-weighted bandit estimators become unstable when the probability of reaching the ground-truth oracle decays along the hierarchy, and add uniform exploration and variance reduction. Agarwal et al.~\cite{agarwal2023} evaluate federated contextual bandits empirically. We combine these settings: federated clients, a noisy upper tool, and selective, audited ground truth.
+\paragraph{Routing, cascades and partial feedback} Federate the Router~\cite{fedrouter} learns language-model routers with FedAvg from offline evaluations; FedHLM~\cite{fedhlm} federates escalation thresholds. BaRP~\cite{barp} trains a router from bandit feedback. Zhang et al.~\cite{zhang2026hi} study hierarchical inference when the probability of reaching the ground-truth oracle depends on the policy. Agarwal et al.~\cite{agarwal2023} evaluate federated contextual bandits. Our routing policy differs in that it can call several tools in sequence under a time budget and the report fuses all answers.
 
-\paragraph{Federated learning} FedAvg~\cite{fedavg} averages client models weighted by data size; non-IID data degrades it~\cite{zhao2018}, and FedProx~\cite{fedprox} adds a proximal term.
+\paragraph{Reinforcement and federated learning} PPO~\cite{ppo} with a clipped objective is our learner. FedAvg~\cite{fedavg} averages client models weighted by data size; non-IID data degrades it~\cite{zhao2018}, FedProx~\cite{fedprox} adds a proximal term, and Flower~\cite{flower} provides the simulation used for the agentic experiments. Label shift between training and deployment is corrected with the EM procedure of Saerens et al.~\cite{saerens2002}.
 
-\section{System}
+\section{Data, tools and cost}\label{sec:setup}
 
-\subsection{Tools, mission and cost}\label{sec:replay}
-
-We use the \texttt{tower14} split of ElecVQA-Bench~\cite{elecvqa}, built on InsPLAD power-line component crops~\cite{insplad}: 18 training towers (25,499 items), 10 validation towers (6,672) and 14 test towers (7,057). Each item asks whether a component has a defect, or which condition it has. Every tool was run once on every item, and the replay reads these cached answers:
+We use the \texttt{tower14} split of ElecVQA-Bench~\cite{elecvqa}, built on InsPLAD power-line component crops~\cite{insplad}: 18 training towers (25,499 items), 10 validation towers (6,672) and 14 test towers (7,057). Each item asks whether a component has a defect, or which condition it has. The validation towers hold 19.6\% defects and the test towers 15.1\%, so any threshold tuned on validation is biased for test. Every tool was run once on every item and the experiments replay these cached answers:
 \begin{itemize}
-\item \texttt{classifier}: a ResNet-50~\cite{resnet} fine-tuned on the training towers, run on every frame (test accuracy 0.961);
-\item \texttt{local}: SmolVLM-256M~\cite{smolvlm} with LoRA~\cite{lora} as in EVLM, on board (0.956);
-\item \texttt{cloud}: Qwen3-VL-8B zero-shot (0.792; corrosion recall 0.012), which needs a 35\,kB JPEG upload.
+\item \textbf{ResNet}: a ResNet-50~\cite{resnet} fine-tuned on the training towers;
+\item \textbf{laya}: laya-vision~\cite{layavision} (201M parameters) fine-tuned on 4,807 training images (item accuracy 0.948; 0.939 in 4-bit at 189\,MB);
+\item \textbf{SmolVLM}: SmolVLM-256M~\cite{smolvlm} with LoRA~\cite{lora} as in EVLM;
+\item \textbf{Qwen}: Qwen3-VL-8B in the cloud, zero-shot, which needs a JPEG upload (median 33\,kB, mean 40\,kB).
 \end{itemize}
-The tools make different errors: of the classifier's 279 test errors, the onboard VLM fixes 186 and the cloud 135.
+Onboard times are RTX 2080 Ti or GV100 times multiplied by 9, our estimate of the gap to a Jetson Orin NX: ResNet 0.07\,s, laya 0.70\,s and SmolVLM 0.73\,s per item on average, and Qwen computes in 0.13\,s. A Qwen call costs its compute time, a 50\,ms round trip and the upload over 4G/LTE traces~\cite{lte} scaled to a \emph{weak} regime (10\% of the trace bandwidth, six 20\,s outages per hour); during an outage Qwen is unavailable. The risk per 1,000 items counts 10 per missed defect, 1 per false alarm and 0.5 per abstention, so the Bayes threshold on a calibrated defect probability is $1/11$.
 
-A mission replays the items in tower order with one frame every 1.16\,s~\cite{evlm} and a deadline of 4\,s; a late answer counts as a miss. Onboard tools share one queue; their times are GV100 times multiplied by 9, our estimate of the gap to a Jetson Orin NX. The uplink follows 4G/LTE traces~\cite{lte} scaled to a \emph{weak} regime (10\% of the trace bandwidth, six 20\,s outages per hour); a cloud request fails when its transfer takes more than 3\,s. Mission risk per 1,000 frames counts 10 per missed defect, 1 per false alarm and 0.5 per abstention. Results are means over 5 trace seeds on the test towers.
+\section{A VLM as the agent}\label{sec:agent}
 
-\subsection{The controller}
-
-After the classifier, the controller chooses one action: \emph{accept} the classifier's answer, ask the \emph{local} VLM, or send the frame to the \emph{cloud}. Its input is the task type, the component type, the classifier's confidence, top-two margin, entropy, predicted label and class probabilities, and five image statistics (size, blur, brightness, contrast). A multilayer perceptron with two hidden layers of 64 units (7,171 parameters, 28.7\,KB in fp32) outputs a probability per action. It is trained with soft cross-entropy against $\mathrm{softmax}(-r_a)$, where $r_a$ is the risk of action $a$ on the frame plus a small escalation cost (0.1 local, 0.2 cloud); frames on which the actions differ are oversampled five times. A fixed rule turns the output into a decision: escalate to the best tool whose probability exceeds that of accepting by a margin, and only if the tool can meet the deadline under the current link and queue. The margin is tuned on the validation towers. The network state thus enters through the rule, which stays on the drone, and not through the federated weights.
-
-\subsection{Regions and federated training}
-
-A client is an operator region that keeps its images and labels. We split the 18 training towers into five regions of balanced size (Table~\ref{tab:regions}). Two regions hold a single large tower, so the split is strongly non-IID. The server holds the validation towers, which it uses only to stop training and to tune the margin.
+We first tested the agentic design. Laya-vision answers a typed question by scoring its options in one forward pass, so it can serve as a policy: we add the actions (zoom into one of five overlapping crops, ask ResNet, ask Qwen, report) as options and read the action from its scores. Tool results return as text in the next query. PPO trains the policy on cached frozen backbone outputs of 800 training images and is evaluated on 400 test images at budgets of 1, 3 and 6\,s; FedAvg runs in Flower over five drones. The report cost counts the defect risk plus errors on the component and condition questions.
 
 \begin{table}[t]
 \centering
-\caption{Regions. Informative frames: frames on which the three actions differ in risk by more than the escalation cost.}
-\label{tab:regions}
+\caption{\textbf{A VLM agent gets worse with tools.} Report cost per 1,000 test images (lower is better; defect risk plus component and condition errors), base laya-vision in 4-bit as agent and report writer, 400 test images, seed 0, 1\,s budget, round 10. Steps: mean actions per image.}
+\label{tab:agent}
 \footnotesize
-\begin{tabular}{lrrrr}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lccc}
 \toprule
-Region & Towers & Frames & Defects & Informative \\
+Method & Report cost & Defect recall & Steps \\
 \midrule
-R1 & 1 & 6,449 & 490 & 1,011 \\
-R2 & 1 & 5,297 & 639 & 935 \\
-R3 & 5 & 4,581 & 619 & 1,017 \\
-R4 & 5 & 4,579 & 599 & 989 \\
-R5 & 6 & 4,593 & 775 & 1,074 \\
+Zero-shot & 1,668 & 0.57 & 1.0 \\
+\multicolumn{4}{l}{\emph{PPO trains the shared option scorer}}\\
+\quad Report only, no tools & 1,505 & 0.77 & 1.0 \\
+\quad Central, with tools & 1,715 & 0.50 & 4.9 \\
+\quad FedAvg, with tools & 1,628 & 0.55 & 6.7 \\
+\multicolumn{4}{l}{\emph{PPO trains the decision head (8.65M parameters)}}\\
+\quad Report only, no tools & 1,438 & 0.66 & 1.0 \\
+\quad Central, with tools & 1,570 & 0.48 & 1.2 \\
+\quad FedAvg, with tools & 1,725 & 0.41 & 3.8 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Feature normalization uses federated means and variances. In each FedAvg round, every region runs 10 full-batch Adam steps (learning rate $10^{-3}$) from the global weights, and the server averages the weights by region size. Training stops 30 rounds after the best validation loss. FedProx adds a proximal term with $\mu = 0.01$. References are central training on all regions and each region alone.
+Table~\ref{tab:agent} shows the outcome. In every configuration, the report written with tools is worse than the report written without them. Separate scorers for the action and the report questions did not change this (1,645--1,765 with tools against 1,592 without). Training the decision head gave the only budget-dependent behaviour: the central policy learned to stop after 1.2 steps at 1\,s and 2.0 steps at 3\,s, but its reports remained worse than without tools. FedAvg learned about five times more slowly and cost 8.65\,MB per drone and round in int8. A pilot with the fine-tuned laya-vision as reader gave the same picture: PPO learned to call no tool, because each tool turned more correct answers into wrong ones than the reverse.
 
-\subsection{One-sided feedback}\label{sec:feedback}
+Two further checks explain part of this. When every tool answers laya's three questions directly, fusing their answers improves component accuracy from 0.872 to 0.905 (oracle 0.925), but SmolVLM fails outside its training prompt (component accuracy 0.14) and zero-shot Qwen calls almost every image defective (false-alarm rate 0.95). And test-time zoom does not help even the classifier: over five overlapping crops, the best zoom rule raises the image-level test risk from 110.0 to 126.9; the defects ResNet misses are small source crops (median 62k against 110k pixels), so zoom adds no detail. The tools are useful, but not through a reader that has to interpret their output.
 
-Section~\ref{sec:fullfb} gives every learner the risk of all actions on every training frame. Deployment gives far less (Table~\ref{tab:feedback}). Each region processes its frames in tower order over 10 rounds. In round 0 it uses the static cascade; afterwards it uses the action with the highest probability under its current controller, replaced by a uniform random action with probability $\varepsilon = 0.05$. The probability of every action is logged. Accepted and locally answered frames are \emph{audited}, that is, sent to the operator without changing the answer, with probability $\lambda$. Cloud frames are reviewed with probability $\rho = 0.5$. A reviewed frame reaches the ground station, which runs all tools on it, so its operator label reveals the risk of all three actions. After each round the controller trains on everything its region has revealed so far: 20 FedAvg rounds of 10 steps in the federated setting, or 200 steps for a region alone.
+\section{Fusing the tools' answers}\label{sec:fusion}
+
+The alternative is to combine the tools' own defect probabilities. For each item we form the logit of $P(\text{defect})$ of every called tool, a flag per tool, the task and the component type, and fit a logistic regression on the validation towers; a missing tool enters as logit 0 with flag 0, so the same model scores every subset of tools. Regularization and features are chosen by five-fold cross-validation grouped by tower.
+
+The threshold is the difficult part. A threshold tuned on validation is too low for the test towers, which hold fewer defects. Without labels, we estimate the test defect share $\hat\pi$ with the EM procedure of Saerens et al.~\cite{saerens2002}, rescale every probability from the validation share $\pi_v$ to $\hat\pi$,
+\begin{equation*}
+p' = \frac{p\,\hat\pi/\pi_v}{p\,\hat\pi/\pi_v + (1-p)(1-\hat\pi)/(1-\pi_v)},
+\end{equation*}
+and apply the Bayes threshold $1/11$. EM is only a mean over posteriors, so a fleet can compute it federatedly.
 
 \begin{table}[t]
 \centering
-\caption{What each action reveals to the learner.}
-\label{tab:feedback}
+\caption{\textbf{Fusing the tools' answers is the largest gain.} Defect risk per 1,000 test items (7,057 items, 1,068 defects) with 95\% bootstrap intervals. Single tools use their own argmax answer.}
+\label{tab:fusion}
 \footnotesize
-\begin{tabular}{P{0.13\linewidth}P{0.75\linewidth}}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lcc}
 \toprule
-Action & Feedback \\
+Method & Risk & 95\% CI \\
 \midrule
-Accept & Nothing; with probability $\lambda$ an audit gives the operator label. \\
-Local & The onboard VLM's answer, not a label; audit as for accept. \\
-Cloud & The cloud answer (noisy); with probability $\rho$ the operator label. \\
+ResNet alone & 177.0 & 148--206 \\
+SmolVLM alone & 184.9 & 157--211 \\
+laya alone & 261.0 & 225--294 \\
+Qwen alone & 625.8 & 575--679 \\
+\midrule
+Fusion, threshold tuned on validation & 115.8 & 100--133 \\
+Fusion, Bayes threshold $1/11$ & 113.8 & 99--130 \\
+Fusion, Bayes after EM correction & \textbf{107.1} & 91--124 \\
+Fusion, EM correction per region & 117.5 & 100--137 \\
+Fusion, best threshold on test (labels) & 105.4 & 89--124 \\
+\midrule
+Best single tool per item (labels) & 44.8 & 30--60 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-We compare five learners. \emph{Full labels} receives the true risks on every frame and is the upper bound. \emph{Cloud as truth} treats the cloud answer of unreviewed cloud frames as the label. \emph{True labels} uses operator labels only. \emph{True labels, IPW} weights each operator label by $1/P(\text{label})$ with $P(\text{label}) = \pi(\text{cloud})\,\rho + (1-\pi(\text{cloud}))\,\lambda$, clipped at 0.02. \emph{Multi-fidelity} adds unreviewed cloud frames with a soft target that averages over the true label given the cloud answer, estimated from frames that have both. The learner sees only this feedback; the evaluation uses every cached answer and the true labels of the test towers.
+Fusion lowers the risk from 177.0 for the best single tool to 113.8, and the EM-corrected threshold to 107.1, within 2 points of the best threshold chosen on test labels (Table~\ref{tab:fusion}). EM estimates a test defect share of 0.154 against the true 0.151. Estimating it per region is worse (117.5), because small regions give unstable estimates. The remaining gap to the per-item oracle (44.8) consists mostly of false alarms: in an analysis with a less regularized fusion, 719 of 725 false alarms had at least one tool answering correctly, and 31 defects were flagged by no tool at all.
 
-\section{Results}
+\section{Learning which tool to call}\label{sec:route}
 
-\subsection{Full feedback: federation matches central training}\label{sec:fullfb}
+\subsection{Environment}
+
+Fusion requires calling every tool, which costs time and uplink. We therefore let a policy choose which tools to call. An episode is one item. ResNet always runs first. The policy then chooses among calling laya, calling SmolVLM, calling Qwen, or writing the report; a tool is available only if it has not been called and fits in the remaining budget. The report is the fused, EM-corrected decision from the tools called so far. The reward is
+\begin{equation*}
+r = -\,\mathrm{risk} - \lambda\,\frac{t}{B},
+\end{equation*}
+paid when the report is written, where $t$ is the time used and $B$ the budget, drawn from $\{0.25, 0.75, 1.5, 3\}$\,s. The state holds the current fused logit and its distance to the threshold, the ResNet logit, the logits of the tools called so far, the remaining budget, the current bandwidth and link state, the cost of each tool, and image statistics (size, blur, contrast, brightness) with task and component.
+
+The policy is a multilayer perceptron with two hidden layers of 64 units (6,916 parameters, 28\,KB in fp32), trained with PPO (clip 0.2, entropy 0.01, Monte-Carlo returns minus a learned value) for 30 rounds of 2,048 episodes on the validation towers. Its fused probabilities come from a fusion fitted out of fold, so the policy never sees probabilities from a model that saw the item's labels. Tests use the test towers with the fusion fitted on all validation towers. FedAvg PPO splits the validation towers into five drones of balanced size; each runs one PPO update per round and the server averages the actors weighted by data size. We compare with ResNet alone, calling every tool that fits, and an uncertainty cascade that calls the next tool (laya, then SmolVLM, then Qwen) while $|p - 1/11| \le 0.1$ and fewer than two tools have been called. An oracle chooses the best subset per item from the labels.
+
+\subsection{Results}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\linewidth]{figs/fig_route.pdf}
+\caption{\textbf{PPO learns budget-aware tool selection and matches calling every tool in less time, but not more accurately than a cascade.} (a) Defect risk per 1,000 test items at each time budget, weak LTE regime; PPO lines are means over 3 seeds after 30 rounds, whiskers one standard deviation, time weight $\lambda = 0.01$. (b) The same methods as risk against the mean time spent per item; filled markers $\lambda = 0.01$, open markers $\lambda = 0.03$. The oracle is omitted from (b); it needs 0.11\,s on average.}
+\label{fig:route}
+\end{figure*}
+
+\begin{table}[t]
+\centering
+\caption{Tool selection at the 3\,s budget, test towers, weak network. PPO: mean $\pm$ standard deviation over 3 seeds. Qwen: share of items sent to the cloud.}
+\label{tab:route}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lccc}
+\toprule
+Method & Risk & Time (s) & Qwen \\
+\midrule
+ResNet only & 146.9 & 0.07 & 0 \\
+All tools that fit & 105.4 & 1.81 & 0.92 \\
+Uncertainty cascade & 106.3 & 1.23 & 0 \\
+Central PPO, $\lambda = 0.01$ & 105.9 $\pm$ 1.5 & 1.26 & 0.58 \\
+Central PPO, $\lambda = 0.03$ & 104.8 $\pm$ 3.4 & 1.21 & 0.61 \\
+FedAvg PPO, $\lambda = 0.01$ & 105.7 $\pm$ 1.8 & 1.79 & 0.92 \\
+FedAvg PPO, $\lambda = 0.03$ & 105.7 $\pm$ 1.8 & 1.31 & 0.53 \\
+Oracle subset (labels) & 65.0 & 0.11 & 0.02 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+PPO learns a sensible, budget-aware policy (Fig.~\ref{fig:route}, Table~\ref{tab:route}). It calls laya first, more often as the budget grows (26--60\% of items at 0.75\,s, 65--100\% at 3\,s), and at 3\,s reaches the risk of calling every tool in 30\% less time. ResNet alone, calibrated by the same fusion, has a risk of 146.9. FedAvg matches central training and is more stable: at 0.75\,s it reaches 123.4 $\pm$ 0.8 against 129.5 $\pm$ 8.7. The time weight matters: with $\lambda = 0.2$ the policy correctly learns never to call a tool, since the time penalty exceeds the average gain per item. At 0.25\,s only Qwen fits, and calling it slightly increases the risk (150.6).
+
+The policy does not beat the cascade. In Fig.~\ref{fig:route}b, central PPO, FedAvg PPO and the cascade lie on the same curve of risk against time. Calling a further tool helps when the fused probability is close to the threshold, and the one-line cascade already encodes this. The oracle shows that much more is possible in principle (65.0), but it exploits per-item knowledge of which tool will correct the answer, which none of the state features predict.
+
+\subsection{Drones that differ}
+
+A fixed rule should suffer when drones differ, which is the case federated learning is meant for. We assign each of five drones one component group (glass insulators, polymer insulators, hardware, yokes, rods and grips; 795--1,912 validation items each) and its own network regime (poor, good, weak, poor, good), and repeat the experiment with three further methods: local PPO on each drone alone, FedAvg PPO followed by 10 rounds of local fine-tuning, and cascades whose tool order, margin and maximum number of tools are tuned on validation, either one rule for the fleet or one per drone. A second split assigns tower groups instead of components. The fusion and the EM estimate are shared by the fleet; per-drone EM failed, estimating 12\% defects for the hardware drone, which has 0.8\%.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\linewidth]{figs/fig_drones.pdf}
+\caption{\textbf{When drones differ in components and network, learned policies still do not beat the cascade; FedAvg with local fine-tuning is the most stable.} Fleet defect risk per 1,000 test items against mean time per item, at budgets of 0.75, 1.5 and 3\,s (left to right along each line), $\lambda = 0.01$. (a) Each drone inspects one component group. (b) Each drone covers one tower group. Learned methods: means over 3 seeds, whiskers one standard deviation. Dotted line: ResNet only.}
+\label{fig:drones}
+\end{figure*}
+
+\begin{table}[t]
+\centering
+\caption{Drones with different component groups and network regimes: fleet risk per 1,000 test items (7,057 items), mean $\pm$ standard deviation over 3 seeds.}
+\label{tab:drones}
+\footnotesize
+\setlength{\tabcolsep}{2pt}
+\begin{tabular}{lccc}
+\toprule
+Method & 0.75\,s & 1.5\,s & 3\,s \\
+\midrule
+Static cascade & 126.5 & 109.3 & 106.3 \\
+Cascade tuned, one rule & 126.5 & 108.3 & 107.3 \\
+Cascade tuned per drone & 127.4 & 120.2 & 117.1 \\
+Central PPO & 138.1 $\pm$ 8.3 & 116.1 $\pm$ 6.1 & 107.7 $\pm$ 1.4 \\
+Local PPO & 131.7 $\pm$ 6.9 & 110.0 $\pm$ 2.0 & 107.1 $\pm$ 2.3 \\
+FedAvg PPO & 126.5 $\pm$ 0.0 & 113.0 $\pm$ 5.4 & 110.8 $\pm$ 4.6 \\
+FedAvg + fine-tune & 126.6 $\pm$ 0.1 & 112.0 $\pm$ 2.6 & 107.9 $\pm$ 0.9 \\
+Oracle (labels) & 105.1 & 73.6 & 66.8 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Heterogeneity does not change the conclusion (Fig.~\ref{fig:drones}, Table~\ref{tab:drones}). FedAvg with local fine-tuning is the most stable learned method and at 3\,s matches the cascade (107.9 $\pm$ 0.9 against 106.3) in 1.05\,s instead of 1.23\,s per item, but no method lowers the risk. Tuning the cascade per drone is clearly worse (117.1), because a drone's validation and test towers differ: the glass drone sees 35\% defects in validation and 20\% in test. The rule tuned for the whole fleet keeps the order laya, SmolVLM, Qwen at every budget, which suggests that the best order of tools hardly depends on the component. The tower split gives the same ranking.
+
+\section{A federated routing controller under one-sided feedback}\label{sec:controller}
+
+The tool-selection experiments give the policy the true risk of every episode. In deployment, a drone sees the label of a frame only if an operator reviews it. We studied this in a mission replay with one decision per frame: after the classifier, a 29\,KB multilayer perceptron (7,171 parameters) chooses to accept, ask the onboard SmolVLM, or send the frame to the cloud, subject to a 4\,s deadline, an onboard queue and the weak uplink. Clients are five operator regions that keep their images and labels, built from the 18 training towers (4,579--6,449 frames each, two with a single tower).
 
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\linewidth]{figs/fig_fc.pdf}
-\caption{\textbf{A federated 29\,KB controller matches central training; under one-sided feedback only audited operator labels, pooled across regions, beat the cascade.} Mission risk per 1,000 test frames, weak network. (a) Full feedback (offline): bars are means over 3 training seeds, dots the seeds, whiskers one standard deviation. R1--R5 train alone. (b) Online learning over 10 rounds against the audit rate $\lambda$; bands are one standard deviation over 3 seeds. The dotted line is the static cascade, the dash-dotted line the oracle.}
+\caption{\textbf{A federated 29\,KB routing controller matches central training; under one-sided feedback only audited operator labels, pooled across regions, beat the cascade.} Mission risk per 1,000 test frames, weak network. (a) Full feedback (offline): bars are means over 3 training seeds, dots the seeds, whiskers one standard deviation. R1--R5 train alone. (b) Online learning over 10 rounds against the audit rate $\lambda$; bands are one standard deviation over 3 seeds. Dotted line: static cascade; dash-dotted line: oracle.}
 \label{fig:fc}
 \end{figure*}
 
-\begin{table*}[t]
+\begin{table}[t]
 \centering
-\caption{Controllers on the test towers, weak network, mean $\pm$ standard deviation over 3 training seeds (5 trace seeds each). Risk counts 10 per missed defect, 1 per false alarm and 0.5 per abstention per 1,000 frames. Model uplink: total controller updates sent during training. Training uploads: frames uploaded by audits and cloud escalations while learning (online rows). \textbf{Bold}: best per group.}
+\caption{Routing controllers on the test towers, weak network, mean $\pm$ standard deviation over 3 training seeds (5 trace seeds each). Uploads: frames sent by audits and escalations while learning.}
 \label{tab:controllers}
 \footnotesize
-\begin{tabular}{llcccccc}
+\setlength{\tabcolsep}{2pt}
+\begin{tabular}{lccc}
 \toprule
-Setting & Controller & Risk & Defect recall & Escalation & True labels & Model uplink & Training uploads \\
+Controller & Risk & Labels & Uploads \\
 \midrule
-\multicolumn{8}{l}{\emph{No learning}}\\
- & Classifier only & 177.0 & 0.888 & 0 & -- & -- & -- \\
- & Static cascade & 155.7 & 0.896 & 0.144 & -- & -- & -- \\
- & Oracle (hindsight) & 62.9 & 0.952 & 0.031 & -- & -- & -- \\
-\midrule
-\multicolumn{8}{l}{\emph{Full feedback, offline}}\\
- & Central & \textbf{114.6 $\pm$ 3.1} & \textbf{0.923} & 0.186 & 25,499 & images pooled & -- \\
- & FedAvg & 115.4 $\pm$ 1.6 & \textbf{0.923} & 0.212 & 25,499 & 6.7--7.9\,MB & -- \\
- & FedProx & 117.1 $\pm$ 1.6 & 0.921 & 0.178 & 25,499 & 7.0--8.3\,MB & -- \\
- & Regions alone (15 models) & 157.9 $\pm$ 20.4 & 0.897 & 0.093 & 4,579--6,449 & 0 & -- \\
-\midrule
-\multicolumn{8}{l}{\emph{One-sided feedback, online, federated}}\\
- & Full labels & \textbf{119.7 $\pm$ 4.8} & \textbf{0.920} & 0.063 & 25,499 & 28.7\,MB & -- \\
- & Cloud as truth, $\lambda = 5\%$ & 175.7 $\pm$ 2.1 & 0.901 & 0.047 & 2,443 & 28.7\,MB & 141\,MB \\
- & True labels, $\lambda = 0$ & 149.6 $\pm$ 5.4 & 0.901 & 0.120 & 386 & 28.7\,MB & 30\,MB \\
- & True labels, $\lambda = 5\%$ & 141.6 $\pm$ 11.5 & 0.905 & 0.079 & 1,719 & 28.7\,MB & 75\,MB \\
- & True labels, IPW, $\lambda = 2\%$ & 153.3 $\pm$ 3.9 & 0.897 & 0.060 & 985 & 28.7\,MB & 52\,MB \\
- & True labels, IPW, $\lambda = 5\%$ & 142.4 $\pm$ 3.6 & 0.907 & 0.072 & 1,727 & 28.7\,MB & 76\,MB \\
- & Multi-fidelity, $\lambda = 2\%$ & 156.8 $\pm$ 5.3 & 0.897 & 0.069 & 1,052 & 28.7\,MB & 58\,MB \\
-\midrule
-\multicolumn{8}{l}{\emph{One-sided feedback, online, regions alone (mean of 5 regions)}}\\
- & Full labels & 155.7 $\pm$ 2.3 & 0.897 & 0.044 & 25,499 & 0 & -- \\
- & True labels, IPW, $\lambda = 5\%$ & 157.3 $\pm$ 5.3 & 0.898 & 0.060 & 2,047 & 0 & 101\,MB \\
- & Multi-fidelity, $\lambda = 5\%$ & 167.3 $\pm$ 3.2 & 0.893 & 0.035 & 2,242 & 0 & 119\,MB \\
+Classifier only & 177.0 & -- & -- \\
+Static cascade & 155.7 & -- & -- \\
+Oracle (hindsight) & 62.9 & -- & -- \\
+\multicolumn{4}{l}{\emph{Full feedback, offline}}\\
+\quad Central & 114.6 $\pm$ 3.1 & 25,499 & -- \\
+\quad FedAvg & 115.4 $\pm$ 1.6 & 25,499 & -- \\
+\quad Regions alone & 157.9 $\pm$ 20.4 & 4,579--6,449 & -- \\
+\multicolumn{4}{l}{\emph{One-sided feedback, online, federated}}\\
+\quad Cloud as truth, $\lambda = 5\%$ & 175.7 $\pm$ 2.1 & 2,443 & 141\,MB \\
+\quad True labels, $\lambda = 0$ & 149.6 $\pm$ 5.4 & 386 & 30\,MB \\
+\quad True labels, IPW, $\lambda = 5\%$ & 142.4 $\pm$ 3.6 & 1,727 & 76\,MB \\
+\quad Multi-fidelity, $\lambda = 2\%$ & 156.8 $\pm$ 5.3 & 1,052 & 58\,MB \\
+\multicolumn{4}{l}{\emph{One-sided feedback, online, regions alone}}\\
+\quad True labels, IPW, $\lambda = 5\%$ & 157.3 $\pm$ 5.3 & 2,047 & 101\,MB \\
 \bottomrule
 \end{tabular}
-\end{table*}
+\end{table}
 
-With labels for every frame, FedAvg reaches a risk of 115.4 $\pm$ 1.6, statistically indistinguishable from central training (114.6 $\pm$ 3.1) and 26\% below the static cascade (Fig.~\ref{fig:fc}a, Table~\ref{tab:controllers}). It finds more defects (recall 0.923 against 0.896) at a false-alarm rate of 0.023 and escalates 21\% of frames. FedProx gives the same result. The best validation loss comes after 16--24 rounds; the runs stop after 47--55, so the total uplink of five regions is 6.7--7.9\,MB, of which a third would suffice.
+With labels for every frame, FedAvg reaches 115.4 $\pm$ 1.6, equal to central training (114.6) and 26\% below the static cascade, for 6.7--7.9\,MB of total uplink (Fig.~\ref{fig:fc}a, Table~\ref{tab:controllers}). Regions alone are no better than the cascade (157.9 $\pm$ 20.4); the two single-tower regions never learn to escalate. Unlike the tool-selection policy, this controller sees the classifier's full probability vector and the component, and chooses between tools whose errors differ strongly, which leaves room to learn.
 
-Regions alone fail in a way that matters for the argument. The two single-tower regions never learn to escalate: in all six of their runs the tuned margin turns escalation off, and the controller collapses to the classifier (177.0). The multi-tower regions reach 129--159. On average a region alone is no better than the cascade (157.9 $\pm$ 20.4), although every region holds about a thousand informative frames. What a region lacks is variety, not volume, and federation supplies it at 29\,KB per update.
-
-\subsection{One-sided feedback}\label{sec:onesided}
-
-Online learning with full labels gives 119.7 $\pm$ 4.8, close to the offline result. With the feedback of deployment, the picture changes (Fig.~\ref{fig:fc}b).
-
-\emph{Cloud answers are harmful teachers.} Treating them as labels yields 175.7--188.4 at every audit rate, worse than the cascade and close to the classifier alone. The cloud is wrong on 1,322 test items where the classifier is right, so its answers teach the controller to distrust correct onboard answers. While learning, it sends 2,500--3,600 frames to the cloud and spends 129--145\,MB of uploads.
-
-\emph{Operator labels are too few without audits.} Without audits, the two true-label learners collect 372--386 operator labels across all five regions, from exploration and reviewed cloud frames, and end at 149.6 and 162.8, around the cascade. With a 5\% audit they collect about 1,720 labels and reach 141.6 $\pm$ 11.5 (unweighted) and 142.4 $\pm$ 3.6 (IPW). IPW does not lower the mean, but cuts the spread across seeds by a factor of three. At 1--2\% audit, no learner is clearly below the cascade. These label counts match the offline learning curve: a controller needs more than about 1,300 labels to beat the cascade.
-
-\emph{Federation is necessary.} With the same 5\% audit, regions alone reach 157.3 $\pm$ 5.3 with IPW and 167.3 with the multi-fidelity learner; even with full labels, regions alone reach only 155.7. Every federated learner with operator labels beats its local counterpart.
-
-\emph{The multi-fidelity learner does not help} in its current form (156.8--160.7). Our reading, not tested, is that its estimate of the cloud's confusion rests on too few reviewed frames, so soft targets from a 79\%-accurate teacher still pull the controller towards the cloud's errors.
-
-\emph{Labels cost more uplink than models.} A 5\% audit uploads about 1,270 frames, and the run sends 76\,MB of frames in total, more than twice the 28.7\,MB of controller updates (1,000 updates of 28.7\,KB, because online training synchronizes 20 times per round). In this fleet the learning budget is dominated by feedback, not by model synchronization.
+Deployment feedback is one-sided: accepting a frame reveals nothing, the cloud answer is a noisy label (accuracy 0.79), and an operator labels a frame only when it is sent and reviewed. An audit sends accepted frames to the operator with probability $\lambda$. Learning from cloud answers makes the controller worse than the cascade (175.7), because the cloud is wrong on 1,322 test items where the classifier is right. Without audits, operator labels are too few (386 across the fleet). Only federated learning from operator labels with a 5\% audit beats the cascade (142.4 $\pm$ 3.6 with inverse-propensity weights); regions alone with the same audit do not (157.3). The audit uploads (76\,MB) exceed the controller updates (28.7\,MB).
 
 \section{Federating perception instead}\label{sec:perception}
 
-The alternative is to federate the perception model and keep a fixed rule. We studied laya-vision~\cite{layavision} (\texttt{thaitea/laya-vision}, 201M parameters, SmolVLM-256M cut to 20 language layers plus a decision head), which answers component, defect and condition queries in one forward pass. Zero-shot it fails (condition macro F1 0.180). Fine-tuned centrally on folder labels of 4,807 training images, it reaches macro F1 0.703, defect AUROC 0.965 and 0.948 item accuracy at 74\,ms per image on an RTX 2080 Ti, below the ResNet-50 classifier (0.961).
-
-We then federated it in 42 configurations: 3 to 18 drones, the decision head, LoRA of rank 8, the last 4 or all 20 language layers, or the full model; fp16 or int8 updates; from the published checkpoint or from a \emph{server model} fine-tuned on 13 server-held towers; few labels per drone; and drones that see different components. Each configuration has one seed. Figure~\ref{fig:uplinkall} and Table~\ref{tab:perception} summarize them.
+The last option is to federate the perception model and keep a fixed rule. Zero-shot, laya-vision fails on this data (condition macro F1 0.180); fine-tuned centrally, it reaches macro F1 0.703 and defect AUROC 0.965 at 74\,ms per image. We federated it in 42 configurations: 3 to 18 drones, the decision head, LoRA of rank 8, the last 4 or all 20 language layers, or the full model, in fp16 or int8, from the published checkpoint or from a server model fine-tuned on 13 server-held towers, with few labels per drone and with drones that see different components. Each configuration has one seed.
 
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\linewidth]{figs/fig2_uplink_all.pdf}
-\caption{\textbf{Federating the perception model costs gigabytes, and the start matters more than the uplink.} Test condition macro F1 (a) and defect AUROC (b) of laya-vision for all 42 federated configurations against the total uplink of the run, by start. Whiskers are 95\% bootstrap intervals; dashed lines mark central training and the server model. One seed per run.}
+\caption{\textbf{Federating the perception model costs gigabytes, and the start matters more than the uplink.} Test condition macro F1 (a) and defect AUROC (b) of laya-vision for 42 federated configurations against the total uplink of the run, by start. Whiskers are 95\% bootstrap intervals; dashed lines mark central training and the server model. One seed per run.}
 \label{fig:uplinkall}
 \end{figure*}
 
 \begin{table}[t]
 \centering
-\caption{Federated laya-vision from the server model (5 fleet drones, 10 rounds, int8 updates; one seed). F1: condition macro F1. ECE of the defect probability on the test towers, raw and after a two-parameter Platt fit on 1,500 validation images (Platt).}
+\caption{Federated laya-vision from the server model (5 fleet drones, 10 rounds, int8 updates, one seed). F1: condition macro F1. ECE of the defect probability, raw and after a Platt fit on 1,500 validation images.}
 \label{tab:perception}
 \footnotesize
 \setlength{\tabcolsep}{3pt}
@@ -213,23 +290,23 @@ Full & 5,735\,MB & \textbf{0.638} & \textbf{0.962} & 0.065 & 0.021 \\
 \end{tabular}
 \end{table}
 
-Three results bear on the controller. First, the cost: one full update is 115\,MB in int8 (230\,MB in fp16), a training run 0.4--41\,GB, which is two to four orders of magnitude more than the 7\,MB of a federated controller. From the published checkpoint, updates below 3\,GB barely learn (macro F1 0.24--0.29). Second, from the server model every update lifts defect AUROC from 0.903 to 0.940--0.962, and int8 full updates match fp16 at half the uplink (macro F1 0.638 against 0.636). Third, the small updates (head, LoRA, last 4) double the calibration error of the defect probability (0.06 to 0.14--0.15), because each fleet drone's images hold 34--67\% defects while the test towers hold 10\%. A controller that thresholds probabilities would be misled. A Platt fit on the server's validation images repairs this (ECE 0.024--0.027), so perception updates must come with recalibration. With 50 labels per drone, FedAvg even lowers the AUROC below the server model (0.839), and only balanced local sampling avoids it (0.925).
+One full update is 115\,MB in int8, about 4,000 times the 28\,KB update of the tool-selection policy, and a training run sends 0.4--41\,GB against about 4\,MB for 30 rounds of policy training on five drones (Fig.~\ref{fig:uplinkall}, Table~\ref{tab:perception}). From the server model every update lifts defect AUROC from 0.903 to 0.940--0.962, but the small updates double the calibration error (0.06 to 0.14--0.15), because each fleet drone's images hold 34--67\% defects while the test towers hold 10\%. As in the fusion, the defect share differs between where a model is trained and where it is used, and probabilities must be recalibrated before a threshold can use them.
 
 \section{Discussion}
 
-\paragraph{What a fleet should federate} The controller and the perception model improve different things, and they cost very different amounts. A federated controller gains 40 risk points over the cascade for about 7\,MB; federating perception improves the defect ranking for hundreds of megabytes to gigabytes, and cheap perception updates must be recalibrated before a controller can use them. For a fleet with a weak uplink, our results suggest federating the decision first. Combining a federated controller with the federated perception model is the next experiment; it needs the laya-vision outputs on the training towers.
+\paragraph{What a fleet should learn} Across the four options, the largest gain per byte came from the simplest step: fusing the tools' answers and correcting the threshold for the deployment's defect share (177.0 to 107.1), which needs no reinforcement learning and only a mean over posteriors from the fleet. A routing controller that sees the classifier's full output gains 40 risk points over a static cascade for about 7\,MB when labels are available, and remains above the cascade with a 5\% audit. A tool-selection policy on top of the fusion saves time but not risk. Federating perception improves defect ranking for gigabytes and needs recalibration. Using a VLM as the agent that reads tool outputs made reports worse in every configuration we tried.
 
-\paragraph{The limit is feedback} With full labels the federated controller is near central training; with deployment feedback it loses most of that gain. The controller sees its mistakes only where it escalates or where the operator audits, cloud answers are worse than no labels, and only a few percent of audited frames, pooled across regions, restore an advantage over the cascade. Audit and escalation uploads exceed the controller updates in the uplink of learning. Warm-starting the controller from labels the server already holds, variance-reduced estimators~\cite{zhang2026hi}, and audits that target uncertain frames are the obvious ways to lower this cost.
+\paragraph{Why the learned policy ties with the cascade} The fused probability already summarizes what the tools agree on, and its distance to the threshold is the main signal for calling another tool; a cascade uses exactly this signal. The oracle gap (105 against 65 at 3\,s) comes from items where one particular tool is right and the others are wrong, and nothing in the state predicts which. Features such as tool disagreement on similar items, per-component tool reliability or image resolution relative to the component are the next candidates. The learned policy also has practical merits a cascade lacks: it adapts to the budget and the link without retuning, and FedAvg trains it with lower variance than any single drone.
 
-\paragraph{Limitations} The fleet and the network are simulated: tool answers are cached, the Jetson latency is a factor-9 estimate, the uplink regime is constructed from LTE traces, and the risk weights are assumptions. The federated controller results use 3 training seeds and one network regime; the perception results use one seed. The controller does not see the network state; the deadline rule handles it. The data cover one benchmark and one asset type.
+\paragraph{Limitations} Tool answers are cached and the fleet, the network and the onboard times are simulated; the Jetson factor of 9 is an estimate, and the risk weights are assumptions. The tool-selection and drone experiments use 3 seeds, the agentic and perception experiments one seed. The tool-selection report covers the defect decision only, not the component and condition questions. FedAvg for tool selection is computed in process; it equals FedAvg in Flower, which we used for the agentic experiments. The fusion is fitted with labels from validation towers, which a deployed fleet would need to collect. All data come from one benchmark and one asset type.
 
 \section{Conclusion}
 
-A 29\,KB tool-routing controller, trained with FedAvg across operator regions that keep their images and labels, matches central training (risk 115.4 against 114.6 per 1,000 frames) and beats a static cascade by 26\% for about 7\,MB of uplink, whereas regions alone do not beat the cascade. Federating the perception model instead costs 0.4--41\,GB and needs recalibration. In deployment, the controller's own decisions hide its mistakes: cloud answers are harmful labels, and only a 5\% operator audit, pooled across regions, keeps a clear advantage over the cascade (142.4). Learning to route under one-sided feedback, not model synchronization, is the bottleneck of federated decision-making in inspection fleets.
+We asked what an inspection drone fleet should learn to use its perception tools well. A VLM that reads its tools' outputs got worse with tools, with and without PPO and FedAvg. Fusing the tools' answers with a label-free threshold lowered the risk from 177.0 to 107.1 per 1,000 items. A PPO policy that chooses which tool to call matched calling every tool in 30\% less time, and FedAvg trained it as well as central training with 28\,KB per update, but it did not beat a one-line uncertainty cascade, also when drones differed in components and network. The gap to an oracle that knows the right tools per item remains large, and closing it requires better per-item evidence rather than a better learner.
 
 \section*{Data and code availability}
 
-The code, the cached tool answers and the result files are in the project repository, branch \texttt{vision-fl} (to be made public on acceptance). ElecVQA-Bench and InsPLAD are public~\cite{elecvqa,insplad}. The laya-vision weights are published under CC BY-NC-SA 4.0~\cite{layavision}.
+The code, the cached tool answers and the result files are in the project repository, branches \texttt{vision-fl} and \texttt{agentic-ppo-v2} (to be made public on acceptance). ElecVQA-Bench and InsPLAD are public~\cite{elecvqa,insplad}. The laya-vision weights are published under CC BY-NC-SA 4.0~\cite{layavision}.
 
 \section*{Declaration of competing interest}
 
@@ -268,6 +345,12 @@ Experiments in this work were run and tracked with OpenResearch~\cite{openresear
 \bibitem{barp} W.~Wei, T.~Yang, H.~Chen, Y.~Zhao, F.~Dernoncourt, R.~A. Rossi, H.~Eldardiry, Learning to route LLMs from bandit feedback: One policy, many trade-offs, arXiv:2510.07429 (2025).
 
 \bibitem{agarwal2023} A.~Agarwal, H.~B. McMahan, Z.~Xu, An empirical evaluation of federated contextual bandit algorithms, arXiv:2303.10218 (2023).
+
+\bibitem{ppo} J.~Schulman, F.~Wolski, P.~Dhariwal, A.~Radford, O.~Klimov, Proximal policy optimization algorithms, arXiv:1707.06347 (2017).
+
+\bibitem{saerens2002} M.~Saerens, P.~Latinne, C.~Decaestecker, Adjusting the outputs of a classifier to new a priori probabilities: A simple procedure, Neural Computation 14~(1) (2002) 21--41.
+
+\bibitem{flower} D.~J. Beutel, et al., Flower: A friendly federated learning research framework, arXiv:2007.14390 (2020).
 
 \bibitem{fedavg} B.~McMahan, E.~Moore, D.~Ramage, S.~Hampson, B.~A. y~Arcas, Communication-efficient learning of deep networks from decentralized data, in: Proceedings of the 20th International Conference on Artificial Intelligence and Statistics (AISTATS), 2017.
 

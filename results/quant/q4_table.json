@@ -1,0 +1,92 @@
+[
+  {
+    "family": "laya-vision",
+    "model": "base",
+    "stored_mb": 189.0,
+    "weight_mb": 175.1,
+    "gpu_mb_after_load": 187.4,
+    "peak_gpu_mb": 222.0,
+    "item_accuracy": 0.8124,
+    "item_risk_per_1000": 1158.0,
+    "condition_macro_f1": 0.1801,
+    "condition_macro_f1_95ci": [
+      0.1703,
+      0.1906
+    ],
+    "component_accuracy": 0.1349,
+    "defect_auroc": 0.7006,
+    "defect_auroc_95ci": [
+      0.6768,
+      0.7236
+    ],
+    "latency_median_ms": 83.14,
+    "latency_p95_ms": 114.52,
+    "latency_unit": "image, 4 questions",
+    "non_finite": 0,
+    "gpu": "NVIDIA GeForce RTX 2080 Ti"
+  },
+  {
+    "family": "laya-vision",
+    "model": "good300_full",
+    "stored_mb": 189.0,
+    "weight_mb": 175.1,
+    "gpu_mb_after_load": 186.2,
+    "peak_gpu_mb": 218.2,
+    "item_accuracy": 0.9392,
+    "item_risk_per_1000": 216.38,
+    "condition_macro_f1": 0.6682,
+    "condition_macro_f1_95ci": [
+      0.6469,
+      0.6889
+    ],
+    "component_accuracy": 0.8703,
+    "defect_auroc": 0.9668,
+    "defect_auroc_95ci": [
+      0.9587,
+      0.9747
+    ],
+    "latency_median_ms": 82.64,
+    "latency_p95_ms": 119.68,
+    "latency_unit": "image, 4 questions",
+    "non_finite": 0,
+    "gpu": "NVIDIA GeForce RTX 2080 Ti"
+  },
+  {
+    "family": "SmolVLM-256M",
+    "model": "base",
+    "stored_mb": 231.9,
+    "weight_mb": 215.7,
+    "gpu_mb_after_load": 229.9,
+    "peak_gpu_mb": 261.7,
+    "item_accuracy": 0.8461,
+    "item_accuracy_95ci": [
+      0.8375,
+      0.8549
+    ],
+    "item_risk_per_1000": 1515.94,
+    "latency_median_ms": 77.39,
+    "latency_p95_ms": 94.27,
+    "latency_unit": "item, 1 question",
+    "non_finite": 0,
+    "gpu": "NVIDIA GeForce RTX 2080 Ti"
+  },
+  {
+    "family": "SmolVLM-256M",
+    "model": "lora",
+    "stored_mb": 231.9,
+    "weight_mb": 215.7,
+    "gpu_mb_after_load": 340.9,
+    "peak_gpu_mb": 373.1,
+    "item_accuracy": 0.8647,
+    "item_accuracy_95ci": [
+      0.8563,
+      0.8729
+    ],
+    "item_risk_per_1000": 1353.27,
+    "latency_median_ms": 75.79,
+    "latency_p95_ms": 94.7,
+    "latency_unit": "item, 1 question",
+    "non_finite": 0,
+    "gpu": "NVIDIA GeForce RTX 2080 Ti"
+  }
+]

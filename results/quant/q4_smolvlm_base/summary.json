@@ -1,0 +1,55 @@
+{
+  "run": "q4_smolvlm_base",
+  "family": "SmolVLM-256M",
+  "model": "base",
+  "format": "nf4 weights, fp16 compute",
+  "stored_at": "/system/user/studentwork/khashan/models/quantized/smolvlm_base_nf4_fp16",
+  "stored_mb": 231.9,
+  "weight_mb": 215.7,
+  "gpu_mb_after_load": 229.9,
+  "four_bit_layers": 283,
+  "float_dtypes": [
+    "float16",
+    "float32"
+  ],
+  "gpu": "NVIDIA GeForce RTX 2080 Ti",
+  "peak_gpu_mb": 261.7,
+  "seconds": 538.6,
+  "test_items": {
+    "items": 7057,
+    "accuracy": 0.8461,
+    "accuracy_95ci": [
+      0.8375,
+      0.8549
+    ],
+    "risk_per_1000": 1515.94
+  },
+  "task_T2": {
+    "items": 1521,
+    "accuracy": 0.6476,
+    "accuracy_95ci": [
+      0.6233,
+      0.6719
+    ],
+    "risk_per_1000": 3512.16
+  },
+  "task_T3": {
+    "items": 5536,
+    "accuracy": 0.9007,
+    "accuracy_95ci": [
+      0.8932,
+      0.9091
+    ],
+    "risk_per_1000": 967.49
+  },
+  "non_finite": 0,
+  "latency_ms": {
+    "frames": 7057,
+    "mean": 76.14,
+    "median": 77.39,
+    "p90": 89.31,
+    "p95": 94.27,
+    "max": 106.73
+  },
+  "latency_note": "one letter-scoring forward pass for each item, image already loaded"
+}

@@ -1,0 +1,43 @@
+{
+  "run": "q4_laya_good300_full",
+  "family": "laya-vision",
+  "model": "good300_full",
+  "format": "nf4 weights, fp16 compute",
+  "stored_at": "/system/user/studentwork/khashan/models/quantized/laya_good300_full_nf4_fp16",
+  "stored_mb": 189.0,
+  "weight_mb": 175.1,
+  "gpu_mb_after_load": 186.2,
+  "four_bit_layers": 213,
+  "backbone_float_dtypes": [
+    "float16",
+    "float32"
+  ],
+  "backbone_weight_mb": 141.2,
+  "head_float_dtypes": [
+    "float32"
+  ],
+  "head_note": "laya casts the decision head input to fp32 in _readout",
+  "images": 7592,
+  "non_finite": 0,
+  "seconds": 683.9,
+  "device": "cuda",
+  "gpu": "NVIDIA GeForce RTX 2080 Ti",
+  "precision": "nf4/fp16",
+  "all_questions_ms": {
+    "frames": 100,
+    "mean": 88.18,
+    "median": 82.64,
+    "p90": 107.28,
+    "p95": 119.68,
+    "max": 125.89
+  },
+  "condition_only_ms": {
+    "frames": 100,
+    "mean": 75.68,
+    "median": 72.77,
+    "p90": 86.27,
+    "p95": 89.05,
+    "max": 92.83
+  },
+  "peak_gpu_mb": 218.2
+}

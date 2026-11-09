@@ -1,0 +1,1299 @@
+{
+  "train_images": 800,
+  "test_images": 400,
+  "budgets": [
+    1.0,
+    3.0,
+    6.0
+  ],
+  "rounds": 10,
+  "zeroshot": {
+    "1.0": {
+      "images": 400,
+      "report_cost_per_1000": 1667.5,
+      "defect_risk_per_1000": 585.0,
+      "defect_recall": 0.5682,
+      "false_alarm": 0.1236,
+      "component_acc": 0.1375,
+      "condition_acc": 0.78,
+      "mean_steps": 1.0,
+      "mean_time_s": 0.065,
+      "deadline_met": 1.0
+    },
+    "3.0": {
+      "images": 400,
+      "report_cost_per_1000": 1667.5,
+      "defect_risk_per_1000": 585.0,
+      "defect_recall": 0.5682,
+      "false_alarm": 0.1236,
+      "component_acc": 0.1375,
+      "condition_acc": 0.78,
+      "mean_steps": 1.0,
+      "mean_time_s": 0.065,
+      "deadline_met": 1.0
+    },
+    "6.0": {
+      "images": 400,
+      "report_cost_per_1000": 1667.5,
+      "defect_risk_per_1000": 585.0,
+      "defect_recall": 0.5682,
+      "false_alarm": 0.1236,
+      "component_acc": 0.1375,
+      "condition_acc": 0.78,
+      "mean_steps": 1.0,
+      "mean_time_s": 0.065,
+      "deadline_met": 1.0
+    }
+  },
+  "zeroshot_seconds": 1.8,
+  "report_only": [
+    {
+      "round": 1,
+      "test": {
+        "1.0": {
+          "images": 400,
+          "report_cost_per_1000": 1605.0,
+          "defect_risk_per_1000": 592.5,
+          "defect_recall": 0.5682,
+          "false_alarm": 0.132,
+          "component_acc": 0.14,
+          "condition_acc": 0.8475,
+          "mean_steps": 1.0,
+          "mean_time_s": 0.065,
+          "deadline_met": 1.0
+        },
+        "3.0": {
+          "images": 400,
+          "report_cost_per_1000": 1605.0,
+          "defect_risk_per_1000": 592.5,
+          "defect_recall": 0.5682,
+          "false_alarm": 0.132,
+          "component_acc": 0.14,
+          "condition_acc": 0.8475,
+          "mean_steps": 1.0,
+          "mean_time_s": 0.065,
+          "deadline_met": 1.0
+        },
+        "6.0": {
+          "images": 400,
+          "report_cost_per_1000": 1605.0,
+          "defect_risk_per_1000": 592.5,
+          "defect_recall": 0.5682,
+          "false_alarm": 0.132,
+          "component_acc": 0.14,
+          "condition_acc": 0.8475,
+          "mean_steps": 1.0,
+          "mean_time_s": 0.065,
+          "deadline_met": 1.0
+        }
+      }
+    },
+    {
+      "round": 2,
+      "test": {
+        "1.0": {
+          "images": 400,
+          "report_cost_per_1000": 1570.0,
+          "defect_risk_per_1000": 612.5,
+          "defect_recall": 0.5682,
+          "false_alarm": 0.1545,
+          "component_acc": 0.17,
+          "condition_acc": 0.8725,
+          "mean_steps": 1.0,
+          "mean_time_s": 0.065,
+          "deadline_met": 1.0
+        },
+        "3.0": {
+          "images": 400,
+          "report_cost_per_1000": 1570.0,
+          "defect_risk_per_1000": 612.5,
+          "defect_recall": 0.5682,
+          "false_alarm": 0.1545,
+          "component_acc": 0.17,
+          "condition_acc": 0.8725,
+          "mean_steps": 1.0,
+          "mean_time_s": 0.065,
+          "deadline_met": 1.0
+        },
+        "6.0": {
+          "images": 400,
+          "report_cost_per_1000": 1570.0,
+          "defect_risk_per_1000": 612.5,
+          "defect_recall": 0.5682,
+          "false_alarm": 0.1545,
+          "component_acc": 0.17,
+          "condition_acc": 0.8725,
+          "mean_steps": 1.0,
+          "mean_time_s": 0.065,
+          "deadline_met": 1.0
+        }
+      }
+    },
+    {
+      "round": 3,
+      "test": {
+        "1.0": {
+          "images": 400,
+          "report_cost_per_1000": 1527.5,
+          "defect_risk_per_1000": 565.0,
+          "defect_recall": 0.6364,
+          "false_alarm": 0.1854,
+          "component_acc": 0.1625,
+          "condition_acc": 0.875,
+          "mean_steps": 1.0,
+          "mean_time_s": 0.065,
+          "deadline_met": 1.0
+        },
+        "3.0": {
+          "images": 400,
+          "report_cost_per_1000": 1527.5,
+          "defect_risk_per_1000": 565.0,
+          "defect_recall": 0.6364,
+          "false_alarm": 0.1854,
+          "component_acc": 0.1625,
+          "condition_acc": 0.875,
+          "mean_steps": 1.0,
+          "mean_time_s": 0.065,
+          "deadline_met": 1.0
+        },
+        "6.0": {
+          "images": 400,
+          "report_cost_per_1000": 1527.5,
+          "defect_risk_per_1000": 565.0,
+          "defect_recall": 0.6364,
+          "false_alarm": 0.1854,
+          "component_acc": 0.1625,
+          "condition_acc": 0.875,
+          "mean_steps": 1.0,
+          "mean_time_s": 0.065,
+          "deadline_met": 1.0
+        }
+      }
+    },
+    {
+      "round": 4,
+      "test": {
+        "1.0": {
+          "images": 400,
+          "report_cost_per_1000": 1542.5,
+          "defect_risk_per_1000": 590.0,
+          "defect_recall": 0.7045,
+          "false_alarm": 0.2978,
+          "component_acc": 0.1625,
+          "condition_acc": 0.885,
+          "mean_steps": 1.0,
+          "mean_time_s": 0.065,
+          "deadline_met": 1.0
+        },
+        "3.0": {
+          "images": 400,
+          "report_cost_per_1000": 1542.5,
+          "defect_risk_per_1000": 590.0,
+          "defect_recall": 0.7045,
+          "false_alarm": 0.2978,
+          "component_acc": 0.1625,
+          "condition_acc": 0.885,
+          "mean_steps": 1.0,
+          "mean_time_s": 0.065,
+          "deadline_met": 1.0
+        },
+        "6.0": {
+          "images": 400,
+          "report_cost_per_1000": 1542.5,
+          "defect_risk_per_1000": 590.0,
+          "defect_recall": 0.7045,
+          "false_alarm": 0.2978,
+          "component_acc": 0.1625,
+          "condition_acc": 0.885,
+          "mean_steps": 1.0,
+          "mean_time_s": 0.065,
+          "deadline_met": 1.0
+        }
+      }
+    },
+    {
+      "round": 5,
+      "test": {
+        "1.0": {
+          "images": 400,
+          "report_cost_per_1000": 1517.5,
+          "defect_risk_per_1000": 572.5,
+          "defect_recall": 0.75,
+          "false_alarm": 0.3343,
+          "component_acc": 0.1675,
+          "condition_acc": 0.8875,
+          "mean_steps": 1.0,
+          "mean_time_s": 0.065,
+          "deadline_met": 1.0
+        },
+        "3.0": {
+          "images": 400,
+          "report_cost_per_1000": 1517.5,
+          "defect_risk_per_1000": 572.5,
+          "defect_recall": 0.75,
+          "false_alarm": 0.3343,
+          "component_acc": 0.1675,
+          "condition_acc": 0.8875,
+          "mean_steps": 1.0,
+          "mean_time_s": 0.065,
+          "deadline_met": 1.0
+        },
+        "6.0": {
+          "images": 400,
+          "report_cost_per_1000": 1517.5,
+          "defect_risk_per_1000": 572.5,
+          "defect_recall": 0.75,
+          "false_alarm": 0.3343,
+          "component_acc": 0.1675,
+          "condition_acc": 0.8875,
+          "mean_steps": 1.0,
+          "mean_time_s": 0.065,
+          "deadline_met": 1.0
+        }
+      }
+    },
+    {
+      "round": 6,
+      "test": {
+        "1.0": {
+          "images": 400,
+          "report_cost_per_1000": 1540.0,
+          "defect_risk_per_1000": 572.5,
+          "defect_recall": 0.7727,
+          "false_alarm": 0.3624,
+          "component_acc": 0.145,
+          "condition_acc": 0.8875,
+          "mean_steps": 1.0,
+          "mean_time_s": 0.065,
+          "deadline_met": 1.0
+        },
+        "3.0": {
+          "images": 400,
+          "report_cost_per_1000": 1540.0,
+          "defect_risk_per_1000": 572.5,
+          "defect_recall": 0.7727,
+          "false_alarm": 0.3624,
+          "component_acc": 0.145,
+          "condition_acc": 0.8875,
+          "mean_steps": 1.0,
+          "mean_time_s": 0.065,
+          "deadline_met": 1.0
+        },
+        "6.0": {
+          "images": 400,
+          "report_cost_per_1000": 1540.0,
+          "defect_risk_per_1000": 572.5,
+          "defect_recall": 0.7727,
+          "false_alarm": 0.3624,
+          "component_acc": 0.145,
+          "condition_acc": 0.8875,
+          "mean_steps": 1.0,
+          "mean_time_s": 0.065,
+          "deadline_met": 1.0
+        }
+      }
+    },
+    {
+      "round": 7,
+      "test": {
+        "1.0": {
+          "images": 400,
+          "report_cost_per_1000": 1590.0,
+          "defect_risk_per_1000": 615.0,
+          "defect_recall": 0.6591,
+          "false_alarm": 0.2697,
+          "component_acc": 0.135,
+          "condition_acc": 0.89,
+          "mean_steps": 1.0,
+          "mean_time_s": 0.065,
+          "deadline_met": 1.0
+        },
+        "3.0": {
+          "images": 400,
+          "report_cost_per_1000": 1590.0,
+          "defect_risk_per_1000": 615.0,
+          "defect_recall": 0.6591,
+          "false_alarm": 0.2697,
+          "component_acc": 0.135,
+          "condition_acc": 0.89,
+          "mean_steps": 1.0,
+          "mean_time_s": 0.065,
+          "deadline_met": 1.0
+        },
+        "6.0": {
+          "images": 400,
+          "report_cost_per_1000": 1590.0,
+          "defect_risk_per_1000": 615.0,
+          "defect_recall": 0.6591,
+          "false_alarm": 0.2697,
+          "component_acc": 0.135,
+          "condition_acc": 0.89,
+          "mean_steps": 1.0,
+          "mean_time_s": 0.065,
+          "deadline_met": 1.0
+        }
+      }
+    },
+    {
+      "round": 8,
+      "test": {
+        "1.0": {
+          "images": 400,
+          "report_cost_per_1000": 1547.5,
+          "defect_risk_per_1000": 602.5,
+          "defect_recall": 0.6818,
+          "false_alarm": 0.2837,
+          "component_acc": 0.165,
+          "condition_acc": 0.89,
+          "mean_steps": 1.0,
+          "mean_time_s": 0.065,
+          "deadline_met": 1.0
+        },
+        "3.0": {
+          "images": 400,
+          "report_cost_per_1000": 1547.5,
+          "defect_risk_per_1000": 602.5,
+          "defect_recall": 0.6818,
+          "false_alarm": 0.2837,
+          "component_acc": 0.165,
+          "condition_acc": 0.89,
+          "mean_steps": 1.0,
+          "mean_time_s": 0.065,
+          "deadline_met": 1.0
+        },
+        "6.0": {
+          "images": 400,
+          "report_cost_per_1000": 1547.5,
+          "defect_risk_per_1000": 602.5,
+          "defect_recall": 0.6818,
+          "false_alarm": 0.2837,
+          "component_acc": 0.165,
+          "condition_acc": 0.89,
+          "mean_steps": 1.0,
+          "mean_time_s": 0.065,
+          "deadline_met": 1.0
+        }
+      }
+    },
+    {
+      "round": 9,
+      "test": {
+        "1.0": {
+          "images": 400,
+          "report_cost_per_1000": 1532.5,
+          "defect_risk_per_1000": 557.5,
+          "defect_recall": 0.6818,
+          "false_alarm": 0.2331,
+          "component_acc": 0.14,
+          "condition_acc": 0.885,
+          "mean_steps": 1.0,
+          "mean_time_s": 0.065,
+          "deadline_met": 1.0
+        },
+        "3.0": {
+          "images": 400,
+          "report_cost_per_1000": 1532.5,
+          "defect_risk_per_1000": 557.5,
+          "defect_recall": 0.6818,
+          "false_alarm": 0.2331,
+          "component_acc": 0.14,
+          "condition_acc": 0.885,
+          "mean_steps": 1.0,
+          "mean_time_s": 0.065,
+          "deadline_met": 1.0
+        },
+        "6.0": {
+          "images": 400,
+          "report_cost_per_1000": 1532.5,
+          "defect_risk_per_1000": 557.5,
+          "defect_recall": 0.6818,
+          "false_alarm": 0.2331,
+          "component_acc": 0.14,
+          "condition_acc": 0.885,
+          "mean_steps": 1.0,
+          "mean_time_s": 0.065,
+          "deadline_met": 1.0
+        }
+      }
+    },
+    {
+      "round": 10,
+      "test": {
+        "1.0": {
+          "images": 400,
+          "report_cost_per_1000": 1505.0,
+          "defect_risk_per_1000": 567.5,
+          "defect_recall": 0.7727,
+          "false_alarm": 0.3567,
+          "component_acc": 0.1725,
+          "condition_acc": 0.89,
+          "mean_steps": 1.0,
+          "mean_time_s": 0.065,
+          "deadline_met": 1.0
+        },
+        "3.0": {
+          "images": 400,
+          "report_cost_per_1000": 1505.0,
+          "defect_risk_per_1000": 567.5,
+          "defect_recall": 0.7727,
+          "false_alarm": 0.3567,
+          "component_acc": 0.1725,
+          "condition_acc": 0.89,
+          "mean_steps": 1.0,
+          "mean_time_s": 0.065,
+          "deadline_met": 1.0
+        },
+        "6.0": {
+          "images": 400,
+          "report_cost_per_1000": 1505.0,
+          "defect_risk_per_1000": 567.5,
+          "defect_recall": 0.7727,
+          "false_alarm": 0.3567,
+          "component_acc": 0.1725,
+          "condition_acc": 0.89,
+          "mean_steps": 1.0,
+          "mean_time_s": 0.065,
+          "deadline_met": 1.0
+        }
+      }
+    }
+  ],
+  "report_only_seconds": 110.4,
+  "central": [
+    {
+      "round": 1,
+      "test": {
+        "1.0": {
+          "images": 400,
+          "report_cost_per_1000": 1662.5,
+          "defect_risk_per_1000": 670.0,
+          "defect_recall": 0.5455,
+          "false_alarm": 0.191,
+          "component_acc": 0.1575,
+          "condition_acc": 0.85,
+          "mean_steps": 6.5,
+          "mean_time_s": 0.414,
+          "deadline_met": 1.0
+        },
+        "3.0": {
+          "images": 400,
+          "report_cost_per_1000": 1665.0,
+          "defect_risk_per_1000": 670.0,
+          "defect_recall": 0.5455,
+          "false_alarm": 0.191,
+          "component_acc": 0.155,
+          "condition_acc": 0.85,
+          "mean_steps": 6.42,
+          "mean_time_s": 0.414,
+          "deadline_met": 1.0
+        },
+        "6.0": {
+          "images": 400,
+          "report_cost_per_1000": 1655.0,
+          "defect_risk_per_1000": 667.5,
+          "defect_recall": 0.5455,
+          "false_alarm": 0.1882,
+          "component_acc": 0.16,
+          "condition_acc": 0.8525,
+          "mean_steps": 6.38,
+          "mean_time_s": 0.411,
+          "deadline_met": 1.0
+        }
+      }
+    },
+    {
+      "round": 2,
+      "test": {
+        "1.0": {
+          "images": 400,
+          "report_cost_per_1000": 1690.0,
+          "defect_risk_per_1000": 712.5,
+          "defect_recall": 0.5227,
+          "false_alarm": 0.2107,
+          "component_acc": 0.155,
+          "condition_acc": 0.8675,
+          "mean_steps": 6.46,
+          "mean_time_s": 0.412,
+          "deadline_met": 1.0
+        },
+        "3.0": {
+          "images": 400,
+          "report_cost_per_1000": 1840.0,
+          "defect_risk_per_1000": 880.0,
+          "defect_recall": 0.4318,
+          "false_alarm": 0.2865,
+          "component_acc": 0.1825,
+          "condition_acc": 0.8575,
+          "mean_steps": 6.78,
+          "mean_time_s": 1.915,
+          "deadline_met": 1.0
+        },
+        "6.0": {
+          "images": 400,
+          "report_cost_per_1000": 1802.5,
+          "defect_risk_per_1000": 837.5,
+          "defect_recall": 0.4773,
+          "false_alarm": 0.2949,
+          "component_acc": 0.1725,
+          "condition_acc": 0.8625,
+          "mean_steps": 6.82,
+          "mean_time_s": 2.032,
+          "deadline_met": 1.0
+        }
+      }
+    },
+    {
+      "round": 3,
+      "test": {
+        "1.0": {
+          "images": 400,
+          "report_cost_per_1000": 1655.0,
+          "defect_risk_per_1000": 665.0,
+          "defect_recall": 0.5455,
+          "false_alarm": 0.1854,
+          "component_acc": 0.15,
+          "condition_acc": 0.86,
+          "mean_steps": 6.62,
+          "mean_time_s": 0.422,
+          "deadline_met": 1.0
+        },
+        "3.0": {
+          "images": 400,
+          "report_cost_per_1000": 1812.5,
+          "defect_risk_per_1000": 860.0,
+          "defect_recall": 0.4318,
+          "false_alarm": 0.264,
+          "component_acc": 0.1825,
+          "condition_acc": 0.865,
+          "mean_steps": 6.96,
+          "mean_time_s": 2.114,
+          "deadline_met": 1.0
+        },
+        "6.0": {
+          "images": 400,
+          "report_cost_per_1000": 1760.0,
+          "defect_risk_per_1000": 807.5,
+          "defect_recall": 0.4773,
+          "false_alarm": 0.2612,
+          "component_acc": 0.1875,
+          "condition_acc": 0.86,
+          "mean_steps": 6.96,
+          "mean_time_s": 2.114,
+          "deadline_met": 1.0
+        }
+      }
+    },
+    {
+      "round": 4,
+      "test": {
+        "1.0": {
+          "images": 400,
+          "report_cost_per_1000": 1622.5,
+          "defect_risk_per_1000": 647.5,
+          "defect_recall": 0.6136,
+          "false_alarm": 0.25,
+          "component_acc": 0.135,
+          "condition_acc": 0.89,
+          "mean_steps": 6.67,
+          "mean_time_s": 0.426,
+          "deadline_met": 1.0
+        },
+        "3.0": {
+          "images": 400,
+          "report_cost_per_1000": 1812.5,
+          "defect_risk_per_1000": 845.0,
+          "defect_recall": 0.5227,
+          "false_alarm": 0.3596,
+          "component_acc": 0.1625,
+          "condition_acc": 0.87,
+          "mean_steps": 6.71,
+          "mean_time_s": 2.099,
+          "deadline_met": 1.0
+        },
+        "6.0": {
+          "images": 400,
+          "report_cost_per_1000": 1852.5,
+          "defect_risk_per_1000": 890.0,
+          "defect_recall": 0.4773,
+          "false_alarm": 0.3539,
+          "component_acc": 0.165,
+          "condition_acc": 0.8725,
+          "mean_steps": 6.79,
+          "mean_time_s": 2.104,
+          "deadline_met": 1.0
+        }
+      }
+    },
+    {
+      "round": 5,
+      "test": {
+        "1.0": {
+          "images": 400,
+          "report_cost_per_1000": 1720.0,
+          "defect_risk_per_1000": 707.5,
+          "defect_recall": 0.5227,
+          "false_alarm": 0.2051,
+          "component_acc": 0.1025,
+          "condition_acc": 0.885,
+          "mean_steps": 6.28,
+          "mean_time_s": 0.402,
+          "deadline_met": 1.0
+        },
+        "3.0": {
+          "images": 400,
+          "report_cost_per_1000": 1755.0,
+          "defect_risk_per_1000": 792.5,
+          "defect_recall": 0.5,
+          "false_alarm": 0.2725,
+          "component_acc": 0.165,
+          "condition_acc": 0.8725,
+          "mean_steps": 6.52,
+          "mean_time_s": 2.086,
+          "deadline_met": 1.0
+        },
+        "6.0": {
+          "images": 400,
+          "report_cost_per_1000": 1710.0,
+          "defect_risk_per_1000": 742.5,
+          "defect_recall": 0.5455,
+          "false_alarm": 0.2725,
+          "component_acc": 0.1575,
+          "condition_acc": 0.875,
+          "mean_steps": 6.77,
+          "mean_time_s": 2.102,
+          "deadline_met": 1.0
+        }
+      }
+    },
+    {
+      "round": 6,
+      "test": {
+        "1.0": {
+          "images": 400,
+          "report_cost_per_1000": 1677.5,
+          "defect_risk_per_1000": 710.0,
+          "defect_recall": 0.5682,
+          "false_alarm": 0.264,
+          "component_acc": 0.1675,
+          "condition_acc": 0.865,
+          "mean_steps": 6.56,
+          "mean_time_s": 0.419,
+          "deadline_met": 1.0
+        },
+        "3.0": {
+          "images": 400,
+          "report_cost_per_1000": 1857.5,
+          "defect_risk_per_1000": 882.5,
+          "defect_recall": 0.5,
+          "false_alarm": 0.3736,
+          "component_acc": 0.1575,
+          "condition_acc": 0.8675,
+          "mean_steps": 6.93,
+          "mean_time_s": 2.112,
+          "deadline_met": 1.0
+        },
+        "6.0": {
+          "images": 400,
+          "report_cost_per_1000": 1882.5,
+          "defect_risk_per_1000": 910.0,
+          "defect_recall": 0.4773,
+          "false_alarm": 0.3764,
+          "component_acc": 0.16,
+          "condition_acc": 0.8675,
+          "mean_steps": 6.96,
+          "mean_time_s": 2.114,
+          "deadline_met": 1.0
+        }
+      }
+    },
+    {
+      "round": 7,
+      "test": {
+        "1.0": {
+          "images": 400,
+          "report_cost_per_1000": 1670.0,
+          "defect_risk_per_1000": 692.5,
+          "defect_recall": 0.5455,
+          "false_alarm": 0.2163,
+          "component_acc": 0.1675,
+          "condition_acc": 0.855,
+          "mean_steps": 6.55,
+          "mean_time_s": 0.418,
+          "deadline_met": 1.0
+        },
+        "3.0": {
+          "images": 400,
+          "report_cost_per_1000": 1822.5,
+          "defect_risk_per_1000": 850.0,
+          "defect_recall": 0.4773,
+          "false_alarm": 0.309,
+          "component_acc": 0.165,
+          "condition_acc": 0.8625,
+          "mean_steps": 6.98,
+          "mean_time_s": 2.115,
+          "deadline_met": 1.0
+        },
+        "6.0": {
+          "images": 400,
+          "report_cost_per_1000": 1822.5,
+          "defect_risk_per_1000": 850.0,
+          "defect_recall": 0.4773,
+          "false_alarm": 0.309,
+          "component_acc": 0.165,
+          "condition_acc": 0.8625,
+          "mean_steps": 7.0,
+          "mean_time_s": 2.117,
+          "deadline_met": 1.0
+        }
+      }
+    },
+    {
+      "round": 8,
+      "test": {
+        "1.0": {
+          "images": 400,
+          "report_cost_per_1000": 1705.0,
+          "defect_risk_per_1000": 722.5,
+          "defect_recall": 0.5,
+          "false_alarm": 0.1938,
+          "component_acc": 0.155,
+          "condition_acc": 0.8625,
+          "mean_steps": 5.69,
+          "mean_time_s": 0.364,
+          "deadline_met": 1.0
+        },
+        "3.0": {
+          "images": 400,
+          "report_cost_per_1000": 1830.0,
+          "defect_risk_per_1000": 857.5,
+          "defect_recall": 0.4318,
+          "false_alarm": 0.2612,
+          "component_acc": 0.1725,
+          "condition_acc": 0.855,
+          "mean_steps": 7.0,
+          "mean_time_s": 2.117,
+          "deadline_met": 1.0
+        },
+        "6.0": {
+          "images": 400,
+          "report_cost_per_1000": 1820.0,
+          "defect_risk_per_1000": 852.5,
+          "defect_recall": 0.4318,
+          "false_alarm": 0.2556,
+          "component_acc": 0.175,
+          "condition_acc": 0.8575,
+          "mean_steps": 7.0,
+          "mean_time_s": 2.117,
+          "deadline_met": 1.0
+        }
+      }
+    },
+    {
+      "round": 9,
+      "test": {
+        "1.0": {
+          "images": 400,
+          "report_cost_per_1000": 1667.5,
+          "defect_risk_per_1000": 672.5,
+          "defect_recall": 0.5455,
+          "false_alarm": 0.1938,
+          "component_acc": 0.1375,
+          "condition_acc": 0.8675,
+          "mean_steps": 5.62,
+          "mean_time_s": 0.358,
+          "deadline_met": 1.0
+        },
+        "3.0": {
+          "images": 400,
+          "report_cost_per_1000": 1675.0,
+          "defect_risk_per_1000": 757.5,
+          "defect_recall": 0.5227,
+          "false_alarm": 0.2612,
+          "component_acc": 0.2,
+          "condition_acc": 0.8825,
+          "mean_steps": 6.66,
+          "mean_time_s": 2.095,
+          "deadline_met": 1.0
+        },
+        "6.0": {
+          "images": 400,
+          "report_cost_per_1000": 1712.5,
+          "defect_risk_per_1000": 792.5,
+          "defect_recall": 0.5,
+          "false_alarm": 0.2725,
+          "component_acc": 0.2,
+          "condition_acc": 0.88,
+          "mean_steps": 6.73,
+          "mean_time_s": 2.099,
+          "deadline_met": 1.0
+        }
+      }
+    },
+    {
+      "round": 10,
+      "test": {
+        "1.0": {
+          "images": 400,
+          "report_cost_per_1000": 1715.0,
+          "defect_risk_per_1000": 732.5,
+          "defect_recall": 0.5,
+          "false_alarm": 0.2051,
+          "component_acc": 0.1525,
+          "condition_acc": 0.865,
+          "mean_steps": 4.85,
+          "mean_time_s": 0.31,
+          "deadline_met": 1.0
+        },
+        "3.0": {
+          "images": 400,
+          "report_cost_per_1000": 1802.5,
+          "defect_risk_per_1000": 842.5,
+          "defect_recall": 0.4545,
+          "false_alarm": 0.2725,
+          "component_acc": 0.1825,
+          "condition_acc": 0.8575,
+          "mean_steps": 4.67,
+          "mean_time_s": 1.968,
+          "deadline_met": 1.0
+        },
+        "6.0": {
+          "images": 400,
+          "report_cost_per_1000": 1797.5,
+          "defect_risk_per_1000": 837.5,
+          "defect_recall": 0.4545,
+          "false_alarm": 0.2669,
+          "component_acc": 0.1825,
+          "condition_acc": 0.8575,
+          "mean_steps": 4.59,
+          "mean_time_s": 1.963,
+          "deadline_met": 1.0
+        }
+      }
+    }
+  ],
+  "central_seconds": 459.8,
+  "fed": {
+    "history": [
+      {
+        "round": 1,
+        "test": {
+          "1.0": {
+            "images": 400,
+            "report_cost_per_1000": 1657.5,
+            "defect_risk_per_1000": 647.5,
+            "defect_recall": 0.5455,
+            "false_alarm": 0.1657,
+            "component_acc": 0.165,
+            "condition_acc": 0.825,
+            "mean_steps": 6.3,
+            "mean_time_s": 0.402,
+            "deadline_met": 1.0
+          },
+          "3.0": {
+            "images": 400,
+            "report_cost_per_1000": 1657.5,
+            "defect_risk_per_1000": 647.5,
+            "defect_recall": 0.5455,
+            "false_alarm": 0.1657,
+            "component_acc": 0.165,
+            "condition_acc": 0.825,
+            "mean_steps": 6.31,
+            "mean_time_s": 0.402,
+            "deadline_met": 1.0
+          },
+          "6.0": {
+            "images": 400,
+            "report_cost_per_1000": 1660.0,
+            "defect_risk_per_1000": 650.0,
+            "defect_recall": 0.5455,
+            "false_alarm": 0.1685,
+            "component_acc": 0.165,
+            "condition_acc": 0.825,
+            "mean_steps": 6.31,
+            "mean_time_s": 0.402,
+            "deadline_met": 1.0
+          }
+        }
+      },
+      {
+        "round": 2,
+        "test": {
+          "1.0": {
+            "images": 400,
+            "report_cost_per_1000": 1622.5,
+            "defect_risk_per_1000": 627.5,
+            "defect_recall": 0.5682,
+            "false_alarm": 0.1713,
+            "component_acc": 0.165,
+            "condition_acc": 0.84,
+            "mean_steps": 6.33,
+            "mean_time_s": 0.404,
+            "deadline_met": 1.0
+          },
+          "3.0": {
+            "images": 400,
+            "report_cost_per_1000": 1625.0,
+            "defect_risk_per_1000": 627.5,
+            "defect_recall": 0.5682,
+            "false_alarm": 0.1713,
+            "component_acc": 0.1625,
+            "condition_acc": 0.84,
+            "mean_steps": 6.33,
+            "mean_time_s": 0.404,
+            "deadline_met": 1.0
+          },
+          "6.0": {
+            "images": 400,
+            "report_cost_per_1000": 1622.5,
+            "defect_risk_per_1000": 627.5,
+            "defect_recall": 0.5682,
+            "false_alarm": 0.1713,
+            "component_acc": 0.165,
+            "condition_acc": 0.84,
+            "mean_steps": 6.34,
+            "mean_time_s": 0.405,
+            "deadline_met": 1.0
+          }
+        }
+      },
+      {
+        "round": 3,
+        "test": {
+          "1.0": {
+            "images": 400,
+            "report_cost_per_1000": 1645.0,
+            "defect_risk_per_1000": 650.0,
+            "defect_recall": 0.5455,
+            "false_alarm": 0.1685,
+            "component_acc": 0.1625,
+            "condition_acc": 0.8425,
+            "mean_steps": 6.34,
+            "mean_time_s": 0.404,
+            "deadline_met": 1.0
+          },
+          "3.0": {
+            "images": 400,
+            "report_cost_per_1000": 1642.5,
+            "defect_risk_per_1000": 647.5,
+            "defect_recall": 0.5455,
+            "false_alarm": 0.1657,
+            "component_acc": 0.1625,
+            "condition_acc": 0.8425,
+            "mean_steps": 6.36,
+            "mean_time_s": 0.406,
+            "deadline_met": 1.0
+          },
+          "6.0": {
+            "images": 400,
+            "report_cost_per_1000": 1640.0,
+            "defect_risk_per_1000": 647.5,
+            "defect_recall": 0.5455,
+            "false_alarm": 0.1657,
+            "component_acc": 0.165,
+            "condition_acc": 0.8425,
+            "mean_steps": 6.38,
+            "mean_time_s": 0.407,
+            "deadline_met": 1.0
+          }
+        }
+      },
+      {
+        "round": 4,
+        "test": {
+          "1.0": {
+            "images": 400,
+            "report_cost_per_1000": 1630.0,
+            "defect_risk_per_1000": 647.5,
+            "defect_recall": 0.5455,
+            "false_alarm": 0.1657,
+            "component_acc": 0.165,
+            "condition_acc": 0.8525,
+            "mean_steps": 6.38,
+            "mean_time_s": 0.407,
+            "deadline_met": 1.0
+          },
+          "3.0": {
+            "images": 400,
+            "report_cost_per_1000": 1635.0,
+            "defect_risk_per_1000": 650.0,
+            "defect_recall": 0.5455,
+            "false_alarm": 0.1685,
+            "component_acc": 0.1625,
+            "condition_acc": 0.8525,
+            "mean_steps": 6.41,
+            "mean_time_s": 0.409,
+            "deadline_met": 1.0
+          },
+          "6.0": {
+            "images": 400,
+            "report_cost_per_1000": 1635.0,
+            "defect_risk_per_1000": 650.0,
+            "defect_recall": 0.5455,
+            "false_alarm": 0.1685,
+            "component_acc": 0.1625,
+            "condition_acc": 0.8525,
+            "mean_steps": 6.41,
+            "mean_time_s": 0.409,
+            "deadline_met": 1.0
+          }
+        }
+      },
+      {
+        "round": 5,
+        "test": {
+          "1.0": {
+            "images": 400,
+            "report_cost_per_1000": 1630.0,
+            "defect_risk_per_1000": 672.5,
+            "defect_recall": 0.5227,
+            "false_alarm": 0.1657,
+            "component_acc": 0.16,
+            "condition_acc": 0.8825,
+            "mean_steps": 6.44,
+            "mean_time_s": 0.411,
+            "deadline_met": 1.0
+          },
+          "3.0": {
+            "images": 400,
+            "report_cost_per_1000": 1605.0,
+            "defect_risk_per_1000": 647.5,
+            "defect_recall": 0.5455,
+            "false_alarm": 0.1657,
+            "component_acc": 0.165,
+            "condition_acc": 0.8775,
+            "mean_steps": 6.45,
+            "mean_time_s": 0.412,
+            "deadline_met": 1.0
+          },
+          "6.0": {
+            "images": 400,
+            "report_cost_per_1000": 1632.5,
+            "defect_risk_per_1000": 672.5,
+            "defect_recall": 0.5227,
+            "false_alarm": 0.1657,
+            "component_acc": 0.1625,
+            "condition_acc": 0.8775,
+            "mean_steps": 6.46,
+            "mean_time_s": 0.412,
+            "deadline_met": 1.0
+          }
+        }
+      },
+      {
+        "round": 6,
+        "test": {
+          "1.0": {
+            "images": 400,
+            "report_cost_per_1000": 1667.5,
+            "defect_risk_per_1000": 717.5,
+            "defect_recall": 0.5,
+            "false_alarm": 0.1882,
+            "component_acc": 0.1675,
+            "condition_acc": 0.8825,
+            "mean_steps": 6.37,
+            "mean_time_s": 0.406,
+            "deadline_met": 1.0
+          },
+          "3.0": {
+            "images": 400,
+            "report_cost_per_1000": 1640.0,
+            "defect_risk_per_1000": 690.0,
+            "defect_recall": 0.5227,
+            "false_alarm": 0.1854,
+            "component_acc": 0.1675,
+            "condition_acc": 0.8825,
+            "mean_steps": 6.41,
+            "mean_time_s": 0.413,
+            "deadline_met": 1.0
+          },
+          "6.0": {
+            "images": 400,
+            "report_cost_per_1000": 1620.0,
+            "defect_risk_per_1000": 665.0,
+            "defect_recall": 0.5455,
+            "false_alarm": 0.1854,
+            "component_acc": 0.1625,
+            "condition_acc": 0.8825,
+            "mean_steps": 6.41,
+            "mean_time_s": 0.413,
+            "deadline_met": 1.0
+          }
+        }
+      },
+      {
+        "round": 7,
+        "test": {
+          "1.0": {
+            "images": 400,
+            "report_cost_per_1000": 1642.5,
+            "defect_risk_per_1000": 697.5,
+            "defect_recall": 0.5227,
+            "false_alarm": 0.1938,
+            "component_acc": 0.17,
+            "condition_acc": 0.885,
+            "mean_steps": 6.41,
+            "mean_time_s": 0.409,
+            "deadline_met": 1.0
+          },
+          "3.0": {
+            "images": 400,
+            "report_cost_per_1000": 1630.0,
+            "defect_risk_per_1000": 677.5,
+            "defect_recall": 0.5455,
+            "false_alarm": 0.1994,
+            "component_acc": 0.165,
+            "condition_acc": 0.8825,
+            "mean_steps": 6.47,
+            "mean_time_s": 0.433,
+            "deadline_met": 1.0
+          },
+          "6.0": {
+            "images": 400,
+            "report_cost_per_1000": 1597.5,
+            "defect_risk_per_1000": 652.5,
+            "defect_recall": 0.5682,
+            "false_alarm": 0.1994,
+            "component_acc": 0.17,
+            "condition_acc": 0.885,
+            "mean_steps": 6.51,
+            "mean_time_s": 0.439,
+            "deadline_met": 1.0
+          }
+        }
+      },
+      {
+        "round": 8,
+        "test": {
+          "1.0": {
+            "images": 400,
+            "report_cost_per_1000": 1650.0,
+            "defect_risk_per_1000": 697.5,
+            "defect_recall": 0.5227,
+            "false_alarm": 0.1938,
+            "component_acc": 0.155,
+            "condition_acc": 0.8925,
+            "mean_steps": 6.4,
+            "mean_time_s": 0.408,
+            "deadline_met": 1.0
+          },
+          "3.0": {
+            "images": 400,
+            "report_cost_per_1000": 1660.0,
+            "defect_risk_per_1000": 705.0,
+            "defect_recall": 0.5227,
+            "false_alarm": 0.2022,
+            "component_acc": 0.155,
+            "condition_acc": 0.89,
+            "mean_steps": 6.46,
+            "mean_time_s": 0.457,
+            "deadline_met": 1.0
+          },
+          "6.0": {
+            "images": 400,
+            "report_cost_per_1000": 1657.5,
+            "defect_risk_per_1000": 707.5,
+            "defect_recall": 0.5227,
+            "false_alarm": 0.2051,
+            "component_acc": 0.16,
+            "condition_acc": 0.89,
+            "mean_steps": 6.52,
+            "mean_time_s": 0.489,
+            "deadline_met": 1.0
+          }
+        }
+      },
+      {
+        "round": 9,
+        "test": {
+          "1.0": {
+            "images": 400,
+            "report_cost_per_1000": 1655.0,
+            "defect_risk_per_1000": 707.5,
+            "defect_recall": 0.5227,
+            "false_alarm": 0.2051,
+            "component_acc": 0.1675,
+            "condition_acc": 0.885,
+            "mean_steps": 6.43,
+            "mean_time_s": 0.41,
+            "deadline_met": 1.0
+          },
+          "3.0": {
+            "images": 400,
+            "report_cost_per_1000": 1665.0,
+            "defect_risk_per_1000": 720.0,
+            "defect_recall": 0.5227,
+            "false_alarm": 0.2191,
+            "component_acc": 0.17,
+            "condition_acc": 0.885,
+            "mean_steps": 6.63,
+            "mean_time_s": 0.604,
+            "deadline_met": 1.0
+          },
+          "6.0": {
+            "images": 400,
+            "report_cost_per_1000": 1725.0,
+            "defect_risk_per_1000": 782.5,
+            "defect_recall": 0.4773,
+            "false_alarm": 0.2331,
+            "component_acc": 0.1775,
+            "condition_acc": 0.88,
+            "mean_steps": 6.72,
+            "mean_time_s": 0.719,
+            "deadline_met": 1.0
+          }
+        }
+      },
+      {
+        "round": 10,
+        "test": {
+          "1.0": {
+            "images": 400,
+            "report_cost_per_1000": 1627.5,
+            "defect_risk_per_1000": 675.0,
+            "defect_recall": 0.5455,
+            "false_alarm": 0.1966,
+            "component_acc": 0.1625,
+            "condition_acc": 0.885,
+            "mean_steps": 6.66,
+            "mean_time_s": 0.424,
+            "deadline_met": 1.0
+          },
+          "3.0": {
+            "images": 400,
+            "report_cost_per_1000": 1732.5,
+            "defect_risk_per_1000": 770.0,
+            "defect_recall": 0.5227,
+            "false_alarm": 0.2753,
+            "component_acc": 0.1625,
+            "condition_acc": 0.875,
+            "mean_steps": 6.9,
+            "mean_time_s": 1.052,
+            "deadline_met": 1.0
+          },
+          "6.0": {
+            "images": 400,
+            "report_cost_per_1000": 1742.5,
+            "defect_risk_per_1000": 777.5,
+            "defect_recall": 0.5455,
+            "false_alarm": 0.3118,
+            "component_acc": 0.1625,
+            "condition_acc": 0.8725,
+            "mean_steps": 6.93,
+            "mean_time_s": 1.321,
+            "deadline_met": 1.0
+          }
+        }
+      }
+    ],
+    "drone_images": [
+      377,
+      215,
+      104,
+      52,
+      52
+    ],
+    "uplink_bytes_per_drone_round_fp32": 1339044,
+    "uplink_total_mb_fp32": 67.0
+  },
+  "fed_seconds": 304.6
+}

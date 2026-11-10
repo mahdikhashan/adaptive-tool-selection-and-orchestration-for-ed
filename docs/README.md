@@ -1,7 +1,7 @@
 # Documentation
 
 This folder contains the documents of the project "Adaptive Tool Selection and Orchestration for Edge-AI Drone Inspection".
-The project asks which AI tool an inspection drone must use for each image, and what a fleet of drones can learn together with federated learning.
+The project asks two questions. Which AI tool must an inspection drone use for each image? What can a fleet of drones learn together with federated learning?
 
 ## Start here
 

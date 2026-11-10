@@ -5,17 +5,10 @@ import time
 import numpy as np
 import torch
 
-from fedorch import vision
 from fedorch.common import write_json, results_dir
 from fedorch.route_env import Network
 from fedorch.select_env import episode, parse, prompt, setup
-from fedorch.tools_v3 import image_file, models_dir
-
-LAYA_QUESTION = "Which step should the drone take next?"
-
-
-def short_option(ep, a):
-    return a if a in ("report", "defer") else f"{a} ({ep.cost(a):.2f} s)"
+from fedorch.tools_v3 import models_dir
 
 
 def rho(ep):
@@ -98,29 +91,14 @@ def qwen_chooser(model_name, adapter, batch_size):
     return choose
 
 
-def laya_chooser(path):
-    agent = vision.load("cuda" if torch.cuda.is_available() else "cpu", path) if path else vision.load("cuda" if torch.cuda.is_available() else "cpu")
-
-    def choose(eps, actions):
-        out = []
-        for e, a in zip(eps, actions):
-            options = [short_option(e, x) for x in a]
-            question = {"next": {"type": "choice", "instructions": LAYA_QUESTION, "criteria": options}}
-            with torch.no_grad():
-                answer = agent.predict({"image": str(image_file(e.i).resolve()), "context": e.describe()}, question)["answers"]["next"]
-            out.append(a[options.index(answer["choice"])])
-        return out
-    return choose
-
-
 def main():
-    parser = argparse.ArgumentParser(description="Evaluate tool selectors (rules, oracle, Qwen base/SFT/GRPO, laya base/SFT) on test items.")
+    parser = argparse.ArgumentParser(description="Evaluate tool selectors (rules, oracle, Qwen3-0.6B base/SFT/GRPO) on test items.")
     parser.add_argument("methods", nargs="*", default=["resnet_only", "all_tools", "cascade_defer", "oracle",
-                                                       "qwen_base", "qwen_sft", "qwen_grpo", "laya_base", "laya_sft"])
+                                                       "qwen_base", "qwen_sft", "qwen_grpo"])
     parser.add_argument("--budgets", type=lambda s: [float(x) for x in s.split(",")], default=[0.25, 0.75, 1.5, 3.0])
     parser.add_argument("--items", type=int, default=1500)
     parser.add_argument("--max-steps", type=int, default=4)
-    parser.add_argument("--model", default="Qwen/Qwen3-1.7B")
+    parser.add_argument("--model", default="Qwen/Qwen3-0.6B")
     parser.add_argument("--batch-size", type=int, default=32)
     parser.add_argument("--seed", type=int, default=0)
     args = parser.parse_args()
@@ -135,8 +113,7 @@ def main():
               "cascade_defer": lambda: rule(cascade_defer), "oracle": lambda: rule(oracle),
               "qwen_base": lambda: qwen_chooser(args.model, None, args.batch_size),
               "qwen_sft": lambda: qwen_chooser(args.model, str(models_dir() / "qwen_sft"), args.batch_size),
-              "qwen_grpo": lambda: qwen_chooser(args.model, str(models_dir() / "qwen_grpo"), args.batch_size),
-              "laya_base": lambda: laya_chooser(None), "laya_sft": lambda: laya_chooser(str(models_dir() / "laya_select"))}
+              "qwen_grpo": lambda: qwen_chooser(args.model, str(models_dir() / "qwen_grpo"), args.batch_size)}
     for name in args.methods:
         start = time.time()
         try:

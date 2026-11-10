@@ -12,7 +12,7 @@ from fedorch.tools_v3 import models_dir
 
 def main():
     parser = argparse.ArgumentParser(description="Supervised fine-tuning of a small language model as tool selector (TRL SFTTrainer + LoRA).")
-    parser.add_argument("--model", default="Qwen/Qwen3-1.7B")
+    parser.add_argument("--model", default="Qwen/Qwen3-0.6B")
     parser.add_argument("--max-examples", type=int, default=12000)
     parser.add_argument("--epochs", type=float, default=1.0)
     parser.add_argument("--batch-size", type=int, default=8)

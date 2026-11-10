@@ -19,7 +19,6 @@ stages=(
   "select_data|scripts/tv3_select_data.py"
   "sft_qwen|scripts/tv3_sft_qwen.py"
   "grpo_qwen|scripts/tv3_grpo_qwen.py"
-  "sft_laya|scripts/tv3_sft_laya.py"
   "eval|scripts/tv3_select_eval.py"
 )
 

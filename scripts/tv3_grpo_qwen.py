@@ -25,7 +25,7 @@ def reward(prompts, completions, values, **kwargs):
 
 def main():
     parser = argparse.ArgumentParser(description="GRPO on the SFT tool selector (TRL GRPOTrainer, LoRA continues from the SFT adapter).")
-    parser.add_argument("--model", default="Qwen/Qwen3-1.7B")
+    parser.add_argument("--model", default="Qwen/Qwen3-0.6B")
     parser.add_argument("--adapter", default=str(models_dir() / "qwen_sft"))
     parser.add_argument("--max-prompts", type=int, default=4000)
     parser.add_argument("--steps", type=int, default=400)

@@ -5,7 +5,9 @@ import numpy as np
 
 from fedorch.common import results_dir
 from fedorch.route_env import Network
-from fedorch.select_env import episode, prompt, setup
+from transformers import AutoTokenizer
+
+from fedorch.select_env import answer, episode, render, setup
 
 
 def main():
@@ -15,9 +17,11 @@ def main():
     parser.add_argument("--max-steps", type=int, default=4)
     parser.add_argument("--grpo-share", type=float, default=0.3)
     parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument("--model", default="Qwen/Qwen3-0.6B", help="tokenizer for the chat template")
     parser.add_argument("--report-keep", type=float, default=0.2, help="share of steps with gold 'report' kept for SFT")
     args = parser.parse_args()
     env = setup()
+    tokenizer = AutoTokenizer.from_pretrained(args.model)
     rng = np.random.default_rng(args.seed)
     trace = Network("weak", args.seed).trace
     out = results_dir("tools_v3") / "select"
@@ -30,11 +34,11 @@ def main():
                 actions = ep.candidates()
                 values = ep.values(actions)
                 gold = min(actions, key=values.get)
-                text = prompt(ep, actions)
+                text = render(tokenizer, ep, actions)
                 if gold != "report" or rng.random() < args.report_keep:
-                    sft.append({"prompt": text, "completion": " " + gold})
+                    sft.append({"prompt": text, "completion": answer(gold)})
                 if rng.random() < args.grpo_share:
-                    grpo.append({"prompt": text, "values": json.dumps(values)})
+                    grpo.append({"prompt": text, "values": json.dumps(values), "gold": gold})
                 move = actions[rng.integers(len(actions))] if rng.random() < args.explore else gold
                 ep.step(move)
                 if ep.done:
@@ -44,7 +48,7 @@ def main():
     for name, rows in (("sft_qwen", sft), ("grpo_qwen", grpo)):
         with (out / f"{name}.jsonl").open("w") as f:
             f.writelines(json.dumps(r) + "\n" for r in rows)
-    golds = [r["completion"].strip() for r in sft]
+    golds = [json.loads(r["completion"])["ids"][0] for r in sft]
     print(f"[select data] SFT steps {len(sft)}, GRPO prompts {len(grpo)}", flush=True)
     print("[select data] gold action counts:", json.dumps({a: golds.count(a) for a in sorted(set(golds), key=golds.count, reverse=True)}), flush=True)
 

@@ -7,7 +7,7 @@ import torch
 
 from fedorch.common import write_json, results_dir
 from fedorch.route_env import Network
-from fedorch.select_env import episode, parse, prompt, setup
+from fedorch.select_env import episode, parse, render, setup
 from fedorch.tools_v3 import models_dir
 
 
@@ -80,11 +80,11 @@ def qwen_chooser(model_name, adapter, batch_size):
 
     def choose(eps, actions):
         out = []
-        texts = [prompt(e, a) for e, a in zip(eps, actions)]
+        texts = [render(tokenizer, e, a) for e, a in zip(eps, actions)]
         for k in range(0, len(texts), batch_size):
             batch = tokenizer(texts[k:k + batch_size], return_tensors="pt", padding=True).to(model.device)
             with torch.no_grad():
-                gen = model.generate(**batch, max_new_tokens=8, do_sample=False, pad_token_id=tokenizer.pad_token_id)
+                gen = model.generate(**batch, max_new_tokens=32, do_sample=False, pad_token_id=tokenizer.pad_token_id)
             decoded = tokenizer.batch_decode(gen[:, batch["input_ids"].shape[1]:], skip_special_tokens=True)
             out += [parse(d, a) or "report" for d, a in zip(decoded, actions[k:k + batch_size])]
         return out

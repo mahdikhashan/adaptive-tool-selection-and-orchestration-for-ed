@@ -1,8 +1,10 @@
 import json
 import math
+import re
 
 import numpy as np
 from rank_bm25 import BM25Okapi
+from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
 from sklearn.linear_model import LogisticRegression
 
 from fedorch.common import results_dir
@@ -78,18 +80,26 @@ def risk_of(item, q):
     return answer_risk(item["defect_option"] if q >= BAYES else "good", item["label"])
 
 
+def words(text):
+    return [w for w in re.findall(r"[a-z0-9]+", text.lower()) if w not in ENGLISH_STOP_WORDS]
+
+
+def documentation(name, tool):
+    return f"{name} ({tool['location']}): {tool['description']}"
+
+
 class Retriever:
-    def __init__(self, tools):
-        self.names = list(tools)
-        self.bm25 = BM25Okapi([(n.replace("_", " ") + " " + tools[n]["description"]).lower().split() for n in self.names])
+    def __init__(self, tools, tau=0.0):
+        self.names, self.tau = list(tools), tau
+        self.bm25 = BM25Okapi([words(name.replace("_", " ") + " " + documentation(name, tools[name])) for name in self.names], k1=1.8, b=1.0)
 
     def rank(self, query):
-        scores = self.bm25.get_scores(query.lower().split())
-        return [self.names[k] for k in np.argsort(-scores, kind="stable")]
+        scores = self.bm25.get_scores(words(query))
+        return [self.names[k] for k in np.argsort(-scores, kind="stable") if scores[k] >= self.tau]
 
 
 class Episode:
-    def __init__(self, item, tools, fusion, prior, new_prior, budget, mbps, lam=0.01, k=8, retriever=None):
+    def __init__(self, item, tools, fusion, prior, new_prior, budget, mbps, lam=0.01, k=15, retriever=None):
         self.i, self.tools, self.fusion, self.prior, self.new_prior = item, tools, fusion, prior, new_prior
         self.budget, self.mbps, self.lam, self.k, self.retriever = budget, mbps, lam, k, retriever
         self.called, self.elapsed, self.done, self.action_log = ["resnet"], self.cost("resnet"), False, []
@@ -147,32 +157,52 @@ class Episode:
         return {"risk": risk, "time": self.elapsed, "deferred": self.final == "defer", "called": list(self.called),
                 "bytes": sum(self.i["cost"][t].get("bytes", 0) for t in self.called if self.tools[t]["location"] != "drone")}
 
-    def describe(self):
+    def task(self):
+        return f"Inspect this {self.i['component']} in a drone photo. {self.i['question']}"
+
+    def substep(self):
         link = f"up, {self.mbps:.1f} Mbit/s" if self.mbps > 0 else "down"
-        seen = "; ".join(f"{t}: defect {100 * self.i['p'][t]:.0f}%" for t in self.called)
-        return (f"Component: {self.i['component']}. Question: {self.i['question']}\n"
-                f"Time left: {max(0., self.budget - self.elapsed):.2f} s of {self.budget:.2f} s. Cloud link: {link}.\n"
-                f"Tools called: {seen}.\nCurrent defect estimate: {100 * self.q():.0f}%.")
+        seen = "; ".join(f"{t} says defect {100 * self.i['p'][t]:.0f}%" for t in self.called)
+        return (f"Choose the next step. Time left: {max(0., self.budget - self.elapsed):.2f} s of {self.budget:.2f} s. "
+                f"Cloud link: {link}. Tools already called: {seen}. Current defect estimate: {100 * self.q():.0f}%. "
+                f"A missed defect costs 10, a false alarm 1, sending to the operator 0.5.")
 
-    def option_text(self, a):
+    def doc(self, a):
         if a in SPECIAL_ACTIONS:
-            return f"{a}: {SPECIAL_ACTIONS[a]}"
-        return f"{a} ({self.cost(a):.2f} s): {self.tools[a]['description']}"
+            return SPECIAL_ACTIONS[a]
+        return f"{documentation(a, self.tools[a])} Time: {self.cost(a):.2f} s."
 
 
-def prompt(ep, actions):
-    lines = "\n".join(f"- {ep.option_text(a)}" for a in actions)
-    return (f"You choose the next inspection step for a drone. A missed defect costs 10, a false alarm 1, "
-            f"sending the image to the operator 0.5. Time costs a little.\n{ep.describe()}\nCandidates:\n{lines}\n"
-            f"Answer with one candidate name only.\nAnswer:")
+
+SYSTEM = ("You are a tool-search agent in the SELECT phase. Pick id(s) from the candidate list that solve the sub-step.\n\n"
+          "Output: brief reasoning, then a JSON object\n{\"name\": \"SELECT\", \"ids\": [\"<id>\", ...]}")
+
+
+def messages(ep, actions):
+    candidates = "\n\n".join(f"[{a}]\n{ep.doc(a)}" for a in actions)
+    user = f"User task: {ep.task()}\n\nSub-step: {ep.substep()}\n\nCandidates ({len(actions)}):\n{candidates}"
+    return [{"role": "system", "content": SYSTEM}, {"role": "user", "content": user}]
+
+
+def render(tokenizer, ep, actions):
+    return tokenizer.apply_chat_template(messages(ep, actions), tokenize=False, add_generation_prompt=True, enable_thinking=False)
+
+
+def answer(action):
+    return json.dumps({"name": "SELECT", "ids": [action]})
 
 
 def parse(text, actions):
-    words = text.strip().lower().replace(":", " ").replace(",", " ").split()
-    for w in words[:3]:
-        if w in actions:
-            return w
-    return next((a for a in sorted(actions, key=len, reverse=True) if a in text.lower()), None)
+    text = text.split("</think>")[-1]
+    for block in re.findall(r"\{.*?\}", text, re.S):
+        try:
+            ids = json.loads(block).get("ids") or []
+        except (ValueError, AttributeError):
+            continue
+        for a in ids:
+            if a in actions:
+                return a
+    return None
 
 
 def setup(lam=0.01):

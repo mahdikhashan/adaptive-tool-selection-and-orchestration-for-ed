@@ -165,16 +165,70 @@ There are two questions:
 - The split `towers` gives the same order of methods.
 - Figure: `figs/fig_drones.pdf`.
 
+### 12. Where the oracle gains, and the DEFER action
+
+- The oracle is better than all-tools fusion on 127 of 7,057 test items. 108 of these are false alarms and 19 are misses.
+- On 83% of these items, the fused probability is within 0.1 of the threshold. The tool subsets give different sides of the threshold, and the oracle uses the label to select the correct side. A policy without labels cannot do this.
+- Richer fusion does not help. Logistic regression with laya outputs and image data gives 118.5. Gradient boosting gives 151.3. Simple fusion gives 106.3 (AUROC 0.991).
+- New action DEFER: the item goes to the operator. The risk of DEFER is 0.5, as in the risk definition. New fusion: one logistic model for each tool subset.
+- Files: `src/fedorch/route_env.py`, `scripts/route_ppo.py`, `results/route/summary_lambda0.01_defer*.json`.
+
+| Method, separate budget per item | 0.75 s | 3 s | Deferred at 3 s |
+|---|---|---|---|
+| Uncertainty cascade, no DEFER | 112.4 | 104.9 | 0 |
+| Cascade with DEFER | 98.5 | 93.9 | 0.067 |
+| All tools, DEFER if uncertain | 96.4 | 92.2 | 0.110 |
+| PPO, 2,048 episodes per round | 115.1 ± 4.7 | 105.8 ± 1.6 | 0 |
+| PPO, 8,192 episodes per round | 105.6 ± 4.6 | 95.4 ± 2.0 | 0.083 |
+
+- DEFER removes 11 to 15 points of risk. The gain is also present on the val towers (cascade 108.8 to 93.2 at 3 s).
+- PPO learns DEFER only with large batches. PPO does not get better results than the rules.
+
+### 13. Mission segments: one budget and one DEFER cap for 40 items
+
+- Files: `src/fedorch/mission_env.py`, `scripts/route_mission.py`, `results/route/mission_*.json`.
+- One episode is 40 consecutive items of one tower. The segment has one time budget (0.1 to 0.3 s per item) and one DEFER cap (5% or 2.5% of the items). The LTE trace runs in mission time, thus an outage continues for many items.
+- Rules: a greedy cascade with DEFER, and a paced cascade. The paced cascade divides the remaining time by the remaining items and defers only above a risk threshold. We tune the pace and the threshold on val.
+- PPO from zero is 10 to 25 points worse than the best rule. Monte-Carlo returns over 40 items gave 142. GAE (0.98, 0.9) gave 110 to 124. Features for recent items and link age did not change the result.
+
+### 14. PPO with a warm start from the paced rule
+
+- Experiment node: "Mission tool selection: PPO warm-started from the paced rule (VM)". Code commit a99697e. Run on student07 with CPU only.
+- Files: `scripts/runs/mission_warm.sh`, `scripts/show_mission.py`, `results/route/mission_warm/`.
+- Step 1: the policy copies the tuned paced rule on 2,000 val segments. The critic learns the rule returns.
+- Step 2: 60 rounds of PPO (lr 1e-4, GAE 0.98 and 0.9). Variant `warm`: PPO only. Variant `anchor`: PPO plus an imitation term with weight 0.5.
+- Central PPO and FedAvg PPO with 5 tower-group drones. 5 seeds. The actor has 7,621 parameters.
+- The table gives the anchor variant. The difference is to the best of the two rules. A negative difference is better than the rule.
+
+| Cap, budget | Best rule | After imitation | Central PPO | FedAvg PPO |
+|---|---|---|---|---|
+| 5%, 0.1 s | 108.8 | 112.3 | 111.5 (+2.7) | 112.7 (+3.9) |
+| 5%, 0.15 s | 106.1 | 107.6 | 105.3 (-0.8) | 106.5 (+0.4) |
+| 5%, 0.2 s | 106.0 | 104.0 | 102.8 (-3.2) | 102.9 (-3.1) |
+| 5%, 0.3 s | 96.9 | 97.9 | 97.4 (+0.5) | 98.3 (+1.4) |
+| 2.5%, 0.1 s | 112.9 | 114.5 | 113.7 (+0.8) | 114.9 (+2.0) |
+| 2.5%, 0.15 s | 113.4 | 115.8 | 116.0 (+2.6) | 115.2 (+1.8) |
+| 2.5%, 0.2 s | 108.2 | 109.8 | 107.6 (-0.6) | 109.3 (+1.1) |
+| 2.5%, 0.3 s | 97.2 | 99.8 | 98.8 (+1.6) | 99.2 (+2.0) |
+
+- The copy of the rule is 1 to 4 points from the best rule. At 5% and 0.2 s it is 2 points better.
+- With the anchor, PPO changes the copy by 2 points or less. PPO is better than the best rule only at 5% and 0.2 s (3 points, standard error 0.4 to 0.7).
+- Without the anchor, PPO makes the copy worse in 14 of 16 cells, by up to 5 points.
+- FedAvg gives the same result as central training.
+- We selected the anchor variant with test results. A paper must select it on val or report the two variants.
+- Figure: `figs/fig_mission.pdf`.
+
 ## Conclusions
 
 1. Do not use a VLM as the agent that reads tool outputs. Use the tools' own answers and fuse them.
 2. The label-free threshold is necessary. The defect share changes between towers.
-3. PPO and FedAvg PPO learn a correct, budget-aware policy, but a one-line cascade is as good in this setting.
-4. Federated training of the policy costs KB per round. Federated training of the perception model costs MB to GB per round.
-5. To beat the cascade, the policy needs a per-item signal that predicts which tool corrects the item.
+3. DEFER to the operator gives the largest gain after fusion (11 to 15 points).
+4. Tuned rules are near the best result with these tools. PPO from zero does not reach them. PPO with a warm start and an anchor reaches them, but it is better in only 1 of 8 cells.
+5. Federated training of the policy costs KB per round and gives the same result as central training. Federated training of the perception model costs MB to GB per round.
+6. The label oracle is not a correct target. Its gain comes from items at the threshold where the label selects the side.
 
 ## Next steps
 
-1. Add per-item features: disagreement between tools, image size per component, and the tool reliability per component.
-2. Run the PPO with Flower (Ray backend) on the VM, with the 4-bit laya times.
-3. Add the three-question report to the environment.
+1. Select the anchor weight on val, not on test.
+2. Add new information for the items at the threshold: higher-resolution crops for glass insulators, lower shackles and vari-grips.
+3. Run the PPO with Flower (Ray backend) on the VM, with the 4-bit laya times.

@@ -10,7 +10,7 @@ from fedorch.common import results_dir, write_json
 from fedorch.decision import answer_risk
 from fedorch.items import CLASSES, load_items
 from fedorch.select_env import BAYES, Fusion, corrected, em_prior, out_of_fold
-from fedorch.tools_v3 import (DEFECT_TYPES, EDGE_MBPS, EDGE_RTT, JETSON, TOOLS, class_probs, group_of, load_tool, timing_path)
+from fedorch.tools_v3 import EDGE_MBPS, EDGE_RTT, JETSON, TOOLS, class_probs, group_of, load_tool, timing_path
 
 STEP2 = {"resnet": "classifier", "smolvlm": "smolvlm_local", "smolvlm_base": "smolvlm_base", "smolvlm_split": "smolvlm_split", "qwen": "cloud"}
 LAYA = {"laya": "good300_full", "laya_q4": "q4_laya_good300_full", "laya_edge": "good300_full"}
@@ -62,12 +62,14 @@ def main():
     laya = {name: {json.loads(l)["image"]: json.loads(l) for l in open(f"results/vision/{run}/predictions.jsonl")} for name, run in LAYA.items()}
     zoom = {json.loads(l)["image"]: json.loads(l) for l in open("results/zoom/resnet_views.jsonl")}
     timing = json.loads(timing_path().read_text()) if timing_path().exists() else {}
-    six = [t for t in ("convnext", "efficientnet", "dinov2_probe", "clip_zeroshot", "yolo_cls", "resnet_recut", *[f"spec_{g}" for g in ("glass", "polymer", "hardware", "yoke", "rodgrip")])]
-    caches = {t: load_tool(t) for t in six + ["laya_recut", "quality", "qwen_any", *[f"qwen_{t}" for t in DEFECT_TYPES], *[f"head_{t}" for t in DEFECT_TYPES]]}
-    quality = [r["score"] for r in caches["quality"].values()]
-    q_mean, q_std = (statistics.mean(quality), statistics.pstdev(quality) or 1.) if quality else (0., 1.)
+    special = set(STEP2) | set(LAYA) | {"qwen_edge", "resnet_crops_mean", "resnet_crops_max"}
+    caches = {t: load_tool(t) for t in TOOLS if t not in special}
+    caches = {t: c for t, c in caches.items() if c and t in timing}
+    scores = {t: [r["score"] for r in c.values()] for t, c in caches.items() if "score" in next(iter(c.values()))}
+    norm = {t: (statistics.mean(v), statistics.pstdev(v) or 1.) for t, v in scores.items()}
     jpeg = statistics.median(r["cloud"]["payload_bytes"] for r in step2.values() if "cloud" in r) if step2 else 35000
     resnet_s = JETSON * statistics.median(r["classifier"]["compute_ms"] for r in step2.values() if "classifier" in r) / 1000
+    print(f"cached new tools: {sorted(caches)}", flush=True)
     rows = []
     for i in items:
         p, cost = {}, {}
@@ -80,6 +82,9 @@ def main():
                     cost[tool] = {"compute_s": ms / 1000, "bytes": s2[key]["payload_bytes"] or jpeg}
                 else:
                     cost[tool] = {"s": JETSON * ms / 1000}
+        if "cloud" in s2:
+            p["qwen_edge"] = from_step2(s2["cloud"])
+            cost["qwen_edge"] = {"s": s2["cloud"]["compute_ms"] / 1000 + EDGE_RTT + jpeg * 8 / (EDGE_MBPS * 1e6), "bytes": jpeg}
         for tool in LAYA:
             row = laya[tool].get(i["image"])
             if row:
@@ -88,31 +93,34 @@ def main():
                               else {"s": JETSON * row["ms"] / 1000})
         views = zoom.get(i["image"])
         if views:
-            scores = [from_classes(i, dict(zip(CLASSES, v))) for v in views["probs"]]
-            p["resnet_crops_mean"], p["resnet_crops_max"] = float(np.mean(scores)), float(np.max(scores))
+            view_scores = [from_classes(i, dict(zip(CLASSES, v))) for v in views["probs"]]
+            p["resnet_crops_mean"], p["resnet_crops_max"] = float(np.mean(view_scores)), float(np.max(view_scores))
             cost["resnet_crops_mean"] = cost["resnet_crops_max"] = {"s": 6 * resnet_s}
-        for tool in six:
-            row = caches[tool].get(i["image"])
-            if row and tool in timing:
-                p[tool] = from_classes(i, row["probs"])
-                cost[tool] = {"s": JETSON * timing[tool]["gpu_ms"] / 1000 + (RECUT_S if "recut" in tool else 0.)}
-        row = caches["laya_recut"].get(i["image"])
-        if row and "laya_recut" in timing:
-            p["laya_recut"] = from_laya(i, row["answers"])
-            cost["laya_recut"] = {"s": JETSON * timing["laya_recut"]["gpu_ms"] / 1000 + RECUT_S}
-        row = caches["quality"].get(i["image"])
-        if row and "quality" in timing:
-            p["quality"] = 1 / (1 + math.exp(-(row["score"] - q_mean) / q_std))
-            cost["quality"] = {"s": timing["quality"]["gpu_ms"] / 1000}
-        for tool in ["qwen_any", *[f"qwen_{t}" for t in DEFECT_TYPES], *[f"head_{t}" for t in DEFECT_TYPES]]:
-            row = caches[tool].get(i["image"])
-            if row and tool in timing:
+        for tool, cache in caches.items():
+            row = cache.get(i["image"])
+            if not row:
+                continue
+            if "probs" in row:
+                v = from_classes(i, row["probs"])
+            elif "answers" in row:
+                v = from_laya(i, row["answers"])
+            elif "defect" in row:
                 kind, value = next(iter(row["defect"].items()))
                 v = from_defect(i, kind, value)
-                if v is not None:
-                    p[tool] = v
-                    cost[tool] = ({"compute_s": timing[tool]["gpu_ms"] / 1000, "bytes": timing[tool]["payload_bytes"] or jpeg}
-                                  if TOOLS[tool][0] == "cloud" else {"s": JETSON * timing[tool]["gpu_ms"] / 1000})
+            else:
+                mean, std = norm[tool]
+                v = 1 / (1 + math.exp(-(row["score"] - mean) / std))
+            if v is None:
+                continue
+            p[tool] = v
+            ms = timing[tool]["gpu_ms"]
+            location = TOOLS[tool][0]
+            if location == "cloud":
+                cost[tool] = {"compute_s": ms / 1000, "bytes": timing[tool]["payload_bytes"] or jpeg}
+            elif tool in ("quality", "exposure", "size"):
+                cost[tool] = {"s": ms / 1000}
+            else:
+                cost[tool] = {"s": JETSON * ms / 1000 + (RECUT_S if "recut" in tool else 0.)}
         p = {t: float(min(max(v, 0.), 1.)) for t, v in p.items() if v is not None and math.isfinite(v)}
         rows.append({"item_id": i["item_id"], "split": i["split"], "tower": i["tower"], "asset": i["asset"], "group": group_of(i["asset"]),
                      "task": i["task"], "label": i["label"], "defect": i["label"] != "good", "defect_option": defect_option(i),

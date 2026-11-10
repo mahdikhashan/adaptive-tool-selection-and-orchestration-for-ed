@@ -14,7 +14,9 @@ from fedorch.tools_v3 import (DEFECT_TYPES, Progress, append, done_images, held_
                               recut_file, record_timing)
 
 PROMPTS = {"qwen_any": "Look at this {c}. Does it have any visible defect, such as rust, corrosion, a missing cap, a bird nest or damage? Answer Yes or No.",
-           **{f"qwen_{t}": "Look at this {c}. Is there " + DEFECT_TYPES[t] + " on it? Answer Yes or No." for t in DEFECT_TYPES}}
+           **{f"qwen_{t}": "Look at this {c}. Is there " + DEFECT_TYPES[t] + " on it? Answer Yes or No." for t in DEFECT_TYPES},
+           "qwen_other": "Look at this {c}. Is there peeling paint or a torn part on it? Answer Yes or No."}
+KIND = {"qwen_any": "any", "qwen_other": "other-defect", "qwen_any_recut": "any", **{f"qwen_{t}": t for t in DEFECT_TYPES}}
 
 
 def laya_recut():
@@ -42,13 +44,8 @@ def prepare(path, side=512):
     return padded
 
 
-def qwen():
+def load_qwen():
     from transformers import AutoModelForImageTextToText, AutoProcessor, BitsAndBytesConfig
-    tools = list(PROMPTS)
-    done = {t: done_images(t) for t in tools}
-    rows = [r for r in held_images() if any(r["image"] not in done[t] for t in tools)]
-    if not rows:
-        return
     checkpoint = os.environ.get("TV3_QWEN", str(WORK / "models" / "ppo_v2" / "qwen8b"))
     quant = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type="nf4", bnb_4bit_compute_dtype=torch.float16, bnb_4bit_use_double_quant=True)
     processor = AutoProcessor.from_pretrained(checkpoint, min_pixels=32 * 32, max_pixels=512 ** 2)
@@ -57,39 +54,63 @@ def qwen():
                                                         quantization_config=quant, attn_implementation="sdpa").eval()
     yes = processor.tokenizer.encode("Yes", add_special_tokens=False)[0]
     no = processor.tokenizer.encode("No", add_special_tokens=False)[0]
-    progress, times = Progress("qwen prompts", len(rows), 200), []
+    return model, processor, yes, no
+
+
+def ask(qwen_parts, image, texts):
+    model, processor, yes, no = qwen_parts
+    messages = [[{"role": "user", "content": [{"type": "image", "image": image}, {"type": "text", "text": t}]}] for t in texts]
+    inputs = processor.apply_chat_template(messages, add_generation_prompt=True, tokenize=True, return_dict=True,
+                                           return_tensors="pt", padding=True)
+    inputs = {k: v.to(0, torch.float16) if v.is_floating_point() else v.to(0) for k, v in inputs.items()}
+    with torch.no_grad():
+        logits = model(**inputs).logits[:, -1, [yes, no]].float()
+    return torch.softmax(logits, -1)[:, 0].cpu().tolist()
+
+
+def run_prompts(qwen_parts, tools, path, label):
+    done = {t: done_images(t) for t in tools}
+    rows = [r for r in held_images() if path(r).exists() and any(r["image"] not in done[t] for t in tools)]
+    progress, times = Progress(label, len(rows), 200), []
     for r in rows:
-        image = prepare(image_file(r))
-        messages = [[{"role": "user", "content": [{"type": "image", "image": image}, {"type": "text", "text": PROMPTS[t].format(c=r["component"])}]}] for t in tools]
-        inputs = processor.apply_chat_template(messages, add_generation_prompt=True, tokenize=True, return_dict=True,
-                                               return_tensors="pt", padding=True)
-        inputs = {k: v.to(0, torch.float16) if v.is_floating_point() else v.to(0) for k, v in inputs.items()}
+        image = prepare(path(r))
         torch.cuda.synchronize()
         start = time.perf_counter()
-        with torch.no_grad():
-            logits = model(**inputs).logits[:, -1, [yes, no]].float()
+        probs = ask(qwen_parts, image, [PROMPTS[t.replace("_recut", "")].format(c=r["component"]) for t in tools])
         torch.cuda.synchronize()
         times.append(1000 * (time.perf_counter() - start) / len(tools))
-        p = torch.softmax(logits, -1)[:, 0].cpu().tolist()
-        for t, v in zip(tools, p):
+        for t, v in zip(tools, probs):
             if r["image"] not in done[t]:
-                kind = "any" if t == "qwen_any" else t[5:]
-                append(t, [{"image": r["image"], "defect": {kind: float(v)}}])
+                append(t, [{"image": r["image"], "defect": {KIND[t]: float(v)}}])
         progress.tick()
-    buffer = io.BytesIO()
-    prepare(image_file(rows[0])).save(buffer, format="JPEG", quality=90)
-    for t in tools:
-        record_timing(t, statistics.median(times[5:] or times), buffer.tell())
+    if rows:
+        buffer = io.BytesIO()
+        prepare(path(rows[0])).save(buffer, format="JPEG", quality=90)
+        for t in tools:
+            record_timing(t, statistics.median(times[5:] or times), buffer.tell())
+
+
+def qwen():
+    parts = load_qwen()
+    run_prompts(parts, list(PROMPTS), image_file, "qwen prompts")
+    run_prompts(parts, ["qwen_any_recut"], recut_file, "qwen re-cut")
 
 
 def main():
     parser = argparse.ArgumentParser(description="laya-vision on re-cut images and Qwen3-VL-8B yes/no prompts for each defect type.")
     parser.add_argument("parts", nargs="*", default=["laya_recut", "qwen"])
     args = parser.parse_args()
+    failed = []
     for part in args.parts:
         start = time.time()
-        {"laya_recut": laya_recut, "qwen": qwen}[part]()
-        print(f"[{part}] done in {(time.time() - start) / 60:.1f} min", flush=True)
+        try:
+            {"laya_recut": laya_recut, "qwen": qwen}[part]()
+            print(f"[{part}] done in {(time.time() - start) / 60:.1f} min", flush=True)
+        except Exception as error:
+            failed.append(part)
+            print(f"[{part}] FAILED: {error!r}", flush=True)
+        torch.cuda.empty_cache()
+    print(f"[vlm] finished, failed parts: {failed or 'none'}", flush=True)
 
 
 if __name__ == "__main__":

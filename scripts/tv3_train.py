@@ -11,12 +11,19 @@ from transformers import AutoModelForImageClassification, Trainer, TrainingArgum
 
 from fedorch.items import CLASSES
 from fedorch.tools_v3 import (GROUPS, Progress, append, condition_label, done_images, group_of, held_images, image_file,
-                              models_dir, record_timing, train_images)
+                              models_dir, recut_file, record_timing, specialist_group, train_images)
 
 MEAN = np.array([0.485, 0.456, 0.406], dtype=np.float32)
 STD = np.array([0.229, 0.224, 0.225], dtype=np.float32)
 MODELS = {"convnext": ("facebook/convnext-tiny-224", 224), "efficientnet": ("google/efficientnet-b0", 224),
-          **{f"spec_{g}": ("microsoft/resnet-50", 384) for g in GROUPS}}
+          "resnet18": ("microsoft/resnet-18", 224), "resnet101": ("microsoft/resnet-101", 224),
+          "vit_base": ("google/vit-base-patch16-224", 224), "deit_small": ("facebook/deit-small-patch16-224", 224),
+          "swin_tiny": ("microsoft/swin-tiny-patch4-window7-224", 224), "mobilenet_v2": ("google/mobilenet_v2_1.0_224", 224),
+          "efficientnet_b3": ("google/efficientnet-b3", 300), "convnext_small": ("facebook/convnext-small-224", 224),
+          **{f"spec_{g}": ("microsoft/resnet-50", 384) for g in GROUPS},
+          **{f"cspec_{g}": ("facebook/convnext-tiny-224", 224) for g in GROUPS}}
+TTA = {"convnext": "convnext_tta", "efficientnet": "efficientnet_tta"}
+RECUT = {"convnext": "convnext_recut"}
 
 
 def pixels(path, size, flip=False):
@@ -64,8 +71,8 @@ def macro_recall(prediction):
 def train(name, args):
     checkpoint, size = MODELS[name]
     rows = train_images()
-    if name.startswith("spec_"):
-        rows = [r for r in rows if group_of(r["asset"]) == name[5:]]
+    if specialist_group(name):
+        rows = [r for r in rows if group_of(r["asset"]) == specialist_group(name)]
     fit, select = split_by_tower(rows)
     print(f"[{name}] training images {len(fit)}, selection images {len(select)}", flush=True)
     model = AutoModelForImageClassification.from_pretrained(checkpoint, num_labels=len(CLASSES), ignore_mismatched_sizes=True)
@@ -83,17 +90,18 @@ def train(name, args):
     return trainer.model.eval(), size
 
 
-def predict(name, model, size, args):
+def predict(name, model, size, args, tool=None, path=image_file, flip=False):
+    tool = tool or name
     rows = held_images()
-    if name.startswith("spec_"):
-        rows = [r for r in rows if group_of(r["asset"]) == name[5:]]
-    done = done_images(name)
-    rows = [r for r in rows if r["image"] not in done]
+    if specialist_group(name):
+        rows = [r for r in rows if group_of(r["asset"]) == specialist_group(name)]
+    done = done_images(tool)
+    rows = [r for r in rows if r["image"] not in done and path(r).exists()]
     run_on = "cuda" if torch.cuda.is_available() else "cpu"
     model = model.to(run_on)
     times = []
     for r in rows[:30]:
-        x = pixels(image_file(r), size).unsqueeze(0).to(run_on)
+        x = pixels(path(r), size).unsqueeze(0).to(run_on)
         if run_on == "cuda":
             torch.cuda.synchronize()
         start = time.perf_counter()
@@ -101,39 +109,53 @@ def predict(name, model, size, args):
             model(pixel_values=x)
         if run_on == "cuda":
             torch.cuda.synchronize()
-        times.append(1000 * (time.perf_counter() - start))
+        times.append(1000 * (time.perf_counter() - start) * (2 if flip else 1))
     if times:
-        record_timing(name, statistics.median(times[5:] or times))
-    progress = Progress(f"{name} predict", len(rows), 1000)
+        record_timing(tool, statistics.median(times[5:] or times))
+    progress = Progress(f"{tool} predict", len(rows), 1000)
     for k in range(0, len(rows), args.batch_size):
         batch = rows[k:k + args.batch_size]
-        x = torch.stack([pixels(image_file(r), size) for r in batch]).to(run_on)
-        with torch.no_grad(), torch.autocast(run_on, dtype=torch.float16, enabled=run_on == "cuda"):
-            probs = torch.softmax(model(pixel_values=x).logits.float(), -1).cpu().numpy()
-        append(name, [{"image": r["image"], "probs": dict(zip(CLASSES, map(float, p.round(5))))} for r, p in zip(batch, probs)])
+        views = [False, True] if flip else [False]
+        probs = 0
+        for mirror in views:
+            x = torch.stack([pixels(path(r), size, mirror) for r in batch]).to(run_on)
+            with torch.no_grad(), torch.autocast(run_on, dtype=torch.float16, enabled=run_on == "cuda"):
+                probs = probs + torch.softmax(model(pixel_values=x).logits.float(), -1).cpu().numpy() / len(views)
+        append(tool, [{"image": r["image"], "probs": dict(zip(CLASSES, map(float, p.round(5))))} for r, p in zip(batch, probs)])
         progress.tick(len(batch))
 
 
 def main():
     parser = argparse.ArgumentParser(description="Fine-tune image-classifier tools with the Hugging Face Trainer and cache their answers on val/test images.")
     parser.add_argument("models", nargs="*", default=list(MODELS))
-    parser.add_argument("--epochs", type=float, default=6)
+    parser.add_argument("--epochs", type=float, default=5)
     parser.add_argument("--lr", type=float, default=1e-4)
     parser.add_argument("--batch-size", type=int, default=32)
     parser.add_argument("--workers", type=int, default=8)
     args = parser.parse_args()
-    for name in args.models:
+    failed = []
+    for n, name in enumerate(args.models, 1):
         start = time.time()
-        best = models_dir() / name / "best"
-        if best.exists():
-            model, size = AutoModelForImageClassification.from_pretrained(str(best)).eval(), MODELS[name][1]
-            print(f"[{name}] using trained model {best}", flush=True)
-        else:
-            model, size = train(name, args)
-        predict(name, model, size, args)
-        print(f"[{name}] done in {(time.time() - start) / 60:.1f} min", flush=True)
-        del model
+        print(f"[train] model {n}/{len(args.models)}: {name}", flush=True)
+        try:
+            best = models_dir() / name / "best"
+            if best.exists():
+                model, size = AutoModelForImageClassification.from_pretrained(str(best)).eval(), MODELS[name][1]
+                print(f"[{name}] using trained model {best}", flush=True)
+            else:
+                model, size = train(name, args)
+            predict(name, model, size, args)
+            if name in TTA:
+                predict(name, model, size, args, tool=TTA[name], flip=True)
+            if name in RECUT:
+                predict(name, model, size, args, tool=RECUT[name], path=recut_file)
+            print(f"[{name}] done in {(time.time() - start) / 60:.1f} min", flush=True)
+            del model
+        except Exception as error:
+            failed.append(name)
+            print(f"[{name}] FAILED: {error!r}", flush=True)
         torch.cuda.empty_cache()
+    print(f"[train] finished, failed models: {failed or 'none'}", flush=True)
 
 
 if __name__ == "__main__":

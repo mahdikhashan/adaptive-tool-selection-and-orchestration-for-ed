@@ -17,6 +17,10 @@ def group_of(asset):
     return next(g for g, prefixes in GROUPS.items() if asset.startswith(prefixes))
 
 
+def specialist_group(tool):
+    return tool.split("_", 1)[1] if tool.startswith(("spec_", "cspec_")) else None
+
+
 TOOLS = {
     "resnet": ("drone", "ResNet-50 image classifier fine-tuned on all components; fast first check"),
     "resnet_crops_mean": ("drone", "ResNet-50 on five overlapping crops and the full image, mean score"),
@@ -41,6 +45,30 @@ TOOLS = {
     **{f"head_{t}": ("drone", f"Detector for {DEFECT_TYPES[t]} only, on DINOv2 features") for t in DEFECT_TYPES},
     **{f"spec_{g}": ("drone", f"ResNet-50 specialist trained only on {g} components; works only for those components")
        for g in GROUPS},
+    "resnet18": ("drone", "ResNet-18 small image classifier fine-tuned on all components; very fast"),
+    "resnet101": ("drone", "ResNet-101 deep image classifier fine-tuned on all components"),
+    "vit_base": ("drone", "Vision Transformer ViT-Base fine-tuned on all components; attention over image patches"),
+    "deit_small": ("drone", "DeiT-Small data-efficient vision transformer fine-tuned on all components"),
+    "swin_tiny": ("drone", "Swin-Tiny shifted-window transformer fine-tuned on all components"),
+    "mobilenet_v2": ("drone", "MobileNet-V2 mobile classifier fine-tuned on all components; lowest compute"),
+    "efficientnet_b3": ("drone", "EfficientNet-B3 classifier fine-tuned on all components; higher input resolution"),
+    "convnext_small": ("drone", "ConvNeXt-Small classifier fine-tuned on all components; larger than ConvNeXt-Tiny"),
+    **{f"cspec_{g}": ("drone", f"ConvNeXt-Tiny specialist trained only on {g} components; works only for those components")
+       for g in GROUPS},
+    "convnext_tta": ("drone", "ConvNeXt-Tiny on the image and its mirror image, mean score"),
+    "efficientnet_tta": ("drone", "EfficientNet-B0 on the image and its mirror image, mean score"),
+    "convnext_recut": ("drone", "ConvNeXt-Tiny on the component cut again from the full-resolution drone photo"),
+    "clip_probe": ("drone", "CLIP image features with a linear defect classifier"),
+    **{f"clip_head_{t}": ("drone", f"Detector for {DEFECT_TYPES[t]} only, on CLIP features") for t in DEFECT_TYPES},
+    "dinov2b_probe": ("drone", "DINOv2-Base larger self-supervised features with a linear defect classifier"),
+    **{f"dinov2b_head_{t}": ("drone", f"Detector for {DEFECT_TYPES[t]} only, on DINOv2-Base features") for t in DEFECT_TYPES},
+    "clip_large_zeroshot": ("drone", "CLIP-Large zero-shot: compares the image with text prompts of each condition"),
+    "siglip_zeroshot": ("drone", "SigLIP zero-shot: compares the image with text prompts of each condition"),
+    "qwen_other": ("cloud", "Qwen3-VL-8B in the cloud asked only about peeling paint or torn parts"),
+    "qwen_any_recut": ("cloud", "Qwen3-VL-8B in the cloud asked about any defect on the full-resolution re-cut"),
+    "qwen_edge": ("edge", "Qwen3-VL-8B on the ground-station edge server; image sent over the local link"),
+    "exposure": ("drone", "Exposure check: brightness and colour saturation of the image"),
+    "size": ("drone", "Image size check: small crops of far components show less detail"),
 }
 SPECIAL_ACTIONS = {"report": "Stop and report the current answer now", "defer": "Send the image to the human operator"}
 

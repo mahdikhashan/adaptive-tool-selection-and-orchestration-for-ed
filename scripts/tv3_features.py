@@ -7,7 +7,7 @@ import numpy as np
 import torch
 from PIL import Image
 from sklearn.linear_model import LogisticRegression
-from transformers import AutoImageProcessor, AutoModel, CLIPModel, CLIPProcessor
+from transformers import AutoImageProcessor, AutoModel, AutoProcessor, CLIPModel, CLIPProcessor
 
 from fedorch.classifier import load_classifier, to_tensor
 from fedorch.items import CLASSES
@@ -18,104 +18,144 @@ CLIP_TEXT = {"good": "a photo of a {} in good condition with no defect", "rust":
              "corrosion": "a photo of a corroded {}", "missing-cap": "a photo of a {} with a missing cap",
              "nest": "a photo of a {} with a bird nest", "other-defect": "a photo of a damaged {} with peeling paint or a torn part"}
 RUN_ON = "cuda" if torch.cuda.is_available() else "cpu"
+FEATURES = {"dinov2": ("facebook/dinov2-small", "dinov2_probe", "head"),
+            "dinov2b": ("facebook/dinov2-base", "dinov2b_probe", "dinov2b_head"),
+            "clip": ("openai/clip-vit-base-patch32", "clip_probe", "clip_head")}
+ZERO_SHOT = {"clip_zeroshot": "openai/clip-vit-base-patch32", "clip_large_zeroshot": "openai/clip-vit-large-patch14",
+             "siglip_zeroshot": "google/siglip-base-patch16-224"}
+
+
+def sync():
+    if RUN_ON == "cuda":
+        torch.cuda.synchronize()
 
 
 def timed(fn, n=30):
     times = []
     for _ in range(n):
-        if RUN_ON == "cuda":
-            torch.cuda.synchronize()
+        sync()
         start = time.perf_counter()
         fn()
-        if RUN_ON == "cuda":
-            torch.cuda.synchronize()
+        sync()
         times.append(1000 * (time.perf_counter() - start))
     return statistics.median(times[5:])
 
 
-def dinov2_features(rows, batch_size):
-    path = models_dir() / "dinov2_features.npz"
+def images(rows):
+    return [Image.open(image_file(r)).convert("RGB") for r in rows]
+
+
+def extractor(checkpoint):
+    if "clip" in checkpoint:
+        processor, model = CLIPProcessor.from_pretrained(checkpoint), CLIPModel.from_pretrained(checkpoint).to(RUN_ON).eval()
+
+        def run(pixel_values):
+            return model.visual_projection(model.vision_model(pixel_values=pixel_values).pooler_output)
+    else:
+        processor, model = AutoImageProcessor.from_pretrained(checkpoint), AutoModel.from_pretrained(checkpoint).to(RUN_ON).eval()
+
+        def run(pixel_values):
+            return model(pixel_values=pixel_values).last_hidden_state[:, 0]
+    return processor, run
+
+
+def features(key, rows, batch_size):
+    checkpoint, probe_tool, head_prefix = FEATURES[key]
+    path = models_dir() / f"{key}_features.npz"
     cache = dict(np.load(path, allow_pickle=True)) if path.exists() else {}
     known = dict(zip(cache.get("images", []), cache.get("features", [])))
     todo = [r for r in rows if r["image"] not in known]
     if todo:
-        processor = AutoImageProcessor.from_pretrained("facebook/dinov2-small")
-        model = AutoModel.from_pretrained("facebook/dinov2-small").to(RUN_ON).eval()
-        progress = Progress("dinov2 features", len(todo), 2000)
+        processor, run = extractor(checkpoint)
+        progress = Progress(f"{key} features", len(todo), 2000)
         for k in range(0, len(todo), batch_size):
             batch = todo[k:k + batch_size]
-            inputs = processor(images=[Image.open(image_file(r)).convert("RGB") for r in batch], return_tensors="pt").to(RUN_ON)
+            pixels = processor(images=images(batch), return_tensors="pt")["pixel_values"].to(RUN_ON)
             with torch.no_grad():
-                out = model(**inputs).last_hidden_state[:, 0].float().cpu().numpy()
-            known.update({r["image"]: f for r, f in zip(batch, out)})
+                known.update({r["image"]: f for r, f in zip(batch, run(pixels).float().cpu().numpy())})
             progress.tick(len(batch))
-        one = processor(images=[Image.open(image_file(rows[0])).convert("RGB")], return_tensors="pt").to(RUN_ON)
-        ms = timed(lambda: model(**one))
-        record_timing("dinov2_probe", ms)
-        for t in DEFECT_TYPES:
-            record_timing(f"head_{t}", ms)
+        one = processor(images=images(rows[:1]), return_tensors="pt")["pixel_values"].to(RUN_ON)
+        with torch.no_grad():
+            ms = timed(lambda: run(one))
+        for tool in [probe_tool] + [f"{head_prefix}_{t}" for t in DEFECT_TYPES]:
+            record_timing(tool, ms)
         np.savez(path, images=np.array(list(known)), features=np.stack(list(known.values())))
     return known
 
 
-def probes(batch_size):
+def probes(key, batch_size):
+    _, probe_tool, head_prefix = FEATURES[key]
     train, held = train_images(), held_images()
-    features = dinov2_features(train + held, batch_size)
-    x = np.stack([features[r["image"]] for r in train])
+    known = features(key, train + held, batch_size)
+    x = np.stack([known[r["image"]] for r in train])
     y = np.array([CLASSES.index(condition_label(r)) for r in train])
-    xh = np.stack([features[r["image"]] for r in held])
-    if not done_images("dinov2_probe"):
+    xh = np.stack([known[r["image"]] for r in held])
+    if not done_images(probe_tool):
         model = LogisticRegression(max_iter=3000, C=1.0, class_weight="balanced").fit(x, y)
         p = model.predict_proba(xh)
-        append("dinov2_probe", [{"image": r["image"], "probs": {CLASSES[c]: float(p[i, k]) for k, c in enumerate(model.classes_)}}
-                                for i, r in enumerate(held)])
-        print("dinov2_probe cached", flush=True)
+        append(probe_tool, [{"image": r["image"], "probs": {CLASSES[c]: float(p[i, k]) for k, c in enumerate(model.classes_)}}
+                            for i, r in enumerate(held)])
+        print(f"{probe_tool} cached", flush=True)
     for t in DEFECT_TYPES:
-        tool = f"head_{t}"
+        tool = f"{head_prefix}_{t}"
         if done_images(tool):
             continue
-        yt = (y == CLASSES.index(t)).astype(int)
-        model = LogisticRegression(max_iter=3000, C=1.0, class_weight="balanced").fit(x, yt)
-        p = model.predict_proba(xh)[:, 1]
-        append(tool, [{"image": r["image"], "defect": {t: float(v)}} for r, v in zip(held, p)])
+        model = LogisticRegression(max_iter=3000, C=1.0, class_weight="balanced").fit(x, (y == CLASSES.index(t)).astype(int))
+        append(tool, [{"image": r["image"], "defect": {t: float(v)}} for r, v in zip(held, model.predict_proba(xh)[:, 1])])
         print(f"{tool} cached", flush=True)
 
 
-def clip_zeroshot(batch_size):
-    rows = [r for r in held_images() if r["image"] not in done_images("clip_zeroshot")]
+def zero_shot(tool, batch_size):
+    rows = [r for r in held_images() if r["image"] not in done_images(tool)]
     if not rows:
         return
-    processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
-    model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32").to(RUN_ON).eval()
-    progress = Progress("clip", len(rows), 2000)
+    checkpoint = ZERO_SHOT[tool]
+    if "siglip" in checkpoint:
+        processor, model = AutoProcessor.from_pretrained(checkpoint), AutoModel.from_pretrained(checkpoint).to(RUN_ON).eval()
+        text_kwargs = {"padding": "max_length"}
+    else:
+        processor, model = CLIPProcessor.from_pretrained(checkpoint), CLIPModel.from_pretrained(checkpoint).to(RUN_ON).eval()
+        text_kwargs = {"padding": True}
+
+    def inputs_for(batch):
+        texts = [CLIP_TEXT[c].format(r["component"]) for r in batch for c in CLASSES]
+        return processor(text=texts, images=images(batch), return_tensors="pt", **text_kwargs).to(RUN_ON)
+
+    progress = Progress(tool, len(rows), 2000)
     for k in range(0, len(rows), batch_size):
         batch = rows[k:k + batch_size]
-        texts = [CLIP_TEXT[c].format(r["component"]) for r in batch for c in CLASSES]
-        inputs = processor(text=texts, images=[Image.open(image_file(r)).convert("RGB") for r in batch], return_tensors="pt", padding=True).to(RUN_ON)
         with torch.no_grad():
-            logits = model(**inputs).logits_per_image.float()
-        own = torch.stack([logits[k, k * len(CLASSES):(k + 1) * len(CLASSES)] for k in range(len(batch))])
+            logits = model(**inputs_for(batch)).logits_per_image.float()
+        own = torch.stack([logits[j, j * len(CLASSES):(j + 1) * len(CLASSES)] for j in range(len(batch))])
         probs = torch.softmax(own, -1).cpu().numpy()
-        append("clip_zeroshot", [{"image": r["image"], "probs": dict(zip(CLASSES, map(float, p)))} for r, p in zip(batch, probs)])
+        append(tool, [{"image": r["image"], "probs": dict(zip(CLASSES, map(float, p)))} for r, p in zip(batch, probs)])
         progress.tick(len(batch))
-    one = processor(text=[CLIP_TEXT[c].format("shackle") for c in CLASSES], images=[Image.open(image_file(rows[0])).convert("RGB")], return_tensors="pt", padding=True).to(RUN_ON)
-    record_timing("clip_zeroshot", timed(lambda: model(**one)))
+    one = inputs_for(rows[:1])
+    with torch.no_grad():
+        record_timing(tool, timed(lambda: model(**one)))
 
 
-def quality():
-    rows = [r for r in held_images() if r["image"] not in done_images("quality")]
-    progress, out = Progress("quality", len(rows), 2000), []
+def image_checks():
+    checks = {"quality": lambda gray, hsv: (float(np.log1p(cv2.Laplacian(gray, cv2.CV_64F).var())), float(gray.std())),
+              "exposure": lambda gray, hsv: (float(abs(gray.mean() - 128) / 128 - hsv[..., 1].mean() / 255), float(gray.mean())),
+              "size": lambda gray, hsv: (float(np.log(gray.shape[0] * gray.shape[1])), float(gray.shape[0]))}
+    done = {t: done_images(t) for t in checks}
+    rows = [r for r in held_images() if any(r["image"] not in done[t] for t in checks)]
+    progress, out = Progress("image checks", len(rows), 2000), {t: [] for t in checks}
     for r in rows:
-        gray = cv2.imread(str(image_file(r)), cv2.IMREAD_GRAYSCALE)
-        out.append({"image": r["image"], "score": float(np.log1p(cv2.Laplacian(gray, cv2.CV_64F).var())), "contrast": float(gray.std())})
+        image = cv2.imread(str(image_file(r)))
+        gray, hsv = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY), cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        for t, fn in checks.items():
+            if r["image"] not in done[t]:
+                score, extra = fn(gray, hsv)
+                out[t].append({"image": r["image"], "score": score, "extra": extra})
         progress.tick()
-        if len(out) == 500:
-            append("quality", out)
-            out = []
-    append("quality", out)
-    if rows:
-        gray = cv2.imread(str(image_file(rows[0])), cv2.IMREAD_GRAYSCALE)
-        record_timing("quality", timed(lambda: cv2.Laplacian(gray, cv2.CV_64F).var()))
+    for t, fn in checks.items():
+        append(t, out[t])
+        if rows:
+            image = cv2.imread(str(image_file(rows[0])))
+            gray, hsv = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY), cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+            record_timing(t, timed(lambda: fn(gray, hsv)))
 
 
 def resnet_recut(batch_size):
@@ -133,20 +173,33 @@ def resnet_recut(batch_size):
         append("resnet_recut", [{"image": r["image"], "probs": dict(zip(CLASSES, map(float, p)))} for r, p in zip(batch, probs)])
         progress.tick(len(batch))
     one = to_tensor(recut_file(rows[0])).unsqueeze(0).to(RUN_ON)
-    record_timing("resnet_recut", timed(lambda: model(pixel_values=one)))
+    with torch.no_grad():
+        record_timing("resnet_recut", timed(lambda: model(pixel_values=one)))
 
 
 def main():
-    parser = argparse.ArgumentParser(description="DINOv2 probes and defect heads, CLIP zero-shot, image quality, ResNet on re-cut images.")
-    parser.add_argument("parts", nargs="*", default=["probes", "clip", "quality", "recut"])
+    parser = argparse.ArgumentParser(description="Feature probes and defect detectors (DINOv2, DINOv2-Base, CLIP), zero-shot models (CLIP, CLIP-Large, SigLIP), image checks, ResNet on re-cut images.")
+    parser.add_argument("parts", nargs="*", default=[*FEATURES, *ZERO_SHOT, "checks", "recut"])
     parser.add_argument("--batch-size", type=int, default=64)
     args = parser.parse_args()
-    jobs = {"probes": lambda: probes(args.batch_size), "clip": lambda: clip_zeroshot(args.batch_size),
-            "quality": quality, "recut": lambda: resnet_recut(args.batch_size)}
+    failed = []
     for part in args.parts:
         start = time.time()
-        jobs[part]()
-        print(f"[{part}] done in {(time.time() - start) / 60:.1f} min", flush=True)
+        try:
+            if part in FEATURES:
+                probes(part, args.batch_size)
+            elif part in ZERO_SHOT:
+                zero_shot(part, args.batch_size)
+            elif part == "checks":
+                image_checks()
+            else:
+                resnet_recut(args.batch_size)
+            print(f"[{part}] done in {(time.time() - start) / 60:.1f} min", flush=True)
+        except Exception as error:
+            failed.append(part)
+            print(f"[{part}] FAILED: {error!r}", flush=True)
+        torch.cuda.empty_cache()
+    print(f"[features] finished, failed parts: {failed or 'none'}", flush=True)
 
 
 if __name__ == "__main__":

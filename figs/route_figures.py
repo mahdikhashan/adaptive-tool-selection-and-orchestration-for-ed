@@ -60,7 +60,7 @@ def drones():
         budgets = ["0.75", "1.5", "3.0"]
         for name, color, marker in fixed:
             ax.plot([m[name][k]["fleet"]["mean_time_s"] for k in budgets], [m[name][k]["fleet"]["risk_per_1000"] for k in budgets],
-                    color=color, marker=marker, ms=3, ls="--" if "tuned" in name else "-", label=name)
+                    color=color, marker=marker, ms=3, ls="--" if "tuned" in name else "-", label=name.replace("fixed", "static"))
         for name, color in learned:
             r = np.array([[m[f"{name} seed {s}"][k]["fleet"]["risk_per_1000"] for s in range(3)] for k in budgets])
             t = np.array([[m[f"{name} seed {s}"][k]["fleet"]["mean_time_s"] for s in range(3)] for k in budgets])

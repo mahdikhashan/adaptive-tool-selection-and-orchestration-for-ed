@@ -68,7 +68,7 @@ The folder `understanding/` explains the full project from the basic concepts. T
 | `ppo_v2_gpu.md`, `ppo_v2_interfaces.md` | The GPU pilot for PPO with Flower and its interfaces |
 | `agentic_demo.md` | A local demo of tool selection on the laptop |
 | `tool_selection_results.md` | All results of route 3, sections 1 to 14 |
-| `tool_corpus_plan.md` | Plan: about 24 tools and laya-vision as a tool selector (Plan, Retrieve, Select) |
+| `tool_corpus_plan.md` | Plan: about 24 tools and laya-vision as a tool selector, after Zhou et al. (2026) |
 
 ## Other places
 

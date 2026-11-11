@@ -8,7 +8,7 @@ from peft import LoraConfig
 from trl import SFTConfig, SFTTrainer
 
 from fedorch.common import results_dir
-from fedorch.tools_v3 import default_dtype, models_dir, selector_tag
+from fedorch.tools_v3 import default_dtype, models_dir, run_suffix, selector_tag
 
 
 def main():
@@ -30,7 +30,7 @@ def main():
     small = "0.6b" in args.model.lower()
     args.batch_size = args.batch_size or (8 if small else 2)
     args.grad_accum = args.grad_accum or (2 if small else 8)
-    data = load_dataset("json", data_files=str(results_dir("tools_v3") / "select" / ("sft_qwen_think.jsonl" if args.think else "sft_qwen.jsonl")), split="train").shuffle(seed=0)
+    data = load_dataset("json", data_files=str(results_dir("tools_v3") / "select" / (f"sft_qwen_think{run_suffix()}.jsonl" if args.think else f"sft_qwen{run_suffix()}.jsonl")), split="train").shuffle(seed=0)
     data = data.select(range(min(args.max_examples, len(data))))
     print(f"[qwen sft] {len(data)} examples, model {args.model}", flush=True)
     cuda = torch.cuda.is_available()

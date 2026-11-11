@@ -8,6 +8,7 @@ from transformers import AutoTokenizer
 
 from fedorch.common import results_dir
 from fedorch.route_env import Network
+from fedorch.tools_v3 import run_suffix
 from fedorch.select_env import episode, render, report_json, select_json, setup, truth_of
 
 
@@ -44,7 +45,7 @@ def main():
         if (n + 1) % 1000 == 0:
             print(f"[select data] {n + 1}/{len(env['val'])} val images, {len(sft)} SFT steps", flush=True)
     for name, rows in (("sft_qwen", sft), ("grpo_qwen", grpo)):
-        with (out / f"{name}.jsonl").open("w") as f:
+        with (out / f"{name}{run_suffix()}.jsonl").open("w") as f:
             f.writelines(json.dumps(r) + "\n" for r in rows)
     print(f"[select data] SFT steps {len(sft)}, GRPO prompts {len(grpo)}", flush=True)
     print("[select data] gold step counts:", json.dumps(dict(golds.most_common())), flush=True)

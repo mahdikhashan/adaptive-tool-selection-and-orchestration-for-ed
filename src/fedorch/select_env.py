@@ -9,7 +9,7 @@ from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
 from fedorch import vision
 from fedorch.common import results_dir
 from fedorch.items import CLASSES
-from fedorch.tools_v3 import JETSON
+from fedorch.tools_v3 import JETSON, excluded_tools
 
 RTT = 0.05
 FIELDS = ("component", "defect", "condition")
@@ -27,7 +27,7 @@ REPORT_DOC = "Finish now with the three-part report: component type, defect yes 
 def load_table():
     root = results_dir("tools_v3")
     images = [json.loads(l) for l in (root / "images.jsonl").open()]
-    tools = json.loads((root / "tools.json").read_text())
+    tools = {t: v for t, v in json.loads((root / "tools.json").read_text()).items() if t not in excluded_tools()}
     return images, tools
 
 

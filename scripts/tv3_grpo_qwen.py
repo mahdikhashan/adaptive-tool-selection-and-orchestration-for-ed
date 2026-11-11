@@ -10,7 +10,7 @@ from trl import GRPOConfig, GRPOTrainer
 
 from fedorch.common import results_dir
 from fedorch.select_env import FIELDS, correct_fields, parse
-from fedorch.tools_v3 import default_dtype, models_dir, selector_tag
+from fedorch.tools_v3 import default_dtype, models_dir, run_suffix, selector_tag
 
 
 def reward(prompts, completions, candidates, truth, gold, **kwargs):
@@ -45,7 +45,7 @@ def main():
     args.adapter = args.adapter or str(models_dir() / f"{tag}_sft{suffix}")
     args.out = args.out or str(models_dir() / f"{tag}_grpo{suffix}")
     args.max_completion = args.max_completion or (384 if args.think else 96)
-    data = load_dataset("json", data_files=str(results_dir("tools_v3") / "select" / "grpo_qwen.jsonl"), split="train").shuffle(seed=0)
+    data = load_dataset("json", data_files=str(results_dir("tools_v3") / "select" / f"grpo_qwen{run_suffix()}.jsonl"), split="train").shuffle(seed=0)
     data = data.select(range(min(args.max_prompts, len(data))))
     if args.think:
         data = data.map(lambda r: {"prompt": r["prompt"].replace("<|im_start|>assistant\n<think>\n\n</think>\n\n", "<|im_start|>assistant\n")})

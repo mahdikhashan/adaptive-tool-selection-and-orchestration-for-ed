@@ -1,4 +1,5 @@
 import json
+import os
 import time
 from pathlib import Path
 
@@ -76,8 +77,17 @@ TOOLS = {name: ("drone" if name in DRONE else "cloud", description) for name, (_
 BUDGETS = "4,10,30,inf"
 
 
+def run_suffix():
+    name = os.environ.get("TV3_RUN", "")
+    return f"_{name}" if name else ""
+
+
+def excluded_tools():
+    return {t for t in os.environ.get("TV3_EXCLUDE", "").split(",") if t}
+
+
 def selector_tag(model):
-    return model.split("/")[-1].lower()
+    return model.split("/")[-1].lower() + run_suffix()
 
 
 def default_dtype(model):

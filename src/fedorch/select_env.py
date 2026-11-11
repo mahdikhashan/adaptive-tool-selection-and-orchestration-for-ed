@@ -10,6 +10,7 @@ from sklearn.linear_model import LogisticRegression
 from fedorch import vision
 from fedorch.common import results_dir
 from fedorch.items import CLASSES
+from fedorch.tools_v3 import JETSON
 
 RTT = 0.05
 COMPONENTS = list(dict.fromkeys(vision.COMPONENT.values()))
@@ -88,7 +89,7 @@ class Teacher:
         for r in rows:
             avail = [t for t in self.tools if t in r["out"]]
             for k in range(subsets):
-                called = set(avail) if k == 0 else {"resnet"} | {t for t in avail if rng.random() < 0.4}
+                called = set(avail) if k == 0 else (set() if k == 1 else {t for t in avail if rng.random() < 0.3})
                 X.append(self.x(r, called))
                 y.append(CLASSES.index(r["condition_label"]))
         self.model = LogisticRegression(max_iter=4000, C=self.C).fit(np.array(X), np.array(y))
@@ -134,18 +135,24 @@ class Retriever:
 
 
 class Episode:
-    def __init__(self, row, tools, teacher, budget, mbps, lam=0.01, k=15, retriever=None, max_steps=4):
+    def __init__(self, row, tools, teacher, budget, mbps, lam=0.01, k=15, retriever=None, max_steps=8):
         self.r, self.tools, self.teacher, self.budget, self.mbps = row, tools, teacher, budget, mbps
         self.lam, self.k, self.retriever, self.max_steps = lam, k, retriever, max_steps
-        self.called, self.elapsed, self.done, self.final, self.steps = ["resnet"], self.cost("resnet"), False, None, 0
+        self.called, self.elapsed, self.done, self.final, self.steps, self.uploaded = [], 0., False, None, 0, {}
+
+    def upload_key(self, t):
+        return "recut" if "recut" in t else "image"
 
     def cost(self, t):
         c = self.r["cost"].get(t)
         if c is None:
             return math.inf
-        if self.tools[t]["location"] == "cloud":
-            return math.inf if self.mbps <= 0 else c["compute_s"] + RTT + c["bytes"] * 8 / (self.mbps * 1e6)
-        return c["s"]
+        if self.tools[t]["location"] == "drone":
+            return JETSON * c["gpu_ms"] / 1000
+        if self.mbps <= 0:
+            return math.inf
+        transfer = 0. if self.upload_key(t) in self.uploaded else c["bytes"] * 8 / (self.mbps * 1e6)
+        return c["gpu_ms"] / 1000 + RTT + transfer
 
     def feasible(self):
         return [t for t in self.tools if t not in self.called and t in self.r["out"] and self.elapsed + self.cost(t) <= self.budget]
@@ -168,10 +175,10 @@ class Episode:
 
     def values(self, actions):
         truth = truth_of(self.r)
-        out = {"report": report_loss(self.teacher_report(), truth) + self.lam * self.elapsed / self.budget}
+        out = {"report": report_loss(self.teacher_report(), truth) + self.lam * self.elapsed}
         for t in actions:
             if t in self.tools:
-                out[t] = report_loss(self.teacher_report(self.called + [t]), truth) + self.lam * (self.elapsed + self.cost(t)) / self.budget
+                out[t] = report_loss(self.teacher_report(self.called + [t]), truth) + self.lam * (self.elapsed + self.cost(t))
         return {a: out[a] for a in actions}
 
     def step(self, action):
@@ -181,6 +188,8 @@ class Episode:
             self.final = action if isinstance(action, dict) else None
             return
         self.elapsed += self.cost(action)
+        if self.tools[action]["location"] == "cloud" and self.upload_key(action) not in self.uploaded:
+            self.uploaded[self.upload_key(action)] = self.r["cost"][action]["bytes"]
         self.called.append(action)
 
     def outcome(self):
@@ -191,18 +200,22 @@ class Episode:
                 "defect_said": bool(report and report["defect"] == "yes"), "defect_true": truth["defect"],
                 "defect_risk": defect_risk(bool(report and report["defect"] == "yes"), truth["defect"]),
                 "true_condition": truth["condition"], "said_condition": report["condition"] if report else None,
-                "bytes": sum(self.r["cost"][t].get("bytes", 0) for t in self.called if self.tools[t]["location"] != "drone")}
+                "bytes": sum(self.uploaded.values())}
 
     def substep(self):
         link = f"up, {self.mbps:.1f} Mbit/s" if self.mbps > 0 else "down"
-        seen = "\n".join(summary(t, self.r["out"][t]) for t in self.called)
-        return (f"Time left: {max(0., self.budget - self.elapsed):.2f} s of {self.budget:.2f} s. Cloud link: {link}. "
+        uploaded = "the image is already uploaded" if "image" in self.uploaded else "the image is not uploaded yet"
+        seen = "\n".join(summary(t, self.r["out"][t]) for t in self.called) or "none yet"
+        budget = (f"Time budget {self.budget:.0f} s, {max(0., self.budget - self.elapsed):.2f} s left." if math.isfinite(self.budget)
+                  else f"No time limit, {self.elapsed:.2f} s used.")
+        return (f"{budget} Cloud link: {link}; {uploaded}. Each second costs {self.lam}. "
                 f"A missed defect costs 10, a false alarm 1, a wrong component or condition 0.5.\nTool results so far:\n{seen}")
 
     def doc(self, a):
         if a == "report":
             return REPORT_DOC
-        return f"{documentation(a, self.tools[a])} Time: {self.cost(a):.2f} s."
+        where = "runs on the drone" if self.tools[a]["location"] == "drone" else "runs in the cloud"
+        return f"{documentation(a, self.tools[a])} {where.capitalize()}. Time now: {self.cost(a):.2f} s."
 
 
 def messages(ep, actions):

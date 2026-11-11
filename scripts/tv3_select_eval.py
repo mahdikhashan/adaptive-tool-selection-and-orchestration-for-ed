@@ -1,5 +1,6 @@
 import argparse
 import json
+import os
 import time
 
 import numpy as np
@@ -8,11 +9,15 @@ import torch
 from fedorch.common import results_dir, write_json
 from fedorch.route_env import Network
 from fedorch.select_env import COMPONENTS, CONDITION_OF, episode, parse, render, setup
-from fedorch.tools_v3 import models_dir
+from fedorch.tools_v3 import default_dtype, models_dir, selector_tag
 
 
 def teacher_now(ep, actions):
     return ep.teacher_report()
+
+
+def teacher_resnet(ep, actions):
+    return "resnet" if "resnet" in actions else ep.teacher_report()
 
 
 def laya_own(ep, actions):
@@ -83,13 +88,13 @@ def run(env, rows, budgets, choose_batch, seed):
     return out
 
 
-def qwen_chooser(model_name, adapter, batch_size):
+def qwen_chooser(model_name, adapter, batch_size, dtype):
     from transformers import AutoModelForCausalLM, AutoTokenizer
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     tokenizer.padding_side = "left"
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
-    model = AutoModelForCausalLM.from_pretrained(model_name, dtype=torch.float32)
+    model = AutoModelForCausalLM.from_pretrained(model_name, dtype=getattr(torch, dtype))
     if adapter:
         from peft import PeftModel
         model = PeftModel.from_pretrained(model, adapter).merge_and_unload()
@@ -101,7 +106,7 @@ def qwen_chooser(model_name, adapter, batch_size):
         for k in range(0, len(texts), batch_size):
             batch = tokenizer(texts[k:k + batch_size], return_tensors="pt", padding=True).to(model.device)
             with torch.no_grad():
-                gen = model.generate(**batch, max_new_tokens=64, do_sample=False, pad_token_id=tokenizer.pad_token_id)
+                gen = model.generate(**batch, max_new_tokens=96, do_sample=False, pad_token_id=tokenizer.pad_token_id)
             decoded = tokenizer.batch_decode(gen[:, batch["input_ids"].shape[1]:], skip_special_tokens=True)
             out += [parse(d, a) for d, a in zip(decoded, actions[k:k + batch_size])]
         return out
@@ -111,11 +116,12 @@ def qwen_chooser(model_name, adapter, batch_size):
 def main():
     parser = argparse.ArgumentParser(description="Evaluate inspection agents on test images against the true labels: rules with the teacher report, "
                                                  "laya alone, the oracle, and Qwen3-0.6B base/SFT/GRPO.")
-    parser.add_argument("methods", nargs="*", default=["teacher_resnet", "laya_own", "all_tools", "oracle", "qwen_base", "qwen_sft", "qwen_grpo"])
-    parser.add_argument("--budgets", type=lambda s: [float(x) for x in s.split(",")], default=[0.25, 0.75, 1.5, 3.0])
+    parser.add_argument("methods", nargs="*", default=["teacher_no_tool", "teacher_resnet", "laya_own", "all_tools", "oracle", "base", "sft", "grpo"])
+    parser.add_argument("--budgets", type=lambda s: [float(x) for x in s.split(",")], default=[4.0, 10.0, 30.0, float("inf")])
     parser.add_argument("--images", type=int, default=1500)
-    parser.add_argument("--model", default="Qwen/Qwen3-0.6B")
-    parser.add_argument("--batch-size", type=int, default=32)
+    parser.add_argument("--model", default=os.environ.get("TV3_SELECTOR", "Qwen/Qwen3-0.6B"))
+    parser.add_argument("--dtype", default=None)
+    parser.add_argument("--batch-size", type=int, default=None, help="default 32 for 0.6B, 12 above")
     parser.add_argument("--seed", type=int, default=0)
     args = parser.parse_args()
     env = setup()
@@ -125,15 +131,18 @@ def main():
     report = json.loads(path.read_text()) if path.exists() else {}
     report.update({"images": len(rows), "budgets": args.budgets, "tools": list(env["tools"]), "components": COMPONENTS})
     report.setdefault("methods", {})
-    makers = {"teacher_resnet": lambda: rule(teacher_now), "laya_own": lambda: rule(laya_own), "all_tools": lambda: rule(all_tools),
-              "oracle": lambda: rule(oracle),
-              "qwen_base": lambda: qwen_chooser(args.model, None, args.batch_size),
-              "qwen_sft": lambda: qwen_chooser(args.model, str(models_dir() / "qwen_sft"), args.batch_size),
-              "qwen_grpo": lambda: qwen_chooser(args.model, str(models_dir() / "qwen_grpo"), args.batch_size)}
-    for name in args.methods:
+    tag, dtype = selector_tag(args.model), args.dtype or default_dtype(args.model)
+    args.batch_size = args.batch_size or (32 if "0.6b" in args.model.lower() else 12)
+    makers = {"teacher_no_tool": lambda: rule(teacher_now), "teacher_resnet": lambda: rule(teacher_resnet), "laya_own": lambda: rule(laya_own),
+              "all_tools": lambda: rule(all_tools), "oracle": lambda: rule(oracle),
+              "base": lambda: qwen_chooser(args.model, None, args.batch_size, dtype),
+              "sft": lambda: qwen_chooser(args.model, str(models_dir() / f"{tag}_sft"), args.batch_size, dtype),
+              "grpo": lambda: qwen_chooser(args.model, str(models_dir() / f"{tag}_grpo"), args.batch_size, dtype)}
+    for method in args.methods:
+        name = f"{tag} {method}" if method in ("base", "sft", "grpo") else method
         start = time.time()
         try:
-            report["methods"][name] = run(env, rows, args.budgets, makers[name](), args.seed)
+            report["methods"][name] = run(env, rows, args.budgets, makers[method](), args.seed)
             line = {b: (v["loss_per_1000"], v["component_accuracy"], v["condition_accuracy"], v["defect_risk_per_1000"], v["mean_time_s"])
                     for b, v in report["methods"][name].items()}
         except Exception as error:

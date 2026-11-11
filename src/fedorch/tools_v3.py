@@ -35,7 +35,6 @@ TOOLS = {
     "laya": ("drone", "laya-vision decision model, full precision; answers component, defect and condition"),
     "laya_q4": ("drone", "laya-vision decision model in 4-bit; cheaper memory, similar answers"),
     "laya_recut": ("drone", "laya-vision on the component cut again from the full-resolution drone photo"),
-    "laya_edge": ("edge", "laya-vision on the ground-station edge server; image sent over the local link"),
     "smolvlm": ("drone", "SmolVLM-256M vision-language model fine-tuned with LoRA for power-line defects"),
     "smolvlm_base": ("drone", "SmolVLM-256M vision-language model without fine-tuning"),
     "smolvlm_split": ("cloud", "SmolVLM-256M split: vision part on the drone, language part in the cloud"),
@@ -66,10 +65,23 @@ TOOLS = {
     "siglip_zeroshot": ("drone", "SigLIP zero-shot: compares the image with text prompts of each condition"),
     "qwen_other": ("cloud", "Qwen3-VL-8B in the cloud asked only about peeling paint or torn parts"),
     "qwen_any_recut": ("cloud", "Qwen3-VL-8B in the cloud asked about any defect on the full-resolution re-cut"),
-    "qwen_edge": ("edge", "Qwen3-VL-8B on the ground-station edge server; image sent over the local link"),
     "exposure": ("drone", "Exposure check: brightness and colour saturation of the image"),
     "size": ("drone", "Image size check: small crops of far components show less detail"),
 }
+DRONE = {"resnet", "resnet18", "mobilenet_v2", "efficientnet", "efficientnet_tta", "deit_small", "laya_q4", "smolvlm",
+         "quality", "exposure", "size", "head_rust", "head_corrosion"}
+TOOLS = {name: ("drone" if name in DRONE else "cloud", description) for name, (_, description) in TOOLS.items()}
+
+
+BUDGETS = "4,10,30,inf"
+
+
+def selector_tag(model):
+    return model.split("/")[-1].lower()
+
+
+def default_dtype(model):
+    return "float32" if "0.6b" in model.lower() else "float16"
 
 
 def cache_dir():

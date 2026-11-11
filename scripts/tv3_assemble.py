@@ -1,5 +1,6 @@
 import json
 import math
+import os
 import statistics
 from collections import defaultdict
 
@@ -10,12 +11,11 @@ from fedorch.cache import load_cache
 from fedorch.common import results_dir, write_json
 from fedorch.items import CLASSES, load_items
 from fedorch.select_env import Teacher, report_loss, truth_of
-from fedorch.tools_v3 import EDGE_MBPS, EDGE_RTT, JETSON, TOOLS, class_probs, group_of, load_tool, timing_path
+from fedorch.tools_v3 import TOOLS, class_probs, group_of, load_tool, recut_file, timing_path
 
 STEP2 = {"smolvlm": "smolvlm_local", "smolvlm_base": "smolvlm_base", "smolvlm_split": "smolvlm_split", "qwen": "cloud"}
-LAYA = {"laya": "good300_full", "laya_q4": "q4_laya_good300_full", "laya_edge": "good300_full"}
+LAYA = {"laya": "good300_full", "laya_q4": "q4_laya_good300_full"}
 CLASS_OF = {v: k for k, v in vision.CONDITION.items()}
-RECUT_S = 0.02
 SCORE_TOOLS = ("quality", "exposure", "size")
 
 
@@ -47,42 +47,45 @@ def main():
     laya = {name: {json.loads(l)["image"]: json.loads(l) for l in open(f"results/vision/{run}/predictions.jsonl")} for name, run in LAYA.items()}
     zoom = {json.loads(l)["image"]: json.loads(l) for l in open("results/zoom/resnet_views.jsonl")}
     timing = json.loads(timing_path().read_text()) if timing_path().exists() else {}
-    special = set(STEP2) | set(LAYA) | {"resnet", "qwen_edge", "resnet_crops_mean", "resnet_crops_max"}
+    special = set(STEP2) | set(LAYA) | {"resnet", "resnet_crops_mean", "resnet_crops_max"}
     caches = {t: load_tool(t) for t in TOOLS if t not in special}
     caches = {t: c for t, c in caches.items() if c and t in timing}
     scores = {t: [r["score"] for r in caches[t].values()] for t in SCORE_TOOLS if t in caches}
     norm = {t: (statistics.mean(v), statistics.pstdev(v) or 1.) for t, v in scores.items()}
     jpeg = statistics.median(r["cloud"]["payload_bytes"] for r in step2.values() if "cloud" in r)
-    resnet_s = JETSON * statistics.median(r["classifier"]["compute_ms"] for r in step2.values() if "classifier" in r) / 1000
+    resnet_ms = statistics.median(r["classifier"]["compute_ms"] for r in step2.values() if "classifier" in r)
+    image_bytes = {}
+    for i in items:
+        row = step2.get(i["item_id"], {}).get("cloud")
+        if row and row.get("payload_bytes"):
+            image_bytes[i["image"]] = row["payload_bytes"]
     print(f"images {len(rows)}, cached new tools: {sorted(caches)}", flush=True)
     table = []
     for r in rows:
         out, cost = {}, {}
+        size = image_bytes.get(r["image"], jpeg)
+        recut = recut_file(r)
+        recut_size = os.path.getsize(recut) if recut.exists() else size
         views = zoom.get(r["image"])
         if views:
             probs = [class_probs(dict(zip(CLASSES, v))) for v in views["probs"]]
             out["resnet"] = {"condition": probs[0]}
             out["resnet_crops_mean"] = {"condition": {c: float(np.mean([p[c] for p in probs])) for c in CLASSES}}
             out["resnet_crops_max"] = {"defect": float(max(1 - p["good"] for p in probs))}
-            cost["resnet"] = {"s": resnet_s}
-            cost["resnet_crops_mean"] = cost["resnet_crops_max"] = {"s": 6 * resnet_s}
+            cost["resnet"] = {"gpu_ms": resnet_ms, "bytes": size}
+            cost["resnet_crops_mean"] = cost["resnet_crops_max"] = {"gpu_ms": 6 * resnet_ms, "bytes": size}
         its = sorted(by_image[r["image"]], key=lambda i: i["task"])
         for tool, key in STEP2.items():
             row = next((step2[i["item_id"]][key] for i in its if key in step2.get(i["item_id"], {})), None)
             if row is None:
                 continue
             out[tool] = {"defect": from_step2(row)}
-            ms = row["compute_ms"]
-            cost[tool] = {"compute_s": ms / 1000, "bytes": row["payload_bytes"] or jpeg} if TOOLS[tool][0] == "cloud" else {"s": JETSON * ms / 1000}
-            if tool == "qwen":
-                out["qwen_edge"] = dict(out[tool])
-                cost["qwen_edge"] = {"s": ms / 1000 + EDGE_RTT + jpeg * 8 / (EDGE_MBPS * 1e6), "bytes": jpeg}
+            cost[tool] = {"gpu_ms": row["compute_ms"], "bytes": size}
         for tool in LAYA:
             row = laya[tool].get(r["image"])
             if row:
                 out[tool] = from_laya(row["answers"])
-                cost[tool] = ({"s": row["ms"] / 1000 + EDGE_RTT + jpeg * 8 / (EDGE_MBPS * 1e6), "bytes": jpeg} if tool == "laya_edge"
-                              else {"s": JETSON * row["ms"] / 1000})
+                cost[tool] = {"gpu_ms": row["ms"], "bytes": size}
         for tool, cache in caches.items():
             row = cache.get(r["image"])
             if not row:
@@ -101,14 +104,8 @@ def main():
             if o is None:
                 continue
             out[tool] = o
-            ms = timing[tool]["gpu_ms"]
-            if TOOLS[tool][0] == "cloud":
-                cost[tool] = {"compute_s": ms / 1000, "bytes": timing[tool]["payload_bytes"] or jpeg}
-            elif tool in SCORE_TOOLS:
-                cost[tool] = {"s": ms / 1000}
-            else:
-                cost[tool] = {"s": JETSON * ms / 1000 + (RECUT_S if "recut" in tool else 0.)}
-        if "resnet" not in out:
+            cost[tool] = {"gpu_ms": timing[tool]["gpu_ms"], "bytes": recut_size if "recut" in tool else size}
+        if not out:
             continue
         table.append({"image": r["image"], "split": r["split"], "tower": r["tower"], "asset": r["asset"], "group": group_of(r["asset"]),
                       "component": r["component"], "condition": r["condition"], "condition_label": CLASS_OF[r["condition"]],
@@ -118,12 +115,12 @@ def main():
         f.writelines(json.dumps(t) + "\n" for t in table)
     present = [t for t in TOOLS if any(t in row["out"] for row in table)]
     tools = {t: {"location": TOOLS[t][0], "description": TOOLS[t][1], "coverage": round(sum(t in row["out"] for row in table) / len(table), 4),
-                 "median_cost_s": round(statistics.median(row["cost"][t].get("s", row["cost"][t].get("compute_s", 0.)) for row in table if t in row["out"]), 4)}
+                 "median_gpu_ms": round(statistics.median(row["cost"][t]["gpu_ms"] for row in table if t in row["out"]), 2)}
              for t in present}
     write_json(root / "tools.json", tools)
     print(f"images {len(table)} (val {sum(t['split'] == 'val' for t in table)}, test {sum(t['split'] == 'test' for t in table)}), tools {len(tools)}", flush=True)
     for t, v in tools.items():
-        print(f"  {t:22s} {v['location']:6s} coverage {v['coverage']:.2f} cost {v['median_cost_s']:.3f} s", flush=True)
+        print(f"  {t:22s} {v['location']:6s} coverage {v['coverage']:.2f} GPU {v['median_gpu_ms']:.1f} ms", flush=True)
     value_report(table, present)
 
 
@@ -154,14 +151,14 @@ def value_report(table, tools):
     test = [r for r in table if r["split"] == "test"]
     teacher = Teacher(tools).fit(val)
     report = {"tools": tools, "teacher": {}, "single_tool": {}}
-    sets = {"resnet only": {"resnet"}, "resnet + laya": {"resnet", "laya"}, "all tools": set(tools)}
+    sets = {"no tool": set(), "resnet only": {"resnet"}, "laya only": {"laya"}, "resnet + laya": {"resnet", "laya"}, "all tools": set(tools)}
     for name, called in sets.items():
         report["teacher"][name] = metrics(test, [teacher.report(r, called) for r in test])
         print(f"teacher, {name}:", json.dumps(report["teacher"][name]), flush=True)
     for t in tools:
         rows = [r for r in test if t in r["out"]]
         if len(rows) >= 50:
-            report["single_tool"][t] = metrics(rows, [teacher.report(r, {"resnet", t}) for r in rows])
+            report["single_tool"][t] = metrics(rows, [teacher.report(r, {t}) for r in rows])
     write_json(results_dir("tools_v3") / "value_report.json", report)
 
 

@@ -1,5 +1,6 @@
 import argparse
 import json
+import os
 
 import torch
 from datasets import load_dataset
@@ -9,7 +10,7 @@ from trl import GRPOConfig, GRPOTrainer
 
 from fedorch.common import results_dir
 from fedorch.select_env import parse, report_loss
-from fedorch.tools_v3 import models_dir
+from fedorch.tools_v3 import default_dtype, models_dir, selector_tag
 
 INVALID = -11.0
 
@@ -46,34 +47,39 @@ def risk_reward(prompts, completions, values, truth, time_cost, **kwargs):
 
 def main():
     parser = argparse.ArgumentParser(description="GRPO on the SFT inspection agent (TRL GRPOTrainer, LoRA continues from the SFT adapter).")
-    parser.add_argument("--model", default="Qwen/Qwen3-0.6B")
-    parser.add_argument("--adapter", default=str(models_dir() / "qwen_sft"))
+    parser.add_argument("--model", default=os.environ.get("TV3_SELECTOR", "Qwen/Qwen3-0.6B"))
+    parser.add_argument("--dtype", default=None)
+    parser.add_argument("--adapter", default=None)
     parser.add_argument("--max-prompts", type=int, default=4000)
     parser.add_argument("--steps", type=int, default=400)
     parser.add_argument("--generations", type=int, default=8)
-    parser.add_argument("--batch-size", type=int, default=16)
+    parser.add_argument("--batch-size", type=int, default=None, help="completions per step; default 16 for 0.6B, 8 above")
     parser.add_argument("--lr", type=float, default=2e-5)
     parser.add_argument("--beta", type=float, default=0.02)
     parser.add_argument("--reward", choices=["exact", "risk"], default="exact", help="exact: 1 for the gold tool, share of correct report fields for a report (as in the paper); risk: minus the report loss against the true labels")
-    parser.add_argument("--out", default=str(models_dir() / "qwen_grpo"))
+    parser.add_argument("--out", default=None)
     args = parser.parse_args()
+    tag = selector_tag(args.model)
+    args.batch_size = args.batch_size or (16 if "0.6b" in args.model.lower() else 8)
+    args.adapter = args.adapter or str(models_dir() / f"{tag}_sft")
+    args.out = args.out or str(models_dir() / f"{tag}_grpo")
     data = load_dataset("json", data_files=str(results_dir("tools_v3") / "select" / "grpo_qwen.jsonl"), split="train").shuffle(seed=0)
     data = data.select(range(min(args.max_prompts, len(data))))
     tokenizer = AutoTokenizer.from_pretrained(args.model)
-    base = AutoModelForCausalLM.from_pretrained(args.model, dtype=torch.float32)
+    base = AutoModelForCausalLM.from_pretrained(args.model, dtype=getattr(torch, args.dtype or default_dtype(args.model)))
     cuda = torch.cuda.is_available()
     if cuda:
         base.enable_input_require_grads()
     model = PeftModel.from_pretrained(base, args.adapter, is_trainable=True)
     config = GRPOConfig(output_dir=args.out, max_steps=args.steps, per_device_train_batch_size=args.batch_size,
-                        num_generations=args.generations, max_completion_length=64, learning_rate=args.lr, beta=args.beta,
+                        num_generations=args.generations, max_completion_length=96, learning_rate=args.lr, beta=args.beta,
                         temperature=1.0, fp16=cuda, logging_steps=5, save_strategy="no", report_to="none",
                         gradient_checkpointing=cuda)
     trainer = GRPOTrainer(model=model, reward_funcs=exact_reward if args.reward == "exact" else risk_reward, args=config, train_dataset=data, processing_class=tokenizer)
     print(f"[qwen grpo] {len(data)} prompts, {args.steps} steps, {args.generations} generations each, reward {args.reward}", flush=True)
     trainer.train()
     trainer.save_model(args.out)
-    (results_dir("tools_v3") / "select" / "qwen_grpo_train.json").write_text(json.dumps({"log": trainer.state.log_history}, indent=1))
+    (results_dir("tools_v3") / "select" / f"{tag}_grpo_train.json").write_text(json.dumps({"log": trainer.state.log_history}, indent=1))
     print(f"[qwen grpo] saved adapter to {args.out}", flush=True)
 
 

@@ -2,6 +2,7 @@
 set -uo pipefail
 cd "$(dirname "$0")/../.."
 source scripts/server_env.sh
+export TV3_SELECTOR="${TV3_SELECTOR:-Qwen/Qwen3-0.6B}"
 
 logs=logs/tools_v3
 mkdir -p "$logs" results/tools_v3
@@ -24,7 +25,7 @@ stages=(
 
 say() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "$progress"; }
 
-say "tools_v3 run started on $(hostname), commit $(git rev-parse --short HEAD), GPU ${CUDA_VISIBLE_DEVICES:-not set}"
+say "tools_v3 run started on $(hostname), commit $(git rev-parse --short HEAD), GPU ${CUDA_VISIBLE_DEVICES:-not set}, selector $TV3_SELECTOR"
 python_run -c "import torch, trl, sklearn, ultralytics; print('torch', torch.__version__, 'cuda', torch.cuda.is_available(), torch.cuda.get_device_name(0) if torch.cuda.is_available() else '-', 'trl', trl.__version__)" 2>&1 | tee -a "$progress"
 
 total=${#stages[@]}

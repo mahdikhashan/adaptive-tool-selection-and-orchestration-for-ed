@@ -1,0 +1,2811 @@
+{
+ "tools": {
+  "resnet": "drone: ResNet-50 image classifier fine-tuned on all components; fast first check",
+  "resnet_crops_mean": "cloud: ResNet-50 on five overlapping crops and the full image, mean score",
+  "resnet_crops_max": "cloud: ResNet-50 on five overlapping crops and the full image, highest defect score",
+  "resnet_recut": "cloud: ResNet-50 on the component cut again from the full-resolution drone photo with context",
+  "convnext": "cloud: ConvNeXt-Tiny image classifier fine-tuned on all components; different architecture from ResNet",
+  "efficientnet": "drone: EfficientNet-B0 image classifier fine-tuned on all components; small and fast",
+  "dinov2_probe": "cloud: DINOv2 self-supervised image features with a linear defect classifier",
+  "yolo_cls": "cloud: YOLO classification model fine-tuned on the six conditions",
+  "quality": "drone: Image quality check: blur and contrast; tells if the image is too poor to judge",
+  "laya": "cloud: laya-vision decision model, full precision; answers component, defect and condition",
+  "laya_q4": "drone: laya-vision decision model in 4-bit; cheaper memory, similar answers",
+  "laya_recut": "cloud: laya-vision on the component cut again from the full-resolution drone photo",
+  "smolvlm": "drone: SmolVLM-256M vision-language model fine-tuned with LoRA for power-line defects",
+  "smolvlm_base": "cloud: SmolVLM-256M vision-language model without fine-tuning",
+  "smolvlm_split": "cloud: SmolVLM-256M split: vision part on the drone, language part in the cloud",
+  "qwen": "cloud: Qwen3-VL-8B large vision-language model in the cloud, general defect question",
+  "qwen_any": "cloud: Qwen3-VL-8B in the cloud asked: is there any visible defect?",
+  "qwen_rust": "cloud: Qwen3-VL-8B in the cloud asked only about rust",
+  "qwen_corrosion": "cloud: Qwen3-VL-8B in the cloud asked only about corrosion",
+  "qwen_missing-cap": "cloud: Qwen3-VL-8B in the cloud asked only about missing cap",
+  "qwen_nest": "cloud: Qwen3-VL-8B in the cloud asked only about bird nest",
+  "head_rust": "drone: Detector for rust only, on DINOv2 features",
+  "head_corrosion": "drone: Detector for corrosion only, on DINOv2 features",
+  "head_missing-cap": "cloud: Detector for missing cap only, on DINOv2 features",
+  "head_nest": "cloud: Detector for bird nest only, on DINOv2 features",
+  "spec_glass": "cloud: ResNet-50 specialist trained only on glass components; works only for those components",
+  "spec_polymer": "cloud: ResNet-50 specialist trained only on polymer components; works only for those components",
+  "spec_hardware": "cloud: ResNet-50 specialist trained only on hardware components; works only for those components",
+  "spec_yoke": "cloud: ResNet-50 specialist trained only on yoke components; works only for those components",
+  "spec_rodgrip": "cloud: ResNet-50 specialist trained only on rodgrip components; works only for those components",
+  "resnet18": "drone: ResNet-18 small image classifier fine-tuned on all components; very fast",
+  "resnet101": "cloud: ResNet-101 deep image classifier fine-tuned on all components",
+  "vit_base": "cloud: Vision Transformer ViT-Base fine-tuned on all components; attention over image patches",
+  "deit_small": "drone: DeiT-Small data-efficient vision transformer fine-tuned on all components",
+  "swin_tiny": "cloud: Swin-Tiny shifted-window transformer fine-tuned on all components",
+  "mobilenet_v2": "drone: MobileNet-V2 mobile classifier fine-tuned on all components; lowest compute",
+  "efficientnet_b3": "cloud: EfficientNet-B3 classifier fine-tuned on all components; higher input resolution",
+  "convnext_small": "cloud: ConvNeXt-Small classifier fine-tuned on all components; larger than ConvNeXt-Tiny",
+  "cspec_glass": "cloud: ConvNeXt-Tiny specialist trained only on glass components; works only for those components",
+  "cspec_polymer": "cloud: ConvNeXt-Tiny specialist trained only on polymer components; works only for those components",
+  "cspec_hardware": "cloud: ConvNeXt-Tiny specialist trained only on hardware components; works only for those components",
+  "cspec_yoke": "cloud: ConvNeXt-Tiny specialist trained only on yoke components; works only for those components",
+  "cspec_rodgrip": "cloud: ConvNeXt-Tiny specialist trained only on rodgrip components; works only for those components",
+  "convnext_tta": "cloud: ConvNeXt-Tiny on the image and its mirror image, mean score",
+  "efficientnet_tta": "drone: EfficientNet-B0 on the image and its mirror image, mean score",
+  "convnext_recut": "cloud: ConvNeXt-Tiny on the component cut again from the full-resolution drone photo",
+  "clip_probe": "cloud: CLIP image features with a linear defect classifier",
+  "clip_head_rust": "cloud: Detector for rust only, on CLIP features",
+  "clip_head_corrosion": "cloud: Detector for corrosion only, on CLIP features",
+  "clip_head_missing-cap": "cloud: Detector for missing cap only, on CLIP features",
+  "clip_head_nest": "cloud: Detector for bird nest only, on CLIP features",
+  "dinov2b_probe": "cloud: DINOv2-Base larger self-supervised features with a linear defect classifier",
+  "dinov2b_head_rust": "cloud: Detector for rust only, on DINOv2-Base features",
+  "dinov2b_head_corrosion": "cloud: Detector for corrosion only, on DINOv2-Base features",
+  "dinov2b_head_missing-cap": "cloud: Detector for missing cap only, on DINOv2-Base features",
+  "dinov2b_head_nest": "cloud: Detector for bird nest only, on DINOv2-Base features",
+  "clip_large_zeroshot": "cloud: CLIP-Large zero-shot: compares the image with text prompts of each condition",
+  "qwen_other": "cloud: Qwen3-VL-8B in the cloud asked only about peeling paint or torn parts",
+  "qwen_any_recut": "cloud: Qwen3-VL-8B in the cloud asked about any defect on the full-resolution re-cut",
+  "exposure": "drone: Exposure check: brightness and colour saturation of the image",
+  "size": "drone: Image size check: small crops of far components show less detail"
+ },
+ "items": [
+  {
+   "i": 21229,
+   "state": "Time budget 4 s, 4.00 s left. Cloud link: up, 1.4 Mbit/s; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "laya (cloud, 0.45 s)",
+    "smolvlm (drone, 0.73 s)",
+    "laya_recut (cloud, 1.02 s)",
+    "convnext_recut (cloud, 0.96 s)",
+    "resnet_recut (cloud, 0.96 s)",
+    "clip_large_zeroshot (cloud, 0.40 s)",
+    "qwen_any (cloud, 0.51 s)",
+    "clip_probe (cloud, 0.38 s)",
+    "dinov2_probe (cloud, 0.38 s)",
+    "qwen_any_recut (cloud, 1.16 s)",
+    "qwen (cloud, 0.52 s)",
+    "dinov2b_probe (cloud, 0.38 s)",
+    "resnet_crops_max (cloud, 0.41 s)",
+    "resnet (drone, 0.07 s)",
+    "resnet_crops_mean (cloud, 0.41 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "laya"
+    ]
+   }
+  },
+  {
+   "i": 51585,
+   "state": "No time limit, 1.00 s used. Cloud link: up, 2.1 Mbit/s; the image is already uploaded.\nTool results so far:\nsmolvlm: defect 0%\nlaya: component yoke suspension 94%; defect 4%; good, no defect 97%, rust 1%",
+   "candidates": [
+    "laya_recut (cloud, 0.57 s)",
+    "qwen_any (cloud, 0.19 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "convnext_recut (cloud, 0.51 s)",
+    "resnet_recut (cloud, 0.51 s)",
+    "dinov2_probe (cloud, 0.05 s)",
+    "qwen_any_recut (cloud, 0.71 s)",
+    "qwen (cloud, 0.17 s)",
+    "dinov2b_probe (cloud, 0.06 s)",
+    "resnet_crops_max (cloud, 0.09 s)",
+    "spec_yoke (cloud, 0.06 s)",
+    "cspec_yoke (cloud, 0.06 s)",
+    "smolvlm_base (cloud, 0.11 s)",
+    "smolvlm_split (cloud, 0.13 s)",
+    "head_rust (drone, 0.04 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "REPORT",
+    "component": "yoke suspension",
+    "defect": "no",
+    "condition": "good, no defect"
+   }
+  },
+  {
+   "i": 21510,
+   "state": "Time budget 10 s, 9.85 s left. Cloud link: up, 2.0 Mbit/s; the image is already uploaded.\nTool results so far:\nlaya: component stockbridge damper 94%; defect 5%; good, no defect 97%, rust 1%",
+   "candidates": [
+    "laya_recut (cloud, 0.22 s)",
+    "convnext_recut (cloud, 0.16 s)",
+    "resnet_recut (cloud, 0.15 s)",
+    "smolvlm (drone, 0.72 s)",
+    "qwen_any (cloud, 0.19 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "dinov2_probe (cloud, 0.05 s)",
+    "qwen_any_recut (cloud, 0.36 s)",
+    "qwen (cloud, 0.14 s)",
+    "dinov2b_probe (cloud, 0.06 s)",
+    "head_rust (drone, 0.04 s)",
+    "resnet_crops_max (cloud, 0.09 s)",
+    "qwen_rust (cloud, 0.19 s)",
+    "clip_head_rust (cloud, 0.06 s)",
+    "laya_q4 (drone, 0.77 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "REPORT",
+    "component": "stockbridge damper",
+    "defect": "no",
+    "condition": "good, no defect"
+   }
+  },
+  {
+   "i": 13139,
+   "state": "Time budget 10 s, 10.00 s left. Cloud link: down; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "smolvlm (drone, 0.72 s)",
+    "resnet (drone, 0.07 s)",
+    "efficientnet (drone, 0.08 s)",
+    "quality (drone, 0.09 s)",
+    "laya_q4 (drone, 0.81 s)",
+    "head_rust (drone, 0.04 s)",
+    "head_corrosion (drone, 0.04 s)",
+    "resnet18 (drone, 0.03 s)",
+    "deit_small (drone, 0.07 s)",
+    "mobilenet_v2 (drone, 0.07 s)",
+    "efficientnet_tta (drone, 0.16 s)",
+    "exposure (drone, 0.03 s)",
+    "size (drone, 0.00 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "laya_q4"
+    ]
+   }
+  },
+  {
+   "i": 51001,
+   "state": "Time budget 4 s, 4.00 s left. Cloud link: up, 1.6 Mbit/s; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "laya (cloud, 0.15 s)",
+    "smolvlm (drone, 0.72 s)",
+    "laya_recut (cloud, 0.21 s)",
+    "convnext_recut (cloud, 0.14 s)",
+    "resnet_recut (cloud, 0.14 s)",
+    "clip_large_zeroshot (cloud, 0.11 s)",
+    "qwen_any (cloud, 0.22 s)",
+    "clip_probe (cloud, 0.08 s)",
+    "dinov2_probe (cloud, 0.08 s)",
+    "qwen_any_recut (cloud, 0.35 s)",
+    "qwen (cloud, 0.18 s)",
+    "dinov2b_probe (cloud, 0.08 s)",
+    "resnet_crops_max (cloud, 0.12 s)",
+    "resnet (drone, 0.07 s)",
+    "resnet_crops_mean (cloud, 0.12 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "laya"
+    ]
+   }
+  },
+  {
+   "i": 23998,
+   "state": "No time limit, 0.00 s used. Cloud link: down; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "smolvlm (drone, 0.75 s)",
+    "resnet (drone, 0.07 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "laya_recut"
+    ]
+   }
+  },
+  {
+   "i": 56151,
+   "state": "Time budget 30 s, 29.52 s left. Cloud link: up, 3.1 Mbit/s; the image is already uploaded.\nTool results so far:\nclip_large_zeroshot: bird nest 74%, missing cap 14%\nlaya: component glass insulator 96%; defect 96%; missing cap 98%, rust 1%",
+   "candidates": [
+    "clip_head_missing-cap (cloud, 0.06 s)",
+    "head_missing-cap (cloud, 0.05 s)",
+    "qwen_missing-cap (cloud, 0.19 s)",
+    "dinov2b_head_missing-cap (cloud, 0.06 s)",
+    "laya_recut (cloud, 1.10 s)",
+    "clip_head_nest (cloud, 0.06 s)",
+    "clip_head_rust (cloud, 0.06 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "convnext_recut (cloud, 1.04 s)",
+    "head_nest (cloud, 0.05 s)",
+    "resnet_recut (cloud, 1.04 s)",
+    "qwen_nest (cloud, 0.19 s)",
+    "dinov2b_head_nest (cloud, 0.06 s)",
+    "smolvlm (drone, 0.72 s)",
+    "qwen (cloud, 0.20 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "REPORT",
+    "component": "glass insulator",
+    "defect": "yes",
+    "condition": "missing cap"
+   }
+  },
+  {
+   "i": 23186,
+   "state": "No time limit, 0.22 s used. Cloud link: up, 3.2 Mbit/s; the image is already uploaded.\nTool results so far:\nlaya: component stockbridge damper 95%; defect 5%; good, no defect 81%, rust 17%",
+   "candidates": [
+    "laya_recut (cloud, 0.47 s)",
+    "convnext_recut (cloud, 0.41 s)",
+    "resnet_recut (cloud, 0.40 s)",
+    "smolvlm (drone, 0.73 s)",
+    "qwen_any (cloud, 0.19 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "dinov2_probe (cloud, 0.05 s)",
+    "qwen_any_recut (cloud, 0.61 s)",
+    "qwen (cloud, 0.19 s)",
+    "dinov2b_probe (cloud, 0.06 s)",
+    "head_rust (drone, 0.04 s)",
+    "resnet_crops_max (cloud, 0.09 s)",
+    "qwen_rust (cloud, 0.19 s)",
+    "clip_head_rust (cloud, 0.06 s)",
+    "dinov2b_head_rust (cloud, 0.06 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "REPORT",
+    "component": "stockbridge damper",
+    "defect": "no",
+    "condition": "good, no defect"
+   }
+  },
+  {
+   "i": 47356,
+   "state": "Time budget 10 s, 7.16 s left. Cloud link: up, 0.5 Mbit/s; the image is already uploaded.\nTool results so far:\nlaya: component vari-grip clamp 94%; defect 4%; good, no defect 97%, rust 1%\nlaya_recut: component vari-grip clamp 83%; defect 4%; good, no defect 97%, rust 1%\nqwen_any_recut: defect 2%\nresnet_crops_max: defect 43%\nclip_probe: good, no defect 97%, rust 3%",
+   "candidates": [
+    "qwen_any (cloud, 0.19 s)",
+    "resnet_recut (cloud, 0.05 s)",
+    "dinov2_probe (cloud, 0.05 s)",
+    "convnext_recut (cloud, 0.06 s)",
+    "clip_head_rust (cloud, 0.06 s)",
+    "dinov2b_probe (cloud, 0.06 s)",
+    "qwen_rust (cloud, 0.19 s)",
+    "qwen (cloud, 0.21 s)",
+    "head_rust (drone, 0.04 s)",
+    "dinov2b_head_rust (cloud, 0.06 s)",
+    "resnet_crops_mean (cloud, 0.09 s)",
+    "smolvlm (drone, 0.71 s)",
+    "clip_large_zeroshot (cloud, 0.08 s)",
+    "clip_head_corrosion (cloud, 0.06 s)",
+    "clip_head_nest (cloud, 0.06 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "REPORT",
+    "component": "vari-grip clamp",
+    "defect": "no",
+    "condition": "good, no defect"
+   }
+  },
+  {
+   "i": 40963,
+   "state": "Time budget 4 s, 4.00 s left. Cloud link: down; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "smolvlm (drone, 0.74 s)",
+    "resnet (drone, 0.07 s)",
+    "efficientnet (drone, 0.08 s)",
+    "quality (drone, 0.09 s)",
+    "laya_q4 (drone, 0.78 s)",
+    "head_rust (drone, 0.04 s)",
+    "head_corrosion (drone, 0.04 s)",
+    "resnet18 (drone, 0.03 s)",
+    "deit_small (drone, 0.07 s)",
+    "mobilenet_v2 (drone, 0.07 s)",
+    "efficientnet_tta (drone, 0.16 s)",
+    "exposure (drone, 0.03 s)",
+    "size (drone, 0.00 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "laya_q4"
+    ]
+   }
+  },
+  {
+   "i": 39593,
+   "state": "Time budget 30 s, 28.90 s left. Cloud link: up, 3.3 Mbit/s; the image is already uploaded.\nTool results so far:\ndinov2_probe: good, no defect 100%, rust 0%\nlaya: component stockbridge damper 91%; defect 4%; good, no defect 97%, rust 1%\nqwen_any_recut: defect 1%\nhead_rust: rust 0%\nlaya_recut: component stockbridge damper 95%; defect 4%; good, no defect 97%, rust 1%",
+   "candidates": [
+    "dinov2b_head_rust (cloud, 0.06 s)",
+    "qwen_rust (cloud, 0.19 s)",
+    "clip_head_rust (cloud, 0.06 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "convnext_recut (cloud, 0.06 s)",
+    "qwen_any (cloud, 0.19 s)",
+    "dinov2b_probe (cloud, 0.06 s)",
+    "resnet_recut (cloud, 0.05 s)",
+    "qwen (cloud, 0.21 s)",
+    "resnet_crops_max (cloud, 0.09 s)",
+    "smolvlm (drone, 0.72 s)",
+    "head_corrosion (drone, 0.04 s)",
+    "head_nest (cloud, 0.05 s)",
+    "head_missing-cap (cloud, 0.05 s)",
+    "dinov2b_head_corrosion (cloud, 0.06 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "REPORT",
+    "component": "stockbridge damper",
+    "defect": "no",
+    "condition": "good, no defect"
+   }
+  },
+  {
+   "i": 31789,
+   "state": "No time limit, 0.00 s used. Cloud link: up, 0.9 Mbit/s; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "laya (cloud, 0.79 s)",
+    "smolvlm (drone, 0.73 s)",
+    "clip_large_zeroshot (cloud, 0.74 s)",
+    "qwen_any (cloud, 0.85 s)",
+    "clip_probe (cloud, 0.71 s)",
+    "dinov2_probe (cloud, 0.71 s)",
+    "qwen (cloud, 0.86 s)",
+    "dinov2b_probe (cloud, 0.72 s)",
+    "resnet_crops_max (cloud, 0.75 s)",
+    "resnet (drone, 0.07 s)",
+    "resnet_crops_mean (cloud, 0.75 s)",
+    "convnext (cloud, 0.71 s)",
+    "efficientnet (drone, 0.08 s)",
+    "yolo_cls (cloud, 0.71 s)",
+    "quality (drone, 0.09 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "clip_probe"
+    ]
+   }
+  },
+  {
+   "i": 35405,
+   "state": "Time budget 4 s, 4.00 s left. Cloud link: up, 4.2 Mbit/s; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "laya (cloud, 0.12 s)",
+    "smolvlm (drone, 0.76 s)",
+    "laya_recut (cloud, 0.13 s)",
+    "convnext_recut (cloud, 0.07 s)",
+    "resnet_recut (cloud, 0.07 s)",
+    "clip_large_zeroshot (cloud, 0.09 s)",
+    "qwen_any (cloud, 0.20 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "dinov2_probe (cloud, 0.06 s)",
+    "qwen_any_recut (cloud, 0.28 s)",
+    "qwen (cloud, 0.17 s)",
+    "dinov2b_probe (cloud, 0.06 s)",
+    "resnet_crops_max (cloud, 0.10 s)",
+    "resnet (drone, 0.07 s)",
+    "resnet_crops_mean (cloud, 0.10 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "dinov2_probe"
+    ]
+   }
+  },
+  {
+   "i": 30685,
+   "state": "Time budget 30 s, 29.79 s left. Cloud link: up, 4.0 Mbit/s; the image is already uploaded.\nTool results so far:\nlaya: component yoke suspension 95%; defect 4%; good, no defect 97%, rust 1%",
+   "candidates": [
+    "laya_recut (cloud, 0.48 s)",
+    "convnext_recut (cloud, 0.42 s)",
+    "resnet_recut (cloud, 0.42 s)",
+    "smolvlm (drone, 0.76 s)",
+    "qwen_any (cloud, 0.19 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "spec_yoke (cloud, 0.06 s)",
+    "cspec_yoke (cloud, 0.06 s)",
+    "dinov2_probe (cloud, 0.05 s)",
+    "qwen_any_recut (cloud, 0.62 s)",
+    "qwen (cloud, 0.21 s)",
+    "dinov2b_probe (cloud, 0.06 s)",
+    "head_rust (drone, 0.04 s)",
+    "resnet_crops_max (cloud, 0.09 s)",
+    "qwen_rust (cloud, 0.19 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "REPORT",
+    "component": "yoke suspension",
+    "defect": "no",
+    "condition": "good, no defect"
+   }
+  },
+  {
+   "i": 2809,
+   "state": "No time limit, 0.00 s used. Cloud link: up, 0.6 Mbit/s; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "laya (cloud, 0.28 s)",
+    "smolvlm (drone, 0.72 s)",
+    "laya_recut (cloud, 0.62 s)",
+    "convnext_recut (cloud, 0.56 s)",
+    "resnet_recut (cloud, 0.56 s)",
+    "clip_large_zeroshot (cloud, 0.24 s)",
+    "qwen_any (cloud, 0.35 s)",
+    "clip_probe (cloud, 0.21 s)",
+    "dinov2_probe (cloud, 0.21 s)",
+    "qwen_any_recut (cloud, 0.77 s)",
+    "qwen (cloud, 0.31 s)",
+    "dinov2b_probe (cloud, 0.22 s)",
+    "resnet_crops_max (cloud, 0.25 s)",
+    "resnet (drone, 0.07 s)",
+    "resnet_crops_mean (cloud, 0.25 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "laya"
+    ]
+   }
+  },
+  {
+   "i": 27793,
+   "state": "Time budget 10 s, 9.56 s left. Cloud link: up, 3.5 Mbit/s; the image is already uploaded.\nTool results so far:\nqwen_any: defect 4%",
+   "candidates": [
+    "laya (cloud, 0.13 s)",
+    "smolvlm (drone, 0.71 s)",
+    "qwen_any_recut (cloud, 1.22 s)",
+    "qwen (cloud, 0.20 s)",
+    "laya_recut (cloud, 1.08 s)",
+    "convnext_recut (cloud, 1.02 s)",
+    "resnet_recut (cloud, 1.02 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "dinov2_probe (cloud, 0.05 s)",
+    "dinov2b_probe (cloud, 0.06 s)",
+    "laya_q4 (drone, 0.99 s)",
+    "resnet_crops_max (cloud, 0.09 s)",
+    "qwen_rust (cloud, 0.19 s)",
+    "qwen_corrosion (cloud, 0.19 s)",
+    "qwen_nest (cloud, 0.19 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "resnet_recut"
+    ]
+   }
+  },
+  {
+   "i": 13694,
+   "state": "Time budget 4 s, 3.18 s left. Cloud link: up, 1.2 Mbit/s; the image is already uploaded.\nTool results so far:\ndinov2b_probe: good, no defect 100%, rust 0%\nclip_head_rust: rust 0%\ndinov2b_head_corrosion: corrosion 0%\nhead_corrosion: corrosion 0%\nlaya: component yoke 95%; defect 4%; good, no defect 97%, rust 1%",
+   "candidates": [
+    "dinov2b_head_rust (cloud, 0.06 s)",
+    "clip_head_corrosion (cloud, 0.06 s)",
+    "head_rust (drone, 0.04 s)",
+    "qwen_rust (cloud, 0.19 s)",
+    "qwen_corrosion (cloud, 0.19 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "dinov2b_head_nest (cloud, 0.06 s)",
+    "dinov2b_head_missing-cap (cloud, 0.06 s)",
+    "dinov2_probe (cloud, 0.05 s)",
+    "clip_head_nest (cloud, 0.06 s)",
+    "clip_head_missing-cap (cloud, 0.06 s)",
+    "qwen_any (cloud, 0.19 s)",
+    "smolvlm (drone, 0.72 s)",
+    "qwen (cloud, 0.18 s)",
+    "head_nest (cloud, 0.05 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "REPORT",
+    "component": "yoke",
+    "defect": "no",
+    "condition": "good, no defect"
+   }
+  },
+  {
+   "i": 7802,
+   "state": "Time budget 30 s, 29.75 s left. Cloud link: up, 2.5 Mbit/s; the image is already uploaded.\nTool results so far:\nlaya: component vari-grip clamp 96%; defect 96%; rust 97%, good, no defect 1%",
+   "candidates": [
+    "smolvlm (drone, 0.71 s)",
+    "qwen_any (cloud, 0.19 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "dinov2_probe (cloud, 0.05 s)",
+    "qwen (cloud, 0.20 s)",
+    "dinov2b_probe (cloud, 0.06 s)",
+    "head_rust (drone, 0.04 s)",
+    "resnet_crops_max (cloud, 0.09 s)",
+    "qwen_rust (cloud, 0.19 s)",
+    "clip_head_rust (cloud, 0.06 s)",
+    "dinov2b_head_rust (cloud, 0.06 s)",
+    "clip_large_zeroshot (cloud, 0.08 s)",
+    "resnet (drone, 0.07 s)",
+    "resnet_crops_mean (cloud, 0.09 s)",
+    "convnext (cloud, 0.06 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "REPORT",
+    "component": "vari-grip clamp",
+    "defect": "yes",
+    "condition": "rust"
+   }
+  },
+  {
+   "i": 57524,
+   "state": "Time budget 4 s, 3.47 s left. Cloud link: up, 2.6 Mbit/s; the image is already uploaded.\nTool results so far:\nresnet: corrosion 97%, rust 3%\nclip_probe: corrosion 84%, good, no defect 11%\nlaya: component shackle 95%; defect 86%; rust 77%, corrosion 21%\ndinov2b_head_rust: rust 96%",
+   "candidates": [
+    "clip_head_rust (cloud, 0.06 s)",
+    "head_rust (drone, 0.04 s)",
+    "clip_head_corrosion (cloud, 0.06 s)",
+    "dinov2b_head_corrosion (cloud, 0.06 s)",
+    "qwen_rust (cloud, 0.19 s)",
+    "head_corrosion (drone, 0.04 s)",
+    "qwen_corrosion (cloud, 0.19 s)",
+    "dinov2b_probe (cloud, 0.06 s)",
+    "dinov2_probe (cloud, 0.05 s)",
+    "resnet_crops_max (cloud, 0.09 s)",
+    "smolvlm (drone, 0.71 s)",
+    "qwen_any (cloud, 0.19 s)",
+    "clip_large_zeroshot (cloud, 0.08 s)",
+    "clip_head_nest (cloud, 0.06 s)",
+    "clip_head_missing-cap (cloud, 0.06 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "REPORT",
+    "component": "shackle",
+    "defect": "yes",
+    "condition": "corrosion"
+   }
+  },
+  {
+   "i": 23259,
+   "state": "No time limit, 0.00 s used. Cloud link: up, 0.2 Mbit/s; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "laya (cloud, 0.57 s)",
+    "smolvlm (drone, 0.73 s)",
+    "laya_recut (cloud, 1.49 s)",
+    "convnext_recut (cloud, 1.43 s)",
+    "resnet_recut (cloud, 1.43 s)",
+    "clip_large_zeroshot (cloud, 0.53 s)",
+    "qwen_any (cloud, 0.64 s)",
+    "clip_probe (cloud, 0.51 s)",
+    "dinov2_probe (cloud, 0.51 s)",
+    "qwen_any_recut (cloud, 1.63 s)",
+    "qwen (cloud, 0.60 s)",
+    "dinov2b_probe (cloud, 0.51 s)",
+    "resnet_crops_max (cloud, 0.55 s)",
+    "resnet (drone, 0.07 s)",
+    "resnet_crops_mean (cloud, 0.55 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "laya"
+    ]
+   }
+  },
+  {
+   "i": 19726,
+   "state": "Time budget 10 s, 10.00 s left. Cloud link: down; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "smolvlm (drone, 0.71 s)",
+    "resnet (drone, 0.07 s)",
+    "efficientnet (drone, 0.08 s)",
+    "quality (drone, 0.09 s)",
+    "laya_q4 (drone, 0.78 s)",
+    "head_rust (drone, 0.04 s)",
+    "head_corrosion (drone, 0.04 s)",
+    "resnet18 (drone, 0.03 s)",
+    "deit_small (drone, 0.07 s)",
+    "mobilenet_v2 (drone, 0.07 s)",
+    "efficientnet_tta (drone, 0.16 s)",
+    "exposure (drone, 0.03 s)",
+    "size (drone, 0.00 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "laya_q4"
+    ]
+   }
+  },
+  {
+   "i": 38771,
+   "state": "Time budget 30 s, 30.00 s left. Cloud link: up, 4.2 Mbit/s; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "laya (cloud, 0.16 s)",
+    "smolvlm (drone, 0.76 s)",
+    "laya_recut (cloud, 0.25 s)",
+    "convnext_recut (cloud, 0.19 s)",
+    "resnet_recut (cloud, 0.19 s)",
+    "clip_large_zeroshot (cloud, 0.12 s)",
+    "qwen_any (cloud, 0.23 s)",
+    "clip_probe (cloud, 0.10 s)",
+    "dinov2_probe (cloud, 0.10 s)",
+    "qwen_any_recut (cloud, 0.39 s)",
+    "qwen (cloud, 0.24 s)",
+    "dinov2b_probe (cloud, 0.10 s)",
+    "resnet_crops_max (cloud, 0.14 s)",
+    "resnet (drone, 0.07 s)",
+    "resnet_crops_mean (cloud, 0.14 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "laya_recut"
+    ]
+   }
+  },
+  {
+   "i": 35727,
+   "state": "Time budget 4 s, 3.87 s left. Cloud link: up, 5.7 Mbit/s; the image is not uploaded yet.\nTool results so far:\nlaya_recut: component stockbridge damper 93%; defect 5%; good, no defect 96%, rust 1%",
+   "candidates": [
+    "laya (cloud, 0.12 s)",
+    "convnext_recut (cloud, 0.06 s)",
+    "resnet_recut (cloud, 0.05 s)",
+    "qwen_any_recut (cloud, 0.26 s)",
+    "smolvlm (drone, 0.74 s)",
+    "qwen_any (cloud, 0.20 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "dinov2_probe (cloud, 0.06 s)",
+    "qwen (cloud, 0.16 s)",
+    "dinov2b_probe (cloud, 0.06 s)",
+    "head_rust (drone, 0.04 s)",
+    "resnet_crops_max (cloud, 0.10 s)",
+    "qwen_rust (cloud, 0.20 s)",
+    "clip_head_rust (cloud, 0.06 s)",
+    "laya_q4 (drone, 0.77 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "REPORT",
+    "component": "stockbridge damper",
+    "defect": "no",
+    "condition": "good, no defect"
+   }
+  },
+  {
+   "i": 35091,
+   "state": "Time budget 30 s, 30.00 s left. Cloud link: up, 0.4 Mbit/s; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "laya (cloud, 0.21 s)",
+    "smolvlm (drone, 0.72 s)",
+    "laya_recut (cloud, 0.34 s)",
+    "convnext_recut (cloud, 0.28 s)",
+    "resnet_recut (cloud, 0.28 s)",
+    "clip_large_zeroshot (cloud, 0.16 s)",
+    "qwen_any (cloud, 0.27 s)",
+    "clip_probe (cloud, 0.14 s)",
+    "dinov2_probe (cloud, 0.14 s)",
+    "qwen_any_recut (cloud, 0.48 s)",
+    "qwen (cloud, 0.23 s)",
+    "dinov2b_probe (cloud, 0.14 s)",
+    "resnet_crops_max (cloud, 0.17 s)",
+    "resnet (drone, 0.07 s)",
+    "resnet_crops_mean (cloud, 0.17 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "resnet"
+    ]
+   }
+  },
+  {
+   "i": 1064,
+   "state": "Time budget 4 s, 4.00 s left. Cloud link: down; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "smolvlm (drone, 0.73 s)",
+    "resnet (drone, 0.07 s)",
+    "efficientnet (drone, 0.08 s)",
+    "quality (drone, 0.09 s)",
+    "head_rust (drone, 0.04 s)",
+    "head_corrosion (drone, 0.04 s)",
+    "resnet18 (drone, 0.03 s)",
+    "deit_small (drone, 0.07 s)",
+    "mobilenet_v2 (drone, 0.07 s)",
+    "efficientnet_tta (drone, 0.16 s)",
+    "exposure (drone, 0.03 s)",
+    "size (drone, 0.00 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "resnet18"
+    ]
+   }
+  },
+  {
+   "i": 795,
+   "state": "Time budget 10 s, 8.74 s left. Cloud link: up, 0.5 Mbit/s; the image is already uploaded.\nTool results so far:\nsmolvlm: defect 0%\nlaya: component glass insulator 94%; defect 5%; good, no defect 97%, rust 1%\nspec_glass: good, no defect 98%, missing cap 1%",
+   "candidates": [
+    "laya_recut (cloud, 1.16 s)",
+    "cspec_glass (cloud, 0.06 s)",
+    "qwen_any (cloud, 0.19 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "head_missing-cap (cloud, 0.05 s)",
+    "dinov2_probe (cloud, 0.05 s)",
+    "qwen_any_recut (cloud, 1.30 s)",
+    "qwen (cloud, 0.18 s)",
+    "dinov2b_probe (cloud, 0.06 s)",
+    "qwen_missing-cap (cloud, 0.19 s)",
+    "clip_head_missing-cap (cloud, 0.06 s)",
+    "dinov2b_head_missing-cap (cloud, 0.06 s)",
+    "resnet_crops_max (cloud, 0.09 s)",
+    "convnext_recut (cloud, 1.10 s)",
+    "resnet_recut (cloud, 1.10 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "REPORT",
+    "component": "glass insulator",
+    "defect": "no",
+    "condition": "good, no defect"
+   }
+  },
+  {
+   "i": 18245,
+   "state": "Time budget 10 s, 10.00 s left. Cloud link: down; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "smolvlm (drone, 0.71 s)",
+    "resnet (drone, 0.07 s)",
+    "efficientnet (drone, 0.08 s)",
+    "quality (drone, 0.09 s)",
+    "laya_q4 (drone, 0.78 s)",
+    "head_rust (drone, 0.04 s)",
+    "head_corrosion (drone, 0.04 s)",
+    "resnet18 (drone, 0.03 s)",
+    "deit_small (drone, 0.07 s)",
+    "mobilenet_v2 (drone, 0.07 s)",
+    "efficientnet_tta (drone, 0.16 s)",
+    "exposure (drone, 0.03 s)",
+    "size (drone, 0.00 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "laya_q4"
+    ]
+   }
+  },
+  {
+   "i": 44340,
+   "state": "Time budget 4 s, 3.32 s left. Cloud link: up, 1.6 Mbit/s; the image is already uploaded.\nTool results so far:\ndinov2_probe: rust 91%, good, no defect 9%\nclip_head_rust: rust 5%",
+   "candidates": [
+    "head_rust (drone, 0.04 s)",
+    "dinov2b_head_rust (cloud, 0.06 s)",
+    "qwen_rust (cloud, 0.19 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "laya (cloud, 0.14 s)",
+    "dinov2b_probe (cloud, 0.06 s)",
+    "smolvlm (drone, 0.72 s)",
+    "clip_large_zeroshot (cloud, 0.08 s)",
+    "clip_head_corrosion (cloud, 0.06 s)",
+    "clip_head_nest (cloud, 0.06 s)",
+    "clip_head_missing-cap (cloud, 0.06 s)",
+    "laya_recut (cloud, 2.32 s)",
+    "convnext_recut (cloud, 2.26 s)",
+    "resnet_recut (cloud, 2.26 s)",
+    "head_corrosion (drone, 0.04 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "clip_probe"
+    ]
+   }
+  },
+  {
+   "i": 19764,
+   "state": "Time budget 10 s, 9.97 s left. Cloud link: down; the image is not uploaded yet.\nTool results so far:\nresnet18: good, no defect 94%, rust 6%",
+   "candidates": [
+    "smolvlm (drone, 0.73 s)",
+    "head_rust (drone, 0.04 s)",
+    "resnet (drone, 0.07 s)",
+    "efficientnet (drone, 0.08 s)",
+    "quality (drone, 0.09 s)",
+    "laya_q4 (drone, 0.79 s)",
+    "head_corrosion (drone, 0.04 s)",
+    "deit_small (drone, 0.07 s)",
+    "mobilenet_v2 (drone, 0.07 s)",
+    "efficientnet_tta (drone, 0.16 s)",
+    "exposure (drone, 0.03 s)",
+    "size (drone, 0.00 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "laya_q4"
+    ]
+   }
+  },
+  {
+   "i": 30319,
+   "state": "Time budget 4 s, 3.60 s left. Cloud link: up, 2.7 Mbit/s; the image is already uploaded.\nTool results so far:\nlaya: component glass insulator 95%; defect 24%; missing cap 82%, good, no defect 7%",
+   "candidates": [
+    "head_missing-cap (cloud, 0.05 s)",
+    "qwen_missing-cap (cloud, 0.19 s)",
+    "clip_head_missing-cap (cloud, 0.06 s)",
+    "dinov2b_head_missing-cap (cloud, 0.06 s)",
+    "smolvlm (drone, 0.72 s)",
+    "qwen_any (cloud, 0.19 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "spec_glass (cloud, 0.06 s)",
+    "cspec_glass (cloud, 0.06 s)",
+    "dinov2_probe (cloud, 0.05 s)",
+    "qwen (cloud, 0.17 s)",
+    "dinov2b_probe (cloud, 0.06 s)",
+    "resnet_crops_max (cloud, 0.09 s)",
+    "clip_large_zeroshot (cloud, 0.08 s)",
+    "resnet (drone, 0.07 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "qwen_missing-cap"
+    ]
+   }
+  },
+  {
+   "i": 26183,
+   "state": "Time budget 10 s, 9.57 s left. Cloud link: up, 1.1 Mbit/s; the image is already uploaded.\nTool results so far:\nlaya: component glass insulator 96%; defect 5%; good, no defect 97%, missing cap 1%",
+   "candidates": [
+    "head_missing-cap (cloud, 0.05 s)",
+    "qwen_missing-cap (cloud, 0.19 s)",
+    "clip_head_missing-cap (cloud, 0.06 s)",
+    "dinov2b_head_missing-cap (cloud, 0.06 s)",
+    "smolvlm (drone, 0.71 s)",
+    "qwen_any (cloud, 0.19 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "spec_glass (cloud, 0.06 s)",
+    "cspec_glass (cloud, 0.06 s)",
+    "dinov2_probe (cloud, 0.05 s)",
+    "qwen (cloud, 0.20 s)",
+    "dinov2b_probe (cloud, 0.06 s)",
+    "resnet_crops_max (cloud, 0.09 s)",
+    "clip_large_zeroshot (cloud, 0.08 s)",
+    "resnet (drone, 0.07 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "REPORT",
+    "component": "glass insulator",
+    "defect": "no",
+    "condition": "good, no defect"
+   }
+  },
+  {
+   "i": 29725,
+   "state": "Time budget 30 s, 30.00 s left. Cloud link: up, 3.9 Mbit/s; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "laya (cloud, 0.15 s)",
+    "smolvlm (drone, 0.72 s)",
+    "laya_recut (cloud, 0.20 s)",
+    "convnext_recut (cloud, 0.14 s)",
+    "resnet_recut (cloud, 0.14 s)",
+    "clip_large_zeroshot (cloud, 0.11 s)",
+    "qwen_any (cloud, 0.22 s)",
+    "clip_probe (cloud, 0.08 s)",
+    "dinov2_probe (cloud, 0.08 s)",
+    "qwen_any_recut (cloud, 0.35 s)",
+    "qwen (cloud, 0.18 s)",
+    "dinov2b_probe (cloud, 0.08 s)",
+    "resnet_crops_max (cloud, 0.12 s)",
+    "resnet (drone, 0.07 s)",
+    "resnet_crops_mean (cloud, 0.12 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "laya_recut"
+    ]
+   }
+  },
+  {
+   "i": 4217,
+   "state": "Time budget 30 s, 30.00 s left. Cloud link: down; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "smolvlm (drone, 0.73 s)",
+    "resnet (drone, 0.07 s)",
+    "efficientnet (drone, 0.08 s)",
+    "quality (drone, 0.09 s)",
+    "laya_q4 (drone, 0.83 s)",
+    "head_rust (drone, 0.04 s)",
+    "head_corrosion (drone, 0.04 s)",
+    "resnet18 (drone, 0.03 s)",
+    "deit_small (drone, 0.07 s)",
+    "mobilenet_v2 (drone, 0.07 s)",
+    "efficientnet_tta (drone, 0.16 s)",
+    "exposure (drone, 0.03 s)",
+    "size (drone, 0.00 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "laya_q4"
+    ]
+   }
+  },
+  {
+   "i": 21210,
+   "state": "Time budget 10 s, 10.00 s left. Cloud link: up, 0.9 Mbit/s; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "laya (cloud, 0.55 s)",
+    "smolvlm (drone, 0.73 s)",
+    "laya_recut (cloud, 1.57 s)",
+    "convnext_recut (cloud, 1.51 s)",
+    "resnet_recut (cloud, 1.51 s)",
+    "clip_large_zeroshot (cloud, 0.51 s)",
+    "qwen_any (cloud, 0.62 s)",
+    "clip_probe (cloud, 0.48 s)",
+    "dinov2_probe (cloud, 0.48 s)",
+    "qwen_any_recut (cloud, 1.71 s)",
+    "qwen (cloud, 0.63 s)",
+    "dinov2b_probe (cloud, 0.49 s)",
+    "resnet_crops_max (cloud, 0.52 s)",
+    "resnet (drone, 0.07 s)",
+    "resnet_crops_mean (cloud, 0.52 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "laya"
+    ]
+   }
+  },
+  {
+   "i": 34560,
+   "state": "Time budget 4 s, 4.00 s left. Cloud link: up, 3.0 Mbit/s; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "laya (cloud, 0.40 s)",
+    "smolvlm (drone, 0.74 s)",
+    "clip_large_zeroshot (cloud, 0.35 s)",
+    "qwen_any (cloud, 0.47 s)",
+    "clip_probe (cloud, 0.33 s)",
+    "dinov2_probe (cloud, 0.33 s)",
+    "qwen (cloud, 0.48 s)",
+    "dinov2b_probe (cloud, 0.33 s)",
+    "resnet_crops_max (cloud, 0.37 s)",
+    "resnet (drone, 0.07 s)",
+    "resnet_crops_mean (cloud, 0.37 s)",
+    "convnext (cloud, 0.33 s)",
+    "efficientnet (drone, 0.08 s)",
+    "yolo_cls (cloud, 0.32 s)",
+    "quality (drone, 0.09 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "efficientnet"
+    ]
+   }
+  },
+  {
+   "i": 49324,
+   "state": "Time budget 30 s, 29.08 s left. Cloud link: up, 0.8 Mbit/s; the image is already uploaded.\nTool results so far:\nlaya: component yoke suspension 93%; defect 4%; good, no defect 97%, rust 1%\nqwen_any_recut: defect 1%",
+   "candidates": [
+    "laya_recut (cloud, 0.12 s)",
+    "convnext_recut (cloud, 0.06 s)",
+    "qwen_any (cloud, 0.19 s)",
+    "resnet_recut (cloud, 0.05 s)",
+    "qwen (cloud, 0.15 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "laya_q4 (drone, 0.79 s)",
+    "qwen_rust (cloud, 0.19 s)",
+    "dinov2_probe (cloud, 0.05 s)",
+    "smolvlm (drone, 0.71 s)",
+    "dinov2b_probe (cloud, 0.06 s)",
+    "resnet_crops_max (cloud, 0.09 s)",
+    "spec_yoke (cloud, 0.06 s)",
+    "cspec_yoke (cloud, 0.06 s)",
+    "head_rust (drone, 0.04 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "REPORT",
+    "component": "yoke suspension",
+    "defect": "no",
+    "condition": "good, no defect"
+   }
+  },
+  {
+   "i": 13173,
+   "state": "Time budget 30 s, 29.39 s left. Cloud link: up, 2.9 Mbit/s; the image is already uploaded.\nTool results so far:\nresnet: good, no defect 99%, missing cap 1%\nlaya: component glass insulator 95%; defect 8%; missing cap 92%, good, no defect 3%\nqwen_missing-cap: missing cap 48%",
+   "candidates": [
+    "head_missing-cap (cloud, 0.05 s)",
+    "clip_head_missing-cap (cloud, 0.06 s)",
+    "dinov2b_head_missing-cap (cloud, 0.06 s)",
+    "qwen_any (cloud, 0.19 s)",
+    "qwen (cloud, 0.18 s)",
+    "resnet_crops_max (cloud, 0.09 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "dinov2_probe (cloud, 0.05 s)",
+    "smolvlm (drone, 0.72 s)",
+    "dinov2b_probe (cloud, 0.06 s)",
+    "spec_glass (cloud, 0.06 s)",
+    "cspec_glass (cloud, 0.06 s)",
+    "qwen_rust (cloud, 0.19 s)",
+    "qwen_corrosion (cloud, 0.19 s)",
+    "qwen_nest (cloud, 0.19 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "smolvlm"
+    ]
+   }
+  },
+  {
+   "i": 12930,
+   "state": "Time budget 4 s, 4.00 s left. Cloud link: down; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "smolvlm (drone, 0.74 s)",
+    "resnet (drone, 0.07 s)",
+    "efficientnet (drone, 0.08 s)",
+    "quality (drone, 0.09 s)",
+    "laya_q4 (drone, 0.80 s)",
+    "head_rust (drone, 0.04 s)",
+    "head_corrosion (drone, 0.04 s)",
+    "resnet18 (drone, 0.03 s)",
+    "deit_small (drone, 0.07 s)",
+    "mobilenet_v2 (drone, 0.07 s)",
+    "efficientnet_tta (drone, 0.16 s)",
+    "exposure (drone, 0.03 s)",
+    "size (drone, 0.00 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "laya_q4"
+    ]
+   }
+  },
+  {
+   "i": 17192,
+   "state": "Time budget 4 s, 3.79 s left. Cloud link: up, 5.9 Mbit/s; the image is not uploaded yet.\nTool results so far:\nlaya_recut: component yoke suspension 94%; defect 42%; rust 69%, good, no defect 29%",
+   "candidates": [
+    "laya (cloud, 0.17 s)",
+    "convnext_recut (cloud, 0.06 s)",
+    "resnet_recut (cloud, 0.05 s)",
+    "qwen_any_recut (cloud, 0.26 s)",
+    "smolvlm (drone, 0.72 s)",
+    "qwen_any (cloud, 0.22 s)",
+    "clip_probe (cloud, 0.08 s)",
+    "spec_yoke (cloud, 0.08 s)",
+    "cspec_yoke (cloud, 0.08 s)",
+    "dinov2_probe (cloud, 0.08 s)",
+    "qwen (cloud, 0.17 s)",
+    "dinov2b_probe (cloud, 0.09 s)",
+    "head_rust (drone, 0.04 s)",
+    "resnet_crops_max (cloud, 0.12 s)",
+    "qwen_rust (cloud, 0.22 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "resnet_recut"
+    ]
+   }
+  },
+  {
+   "i": 47322,
+   "state": "Time budget 4 s, 4.00 s left. Cloud link: up, 0.0 Mbit/s; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "smolvlm (drone, 0.70 s)",
+    "resnet (drone, 0.07 s)",
+    "efficientnet (drone, 0.08 s)",
+    "quality (drone, 0.09 s)",
+    "head_rust (drone, 0.04 s)",
+    "head_corrosion (drone, 0.04 s)",
+    "resnet18 (drone, 0.03 s)",
+    "deit_small (drone, 0.07 s)",
+    "mobilenet_v2 (drone, 0.07 s)",
+    "efficientnet_tta (drone, 0.16 s)",
+    "exposure (drone, 0.03 s)",
+    "size (drone, 0.00 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "resnet18"
+    ]
+   }
+  },
+  {
+   "i": 26328,
+   "state": "Time budget 10 s, 8.36 s left. Cloud link: up, 2.3 Mbit/s; the image is already uploaded.\nTool results so far:\nresnet: good, no defect 100%, rust 0%\nconvnext_recut: good, no defect 100%, rust 0%\ndinov2_probe: good, no defect 100%, missing cap 0%",
+   "candidates": [
+    "laya (cloud, 0.12 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "dinov2b_probe (cloud, 0.06 s)",
+    "head_rust (drone, 0.04 s)",
+    "resnet_recut (cloud, 0.05 s)",
+    "qwen_any_recut (cloud, 0.26 s)",
+    "head_missing-cap (cloud, 0.05 s)",
+    "dinov2b_head_rust (cloud, 0.06 s)",
+    "dinov2b_head_missing-cap (cloud, 0.06 s)",
+    "qwen_rust (cloud, 0.19 s)",
+    "clip_head_rust (cloud, 0.06 s)",
+    "laya_recut (cloud, 0.12 s)",
+    "resnet_crops_max (cloud, 0.09 s)",
+    "qwen_missing-cap (cloud, 0.19 s)",
+    "clip_head_missing-cap (cloud, 0.06 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "laya"
+    ]
+   }
+  },
+  {
+   "i": 1678,
+   "state": "Time budget 30 s, 30.00 s left. Cloud link: down; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "smolvlm (drone, 0.73 s)",
+    "resnet (drone, 0.07 s)",
+    "efficientnet (drone, 0.08 s)",
+    "quality (drone, 0.09 s)",
+    "head_rust (drone, 0.04 s)",
+    "head_corrosion (drone, 0.04 s)",
+    "resnet18 (drone, 0.03 s)",
+    "deit_small (drone, 0.07 s)",
+    "mobilenet_v2 (drone, 0.07 s)",
+    "efficientnet_tta (drone, 0.16 s)",
+    "exposure (drone, 0.03 s)",
+    "size (drone, 0.00 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "resnet18"
+    ]
+   }
+  },
+  {
+   "i": 28564,
+   "state": "No time limit, 0.38 s used. Cloud link: up, 3.9 Mbit/s; the image is already uploaded.\nTool results so far:\nlaya: component yoke suspension 94%; defect 4%; good, no defect 97%, rust 1%\nqwen_rust: rust 75%",
+   "candidates": [
+    "head_rust (drone, 0.04 s)",
+    "clip_head_rust (cloud, 0.06 s)",
+    "dinov2b_head_rust (cloud, 0.06 s)",
+    "laya_recut (cloud, 0.35 s)",
+    "qwen_any (cloud, 0.19 s)",
+    "qwen_any_recut (cloud, 0.49 s)",
+    "convnext_recut (cloud, 0.29 s)",
+    "qwen (cloud, 0.18 s)",
+    "resnet_recut (cloud, 0.28 s)",
+    "smolvlm (drone, 0.73 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "spec_yoke (cloud, 0.06 s)",
+    "cspec_yoke (cloud, 0.06 s)",
+    "dinov2_probe (cloud, 0.05 s)",
+    "dinov2b_probe (cloud, 0.06 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "REPORT",
+    "component": "yoke suspension",
+    "defect": "no",
+    "condition": "good, no defect"
+   }
+  },
+  {
+   "i": 30908,
+   "state": "No time limit, 0.44 s used. Cloud link: up, 0.9 Mbit/s; the image is already uploaded.\nTool results so far:\nlaya: component shackle 95%; defect 4%; good, no defect 97%, rust 1%\nclip_probe: rust 61%, good, no defect 32%",
+   "candidates": [
+    "clip_head_rust (cloud, 0.06 s)",
+    "laya_recut (cloud, 1.01 s)",
+    "dinov2_probe (cloud, 0.05 s)",
+    "dinov2b_probe (cloud, 0.06 s)",
+    "head_rust (drone, 0.04 s)",
+    "qwen_rust (cloud, 0.19 s)",
+    "dinov2b_head_rust (cloud, 0.06 s)",
+    "qwen_any (cloud, 0.19 s)",
+    "laya_q4 (drone, 0.86 s)",
+    "convnext_recut (cloud, 0.95 s)",
+    "resnet_recut (cloud, 0.95 s)",
+    "qwen_any_recut (cloud, 1.15 s)",
+    "smolvlm (drone, 0.74 s)",
+    "qwen (cloud, 0.21 s)",
+    "resnet_crops_max (cloud, 0.09 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "REPORT",
+    "component": "shackle",
+    "defect": "no",
+    "condition": "good, no defect"
+   }
+  },
+  {
+   "i": 1257,
+   "state": "No time limit, 0.80 s used. Cloud link: up, 2.6 Mbit/s; the image is already uploaded.\nTool results so far:\nefficientnet: missing cap 100%, corrosion 0%\nlaya: component glass insulator 88%; defect 97%; missing cap 98%, good, no defect 1%",
+   "candidates": [
+    "head_missing-cap (cloud, 0.05 s)",
+    "qwen_missing-cap (cloud, 0.19 s)",
+    "clip_head_missing-cap (cloud, 0.06 s)",
+    "dinov2b_head_missing-cap (cloud, 0.06 s)",
+    "smolvlm (drone, 0.71 s)",
+    "qwen_any (cloud, 0.19 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "spec_glass (cloud, 0.06 s)",
+    "cspec_glass (cloud, 0.06 s)",
+    "dinov2_probe (cloud, 0.05 s)",
+    "qwen (cloud, 0.20 s)",
+    "dinov2b_probe (cloud, 0.06 s)",
+    "efficientnet_tta (drone, 0.16 s)",
+    "head_corrosion (drone, 0.04 s)",
+    "resnet_crops_max (cloud, 0.09 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "REPORT",
+    "component": "glass insulator",
+    "defect": "yes",
+    "condition": "missing cap"
+   }
+  },
+  {
+   "i": 15085,
+   "state": "Time budget 10 s, 9.75 s left. Cloud link: up, 3.0 Mbit/s; the image is already uploaded.\nTool results so far:\nqwen_any: defect 4%",
+   "candidates": [
+    "laya (cloud, 0.12 s)",
+    "smolvlm (drone, 0.76 s)",
+    "qwen_any_recut (cloud, 0.44 s)",
+    "qwen (cloud, 0.15 s)",
+    "laya_recut (cloud, 0.30 s)",
+    "convnext_recut (cloud, 0.24 s)",
+    "resnet_recut (cloud, 0.24 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "dinov2_probe (cloud, 0.05 s)",
+    "dinov2b_probe (cloud, 0.06 s)",
+    "resnet_crops_max (cloud, 0.09 s)",
+    "qwen_rust (cloud, 0.19 s)",
+    "qwen_corrosion (cloud, 0.19 s)",
+    "qwen_nest (cloud, 0.19 s)",
+    "qwen_other (cloud, 0.19 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "laya"
+    ]
+   }
+  },
+  {
+   "i": 17267,
+   "state": "No time limit, 0.19 s used. Cloud link: up, 3.2 Mbit/s; the image is already uploaded.\nTool results so far:\nlaya: component glass insulator 94%; defect 4%; good, no defect 97%, missing cap 1%",
+   "candidates": [
+    "laya_recut (cloud, 0.30 s)",
+    "head_missing-cap (cloud, 0.05 s)",
+    "qwen_missing-cap (cloud, 0.19 s)",
+    "clip_head_missing-cap (cloud, 0.06 s)",
+    "dinov2b_head_missing-cap (cloud, 0.06 s)",
+    "convnext_recut (cloud, 0.24 s)",
+    "resnet_recut (cloud, 0.24 s)",
+    "smolvlm (drone, 0.74 s)",
+    "qwen_any (cloud, 0.19 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "spec_glass (cloud, 0.06 s)",
+    "cspec_glass (cloud, 0.06 s)",
+    "dinov2_probe (cloud, 0.05 s)",
+    "qwen_any_recut (cloud, 0.45 s)",
+    "qwen (cloud, 0.18 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "REPORT",
+    "component": "glass insulator",
+    "defect": "no",
+    "condition": "good, no defect"
+   }
+  },
+  {
+   "i": 53580,
+   "state": "No time limit, 0.00 s used. Cloud link: up, 5.7 Mbit/s; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "laya (cloud, 0.19 s)",
+    "smolvlm (drone, 0.75 s)",
+    "clip_large_zeroshot (cloud, 0.15 s)",
+    "qwen_any (cloud, 0.26 s)",
+    "clip_probe (cloud, 0.12 s)",
+    "dinov2_probe (cloud, 0.12 s)",
+    "qwen (cloud, 0.27 s)",
+    "dinov2b_probe (cloud, 0.13 s)",
+    "resnet_crops_max (cloud, 0.16 s)",
+    "resnet (drone, 0.07 s)",
+    "resnet_crops_mean (cloud, 0.16 s)",
+    "convnext (cloud, 0.12 s)",
+    "efficientnet (drone, 0.08 s)",
+    "yolo_cls (cloud, 0.12 s)",
+    "quality (drone, 0.09 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "resnet"
+    ]
+   }
+  },
+  {
+   "i": 16575,
+   "state": "Time budget 4 s, 4.00 s left. Cloud link: up, 2.2 Mbit/s; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "laya (cloud, 0.17 s)",
+    "smolvlm (drone, 0.72 s)",
+    "laya_recut (cloud, 0.31 s)",
+    "convnext_recut (cloud, 0.25 s)",
+    "resnet_recut (cloud, 0.25 s)",
+    "clip_large_zeroshot (cloud, 0.14 s)",
+    "qwen_any (cloud, 0.25 s)",
+    "clip_probe (cloud, 0.11 s)",
+    "dinov2_probe (cloud, 0.11 s)",
+    "qwen_any_recut (cloud, 0.45 s)",
+    "qwen (cloud, 0.20 s)",
+    "dinov2b_probe (cloud, 0.11 s)",
+    "resnet_crops_max (cloud, 0.15 s)",
+    "resnet (drone, 0.07 s)",
+    "resnet_crops_mean (cloud, 0.15 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "laya"
+    ]
+   }
+  },
+  {
+   "i": 50794,
+   "state": "Time budget 4 s, 4.00 s left. Cloud link: up, 2.5 Mbit/s; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "laya (cloud, 0.14 s)",
+    "smolvlm (drone, 0.75 s)",
+    "laya_recut (cloud, 0.17 s)",
+    "convnext_recut (cloud, 0.11 s)",
+    "resnet_recut (cloud, 0.11 s)",
+    "clip_large_zeroshot (cloud, 0.10 s)",
+    "qwen_any (cloud, 0.21 s)",
+    "clip_probe (cloud, 0.07 s)",
+    "dinov2_probe (cloud, 0.07 s)",
+    "qwen_any_recut (cloud, 0.32 s)",
+    "qwen (cloud, 0.17 s)",
+    "dinov2b_probe (cloud, 0.08 s)",
+    "resnet_crops_max (cloud, 0.11 s)",
+    "resnet (drone, 0.07 s)",
+    "resnet_crops_mean (cloud, 0.11 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "laya"
+    ]
+   }
+  },
+  {
+   "i": 22679,
+   "state": "Time budget 4 s, 3.81 s left. Cloud link: up, 2.8 Mbit/s; the image is already uploaded.\nTool results so far:\ndinov2_probe: good, no defect 100%, corrosion 0%",
+   "candidates": [
+    "laya (cloud, 0.12 s)",
+    "dinov2b_probe (cloud, 0.06 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "head_corrosion (drone, 0.04 s)",
+    "smolvlm (drone, 0.72 s)",
+    "dinov2b_head_corrosion (cloud, 0.06 s)",
+    "qwen_corrosion (cloud, 0.19 s)",
+    "clip_head_corrosion (cloud, 0.06 s)",
+    "qwen_any (cloud, 0.19 s)",
+    "qwen (cloud, 0.17 s)",
+    "resnet_crops_max (cloud, 0.09 s)",
+    "clip_large_zeroshot (cloud, 0.08 s)",
+    "head_rust (drone, 0.04 s)",
+    "head_nest (cloud, 0.05 s)",
+    "head_missing-cap (cloud, 0.05 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "head_corrosion"
+    ]
+   }
+  },
+  {
+   "i": 60536,
+   "state": "Time budget 30 s, 29.27 s left. Cloud link: up, 0.3 Mbit/s; the image is not uploaded yet.\nTool results so far:\nsmolvlm: defect 0%",
+   "candidates": [
+    "laya (cloud, 0.31 s)",
+    "laya_recut (cloud, 0.65 s)",
+    "convnext_recut (cloud, 0.59 s)",
+    "smolvlm_base (cloud, 0.30 s)",
+    "smolvlm_split (cloud, 0.32 s)",
+    "resnet_recut (cloud, 0.59 s)",
+    "qwen_any (cloud, 0.38 s)",
+    "clip_probe (cloud, 0.24 s)",
+    "dinov2_probe (cloud, 0.24 s)",
+    "qwen_any_recut (cloud, 0.80 s)",
+    "qwen (cloud, 0.34 s)",
+    "dinov2b_probe (cloud, 0.25 s)",
+    "resnet_crops_max (cloud, 0.28 s)",
+    "clip_large_zeroshot (cloud, 0.27 s)",
+    "resnet (drone, 0.07 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "resnet"
+    ]
+   }
+  },
+  {
+   "i": 6889,
+   "state": "No time limit, 0.33 s used. Cloud link: up, 5.7 Mbit/s; the image is already uploaded.\nTool results so far:\nlaya: component yoke suspension 95%; defect 5%; good, no defect 97%, rust 1%\nlaya_recut: component yoke suspension 95%; defect 4%; good, no defect 97%, rust 1%",
+   "candidates": [
+    "convnext_recut (cloud, 0.06 s)",
+    "resnet_recut (cloud, 0.05 s)",
+    "qwen_any_recut (cloud, 0.26 s)",
+    "spec_yoke (cloud, 0.06 s)",
+    "cspec_yoke (cloud, 0.06 s)",
+    "qwen_any (cloud, 0.19 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "head_rust (drone, 0.04 s)",
+    "qwen_rust (cloud, 0.19 s)",
+    "clip_head_rust (cloud, 0.06 s)",
+    "dinov2b_head_rust (cloud, 0.06 s)",
+    "dinov2_probe (cloud, 0.05 s)",
+    "qwen (cloud, 0.17 s)",
+    "dinov2b_probe (cloud, 0.06 s)",
+    "resnet_crops_max (cloud, 0.09 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "REPORT",
+    "component": "yoke suspension",
+    "defect": "no",
+    "condition": "good, no defect"
+   }
+  },
+  {
+   "i": 60346,
+   "state": "Time budget 10 s, 9.70 s left. Cloud link: up, 5.1 Mbit/s; the image is not uploaded yet.\nTool results so far:\nlaya_recut: component yoke suspension 94%; defect 5%; good, no defect 97%, rust 1%",
+   "candidates": [
+    "laya (cloud, 0.18 s)",
+    "convnext_recut (cloud, 0.06 s)",
+    "resnet_recut (cloud, 0.05 s)",
+    "qwen_any_recut (cloud, 0.26 s)",
+    "smolvlm (drone, 0.74 s)",
+    "qwen_any (cloud, 0.25 s)",
+    "clip_probe (cloud, 0.11 s)",
+    "spec_yoke (cloud, 0.11 s)",
+    "cspec_yoke (cloud, 0.11 s)",
+    "dinov2_probe (cloud, 0.11 s)",
+    "qwen (cloud, 0.22 s)",
+    "dinov2b_probe (cloud, 0.11 s)",
+    "head_rust (drone, 0.04 s)",
+    "resnet_crops_max (cloud, 0.15 s)",
+    "qwen_rust (cloud, 0.25 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "REPORT",
+    "component": "yoke suspension",
+    "defect": "no",
+    "condition": "good, no defect"
+   }
+  },
+  {
+   "i": 44571,
+   "state": "Time budget 4 s, 4.00 s left. Cloud link: up, 3.3 Mbit/s; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "laya (cloud, 0.37 s)",
+    "smolvlm (drone, 0.73 s)",
+    "clip_large_zeroshot (cloud, 0.29 s)",
+    "qwen_any (cloud, 0.40 s)",
+    "clip_probe (cloud, 0.27 s)",
+    "dinov2_probe (cloud, 0.27 s)",
+    "qwen (cloud, 0.39 s)",
+    "dinov2b_probe (cloud, 0.27 s)",
+    "resnet_crops_max (cloud, 0.31 s)",
+    "resnet (drone, 0.07 s)",
+    "resnet_crops_mean (cloud, 0.31 s)",
+    "convnext (cloud, 0.27 s)",
+    "efficientnet (drone, 0.08 s)",
+    "yolo_cls (cloud, 0.26 s)",
+    "quality (drone, 0.09 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "efficientnet"
+    ]
+   }
+  },
+  {
+   "i": 27787,
+   "state": "Time budget 4 s, 4.00 s left. Cloud link: up, 3.4 Mbit/s; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "laya (cloud, 0.38 s)",
+    "smolvlm (drone, 0.71 s)",
+    "laya_recut (cloud, 1.11 s)",
+    "convnext_recut (cloud, 1.05 s)",
+    "resnet_recut (cloud, 1.05 s)",
+    "clip_large_zeroshot (cloud, 0.33 s)",
+    "qwen_any (cloud, 0.44 s)",
+    "clip_probe (cloud, 0.31 s)",
+    "dinov2_probe (cloud, 0.31 s)",
+    "qwen_any_recut (cloud, 1.25 s)",
+    "qwen (cloud, 0.45 s)",
+    "dinov2b_probe (cloud, 0.31 s)",
+    "resnet_crops_max (cloud, 0.34 s)",
+    "resnet (drone, 0.07 s)",
+    "resnet_crops_mean (cloud, 0.34 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "resnet_recut"
+    ]
+   }
+  },
+  {
+   "i": 31159,
+   "state": "Time budget 30 s, 29.92 s left. Cloud link: up, 2.6 Mbit/s; the image is already uploaded.\nTool results so far:\ndinov2_probe: good, no defect 100%, rust 0%",
+   "candidates": [
+    "laya (cloud, 0.12 s)",
+    "dinov2b_probe (cloud, 0.06 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "head_rust (drone, 0.04 s)",
+    "smolvlm (drone, 0.73 s)",
+    "dinov2b_head_rust (cloud, 0.06 s)",
+    "laya_recut (cloud, 0.21 s)",
+    "convnext_recut (cloud, 0.15 s)",
+    "resnet_recut (cloud, 0.15 s)",
+    "qwen_rust (cloud, 0.19 s)",
+    "clip_head_rust (cloud, 0.06 s)",
+    "qwen_any (cloud, 0.19 s)",
+    "qwen_any_recut (cloud, 0.35 s)",
+    "qwen (cloud, 0.17 s)",
+    "resnet_crops_max (cloud, 0.09 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "laya"
+    ]
+   }
+  },
+  {
+   "i": 59471,
+   "state": "Time budget 30 s, 30.00 s left. Cloud link: up, 2.6 Mbit/s; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "laya (cloud, 0.20 s)",
+    "smolvlm (drone, 0.74 s)",
+    "laya_recut (cloud, 0.35 s)",
+    "convnext_recut (cloud, 0.29 s)",
+    "resnet_recut (cloud, 0.29 s)",
+    "clip_large_zeroshot (cloud, 0.15 s)",
+    "qwen_any (cloud, 0.26 s)",
+    "clip_probe (cloud, 0.13 s)",
+    "dinov2_probe (cloud, 0.13 s)",
+    "qwen_any_recut (cloud, 0.49 s)",
+    "qwen (cloud, 0.22 s)",
+    "dinov2b_probe (cloud, 0.13 s)",
+    "resnet_crops_max (cloud, 0.16 s)",
+    "resnet (drone, 0.07 s)",
+    "resnet_crops_mean (cloud, 0.16 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "resnet"
+    ]
+   }
+  },
+  {
+   "i": 22749,
+   "state": "Time budget 10 s, 9.72 s left. Cloud link: up, 2.6 Mbit/s; the image is already uploaded.\nTool results so far:\nresnet: good, no defect 98%, rust 1%\nlaya: component yoke suspension 94%; defect 5%; good, no defect 97%, rust 1%",
+   "candidates": [
+    "laya_recut (cloud, 0.34 s)",
+    "head_rust (drone, 0.04 s)",
+    "resnet_recut (cloud, 0.27 s)",
+    "qwen_rust (cloud, 0.19 s)",
+    "clip_head_rust (cloud, 0.06 s)",
+    "dinov2b_head_rust (cloud, 0.06 s)",
+    "resnet_crops_max (cloud, 0.09 s)",
+    "qwen_any (cloud, 0.19 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "convnext_recut (cloud, 0.27 s)",
+    "dinov2_probe (cloud, 0.05 s)",
+    "qwen_any_recut (cloud, 0.48 s)",
+    "smolvlm (drone, 0.73 s)",
+    "qwen (cloud, 0.20 s)",
+    "dinov2b_probe (cloud, 0.06 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "REPORT",
+    "component": "yoke suspension",
+    "defect": "no",
+    "condition": "good, no defect"
+   }
+  },
+  {
+   "i": 27966,
+   "state": "Time budget 4 s, 3.97 s left. Cloud link: down; the image is not uploaded yet.\nTool results so far:\nexposure: score +1.2 (0 = average image)",
+   "candidates": [
+    "smolvlm (drone, 0.71 s)",
+    "efficientnet_tta (drone, 0.16 s)",
+    "quality (drone, 0.09 s)",
+    "size (drone, 0.00 s)",
+    "resnet (drone, 0.07 s)",
+    "efficientnet (drone, 0.08 s)",
+    "resnet18 (drone, 0.03 s)",
+    "laya_q4 (drone, 0.92 s)",
+    "head_rust (drone, 0.04 s)",
+    "head_corrosion (drone, 0.04 s)",
+    "deit_small (drone, 0.07 s)",
+    "mobilenet_v2 (drone, 0.07 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "laya_q4"
+    ]
+   }
+  },
+  {
+   "i": 25426,
+   "state": "Time budget 4 s, 4.00 s left. Cloud link: up, 4.4 Mbit/s; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "laya (cloud, 0.14 s)",
+    "smolvlm (drone, 0.73 s)",
+    "laya_recut (cloud, 0.20 s)",
+    "convnext_recut (cloud, 0.13 s)",
+    "resnet_recut (cloud, 0.13 s)",
+    "clip_large_zeroshot (cloud, 0.11 s)",
+    "qwen_any (cloud, 0.22 s)",
+    "clip_probe (cloud, 0.09 s)",
+    "dinov2_probe (cloud, 0.09 s)",
+    "qwen_any_recut (cloud, 0.34 s)",
+    "qwen (cloud, 0.19 s)",
+    "dinov2b_probe (cloud, 0.09 s)",
+    "resnet_crops_max (cloud, 0.12 s)",
+    "resnet (drone, 0.07 s)",
+    "resnet_crops_mean (cloud, 0.12 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "laya_recut"
+    ]
+   }
+  },
+  {
+   "i": 26677,
+   "state": "Time budget 30 s, 30.00 s left. Cloud link: up, 1.2 Mbit/s; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "laya (cloud, 0.17 s)",
+    "smolvlm (drone, 0.73 s)",
+    "laya_recut (cloud, 0.27 s)",
+    "convnext_recut (cloud, 0.21 s)",
+    "resnet_recut (cloud, 0.21 s)",
+    "clip_large_zeroshot (cloud, 0.13 s)",
+    "qwen_any (cloud, 0.24 s)",
+    "clip_probe (cloud, 0.10 s)",
+    "dinov2_probe (cloud, 0.10 s)",
+    "qwen_any_recut (cloud, 0.42 s)",
+    "qwen (cloud, 0.20 s)",
+    "dinov2b_probe (cloud, 0.11 s)",
+    "resnet_crops_max (cloud, 0.14 s)",
+    "resnet (drone, 0.07 s)",
+    "resnet_crops_mean (cloud, 0.14 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "resnet"
+    ]
+   }
+  },
+  {
+   "i": 34864,
+   "state": "Time budget 4 s, 3.79 s left. Cloud link: up, 3.4 Mbit/s; the image is already uploaded.\nTool results so far:\nlaya: component vari-grip clamp 95%; defect 95%; bird nest 97%, rust 1%",
+   "candidates": [
+    "laya_recut (cloud, 0.36 s)",
+    "convnext_recut (cloud, 0.30 s)",
+    "head_nest (cloud, 0.05 s)",
+    "resnet_recut (cloud, 0.30 s)",
+    "qwen_nest (cloud, 0.19 s)",
+    "clip_head_nest (cloud, 0.06 s)",
+    "dinov2b_head_nest (cloud, 0.06 s)",
+    "smolvlm (drone, 0.75 s)",
+    "head_rust (drone, 0.04 s)",
+    "qwen_rust (cloud, 0.19 s)",
+    "clip_head_rust (cloud, 0.06 s)",
+    "dinov2b_head_rust (cloud, 0.06 s)",
+    "qwen_any (cloud, 0.19 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "dinov2_probe (cloud, 0.05 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "REPORT",
+    "component": "vari-grip clamp",
+    "defect": "yes",
+    "condition": "bird nest"
+   }
+  },
+  {
+   "i": 18915,
+   "state": "Time budget 10 s, 9.11 s left. Cloud link: up, 1.6 Mbit/s; the image is already uploaded.\nTool results so far:\nresnet: corrosion 99%, rust 1%\nlaya: component shackle 94%; defect 96%; missing cap 76%, rust 8%\nqwen_rust: rust 100%",
+   "candidates": [
+    "head_rust (drone, 0.04 s)",
+    "clip_head_rust (cloud, 0.06 s)",
+    "dinov2b_head_rust (cloud, 0.06 s)",
+    "qwen_missing-cap (cloud, 0.19 s)",
+    "head_missing-cap (cloud, 0.05 s)",
+    "clip_head_missing-cap (cloud, 0.06 s)",
+    "dinov2b_head_missing-cap (cloud, 0.06 s)",
+    "qwen_corrosion (cloud, 0.19 s)",
+    "qwen_any (cloud, 0.19 s)",
+    "smolvlm (drone, 0.73 s)",
+    "qwen (cloud, 0.20 s)",
+    "resnet_crops_max (cloud, 0.09 s)",
+    "head_corrosion (drone, 0.04 s)",
+    "clip_head_corrosion (cloud, 0.06 s)",
+    "dinov2b_head_corrosion (cloud, 0.06 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "REPORT",
+    "component": "shackle",
+    "defect": "yes",
+    "condition": "corrosion"
+   }
+  },
+  {
+   "i": 6853,
+   "state": "Time budget 4 s, 4.00 s left. Cloud link: down; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "smolvlm (drone, 0.71 s)",
+    "resnet (drone, 0.07 s)",
+    "efficientnet (drone, 0.08 s)",
+    "quality (drone, 0.09 s)",
+    "head_rust (drone, 0.04 s)",
+    "head_corrosion (drone, 0.04 s)",
+    "resnet18 (drone, 0.03 s)",
+    "deit_small (drone, 0.07 s)",
+    "mobilenet_v2 (drone, 0.07 s)",
+    "efficientnet_tta (drone, 0.16 s)",
+    "exposure (drone, 0.03 s)",
+    "size (drone, 0.00 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "resnet18"
+    ]
+   }
+  },
+  {
+   "i": 59046,
+   "state": "Time budget 10 s, 9.61 s left. Cloud link: up, 2.8 Mbit/s; the image is not uploaded yet.\nTool results so far:\nconvnext_recut: good, no defect 100%, rust 0%",
+   "candidates": [
+    "laya (cloud, 0.22 s)",
+    "laya_recut (cloud, 0.12 s)",
+    "resnet_recut (cloud, 0.05 s)",
+    "qwen_any_recut (cloud, 0.26 s)",
+    "smolvlm (drone, 0.72 s)",
+    "head_rust (drone, 0.04 s)",
+    "qwen_rust (cloud, 0.29 s)",
+    "clip_head_rust (cloud, 0.16 s)",
+    "dinov2b_head_rust (cloud, 0.16 s)",
+    "qwen_any (cloud, 0.29 s)",
+    "clip_probe (cloud, 0.16 s)",
+    "dinov2_probe (cloud, 0.16 s)",
+    "qwen (cloud, 0.27 s)",
+    "dinov2b_probe (cloud, 0.16 s)",
+    "resnet_crops_max (cloud, 0.20 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "laya_recut"
+    ]
+   }
+  },
+  {
+   "i": 3759,
+   "state": "Time budget 10 s, 9.81 s left. Cloud link: up, 0.6 Mbit/s; the image is already uploaded.\nTool results so far:\ndinov2_probe: good, no defect 100%, rust 0%",
+   "candidates": [
+    "laya (cloud, 0.11 s)",
+    "dinov2b_probe (cloud, 0.06 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "head_rust (drone, 0.04 s)",
+    "smolvlm (drone, 0.72 s)",
+    "dinov2b_head_rust (cloud, 0.06 s)",
+    "laya_recut (cloud, 0.48 s)",
+    "convnext_recut (cloud, 0.42 s)",
+    "resnet_recut (cloud, 0.41 s)",
+    "qwen_rust (cloud, 0.19 s)",
+    "clip_head_rust (cloud, 0.06 s)",
+    "qwen_any (cloud, 0.19 s)",
+    "qwen_any_recut (cloud, 0.62 s)",
+    "qwen (cloud, 0.15 s)",
+    "resnet_crops_max (cloud, 0.09 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "laya"
+    ]
+   }
+  },
+  {
+   "i": 1471,
+   "state": "Time budget 4 s, 3.37 s left. Cloud link: up, 0.7 Mbit/s; the image is already uploaded.\nTool results so far:\nlaya: component vari-grip clamp 95%; defect 72%; rust 91%, good, no defect 4%\ndinov2b_probe: rust 100%, good, no defect 0%",
+   "candidates": [
+    "dinov2b_head_rust (cloud, 0.06 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "dinov2_probe (cloud, 0.05 s)",
+    "head_rust (drone, 0.04 s)",
+    "qwen_rust (cloud, 0.19 s)",
+    "clip_head_rust (cloud, 0.06 s)",
+    "qwen_any (cloud, 0.19 s)",
+    "laya_q4 (drone, 0.85 s)",
+    "smolvlm (drone, 0.74 s)",
+    "qwen (cloud, 0.21 s)",
+    "resnet_crops_max (cloud, 0.09 s)",
+    "dinov2b_head_corrosion (cloud, 0.06 s)",
+    "dinov2b_head_nest (cloud, 0.06 s)",
+    "dinov2b_head_missing-cap (cloud, 0.06 s)",
+    "clip_large_zeroshot (cloud, 0.08 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "REPORT",
+    "component": "vari-grip clamp",
+    "defect": "yes",
+    "condition": "rust"
+   }
+  },
+  {
+   "i": 50641,
+   "state": "Time budget 4 s, 4.00 s left. Cloud link: up, 5.9 Mbit/s; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "laya (cloud, 0.16 s)",
+    "smolvlm (drone, 0.70 s)",
+    "laya_recut (cloud, 0.30 s)",
+    "convnext_recut (cloud, 0.24 s)",
+    "resnet_recut (cloud, 0.24 s)",
+    "clip_large_zeroshot (cloud, 0.12 s)",
+    "qwen_any (cloud, 0.23 s)",
+    "clip_probe (cloud, 0.09 s)",
+    "dinov2_probe (cloud, 0.09 s)",
+    "qwen_any_recut (cloud, 0.45 s)",
+    "qwen (cloud, 0.24 s)",
+    "dinov2b_probe (cloud, 0.09 s)",
+    "resnet_crops_max (cloud, 0.13 s)",
+    "resnet (drone, 0.07 s)",
+    "resnet_crops_mean (cloud, 0.13 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "laya"
+    ]
+   }
+  },
+  {
+   "i": 44338,
+   "state": "Time budget 4 s, 4.00 s left. Cloud link: up, 1.6 Mbit/s; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "laya (cloud, 0.71 s)",
+    "smolvlm (drone, 0.72 s)",
+    "laya_recut (cloud, 2.32 s)",
+    "convnext_recut (cloud, 2.26 s)",
+    "resnet_recut (cloud, 2.26 s)",
+    "clip_large_zeroshot (cloud, 0.65 s)",
+    "qwen_any (cloud, 0.76 s)",
+    "clip_probe (cloud, 0.63 s)",
+    "dinov2_probe (cloud, 0.62 s)",
+    "qwen_any_recut (cloud, 2.47 s)",
+    "qwen (cloud, 0.78 s)",
+    "dinov2b_probe (cloud, 0.63 s)",
+    "resnet_crops_max (cloud, 0.66 s)",
+    "resnet (drone, 0.07 s)",
+    "resnet_crops_mean (cloud, 0.66 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "resnet"
+    ]
+   }
+  },
+  {
+   "i": 6184,
+   "state": "Time budget 10 s, 10.00 s left. Cloud link: up, 2.0 Mbit/s; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "laya (cloud, 0.40 s)",
+    "smolvlm (drone, 0.74 s)",
+    "laya_recut (cloud, 0.82 s)",
+    "convnext_recut (cloud, 0.75 s)",
+    "resnet_recut (cloud, 0.75 s)",
+    "clip_large_zeroshot (cloud, 0.36 s)",
+    "qwen_any (cloud, 0.47 s)",
+    "clip_probe (cloud, 0.33 s)",
+    "dinov2_probe (cloud, 0.33 s)",
+    "qwen_any_recut (cloud, 0.96 s)",
+    "qwen (cloud, 0.48 s)",
+    "dinov2b_probe (cloud, 0.33 s)",
+    "resnet_crops_max (cloud, 0.37 s)",
+    "resnet (drone, 0.07 s)",
+    "resnet_crops_mean (cloud, 0.37 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "laya"
+    ]
+   }
+  },
+  {
+   "i": 54209,
+   "state": "Time budget 4 s, 3.75 s left. Cloud link: up, 2.1 Mbit/s; the image is already uploaded.\nTool results so far:\nclip_large_zeroshot: bird nest 44%, corrosion 22%",
+   "candidates": [
+    "clip_head_nest (cloud, 0.06 s)",
+    "laya (cloud, 0.13 s)",
+    "clip_head_corrosion (cloud, 0.06 s)",
+    "head_nest (cloud, 0.05 s)",
+    "qwen_nest (cloud, 0.19 s)",
+    "dinov2b_head_nest (cloud, 0.06 s)",
+    "smolvlm (drone, 0.71 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "head_corrosion (drone, 0.04 s)",
+    "qwen_corrosion (cloud, 0.19 s)",
+    "qwen (cloud, 0.21 s)",
+    "dinov2b_head_corrosion (cloud, 0.06 s)",
+    "clip_head_rust (cloud, 0.06 s)",
+    "clip_head_missing-cap (cloud, 0.06 s)",
+    "qwen_any (cloud, 0.19 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "head_corrosion"
+    ]
+   }
+  },
+  {
+   "i": 7684,
+   "state": "Time budget 10 s, 10.00 s left. Cloud link: up, 1.6 Mbit/s; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "laya (cloud, 0.43 s)",
+    "smolvlm (drone, 0.73 s)",
+    "laya_recut (cloud, 1.22 s)",
+    "convnext_recut (cloud, 1.16 s)",
+    "resnet_recut (cloud, 1.15 s)",
+    "clip_large_zeroshot (cloud, 0.39 s)",
+    "qwen_any (cloud, 0.50 s)",
+    "clip_probe (cloud, 0.36 s)",
+    "dinov2_probe (cloud, 0.36 s)",
+    "qwen_any_recut (cloud, 1.36 s)",
+    "qwen (cloud, 0.48 s)",
+    "dinov2b_probe (cloud, 0.36 s)",
+    "resnet_crops_max (cloud, 0.40 s)",
+    "resnet (drone, 0.07 s)",
+    "resnet_crops_mean (cloud, 0.40 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "laya_recut"
+    ]
+   }
+  },
+  {
+   "i": 26373,
+   "state": "Time budget 30 s, 25.38 s left. Cloud link: up, 0.5 Mbit/s; the image is already uploaded.\nTool results so far:\nlaya_recut: component lightning rod suspension 95%; defect 4%; good, no defect 97%, rust 1%\nclip_head_rust: rust 9%\nclip_probe: good, no defect 96%, rust 4%\nclip_large_zeroshot: missing cap 60%, bird nest 25%\nhead_missing-cap: missing cap 0%",
+   "candidates": [
+    "clip_head_missing-cap (cloud, 0.06 s)",
+    "dinov2b_head_missing-cap (cloud, 0.06 s)",
+    "qwen_missing-cap (cloud, 0.19 s)",
+    "head_rust (drone, 0.04 s)",
+    "laya (cloud, 0.13 s)",
+    "clip_head_nest (cloud, 0.06 s)",
+    "dinov2b_head_rust (cloud, 0.06 s)",
+    "qwen_rust (cloud, 0.19 s)",
+    "clip_head_corrosion (cloud, 0.06 s)",
+    "head_nest (cloud, 0.05 s)",
+    "convnext_recut (cloud, 0.06 s)",
+    "dinov2_probe (cloud, 0.05 s)",
+    "laya_q4 (drone, 0.87 s)",
+    "resnet_recut (cloud, 0.05 s)",
+    "qwen_any_recut (cloud, 0.26 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "REPORT",
+    "component": "lightning rod suspension",
+    "defect": "no",
+    "condition": "good, no defect"
+   }
+  },
+  {
+   "i": 6094,
+   "state": "Time budget 4 s, 3.93 s left. Cloud link: up, 5.5 Mbit/s; the image is not uploaded yet.\nTool results so far:\nresnet: good, no defect 100%, other defect (torn part or peeling paint) 0%",
+   "candidates": [
+    "laya (cloud, 0.25 s)",
+    "qwen_other (cloud, 0.31 s)",
+    "resnet_crops_max (cloud, 0.21 s)",
+    "smolvlm (drone, 0.71 s)",
+    "qwen_any (cloud, 0.31 s)",
+    "clip_probe (cloud, 0.17 s)",
+    "dinov2_probe (cloud, 0.17 s)",
+    "qwen (cloud, 0.32 s)",
+    "dinov2b_probe (cloud, 0.17 s)",
+    "clip_large_zeroshot (cloud, 0.20 s)",
+    "resnet_crops_mean (cloud, 0.21 s)",
+    "resnet101 (cloud, 0.18 s)",
+    "resnet18 (drone, 0.03 s)",
+    "convnext (cloud, 0.17 s)",
+    "spec_polymer (cloud, 0.17 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "laya"
+    ]
+   }
+  },
+  {
+   "i": 56732,
+   "state": "Time budget 4 s, 4.00 s left. Cloud link: up, 2.1 Mbit/s; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "laya (cloud, 0.18 s)",
+    "smolvlm (drone, 0.72 s)",
+    "laya_recut (cloud, 0.30 s)",
+    "convnext_recut (cloud, 0.24 s)",
+    "resnet_recut (cloud, 0.24 s)",
+    "clip_large_zeroshot (cloud, 0.14 s)",
+    "qwen_any (cloud, 0.25 s)",
+    "clip_probe (cloud, 0.11 s)",
+    "dinov2_probe (cloud, 0.11 s)",
+    "qwen_any_recut (cloud, 0.44 s)",
+    "qwen (cloud, 0.21 s)",
+    "dinov2b_probe (cloud, 0.12 s)",
+    "resnet_crops_max (cloud, 0.15 s)",
+    "resnet (drone, 0.07 s)",
+    "resnet_crops_mean (cloud, 0.15 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "laya"
+    ]
+   }
+  },
+  {
+   "i": 31746,
+   "state": "Time budget 4 s, 3.96 s left. Cloud link: down; the image is not uploaded yet.\nTool results so far:\nhead_corrosion: corrosion 0%",
+   "candidates": [
+    "smolvlm (drone, 0.72 s)",
+    "head_rust (drone, 0.04 s)",
+    "resnet (drone, 0.07 s)",
+    "efficientnet (drone, 0.08 s)",
+    "quality (drone, 0.09 s)",
+    "resnet18 (drone, 0.03 s)",
+    "deit_small (drone, 0.07 s)",
+    "mobilenet_v2 (drone, 0.07 s)",
+    "efficientnet_tta (drone, 0.16 s)",
+    "exposure (drone, 0.03 s)",
+    "size (drone, 0.00 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "resnet18"
+    ]
+   }
+  },
+  {
+   "i": 33512,
+   "state": "Time budget 4 s, 4.00 s left. Cloud link: up, 4.6 Mbit/s; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "laya (cloud, 0.15 s)",
+    "smolvlm (drone, 0.72 s)",
+    "laya_recut (cloud, 0.20 s)",
+    "convnext_recut (cloud, 0.14 s)",
+    "resnet_recut (cloud, 0.14 s)",
+    "clip_large_zeroshot (cloud, 0.11 s)",
+    "qwen_any (cloud, 0.22 s)",
+    "clip_probe (cloud, 0.09 s)",
+    "dinov2_probe (cloud, 0.09 s)",
+    "qwen_any_recut (cloud, 0.34 s)",
+    "qwen (cloud, 0.18 s)",
+    "dinov2b_probe (cloud, 0.09 s)",
+    "resnet_crops_max (cloud, 0.13 s)",
+    "resnet (drone, 0.07 s)",
+    "resnet_crops_mean (cloud, 0.13 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "resnet"
+    ]
+   }
+  },
+  {
+   "i": 29510,
+   "state": "Time budget 30 s, 29.66 s left. Cloud link: up, 1.9 Mbit/s; the image is already uploaded.\nTool results so far:\nlaya: component shackle 95%; defect 96%; corrosion 97%, rust 1%",
+   "candidates": [
+    "smolvlm (drone, 0.72 s)",
+    "head_rust (drone, 0.04 s)",
+    "head_corrosion (drone, 0.04 s)",
+    "qwen_rust (cloud, 0.19 s)",
+    "qwen_corrosion (cloud, 0.19 s)",
+    "clip_head_rust (cloud, 0.06 s)",
+    "clip_head_corrosion (cloud, 0.06 s)",
+    "dinov2b_head_rust (cloud, 0.06 s)",
+    "dinov2b_head_corrosion (cloud, 0.06 s)",
+    "qwen_any (cloud, 0.19 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "dinov2_probe (cloud, 0.05 s)",
+    "qwen (cloud, 0.20 s)",
+    "dinov2b_probe (cloud, 0.06 s)",
+    "resnet_crops_max (cloud, 0.09 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "REPORT",
+    "component": "shackle",
+    "defect": "yes",
+    "condition": "corrosion"
+   }
+  },
+  {
+   "i": 9553,
+   "state": "No time limit, 0.66 s used. Cloud link: up, 1.6 Mbit/s; the image is already uploaded.\nTool results so far:\nlaya: component yoke suspension 94%; defect 4%; good, no defect 97%, rust 1%\nhead_rust: rust 0%",
+   "candidates": [
+    "clip_head_rust (cloud, 0.06 s)",
+    "dinov2b_head_rust (cloud, 0.06 s)",
+    "qwen_rust (cloud, 0.19 s)",
+    "laya_recut (cloud, 1.99 s)",
+    "convnext_recut (cloud, 1.92 s)",
+    "resnet_recut (cloud, 1.92 s)",
+    "smolvlm (drone, 0.71 s)",
+    "qwen_any (cloud, 0.19 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "spec_yoke (cloud, 0.06 s)",
+    "cspec_yoke (cloud, 0.06 s)",
+    "dinov2_probe (cloud, 0.05 s)",
+    "qwen_any_recut (cloud, 2.13 s)",
+    "qwen (cloud, 0.20 s)",
+    "dinov2b_probe (cloud, 0.06 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "REPORT",
+    "component": "yoke suspension",
+    "defect": "no",
+    "condition": "good, no defect"
+   }
+  },
+  {
+   "i": 52767,
+   "state": "Time budget 10 s, 10.00 s left. Cloud link: down; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "smolvlm (drone, 0.73 s)",
+    "resnet (drone, 0.07 s)",
+    "efficientnet (drone, 0.08 s)",
+    "quality (drone, 0.09 s)",
+    "head_rust (drone, 0.04 s)",
+    "head_corrosion (drone, 0.04 s)",
+    "resnet18 (drone, 0.03 s)",
+    "deit_small (drone, 0.07 s)",
+    "mobilenet_v2 (drone, 0.07 s)",
+    "efficientnet_tta (drone, 0.16 s)",
+    "exposure (drone, 0.03 s)",
+    "size (drone, 0.00 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "resnet18"
+    ]
+   }
+  },
+  {
+   "i": 19416,
+   "state": "Time budget 30 s, 30.00 s left. Cloud link: up, 0.9 Mbit/s; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "laya (cloud, 1.08 s)",
+    "smolvlm (drone, 0.74 s)",
+    "laya_recut (cloud, 4.29 s)",
+    "convnext_recut (cloud, 4.23 s)",
+    "resnet_recut (cloud, 4.23 s)",
+    "clip_large_zeroshot (cloud, 1.01 s)",
+    "qwen_any (cloud, 1.12 s)",
+    "clip_probe (cloud, 0.99 s)",
+    "dinov2_probe (cloud, 0.99 s)",
+    "qwen_any_recut (cloud, 4.43 s)",
+    "qwen (cloud, 1.12 s)",
+    "dinov2b_probe (cloud, 0.99 s)",
+    "resnet_crops_max (cloud, 1.03 s)",
+    "resnet (drone, 0.07 s)",
+    "resnet_crops_mean (cloud, 1.03 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "laya"
+    ]
+   }
+  },
+  {
+   "i": 4511,
+   "state": "No time limit, 0.00 s used. Cloud link: up, 3.0 Mbit/s; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "laya (cloud, 0.18 s)",
+    "smolvlm (drone, 0.72 s)",
+    "laya_recut (cloud, 0.31 s)",
+    "convnext_recut (cloud, 0.24 s)",
+    "resnet_recut (cloud, 0.24 s)",
+    "clip_large_zeroshot (cloud, 0.15 s)",
+    "qwen_any (cloud, 0.26 s)",
+    "clip_probe (cloud, 0.12 s)",
+    "dinov2_probe (cloud, 0.12 s)",
+    "qwen_any_recut (cloud, 0.45 s)",
+    "qwen (cloud, 0.24 s)",
+    "dinov2b_probe (cloud, 0.12 s)",
+    "resnet_crops_max (cloud, 0.16 s)",
+    "resnet (drone, 0.07 s)",
+    "resnet_crops_mean (cloud, 0.16 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "laya"
+    ]
+   }
+  },
+  {
+   "i": 34165,
+   "state": "Time budget 30 s, 30.00 s left. Cloud link: up, 5.1 Mbit/s; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "laya (cloud, 0.13 s)",
+    "smolvlm (drone, 0.74 s)",
+    "laya_recut (cloud, 0.16 s)",
+    "convnext_recut (cloud, 0.10 s)",
+    "resnet_recut (cloud, 0.09 s)",
+    "clip_large_zeroshot (cloud, 0.09 s)",
+    "qwen_any (cloud, 0.20 s)",
+    "clip_probe (cloud, 0.07 s)",
+    "dinov2_probe (cloud, 0.07 s)",
+    "qwen_any_recut (cloud, 0.30 s)",
+    "qwen (cloud, 0.18 s)",
+    "dinov2b_probe (cloud, 0.07 s)",
+    "resnet_crops_max (cloud, 0.10 s)",
+    "resnet (drone, 0.07 s)",
+    "resnet_crops_mean (cloud, 0.10 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "laya"
+    ]
+   }
+  },
+  {
+   "i": 9321,
+   "state": "No time limit, 0.28 s used. Cloud link: up, 5.5 Mbit/s; the image is already uploaded.\nTool results so far:\nlaya: component shackle 94%; defect 96%; rust 97%, good, no defect 1%\nqwen: defect 1%",
+   "candidates": [
+    "laya_recut (cloud, 0.14 s)",
+    "qwen_any (cloud, 0.19 s)",
+    "qwen_any_recut (cloud, 0.29 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "convnext_recut (cloud, 0.08 s)",
+    "qwen_rust (cloud, 0.19 s)",
+    "resnet_recut (cloud, 0.08 s)",
+    "dinov2_probe (cloud, 0.05 s)",
+    "smolvlm (drone, 0.71 s)",
+    "dinov2b_probe (cloud, 0.06 s)",
+    "resnet_crops_max (cloud, 0.09 s)",
+    "head_rust (drone, 0.04 s)",
+    "clip_head_rust (cloud, 0.06 s)",
+    "dinov2b_head_rust (cloud, 0.06 s)",
+    "qwen_corrosion (cloud, 0.19 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "dinov2_probe"
+    ]
+   }
+  },
+  {
+   "i": 1964,
+   "state": "No time limit, 0.79 s used. Cloud link: up, 4.0 Mbit/s; the image is already uploaded.\nTool results so far:\nqwen_any_recut: defect 1%\nqwen: defect 1%",
+   "candidates": [
+    "laya (cloud, 0.12 s)",
+    "qwen_any (cloud, 0.19 s)",
+    "laya_recut (cloud, 0.12 s)",
+    "convnext_recut (cloud, 0.06 s)",
+    "resnet_recut (cloud, 0.05 s)",
+    "smolvlm (drone, 0.73 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "qwen_rust (cloud, 0.19 s)",
+    "qwen_corrosion (cloud, 0.19 s)",
+    "qwen_nest (cloud, 0.19 s)",
+    "qwen_other (cloud, 0.19 s)",
+    "dinov2_probe (cloud, 0.05 s)",
+    "qwen_missing-cap (cloud, 0.19 s)",
+    "dinov2b_probe (cloud, 0.06 s)",
+    "resnet_crops_max (cloud, 0.09 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "resnet_recut"
+    ]
+   }
+  },
+  {
+   "i": 57672,
+   "state": "Time budget 10 s, 9.69 s left. Cloud link: up, 2.5 Mbit/s; the image is already uploaded.\nTool results so far:\nresnet: bird nest 99%, good, no defect 1%\nlaya: component vari-grip clamp 92%; defect 96%; rust 77%, bird nest 10%",
+   "candidates": [
+    "head_nest (cloud, 0.05 s)",
+    "qwen_nest (cloud, 0.19 s)",
+    "clip_head_nest (cloud, 0.06 s)",
+    "dinov2b_head_nest (cloud, 0.06 s)",
+    "resnet_crops_max (cloud, 0.09 s)",
+    "smolvlm (drone, 0.75 s)",
+    "qwen_any (cloud, 0.19 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "dinov2_probe (cloud, 0.05 s)",
+    "qwen (cloud, 0.20 s)",
+    "dinov2b_probe (cloud, 0.06 s)",
+    "head_rust (drone, 0.04 s)",
+    "qwen_rust (cloud, 0.19 s)",
+    "clip_head_rust (cloud, 0.06 s)",
+    "dinov2b_head_rust (cloud, 0.06 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "REPORT",
+    "component": "vari-grip clamp",
+    "defect": "yes",
+    "condition": "bird nest"
+   }
+  },
+  {
+   "i": 10963,
+   "state": "Time budget 4 s, 4.00 s left. Cloud link: up, 1.7 Mbit/s; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "laya (cloud, 0.29 s)",
+    "smolvlm (drone, 0.70 s)",
+    "clip_large_zeroshot (cloud, 0.25 s)",
+    "qwen_any (cloud, 0.36 s)",
+    "clip_probe (cloud, 0.22 s)",
+    "dinov2_probe (cloud, 0.22 s)",
+    "qwen (cloud, 0.37 s)",
+    "dinov2b_probe (cloud, 0.22 s)",
+    "resnet_crops_max (cloud, 0.26 s)",
+    "resnet (drone, 0.07 s)",
+    "resnet_crops_mean (cloud, 0.26 s)",
+    "convnext (cloud, 0.22 s)",
+    "efficientnet (drone, 0.08 s)",
+    "yolo_cls (cloud, 0.22 s)",
+    "quality (drone, 0.09 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "efficientnet"
+    ]
+   }
+  },
+  {
+   "i": 23277,
+   "state": "Time budget 10 s, 9.51 s left. Cloud link: up, 2.5 Mbit/s; the image is already uploaded.\nTool results so far:\nresnet: good, no defect 100%, missing cap 0%\nlaya: component glass insulator 95%; defect 5%; good, no defect 97%, missing cap 1%\nclip_probe: good, no defect 100%, missing cap 0%",
+   "candidates": [
+    "clip_head_missing-cap (cloud, 0.06 s)",
+    "head_missing-cap (cloud, 0.05 s)",
+    "qwen_missing-cap (cloud, 0.19 s)",
+    "dinov2b_head_missing-cap (cloud, 0.06 s)",
+    "dinov2_probe (cloud, 0.05 s)",
+    "dinov2b_probe (cloud, 0.06 s)",
+    "qwen_any (cloud, 0.19 s)",
+    "resnet_crops_max (cloud, 0.09 s)",
+    "qwen (cloud, 0.18 s)",
+    "smolvlm (drone, 0.72 s)",
+    "spec_glass (cloud, 0.06 s)",
+    "clip_large_zeroshot (cloud, 0.08 s)",
+    "cspec_glass (cloud, 0.06 s)",
+    "clip_head_rust (cloud, 0.06 s)",
+    "clip_head_corrosion (cloud, 0.06 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "REPORT",
+    "component": "glass insulator",
+    "defect": "no",
+    "condition": "good, no defect"
+   }
+  },
+  {
+   "i": 21352,
+   "state": "Time budget 10 s, 10.00 s left. Cloud link: up, 0.0 Mbit/s; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "smolvlm (drone, 0.72 s)",
+    "resnet (drone, 0.07 s)",
+    "efficientnet (drone, 0.08 s)",
+    "quality (drone, 0.09 s)",
+    "head_rust (drone, 0.04 s)",
+    "head_corrosion (drone, 0.04 s)",
+    "resnet18 (drone, 0.03 s)",
+    "deit_small (drone, 0.07 s)",
+    "mobilenet_v2 (drone, 0.07 s)",
+    "efficientnet_tta (drone, 0.16 s)",
+    "exposure (drone, 0.03 s)",
+    "size (drone, 0.00 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "resnet18"
+    ]
+   }
+  },
+  {
+   "i": 14097,
+   "state": "Time budget 10 s, 9.65 s left. Cloud link: up, 3.1 Mbit/s; the image is already uploaded.\nTool results so far:\nclip_probe: missing cap 100%, rust 0%",
+   "candidates": [
+    "clip_head_missing-cap (cloud, 0.06 s)",
+    "laya (cloud, 0.21 s)",
+    "head_missing-cap (cloud, 0.05 s)",
+    "clip_head_rust (cloud, 0.06 s)",
+    "qwen_missing-cap (cloud, 0.19 s)",
+    "dinov2b_head_missing-cap (cloud, 0.06 s)",
+    "smolvlm (drone, 0.73 s)",
+    "clip_large_zeroshot (cloud, 0.08 s)",
+    "dinov2_probe (cloud, 0.05 s)",
+    "dinov2b_probe (cloud, 0.06 s)",
+    "head_rust (drone, 0.04 s)",
+    "qwen_rust (cloud, 0.19 s)",
+    "dinov2b_head_rust (cloud, 0.06 s)",
+    "clip_head_corrosion (cloud, 0.06 s)",
+    "clip_head_nest (cloud, 0.06 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "laya"
+    ]
+   }
+  },
+  {
+   "i": 51921,
+   "state": "Time budget 10 s, 10.00 s left. Cloud link: up, 2.5 Mbit/s; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "laya (cloud, 0.16 s)",
+    "smolvlm (drone, 0.73 s)",
+    "laya_recut (cloud, 0.25 s)",
+    "convnext_recut (cloud, 0.19 s)",
+    "resnet_recut (cloud, 0.19 s)",
+    "clip_large_zeroshot (cloud, 0.12 s)",
+    "qwen_any (cloud, 0.23 s)",
+    "clip_probe (cloud, 0.10 s)",
+    "dinov2_probe (cloud, 0.10 s)",
+    "qwen_any_recut (cloud, 0.39 s)",
+    "qwen (cloud, 0.19 s)",
+    "dinov2b_probe (cloud, 0.10 s)",
+    "resnet_crops_max (cloud, 0.13 s)",
+    "resnet (drone, 0.07 s)",
+    "resnet_crops_mean (cloud, 0.13 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "laya"
+    ]
+   }
+  },
+  {
+   "i": 37090,
+   "state": "Time budget 4 s, 3.24 s left. Cloud link: up, 2.6 Mbit/s; the image is already uploaded.\nTool results so far:\nqwen_any: defect 1%\nlaya: component glass insulator 95%; defect 5%; good, no defect 96%, missing cap 1%",
+   "candidates": [
+    "qwen_missing-cap (cloud, 0.19 s)",
+    "qwen (cloud, 0.21 s)",
+    "head_missing-cap (cloud, 0.05 s)",
+    "clip_head_missing-cap (cloud, 0.06 s)",
+    "dinov2b_head_missing-cap (cloud, 0.06 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "dinov2_probe (cloud, 0.05 s)",
+    "smolvlm (drone, 0.71 s)",
+    "dinov2b_probe (cloud, 0.06 s)",
+    "resnet_crops_max (cloud, 0.09 s)",
+    "spec_glass (cloud, 0.06 s)",
+    "cspec_glass (cloud, 0.06 s)",
+    "qwen_rust (cloud, 0.19 s)",
+    "qwen_corrosion (cloud, 0.19 s)",
+    "qwen_nest (cloud, 0.19 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "REPORT",
+    "component": "glass insulator",
+    "defect": "no",
+    "condition": "good, no defect"
+   }
+  },
+  {
+   "i": 48057,
+   "state": "Time budget 10 s, 10.00 s left. Cloud link: up, 4.1 Mbit/s; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "laya (cloud, 0.16 s)",
+    "smolvlm (drone, 0.73 s)",
+    "laya_recut (cloud, 0.27 s)",
+    "convnext_recut (cloud, 0.21 s)",
+    "resnet_recut (cloud, 0.20 s)",
+    "clip_large_zeroshot (cloud, 0.12 s)",
+    "qwen_any (cloud, 0.23 s)",
+    "clip_probe (cloud, 0.10 s)",
+    "dinov2_probe (cloud, 0.10 s)",
+    "qwen_any_recut (cloud, 0.41 s)",
+    "qwen (cloud, 0.22 s)",
+    "dinov2b_probe (cloud, 0.10 s)",
+    "resnet_crops_max (cloud, 0.14 s)",
+    "resnet (drone, 0.07 s)",
+    "resnet_crops_mean (cloud, 0.14 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "laya"
+    ]
+   }
+  },
+  {
+   "i": 45937,
+   "state": "Time budget 10 s, 9.80 s left. Cloud link: up, 3.1 Mbit/s; the image is already uploaded.\nTool results so far:\nresnet: good, no defect 99%, rust 1%\nlaya: component shackle 94%; defect 95%; rust 97%, good, no defect 1%",
+   "candidates": [
+    "laya_recut (cloud, 0.15 s)",
+    "head_rust (drone, 0.04 s)",
+    "resnet_recut (cloud, 0.09 s)",
+    "qwen_rust (cloud, 0.19 s)",
+    "clip_head_rust (cloud, 0.06 s)",
+    "dinov2b_head_rust (cloud, 0.06 s)",
+    "resnet_crops_max (cloud, 0.09 s)",
+    "qwen_any (cloud, 0.19 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "convnext_recut (cloud, 0.09 s)",
+    "dinov2_probe (cloud, 0.05 s)",
+    "qwen_any_recut (cloud, 0.29 s)",
+    "smolvlm (drone, 0.72 s)",
+    "qwen (cloud, 0.15 s)",
+    "dinov2b_probe (cloud, 0.06 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "REPORT",
+    "component": "shackle",
+    "defect": "no",
+    "condition": "good, no defect"
+   }
+  },
+  {
+   "i": 11916,
+   "state": "No time limit, 0.25 s used. Cloud link: up, 4.7 Mbit/s; the image is already uploaded.\nTool results so far:\nresnet_crops_mean: good, no defect 91%, missing cap 6%",
+   "candidates": [
+    "laya (cloud, 0.17 s)",
+    "resnet_crops_max (cloud, 0.09 s)",
+    "head_missing-cap (cloud, 0.05 s)",
+    "qwen_missing-cap (cloud, 0.19 s)",
+    "clip_head_missing-cap (cloud, 0.06 s)",
+    "dinov2b_head_missing-cap (cloud, 0.06 s)",
+    "smolvlm (drone, 0.73 s)",
+    "qwen_any (cloud, 0.19 s)",
+    "clip_probe (cloud, 0.06 s)",
+    "dinov2_probe (cloud, 0.05 s)",
+    "qwen (cloud, 0.18 s)",
+    "dinov2b_probe (cloud, 0.06 s)",
+    "size (drone, 0.00 s)",
+    "convnext_tta (cloud, 0.06 s)",
+    "efficientnet_tta (drone, 0.16 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "smolvlm"
+    ]
+   }
+  },
+  {
+   "i": 45475,
+   "state": "Time budget 30 s, 30.00 s left. Cloud link: up, 3.4 Mbit/s; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "laya (cloud, 0.24 s)",
+    "smolvlm (drone, 0.73 s)",
+    "laya_recut (cloud, 0.49 s)",
+    "convnext_recut (cloud, 0.43 s)",
+    "resnet_recut (cloud, 0.43 s)",
+    "clip_large_zeroshot (cloud, 0.20 s)",
+    "qwen_any (cloud, 0.31 s)",
+    "clip_probe (cloud, 0.17 s)",
+    "dinov2_probe (cloud, 0.17 s)",
+    "qwen_any_recut (cloud, 0.63 s)",
+    "qwen (cloud, 0.30 s)",
+    "dinov2b_probe (cloud, 0.18 s)",
+    "resnet_crops_max (cloud, 0.21 s)",
+    "resnet (drone, 0.07 s)",
+    "resnet_crops_mean (cloud, 0.21 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "laya"
+    ]
+   }
+  },
+  {
+   "i": 40241,
+   "state": "Time budget 10 s, 9.35 s left. Cloud link: down; the image is not uploaded yet.\nTool results so far:\nlaya_q4: component stockbridge damper 94%; defect 5%; good, no defect 97%, rust 1%",
+   "candidates": [
+    "smolvlm (drone, 0.75 s)",
+    "head_rust (drone, 0.04 s)",
+    "resnet (drone, 0.07 s)",
+    "efficientnet (drone, 0.08 s)",
+    "quality (drone, 0.09 s)",
+    "head_corrosion (drone, 0.04 s)",
+    "resnet18 (drone, 0.03 s)",
+    "deit_small (drone, 0.07 s)",
+    "mobilenet_v2 (drone, 0.07 s)",
+    "efficientnet_tta (drone, 0.16 s)",
+    "exposure (drone, 0.03 s)",
+    "size (drone, 0.00 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "REPORT",
+    "component": "stockbridge damper",
+    "defect": "no",
+    "condition": "good, no defect"
+   }
+  },
+  {
+   "i": 15168,
+   "state": "Time budget 30 s, 30.00 s left. Cloud link: up, 1.1 Mbit/s; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "laya (cloud, 0.49 s)",
+    "smolvlm (drone, 0.72 s)",
+    "clip_large_zeroshot (cloud, 0.46 s)",
+    "qwen_any (cloud, 0.57 s)",
+    "clip_probe (cloud, 0.43 s)",
+    "dinov2_probe (cloud, 0.43 s)",
+    "qwen (cloud, 0.55 s)",
+    "dinov2b_probe (cloud, 0.43 s)",
+    "resnet_crops_max (cloud, 0.47 s)",
+    "resnet (drone, 0.07 s)",
+    "resnet_crops_mean (cloud, 0.47 s)",
+    "convnext (cloud, 0.43 s)",
+    "efficientnet (drone, 0.08 s)",
+    "yolo_cls (cloud, 0.42 s)",
+    "quality (drone, 0.09 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "resnet_crops_max"
+    ]
+   }
+  },
+  {
+   "i": 47004,
+   "state": "No time limit, 0.00 s used. Cloud link: up, 3.8 Mbit/s; the image is not uploaded yet.\nTool results so far:\nnone yet",
+   "candidates": [
+    "laya (cloud, 0.15 s)",
+    "smolvlm (drone, 0.72 s)",
+    "laya_recut (cloud, 0.24 s)",
+    "convnext_recut (cloud, 0.18 s)",
+    "resnet_recut (cloud, 0.17 s)",
+    "clip_large_zeroshot (cloud, 0.12 s)",
+    "qwen_any (cloud, 0.23 s)",
+    "clip_probe (cloud, 0.10 s)",
+    "dinov2_probe (cloud, 0.10 s)",
+    "qwen_any_recut (cloud, 0.38 s)",
+    "qwen (cloud, 0.22 s)",
+    "dinov2b_probe (cloud, 0.10 s)",
+    "resnet_crops_max (cloud, 0.14 s)",
+    "resnet (drone, 0.07 s)",
+    "resnet_crops_mean (cloud, 0.14 s)",
+    "report"
+   ],
+   "answer": {
+    "name": "SELECT",
+    "ids": [
+     "laya_recut"
+    ]
+   }
+  }
+ ]
+}

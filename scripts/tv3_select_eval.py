@@ -57,7 +57,7 @@ def run(env, rows, budgets, choose_batch, seed):
     return out
 
 
-def qwen_chooser(model_name, adapter, batch_size, dtype):
+def qwen_chooser(model_name, adapter, batch_size, dtype, think=False):
     from transformers import AutoModelForCausalLM, AutoTokenizer
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     tokenizer.padding_side = "left"
@@ -71,11 +71,11 @@ def qwen_chooser(model_name, adapter, batch_size, dtype):
 
     def choose(eps, actions):
         out = []
-        texts = [render(tokenizer, e, a) for e, a in zip(eps, actions)]
+        texts = [render(tokenizer, e, a, think) for e, a in zip(eps, actions)]
         for k in range(0, len(texts), batch_size):
             batch = tokenizer(texts[k:k + batch_size], return_tensors="pt", padding=True).to(model.device)
             with torch.no_grad():
-                gen = model.generate(**batch, max_new_tokens=96, do_sample=False, pad_token_id=tokenizer.pad_token_id)
+                gen = model.generate(**batch, max_new_tokens=384 if think else 96, do_sample=False, pad_token_id=tokenizer.pad_token_id)
             decoded = tokenizer.batch_decode(gen[:, batch["input_ids"].shape[1]:], skip_special_tokens=True)
             out += [parse(d, a) for d, a in zip(decoded, actions[k:k + batch_size])]
         return out
@@ -102,11 +102,12 @@ def main():
     report = json.loads(path.read_text()) if path.exists() else {}
     report.update({"images": len(rows), "budgets": args.budgets, "tools": list(env["tools"])})
     report.setdefault("methods", {})
-    adapters = {"base": None, "sft": str(models_dir() / f"{tag}_sft"), "grpo": str(models_dir() / f"{tag}_grpo")}
+    adapters = {"base": None, "sft": str(models_dir() / f"{tag}_sft"), "grpo": str(models_dir() / f"{tag}_grpo"),
+                "base_think": None, "sft_think": str(models_dir() / f"{tag}_sft_think")}
     for method in args.methods:
         name, start = f"{tag} {method}", time.time()
         try:
-            report["methods"][name] = run(env, rows, args.budgets, qwen_chooser(args.model, adapters[method], batch_size, dtype), args.seed)
+            report["methods"][name] = run(env, rows, args.budgets, qwen_chooser(args.model, adapters[method], batch_size, dtype, method.endswith("_think")), args.seed)
             line = {b: (v["component_accuracy"], v["defect_accuracy"], v["condition_accuracy"], v["all_three_correct"], v["mean_time_s"])
                     for b, v in report["methods"][name].items()}
         except Exception as error:

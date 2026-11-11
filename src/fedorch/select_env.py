@@ -177,8 +177,8 @@ def messages(ep, actions):
     return [{"role": "system", "content": SYSTEM}, {"role": "user", "content": user}]
 
 
-def render(tokenizer, ep, actions):
-    return tokenizer.apply_chat_template(messages(ep, actions), tokenize=False, add_generation_prompt=True, enable_thinking=False)
+def render(tokenizer, ep, actions, think=False):
+    return tokenizer.apply_chat_template(messages(ep, actions), tokenize=False, add_generation_prompt=True, enable_thinking=think)
 
 
 def select_json(tool):

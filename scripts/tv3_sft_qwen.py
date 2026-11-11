@@ -22,13 +22,15 @@ def main():
     parser.add_argument("--lr", type=float, default=1e-4)
     parser.add_argument("--max-length", type=int, default=2048)
     parser.add_argument("--out", default=None)
+    parser.add_argument("--think", action="store_true", help="train on the steps with teacher reasons (sft_qwen_think.jsonl)")
     args = parser.parse_args()
-    args.out = args.out or str(models_dir() / f"{selector_tag(args.model)}_sft")
+    name = f"{selector_tag(args.model)}_sft" + ("_think" if args.think else "")
+    args.out = args.out or str(models_dir() / name)
     dtype = getattr(torch, args.dtype or default_dtype(args.model))
     small = "0.6b" in args.model.lower()
     args.batch_size = args.batch_size or (8 if small else 2)
     args.grad_accum = args.grad_accum or (2 if small else 8)
-    data = load_dataset("json", data_files=str(results_dir("tools_v3") / "select" / "sft_qwen.jsonl"), split="train").shuffle(seed=0)
+    data = load_dataset("json", data_files=str(results_dir("tools_v3") / "select" / ("sft_qwen_think.jsonl" if args.think else "sft_qwen.jsonl")), split="train").shuffle(seed=0)
     data = data.select(range(min(args.max_examples, len(data))))
     print(f"[qwen sft] {len(data)} examples, model {args.model}", flush=True)
     cuda = torch.cuda.is_available()
@@ -40,7 +42,7 @@ def main():
     trainer = SFTTrainer(model=args.model, args=config, train_dataset=data, peft_config=lora)
     result = trainer.train()
     trainer.save_model(args.out)
-    (results_dir("tools_v3") / "select" / f"{selector_tag(args.model)}_sft_train.json").write_text(json.dumps(
+    (results_dir("tools_v3") / "select" / f"{name}_train.json").write_text(json.dumps(
         {"model": args.model, "examples": len(data), "metrics": result.metrics, "log": trainer.state.log_history}, indent=1))
     print(f"[qwen sft] saved adapter to {args.out}", flush=True)
 

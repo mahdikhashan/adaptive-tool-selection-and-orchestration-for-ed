@@ -1,0 +1,7 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   0%|          | 1/311 [00:00<00:45,  6.75it/s]Loading weights:  99%|█████████▊| 307/311 [00:00<00:00, 1504.41it/s]Loading weights: 100%|██████████| 311/311 [00:00<00:00, 1250.67it/s]
+[eval] qwen3-0.6b base (20.2 min): (component, defect, condition, all three, time s) {"4.0": [0.0367, 0.8953, 0.0, 0.0, 0.0], "10.0": [0.0307, 0.8953, 0.0, 0.0, 0.0], "30.0": [0.0347, 0.8953, 0.0, 0.0, 0.0], "inf": [0.0367, 0.8953, 0.0, 0.0, 0.0]}
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   0%|          | 1/311 [00:00<00:51,  6.00it/s]Loading weights: 100%|██████████| 311/311 [00:00<00:00, 1187.58it/s]
+[eval] qwen3-0.6b sft (36.7 min): (component, defect, condition, all three, time s) {"4.0": [0.9193, 0.9607, 0.958, 0.8813, 0.354], "10.0": [0.9173, 0.9613, 0.958, 0.88, 0.37], "30.0": [0.9147, 0.9593, 0.9567, 0.876, 0.405], "inf": [0.9187, 0.96, 0.9573, 0.88, Infinity]}
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   0%|          | 1/311 [00:00<00:51,  6.00it/s]Loading weights: 100%|██████████| 311/311 [00:00<00:00, 1337.43it/s]
+[eval] qwen3-0.6b grpo (36.6 min): (component, defect, condition, all three, time s) {"4.0": [0.9193, 0.9607, 0.958, 0.8813, 0.354], "10.0": [0.9173, 0.9613, 0.958, 0.88, 0.37], "30.0": [0.9147, 0.9593, 0.9567, 0.876, 0.405], "inf": [0.9187, 0.96, 0.9573, 0.88, Infinity]}

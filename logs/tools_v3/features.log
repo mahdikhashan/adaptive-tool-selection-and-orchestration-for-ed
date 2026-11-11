@@ -1,0 +1,46 @@
+[dinov2] done in 0.0 min
+[dinov2b] done in 0.0 min
+[clip] done in 0.0 min
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights: 100%|██████████| 398/398 [00:00<00:00, 36357.82it/s]
+[clip_zeroshot] FAILED: OSError(28, 'No space left on device')
+Loading weights:   0%|          | 0/590 [00:00<?, ?it/s]Loading weights:  16%|█▋        | 97/590 [00:00<00:00, 955.81it/s]Loading weights:  33%|███▎      | 193/590 [00:00<00:00, 888.23it/s]Loading weights:  48%|████▊     | 283/590 [00:00<00:00, 861.55it/s]Loading weights: 100%|██████████| 590/590 [00:00<00:00, 1708.16it/s]
+[clip_large_zeroshot] 2048/11716 (17%), 40.3/s, about 4.0 min left
+[clip_large_zeroshot] 4032/11716 (34%), 40.4/s, about 3.2 min left
+[clip_large_zeroshot] 6016/11716 (51%), 40.5/s, about 2.3 min left
+[clip_large_zeroshot] 8000/11716 (68%), 40.3/s, about 1.5 min left
+[clip_large_zeroshot] 10048/11716 (86%), 40.1/s, about 0.7 min left
+[clip_large_zeroshot] 11716/11716 (100%), 40.1/s, about 0.0 min left
+[clip_large_zeroshot] done in 5.4 min
+[transformers] Model config: bos_token_id must be `None` or an integer within the vocabulary (between 0 and 31999), got 49406. This may result in unexpected behavior.
+[transformers] Model config: eos_token_id must be `None` or an integer within the vocabulary (between 0 and 31999), got 49407. This may result in unexpected behavior.
+[siglip_zeroshot] FAILED: ImportError('\nSiglipTokenizer requires the SentencePiece library but it was not found in your environment. Check out the instructions on the\ninstallation page of its repo: https://github.com/google/sentencepiece#installation and follow the ones\nthat match your environment. Please note that you may need to restart your runtime after installation.\n')
+[image checks] 2000/11716 (17%), 101.6/s, about 1.6 min left
+[image checks] 4000/11716 (34%), 106.7/s, about 1.2 min left
+[image checks] 6000/11716 (51%), 112.3/s, about 0.8 min left
+[image checks] 8000/11716 (68%), 113.5/s, about 0.5 min left
+[image checks] 10000/11716 (85%), 113.2/s, about 0.3 min left
+[image checks] 11716/11716 (100%), 114.0/s, about 0.0 min left
+[checks] done in 1.7 min
+[transformers] You passed `num_labels=6` which is incompatible to the `id2label` map of length `1000`.
+Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]Loading weights: 100%|██████████| 320/320 [00:00<00:00, 10720.69it/s]
+[transformers] [1mResNetForImageClassification LOAD REPORT[0m from: microsoft/resnet-50
+Key                 | Status   |                                                                                            
+--------------------+----------+--------------------------------------------------------------------------------------------
+classifier.1.weight | MISMATCH | Reinit due to size mismatch - ckpt: torch.Size([1000, 2048]) vs model:torch.Size([6, 2048])
+classifier.1.bias   | MISMATCH | Reinit due to size mismatch - ckpt: torch.Size([1000]) vs model:torch.Size([6])            
+
+Notes:
+- MISMATCH:	ckpt weights were loaded, but they did not match the original empty weight shapes.
+[resnet_recut] 1024/9435 (11%), 64.6/s, about 2.2 min left
+[resnet_recut] 2048/9435 (22%), 64.6/s, about 1.9 min left
+[resnet_recut] 3008/9435 (32%), 65.3/s, about 1.6 min left
+[resnet_recut] 4032/9435 (43%), 65.0/s, about 1.4 min left
+[resnet_recut] 5056/9435 (54%), 65.1/s, about 1.1 min left
+[resnet_recut] 6016/9435 (64%), 65.0/s, about 0.9 min left
+[resnet_recut] 7040/9435 (75%), 64.9/s, about 0.6 min left
+[resnet_recut] 8000/9435 (85%), 64.7/s, about 0.4 min left
+[resnet_recut] 9024/9435 (96%), 64.7/s, about 0.1 min left
+[resnet_recut] 9435/9435 (100%), 64.7/s, about 0.0 min left
+[recut] done in 2.6 min
+[features] finished, failed parts: ['clip_zeroshot', 'siglip_zeroshot']

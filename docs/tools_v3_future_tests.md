@@ -25,6 +25,7 @@ The current test is as follows:
 | 10 | Remove laya from the tool list | Tool list and data | Low | Second |
 | 11 | Transfer to new tools that the agent did not see in training | New tools, tool list, evaluation | Medium | Third |
 | 12 | Run on a Jetson Nano | Hardware, model format | High | Third |
+| 13 | Training targets without hindsight, then a full episode | Gold rule, reward, GRPO loop | Low, then high | Second |
 
 ## 1. Larger Qwen3 models
 
@@ -183,3 +184,23 @@ bash scripts/runs/tools_v3_selector.sh Qwen/Qwen3-4B
 - If a Jetson Orin is available, measure on it also. The Orin is the device of EVLM (Farahani et al.).
 
 **Risk:** Thinking adds approximately 150 tokens for each step. On a Jetson Nano, this can take several seconds for each step. Then the 4 s budget becomes a real limit, and the agent with thinking can be too slow for the drone.
+
+## 13. Training targets without hindsight, then a full episode
+
+**Problem:** The gold rule uses hindsight. It knows which tools are correct on this image, and it selects the fastest correct tool. The agent cannot know which tools are correct on a new image. Thus the agent learns "a cheap tool that is usually correct" and not "the tool with the best accuracy".
+
+**Example (run without laya, 2026-11-11):** The gold tool for defect and condition is ResNet-50 on the drone in 20,004 steps. The most accurate tool, `convnext_recut` (0.988), is the gold tool in only 12 steps. ResNet-50 is correct on approximately 97% of the images and it is the fastest correct tool on most of them.
+
+**Three solutions, from low cost to high cost:**
+
+| Solution | What changes | Cost | What the agent learns |
+|---|---|---|---|
+| A. Targets without hindsight | The gold tool for a missing field is the tool with the best accuracy on the validation images, with a small time penalty. If the agent knows the component group, use the accuracy for that group. Do not use the label of this image. | Low: change `gold()`, make the data again, train again (approximately 2 hours) | `convnext_recut` for defect and condition, the component tool for the component |
+| B. Step-wise GRPO with a rollout reward | Keep the prompts for each step. The reward of a sampled tool is the final accuracy when a constant policy completes the episode from that step. The tool answers are in the cache. Thus this is fast. | Medium: a new reward function | which tool increases the final accuracy, also when a second tool is necessary |
+| C. GRPO on a full episode (test 3) | The agent does the full episode. The reward is the final accuracy of the report minus a time cost. For example: 1 for each correct field, minus 0.01 for each second. | High: rollouts with many turns (TRL `rollout_func` or an environment) | the best full strategy, also which tool to trust in the report |
+
+**Order:**
+
+1. Do solution A first. Add a mode `--gold expected` to `tv3_select_data.py`, so that the data with hindsight stays for comparison.
+2. Then do solution C, starting from the SFT model of solution A. This test shows if GRPO on the final result is better than imitation.
+3. Solution C needs a time cost in the reward. If there is no time cost, the agent calls many tools, because the budgets (4 s and more) do not limit it. Real Jetson times (test 12) or smaller budgets make the budget a real limit.

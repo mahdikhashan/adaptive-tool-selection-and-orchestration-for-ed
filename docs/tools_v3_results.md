@@ -140,7 +140,40 @@ The agent calls laya_q4 (on the drone) when the link is down.
 - SFT with thinking: 0.6B (loss 1.74 to approximately 0.89), 1.7B (loss 1.90 to 0.81), 4B on the A10 (running).
 - Evaluations of `base_think`, `sft_think` and `grpo_think`: running. The results go to `results/tools_v3/select/eval_think*.json`.
 
-## 7. Files
+## 7. Run without laya-vision and with a component tool
+
+### 7.1 The component tool
+
+Without laya-vision, no tool gives the component. We counted the 6,092 test images where at least one tool without laya is correct. The share is 0.000 for the component, 1.000 for the defect and 0.999 for the condition. Thus we added a new tool:
+
+| Tool | Location | Answer | GPU time | Component accuracy (6,092 test images) |
+|---|---|---|---|---|
+| `component_resnet18` | drone | component only | 2.8 ms | 0.996 |
+| laya (for comparison) | cloud | all three fields | 73 ms | 0.924 |
+
+The retriever puts `component_resnet18` in position 1 of 59 tools. This is true at the first step and after a condition result. Its description is "ResNet-18 component classifier: names the component type. It gives no defect or condition".
+
+### 7.2 Training data
+
+Settings: `TV3_EXCLUDE=laya,laya_q4,laya_recut`, `TV3_RUN=nolaya`. The data uses the corrected cost check (commit a23f30f).
+
+| Gold action | Steps |
+|---|---|
+| report | 29,768 |
+| `component_resnet18` | 29,102 |
+| `resnet` (ResNet-50, drone) | 20,004 |
+| `resnet18` (drone) | 3,562 |
+| `dinov2_probe` | 1,009 |
+| `clip_probe` | 482 |
+| all other tools | less than 300 each |
+| `convnext_recut` (most accurate tool) | 12 |
+
+- An episode has approximately 3.8 steps (with laya: 2.7). The agent learns two tools: one condition classifier and the component tool.
+- The gold rule selects the fastest tool that is correct on this image. ResNet-50 on the drone is correct on approximately 97% of the images, thus it is the gold tool on most images. Test 13 in `tools_v3_future_tests.md` describes this problem and the solutions.
+- Expected result (not measured yet): approximately 0.96 for all three fields, with approximately 0.1 s for each image and almost no upload. The SFT agent with laya gets 0.881.
+- Results: `results/tools_v3/select/eval_nolaya.json` (running).
+
+## 8. Files
 
 | File | Content |
 |---|---|

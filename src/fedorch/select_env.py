@@ -7,11 +7,21 @@ from rank_bm25 import BM25Okapi
 from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
 from sklearn.linear_model import LogisticRegression
 
+from fedorch import vision
 from fedorch.common import results_dir
-from fedorch.decision import answer_risk
-from fedorch.tools_v3 import ANSWERS, SPECIAL_ACTIONS
+from fedorch.items import CLASSES
 
-BAYES, RTT = 1 / 11, 0.05
+RTT = 0.05
+COMPONENTS = list(dict.fromkeys(vision.COMPONENT.values()))
+CONDITIONS = list(vision.CONDITION.values())
+CONDITION_OF = dict(zip(CLASSES, [vision.CONDITION[c] for c in CLASSES]))
+TASK = "Inspect this power line component in a drone photo. Report its component type, whether it has a defect, and its condition."
+SYSTEM = ("You are an inspection agent. At each step, either pick one tool id from the candidate list, or finish with the report.\n\n"
+          "Output: brief reasoning, then one JSON object, either\n{\"name\": \"SELECT\", \"ids\": [\"<id>\"]}\nor\n"
+          "{\"name\": \"REPORT\", \"component\": \"<component>\", \"defect\": \"yes\" or \"no\", \"condition\": \"<condition>\"}\n\n"
+          f"Components: {', '.join(COMPONENTS)}.\nConditions: {', '.join(CONDITIONS)}.")
+REPORT_DOC = "Finish now with the three-part report: component type, defect yes or no, condition."
+COMPONENT_WEIGHT, CONDITION_WEIGHT = 0.5, 0.5
 
 
 def logit(p):
@@ -21,63 +31,88 @@ def logit(p):
 
 def load_table():
     root = results_dir("tools_v3")
-    items = [json.loads(l) for l in (root / "items.jsonl").open()]
+    images = [json.loads(l) for l in (root / "images.jsonl").open()]
     tools = json.loads((root / "tools.json").read_text())
-    return items, tools
+    return images, tools
 
 
-class Fusion:
-    def __init__(self, tools, assets, C=0.05):
-        self.tools, self.assets, self.C = tools, assets, C
+def defect_risk(said_defect, true_defect):
+    return 10. if true_defect and not said_defect else (1. if said_defect and not true_defect else 0.)
 
-    def x(self, item, called):
+
+def report_loss(report, truth):
+    if report is None:
+        return 10. * truth["defect"] + COMPONENT_WEIGHT + CONDITION_WEIGHT
+    return (defect_risk(report["defect"] == "yes", truth["defect"]) + COMPONENT_WEIGHT * (report["component"] != truth["component"])
+            + CONDITION_WEIGHT * (report["condition"] != truth["condition"]))
+
+
+def truth_of(row):
+    return {"component": row["component"], "defect": row["defect"], "condition": row["condition"]}
+
+
+def summary(name, out):
+    parts = []
+    if "component" in out:
+        top = max(out["component"], key=out["component"].get)
+        parts.append(f"component {top} {100 * out['component'][top]:.0f}%")
+    if "defect" in out:
+        parts.append(f"defect {100 * out['defect']:.0f}%")
+    if "condition" in out:
+        top2 = sorted(out["condition"], key=out["condition"].get, reverse=True)[:2]
+        parts.append(", ".join(f"{CONDITION_OF[c]} {100 * out['condition'][c]:.0f}%" for c in top2))
+    if "kind" in out:
+        parts.extend(f"{CONDITION_OF.get(k, k)} {100 * v:.0f}%" for k, v in out["kind"].items())
+    if "score" in out:
+        parts.append(f"score {out['score']:+.1f} (0 = average image)")
+    return f"{name}: " + "; ".join(parts)
+
+
+class Teacher:
+    def __init__(self, tools, C=0.1):
+        self.tools, self.C = tools, C
+
+    def x(self, row, called):
         out = []
         for t in self.tools:
-            p = item["p"].get(t)
-            on = t in called and p is not None
-            out += [logit(p) if on else 0., float(on)]
-        return out + [float(item["task"] == "T2")] + [float(item["asset"] == a) for a in self.assets]
+            o = row["out"].get(t) if t in called else None
+            cond = o.get("condition") if o else None
+            out += [math.log(max(cond.get(c, 0.), 1e-4)) if cond else 0. for c in CLASSES]
+            out += [logit(o["defect"]) if o and "defect" in o else 0.]
+            out += [logit(next(iter(o["kind"].values()))) if o and "kind" in o else 0.]
+            out += [o["score"] if o and "score" in o else 0., float(o is not None)]
+        return out
 
-    def fit(self, items, rng=np.random.default_rng(0), subsets=6):
+    def fit(self, rows, rng=np.random.default_rng(0), subsets=6):
         X, y = [], []
-        for i in items:
-            avail = [t for t in self.tools if i["p"].get(t) is not None]
+        for r in rows:
+            avail = [t for t in self.tools if t in r["out"]]
             for k in range(subsets):
                 called = set(avail) if k == 0 else {"resnet"} | {t for t in avail if rng.random() < 0.4}
-                X.append(self.x(i, called))
-                y.append(i["defect"])
+                X.append(self.x(r, called))
+                y.append(CLASSES.index(r["condition_label"]))
         self.model = LogisticRegression(max_iter=4000, C=self.C).fit(np.array(X), np.array(y))
-        self.prior = float(np.mean([i["defect"] for i in items]))
         return self
 
-    def prob(self, items, called_sets):
-        return self.model.predict_proba(np.array([self.x(i, c) for i, c in zip(items, called_sets)]))[:, 1]
+    def condition_probs(self, rows, called_sets):
+        p = self.model.predict_proba(np.array([self.x(r, c) for r, c in zip(rows, called_sets)]))
+        full = np.zeros((len(rows), len(CLASSES)))
+        full[:, self.model.classes_] = p
+        return full
+
+    def report(self, row, called):
+        p = self.condition_probs([row], [called])[0]
+        defect = 1 - p[CLASSES.index("good")] >= 1 / 11
+        condition = CLASSES[int(np.argmax(np.where(np.array(CLASSES) == "good", -1., p)))] if defect else "good"
+        comps = [row["out"][t]["component"] for t in called if t in row["out"] and "component" in row["out"][t]]
+        component = max(COMPONENTS, key=lambda c: sum(d.get(c, 0.) for d in comps)) if comps else None
+        return {"component": component, "defect": "yes" if defect else "no", "condition": CONDITION_OF[condition]}
 
 
-def out_of_fold(items, tools, assets, folds=5):
-    towers = sorted({i["tower"] for i in items})
-    models = {}
-    for k in range(folds):
-        fit = [i for i in items if towers.index(i["tower"]) % folds != k]
-        models[k] = Fusion(tools, assets).fit(fit)
-    return {i["item_id"]: models[towers.index(i["tower"]) % folds] for i in items}
-
-
-def em_prior(p, prior, steps=200):
-    pi = prior
-    for _ in range(steps):
-        pi = float(corrected(p, prior, pi).mean())
-    return pi
-
-
-def corrected(p, prior, new):
-    a = p * new / prior
-    b = (1 - p) * (1 - new) / (1 - prior)
-    return a / (a + b)
-
-
-def risk_of(item, q):
-    return answer_risk(item["defect_option"] if q >= BAYES else "good", item["label"])
+def out_of_fold(rows, tools, folds=5):
+    towers = sorted({r["tower"] for r in rows})
+    models = {k: Teacher(tools).fit([r for r in rows if towers.index(r["tower"]) % folds != k]) for k in range(folds)}
+    return {r["image"]: models[towers.index(r["tower"]) % folds] for r in rows}
 
 
 def words(text):
@@ -99,97 +134,80 @@ class Retriever:
 
 
 class Episode:
-    def __init__(self, item, tools, fusion, prior, new_prior, budget, mbps, lam=0.01, k=15, retriever=None, estimate=True):
-        self.i, self.tools, self.fusion, self.prior, self.new_prior = item, tools, fusion, prior, new_prior
-        self.budget, self.mbps, self.lam, self.k, self.retriever, self.estimate = budget, mbps, lam, k, retriever, estimate
-        self.called, self.elapsed, self.done, self.action_log = ["resnet"], self.cost("resnet"), False, []
+    def __init__(self, row, tools, teacher, budget, mbps, lam=0.01, k=15, retriever=None, max_steps=4):
+        self.r, self.tools, self.teacher, self.budget, self.mbps = row, tools, teacher, budget, mbps
+        self.lam, self.k, self.retriever, self.max_steps = lam, k, retriever, max_steps
+        self.called, self.elapsed, self.done, self.final, self.steps = ["resnet"], self.cost("resnet"), False, None, 0
 
     def cost(self, t):
-        c = self.i["cost"].get(t)
+        c = self.r["cost"].get(t)
         if c is None:
             return math.inf
         if self.tools[t]["location"] == "cloud":
             return math.inf if self.mbps <= 0 else c["compute_s"] + RTT + c["bytes"] * 8 / (self.mbps * 1e6)
         return c["s"]
 
-    def q(self, called=None):
-        called = self.called if called is None else called
-        return float(corrected(self.fusion.prob([self.i], [set(called)])[0], self.prior, self.new_prior))
-
     def feasible(self):
-        return [t for t in self.tools if t not in self.called and self.i["p"].get(t) is not None
-                and self.elapsed + self.cost(t) <= self.budget]
+        return [t for t in self.tools if t not in self.called and t in self.r["out"] and self.elapsed + self.cost(t) <= self.budget]
+
+    def query(self):
+        seen = " ".join(summary(t, self.r["out"][t]) for t in self.called)
+        return f"inspect power line component defect condition component type {seen}"
 
     def candidates(self):
+        if self.steps >= self.max_steps - 1:
+            return ["report"]
         feasible = self.feasible()
         if self.retriever is not None:
-            order = self.retriever.rank(f"{self.i['component']} {self.i['question']} defect")
+            order = self.retriever.rank(self.query())
             feasible = [t for t in order if t in feasible]
-        return feasible[: self.k] + list(ANSWERS)
+        return feasible[: self.k] + ["report"]
 
-    def fused_answer(self):
-        return "answer_defect" if self.q() >= BAYES else "answer_good"
+    def teacher_report(self, called=None):
+        return self.teacher.report(self.r, set(self.called if called is None else called))
 
-    def answer_risk(self, action):
-        if action == "defer":
-            return 0.5
-        return answer_risk(self.i["defect_option"] if action == "answer_defect" else "good", self.i["label"])
-
-    def values(self, actions, true_answers=False):
-        now = self.lam * self.elapsed / self.budget
-        evidence = self.fused_answer()
-        out = {"defer": 0.5 + now}
-        for a in ("answer_defect", "answer_good"):
-            if true_answers:
-                out[a] = self.answer_risk(a) + now
-            else:
-                out[a] = self.answer_risk(evidence) + now + (0. if a == evidence else 1.)
-        tools = [a for a in actions if a in self.tools]
-        if tools:
-            p = self.fusion.prob([self.i] * len(tools), [set(self.called) | {t} for t in tools])
-            for t, v in zip(tools, corrected(p, self.prior, self.new_prior)):
-                out[t] = risk_of(self.i, float(v)) + self.lam * (self.elapsed + self.cost(t)) / self.budget
+    def values(self, actions):
+        truth = truth_of(self.r)
+        out = {"report": report_loss(self.teacher_report(), truth) + self.lam * self.elapsed / self.budget}
+        for t in actions:
+            if t in self.tools:
+                out[t] = report_loss(self.teacher_report(self.called + [t]), truth) + self.lam * (self.elapsed + self.cost(t)) / self.budget
         return {a: out[a] for a in actions}
 
     def step(self, action):
-        self.action_log.append(action)
-        if action in ANSWERS or action not in self.tools or action in self.called:
+        self.steps += 1
+        if isinstance(action, dict) or action == "report" or action not in self.tools or action in self.called:
             self.done = True
-            self.final = action if action in ANSWERS else "defer"
+            self.final = action if isinstance(action, dict) else None
             return
         self.elapsed += self.cost(action)
         self.called.append(action)
 
     def outcome(self):
-        return {"risk": self.answer_risk(self.final), "time": self.elapsed, "deferred": self.final == "defer",
-                "answer": self.final, "called": list(self.called),
-                "bytes": sum(self.i["cost"][t].get("bytes", 0) for t in self.called if self.tools[t]["location"] != "drone")}
-
-    def task(self):
-        return f"Inspect this {self.i['component']} in a drone photo and answer: {self.i['question']}"
+        truth, report = truth_of(self.r), self.final
+        return {"loss": report_loss(report, truth), "time": self.elapsed, "called": list(self.called), "report": report,
+                "component_ok": bool(report and report["component"] == truth["component"]),
+                "condition_ok": bool(report and report["condition"] == truth["condition"]),
+                "defect_said": bool(report and report["defect"] == "yes"), "defect_true": truth["defect"],
+                "defect_risk": defect_risk(bool(report and report["defect"] == "yes"), truth["defect"]),
+                "true_condition": truth["condition"], "said_condition": report["condition"] if report else None,
+                "bytes": sum(self.r["cost"][t].get("bytes", 0) for t in self.called if self.tools[t]["location"] != "drone")}
 
     def substep(self):
         link = f"up, {self.mbps:.1f} Mbit/s" if self.mbps > 0 else "down"
-        seen = "; ".join(f"{t} says defect {100 * self.i['p'][t]:.0f}%" for t in self.called)
-        return (f"Choose the next step. Time left: {max(0., self.budget - self.elapsed):.2f} s of {self.budget:.2f} s. "
-                f"Cloud link: {link}. Tools already called: {seen}. "
-                + (f"Combined defect estimate of these tools: {100 * self.q():.0f}%. " if self.estimate else "")
-                + "Call another tool, or finish with an answer. A missed defect costs 10, a false alarm 1, sending to the operator 0.5.")
+        seen = "\n".join(summary(t, self.r["out"][t]) for t in self.called)
+        return (f"Time left: {max(0., self.budget - self.elapsed):.2f} s of {self.budget:.2f} s. Cloud link: {link}. "
+                f"A missed defect costs 10, a false alarm 1, a wrong component or condition 0.5.\nTool results so far:\n{seen}")
 
     def doc(self, a):
-        if a in SPECIAL_ACTIONS:
-            return SPECIAL_ACTIONS[a]
+        if a == "report":
+            return REPORT_DOC
         return f"{documentation(a, self.tools[a])} Time: {self.cost(a):.2f} s."
-
-
-
-SYSTEM = ("You are a tool-search agent in the SELECT phase. Pick id(s) from the candidate list that solve the sub-step.\n\n"
-          "Output: brief reasoning, then a JSON object\n{\"name\": \"SELECT\", \"ids\": [\"<id>\", ...]}")
 
 
 def messages(ep, actions):
     candidates = "\n\n".join(f"[{a}]\n{ep.doc(a)}" for a in actions)
-    user = f"User task: {ep.task()}\n\nSub-step: {ep.substep()}\n\nCandidates ({len(actions)}):\n{candidates}"
+    user = f"User task: {TASK}\n\nSub-step: {ep.substep()}\n\nCandidates ({len(actions)}):\n{candidates}"
     return [{"role": "system", "content": SYSTEM}, {"role": "user", "content": user}]
 
 
@@ -197,40 +215,41 @@ def render(tokenizer, ep, actions):
     return tokenizer.apply_chat_template(messages(ep, actions), tokenize=False, add_generation_prompt=True, enable_thinking=False)
 
 
-def answer(action):
-    return json.dumps({"name": "SELECT", "ids": [action]})
+def select_json(tool):
+    return json.dumps({"name": "SELECT", "ids": [tool]})
+
+
+def report_json(report):
+    return json.dumps({"name": "REPORT", "component": report["component"], "defect": report["defect"], "condition": report["condition"]})
 
 
 def parse(text, actions):
     text = text.split("</think>")[-1]
     for block in re.findall(r"\{.*?\}", text, re.S):
         try:
-            ids = json.loads(block).get("ids") or []
-        except (ValueError, AttributeError):
+            obj = json.loads(block)
+        except ValueError:
             continue
-        for a in ids:
-            if a in actions:
+        if not isinstance(obj, dict):
+            continue
+        if obj.get("name") == "REPORT" and "report" in actions:
+            return {"component": str(obj.get("component", "")), "defect": "yes" if str(obj.get("defect", "")).lower() in ("yes", "true", "1") else "no",
+                    "condition": str(obj.get("condition", ""))}
+        for a in obj.get("ids") or []:
+            if a in actions and a != "report":
                 return a
     return None
 
 
 def setup(lam=0.01):
-    items, tools = load_table()
+    images, tools = load_table()
     names = list(tools)
-    assets = sorted({i["asset"] for i in items})
-    val = [i for i in items if i["split"] == "val"]
-    test = [i for i in items if i["split"] == "test"]
-    oof = out_of_fold(val, names, assets)
-    full = Fusion(names, assets).fit(val)
-    prior = float(np.mean([i["defect"] for i in val]))
-    p_all = full.prob(test, [set(names)] * len(test))
-    new_prior = em_prior(p_all, prior)
-    return dict(items=items, tools=tools, val=val, test=test, oof=oof, full=full, prior=prior, test_prior=new_prior,
+    val = [r for r in images if r["split"] == "val"]
+    test = [r for r in images if r["split"] == "test"]
+    return dict(images=images, tools=tools, val=val, test=test, oof=out_of_fold(val, names), full=Teacher(names).fit(val),
                 retriever=Retriever(tools), lam=lam)
 
 
-def episode(env, item, budget, mbps, train, estimate=True):
-    fusion = env["oof"][item["item_id"]] if train else env["full"]
-    new_prior = env["prior"] if train else env["test_prior"]
-    return Episode(item, env["tools"], fusion, env["prior"], new_prior, budget, mbps, env["lam"], retriever=env["retriever"],
-                   estimate=estimate)
+def episode(env, row, budget, mbps, train):
+    teacher = env["oof"][row["image"]] if train else env["full"]
+    return Episode(row, env["tools"], teacher, budget, mbps, env["lam"], retriever=env["retriever"])

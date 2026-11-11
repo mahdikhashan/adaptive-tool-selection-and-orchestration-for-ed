@@ -70,10 +70,6 @@ TOOLS = {
     "exposure": ("drone", "Exposure check: brightness and colour saturation of the image"),
     "size": ("drone", "Image size check: small crops of far components show less detail"),
 }
-SPECIAL_ACTIONS = {"answer_defect": "Finish: report that the component has the defect asked about",
-                   "answer_good": "Finish: report that the component is in good condition",
-                   "defer": "Finish: send the image to the human operator"}
-ANSWERS = ("answer_defect", "answer_good", "defer")
 
 
 def cache_dir():

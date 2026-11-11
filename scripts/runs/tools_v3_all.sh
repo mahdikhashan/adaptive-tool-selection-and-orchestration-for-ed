@@ -61,12 +61,12 @@ if [ -f results/tools_v3/select/eval.json ]; then
   python3 - <<'EOF' | tee -a "$progress"
 import json
 r = json.load(open("results/tools_v3/select/eval.json"))
-print("risk per 1,000 / mean time (s) / deferred share, test items:", r["items"])
+print("per budget: loss per 1,000 / component acc / condition acc / defect risk per 1,000 / time (s); test images:", r["images"])
 for name, res in r["methods"].items():
     if "error" in res:
         print(f"  {name:14s} ERROR {res['error'][:120]}")
     else:
-        print(f"  {name:14s} " + " | ".join(f"{b}s: {v['risk_per_1000']:6.1f} {v['mean_time_s']:.2f} {v['deferred']:.3f}" for b, v in res.items()))
+        print(f"  {name:14s} " + " | ".join(f"{b}s: {v['loss_per_1000']:6.1f} {v['component_accuracy']:.3f} {v['condition_accuracy']:.3f} {v['defect_risk_per_1000']:6.1f} {v['mean_time_s']:.2f}" for b, v in res.items()))
 EOF
 fi
 say "push the results: git add results/tools_v3 logs/tools_v3 && git commit -m 'tools_v3 results' && git push"

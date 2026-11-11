@@ -69,6 +69,7 @@ The folder `understanding/` explains the full project from the basic concepts. T
 | `agentic_demo.md` | A local demo of tool selection on the laptop |
 | `tool_selection_results.md` | All results of route 3, sections 1 to 14 |
 | `tool_corpus_plan.md` | Plan: about 24 tools and laya-vision as a tool selector, after Zhou et al. (2026) |
+| `tools_v3_results.md` | Results of the Qwen inspection agent: base, SFT and GRPO without thinking. Thinking runs are in progress |
 | `tools_v3_future_tests.md` | Tests for later: larger Qwen3 models, thinking SFT, GRPO on a full episode, Llama 3.2 and other models |
 
 ## Other places

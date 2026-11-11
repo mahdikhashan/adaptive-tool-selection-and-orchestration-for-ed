@@ -12,6 +12,7 @@
 \newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
 \definecolor{boxblue}{RGB}{222,236,246}
 \definecolor{boxgreen}{RGB}{226,240,222}
+\definecolor{pending}{RGB}{150,150,150}
 \renewcommand{\topfraction}{0.9}
 \renewcommand{\dbltopfraction}{0.9}
 \renewcommand{\textfraction}{0.07}
@@ -20,351 +21,264 @@
 \setcounter{topnumber}{3}
 \setcounter{dbltopnumber}{2}
 \newcommand{\limitbox}[2]{\par\smallskip\noindent\colorbox{#1}{\parbox{\dimexpr\linewidth-2\fboxsep\relax}{\small #2}}\par\smallskip}
+\newcommand{\pend}{\textcolor{pending}{pending}}
 
 \begin{document}
 
 \begin{frontmatter}
 
-\title{What Should an Inspection Drone Fleet Learn? Tool Selection, Answer Fusion and Federated Reinforcement Learning under Time Budgets}
+\title{Can a Small Language Model Choose the Tools of an Inspection Drone? Tool Selection with SFT and GRPO under Time Budgets}
 
 \author{Mahdi Khashan}
 \ead{mahdikhashan1@gmail.com}
 \affiliation{organization={[Affiliation to be added]}}
 
 \begin{abstract}
-Inspection drones can now run small vision models on board and send difficult images to a large model in the cloud. For every image, the drone must decide which model to ask, under a time limit and over a weak radio link. A popular idea is to let a vision-language model (VLM) make this decision as an agent and to train it with federated reinforcement learning across the fleet. This article tests that idea against simple alternatives on 13,729 power-line component images from the ElecVQA-Bench benchmark. We use four tools: a ResNet-50 classifier, the laya-vision decision model and SmolVLM-256M on the drone, and Qwen3-VL-8B in the cloud. We measure their latency, replay real LTE network traces, and count 10 points for a missed defect, 1 for a false alarm and 0.5 for sending an image to the operator. Three results stand out. First, a VLM agent becomes worse when it can call tools. Second, simple methods give the largest gains: combining the answers of all tools lowers the risk from 177 to 107 points per 1,000 images, and sending uncertain images to the operator lowers it to 92--94 points at 0.25\,s per image. Third, deep reinforcement learning (PPO), trained centrally or with federated averaging over five drones, learns good tool choices but only matches well-tuned rules. It wins clearly in one of eight settings. The best methods answer an image in 0.18--0.25\,s with 1.6--3.4\,kB of upload, while a SmolVLM-based pipeline measured on a Jetson needs 1.4--6.4\,s per video segment.
+Inspection drones can run small vision models on board and send images to larger models in the cloud. Choosing which model to call for each image is a tool-selection problem with a time budget and a weak radio link. Recent work trains small language models to select tools with supervised fine-tuning (SFT) and reinforcement learning (GRPO). We test this recipe on power-line inspection. A text-only Qwen3-0.6B agent chooses, step by step, among 61 vision tools (13 on the drone, 48 in the cloud) and then writes a three-part report: component type, defect yes or no, and condition. We evaluate the reports against the true labels of 1,500 test images from InsPLAD, with real LTE traces and budgets of 4, 10 and 30\,s. Without training, the agent calls no tool and no report is fully correct. After SFT, 88.1\% of the reports are fully correct, at 0.35\,s and 34\,kB of upload per image. GRPO after SFT changes nothing measurable: the SFT model is so certain that most groups of sampled answers receive the same reward. The agent learns to call one strong multi-answer model and stops; single classifiers that it never calls are more accurate on defect and condition (0.988 against 0.961). We discuss why step-wise training targets cause this, and we add teacher reasoning from a larger model to give GRPO a learning signal. Results for this thinking variant at 0.6B, 1.7B and 4B parameters are in progress.
 \end{abstract}
 
 \begin{keyword}
-drone inspection \sep edge AI \sep tool selection \sep federated learning \sep reinforcement learning \sep vision-language model
+drone inspection \sep edge AI \sep tool selection \sep small language model \sep reinforcement learning \sep GRPO
 \end{keyword}
 
 \end{frontmatter}
 
 \section{Introduction}
 
-Drones are changing how power lines, bridges and towers are inspected. They take many high-resolution images during a flight, and new drones can also analyse these images on board~\cite{p2s}. A drone can now use several AI models, which we call \emph{tools}. A small image classifier is fast but makes mistakes. A vision-language model (VLM) on the drone is slower but can explain what it sees. A large VLM in the cloud is stronger, but the drone must send the image over a radio link that is often slow or down. Farahani et al.\ run a fine-tuned SmolVLM-256M on a Jetson board and need 1.4--6.4\,s for each video segment~\cite{evlm}. Azimi et al.\ compare running such a model on the drone, in the cloud, or split between the two~\cite{splitvlm}. Both groups name an adaptive controller, which decides at run time which tool to use, as future work.
+Drones are changing how power lines, bridges and towers are inspected. They take many high-resolution images during a flight, and new drones can also analyse these images on board~\cite{p2s}. A drone can use many AI models, which we call \emph{tools}: small classifiers on the drone, vision-language models (VLMs) on the drone, and large models in the cloud that need an image upload over a radio link that is often slow or down. Farahani et al.\ run a fine-tuned SmolVLM-256M on a Jetson board and need 1.4--6.4\,s for each video segment~\cite{evlm}. Azimi et al.\ compare running such a model on the drone, in the cloud, or split between the two~\cite{splitvlm}. Both groups name an adaptive controller, which decides at run time which tool to use, as future work.
 
-This article studies that controller. For every image, the drone must decide which tools to ask, when to stop and answer, and when to pass the image to a human operator. It must do this within a time budget and with a weak network. A fleet of drones could also learn this decision together with federated learning, without sharing images.
+Language models that use tools are now common~\cite{toolformer,react,toolllm}. Zhou et al.~\cite{zhou2026} show that even small language models can learn to select tools from a large catalogue when they are trained with supervised fine-tuning (SFT) and then with group relative policy optimisation (GRPO)~\cite{grpo}. A small model of this kind could run next to the drone's other software and plan the inspection of each image.
 
-Two designs are possible. In the \emph{agentic} design, a VLM is the agent: it looks at the image, asks other tools and reads their answers. In the \emph{routing} design, a small policy only chooses the next tool, and the final answer is computed from the tools' own answers. We test both designs, and we compare classical methods (rules and logistic regression) with deep reinforcement learning (PPO~\cite{ppo}).
+This article asks a simple question: \emph{can a small language model learn to choose the tools of an inspection drone, and does reinforcement learning improve on imitation?} We build a catalogue of 61 vision tools, cache their answers on every image, and let a text-only Qwen3-0.6B~\cite{qwen3} agent call tools step by step until it writes a report. We train it with the recipe of Zhou et al.\ and compare it with the same model without training and with each tool alone.
 
 Our main contributions are:
 \begin{itemize}
-\item a test of a VLM decision model used as an agent, which shows that it becomes worse with tools;
-\item a simple fusion of tool answers with a threshold that needs no labels, which gives the largest single gain;
-\item a clear formulation of tool selection with time budgets, network delays and a limit on how many images go to the operator;
-\item a fair comparison of classical rules and deep reinforcement learning, central and federated, with latency and upload measured per image.
+\item a tool-selection benchmark for drone inspection with 61 real vision tools, measured latency, LTE traces and an upload cost that is paid once per image;
+\item a test of the SFT and GRPO recipe for small tool-selecting language models in this setting, evaluated by report accuracy against true labels;
+\item an analysis of why GRPO adds nothing after SFT here, and why the agent ignores the most accurate tools;
+\item a thinking variant trained on reasons written by a larger teacher model (results in progress).
 \end{itemize}
 
-\section{From Fixed Rules to Learned Tool Selection}
+\section{Background}
 
-\textbf{Edge VLMs for inspection.} EVLM~\cite{evlm} runs a LoRA-tuned SmolVLM-256M on a Jetson and reduces the upload of a 4\,s video segment from 485\,kB to 25\,kB. The study in~\cite{splitvlm} measures SmolVLM on the drone, in the cloud, and split between them, under different bandwidths. INAR-VL~\cite{inarvl} sends requests to the edge or the cloud based on the input and the bandwidth. Farahani et al.~\cite{p2s} show that SmolVLM-256 needs about 2.8\,s per image on a Jetson Orin, while a YOLO detector needs 0.14\,s, and they conclude that a light detector should trigger the VLM only when needed.
+\textbf{Edge VLMs for inspection.} EVLM~\cite{evlm} runs a LoRA-tuned SmolVLM-256M on a Jetson and reduces the upload of a 4\,s video segment from 485\,kB to 25\,kB. The study in~\cite{splitvlm} measures SmolVLM on the drone, in the cloud, and split between them, under different bandwidths. INAR-VL~\cite{inarvl} sends requests to the edge or the cloud based on the input and the bandwidth. Farahani et al.~\cite{p2s} show that SmolVLM-256 needs about 2.8\,s per image on a Jetson Orin, while a YOLO detector needs 0.14\,s, and they conclude that a light model should trigger the VLM only when needed.
 
-\limitbox{boxblue}{\textbf{Limitations of existing work:} These systems use fixed rules to choose where a model runs. They do not decide per image which of several models to ask, and they do not learn this decision from the fleet's experience.}
+\limitbox{boxblue}{\textbf{Limitations of existing work:} These systems use fixed rules to choose where one model runs. They do not choose, per image, among many models with different strengths, costs and locations.}
 
-\textbf{Routing and cascades.} Federate the Router~\cite{fedrouter} trains routers for language models with federated averaging from offline scores. FedHLM~\cite{fedhlm} learns escalation thresholds in a federated way. BaRP~\cite{barp} trains a router when only the chosen model's result is seen. Zhang et al.~\cite{zhang2026hi} study escalation along a chain of models when labels arrive only for some decisions.
+\textbf{Tool-using language models.} Toolformer~\cite{toolformer} and ReAct~\cite{react} let a language model call tools inside its own text. ToolLLM~\cite{toolllm} and Gorilla~\cite{gorilla} train models on thousands of APIs and use a retriever to shorten the list of candidates. Zhou et al.~\cite{zhou2026} split the problem into planning, retrieval and selection and show that small models trained with SFT and GRPO transfer to new tools. Distilling the reasoning of a larger model into a small one improves small models on several tasks~\cite{distill}.
 
-\limitbox{boxgreen}{\textbf{Limitations of existing work:} Most routers choose one model per request. They do not call several tools one after another within a time budget, and they rarely include a human operator as an option.}
+\limitbox{boxgreen}{\textbf{Limitations of existing work:} Tool-selection benchmarks use software APIs without time limits, networks or a real cost per call. The tools rarely disagree, and success is usually a correct call, not a correct final answer.}
 
-\textbf{Learning methods.} PPO~\cite{ppo} is a standard deep reinforcement learning method, and GAE~\cite{gae} gives it more stable learning signals over long episodes. Federated averaging (FedAvg)~\cite{fedavg} trains one model across clients by averaging their weights; it suffers when clients have different data~\cite{zhao2018}. Flower~\cite{flower} provides federated simulation. The EM method of Saerens et al.~\cite{saerens2002} estimates how common defects are in new data without labels.
+In our earlier work on the same data, a learned policy (PPO~\cite{ppo}) that chose among four tools matched but did not beat well-tuned rules, and combining the tools' answers with a fixed formula gave the largest gain. Here the language model itself reads the tool answers and writes the report, so no fusion formula is used.
 
 \section{Data, Tools and Constraints}
 
-\textbf{Data.} We use the \texttt{tower14} split of ElecVQA-Bench~\cite{elecvqa}, built on InsPLAD power-line images~\cite{insplad}. It has 18 training towers (25,499 images), 10 validation towers (6,672) and 14 test towers (7,057), with 17 component types. Each image comes with a question about a defect. The validation towers contain 19.6\% defects and the test towers 15.1\%. We ran every tool once on every image and replay these saved answers.
+\textbf{Data.} We use component images of InsPLAD~\cite{insplad} with the \texttt{tower14} split of ElecVQA-Bench~\cite{elecvqa}: 18 training towers for the tools, 10 validation towers (5,624 images) for the agent's training data, and 14 test towers (6,092 images). There are 11 component types and six conditions: good, rust, corrosion, missing cap, bird nest and other defect. Only 9.9\% of the test images show a defect. The agent is tested on 1,500 test images drawn with a fixed seed.
 
-\textbf{Tools.} Table~\ref{tab:tools} lists the four tools. The ResNet classifier always runs first. The other three are optional. We measured the time of each tool on a desktop GPU. Because we have no Jetson, we multiply onboard times by 9, our estimate of the speed gap to a Jetson Orin NX.
+\textbf{Tools.} Table~\ref{tab:tools} groups the 61 tools. We fine-tuned the classifiers on the training towers and ran every tool once on every validation and test image; episodes replay these cached answers. Only the three laya-vision tools~\cite{layavision} also name the component. We measured the GPU time of each tool on a desktop GPU. Because we have no Jetson, we multiply onboard times by 9, our estimate of the speed gap to a Jetson Orin NX.
 
 \begin{table}[t]
 \centering
-\caption{The four tools. Time per image on the drone (onboard tools: desktop time multiplied by 9) or in the cloud (compute and round trip, without upload). Risk alone: risk per 1,000 test images when only this tool answers.}
+\caption{The 61 tools in groups. Answer: the fields that the tool can answer (C: component, D: defect, S: condition).}
 \label{tab:tools}
 \footnotesize
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{lP{0.30\linewidth}lrr}
+\begin{tabular}{P{0.33\linewidth}P{0.33\linewidth}cc}
 \toprule
-Tool & Model & Runs on & Time & Risk alone \\
+Group & Examples & Tools & Answer \\
 \midrule
-ResNet & ResNet-50~\cite{resnet}, fine-tuned & drone & 0.07\,s & 177 \\
-laya & laya-vision~\cite{layavision} (201M), fine-tuned & drone & 0.70\,s & 261 \\
-SmolVLM & SmolVLM-256M~\cite{smolvlm} with LoRA~\cite{lora} & drone & 0.73\,s & 185 \\
-Qwen & Qwen3-VL-8B, no fine-tuning & cloud & 0.18\,s & 626 \\
+Image classifiers & ResNet-18/50/101~\cite{resnet}, ConvNeXt, ViT, DeiT, Swin, EfficientNet, MobileNet, YOLO & 12 & D, S \\
+Classifier variants & flip, five crops, re-cut from the full photo & 6 & D, S \\
+Component specialists & ResNet-50 and ConvNeXt per component group & 10 & D, S \\
+Feature probes & DINOv2~\cite{dinov2}, CLIP~\cite{clip}: condition classifier and defect detectors & 15 & D or S \\
+Zero-shot & CLIP-L with text prompts & 1 & D, S \\
+Small VLMs & SmolVLM-256M~\cite{smolvlm}, 3 variants & 3 & D \\
+laya-vision & full, 4-bit, re-cut & 3 & C, D, S \\
+Large VLM & Qwen3-VL-8B, 8 questions or crops & 8 & D \\
+Image checks & quality, exposure, size & 3 & -- \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\textbf{Network.} The upload to the cloud follows real 4G/LTE traces~\cite{lte}. We use a \emph{weak} network: 10\% of the trace bandwidth (about 3\,Mbit/s) and six outages of 20\,s per hour. A Qwen call sends a JPEG image of 33\,kB (median), which takes about 85\,ms. During an outage, Qwen cannot be used.
+\textbf{Location and cost.} Thirteen tools run on the drone (for example ResNet-18, DeiT-S, MobileNet, the 4-bit laya-vision and SmolVLM). The other 48 run in the cloud. A cloud call costs its GPU time, a round trip of 50\,ms, and the upload of the image, which is paid once per image. The upload follows real 4G/LTE traces~\cite{lte} reduced to 10\% of their bandwidth (about 3\,Mbit/s), with outages during which no cloud tool can run. A median image has 33\,kB.
 
-\textbf{Risk.} A missed defect costs 10 points, a false alarm 1 point, and sending the image to the operator (\emph{defer}) 0.5 points. We report the risk per 1,000 images; lower is better.
+\textbf{Constraints.} The agent has a time budget of 4, 10 or 30\,s per image, and at most 8 steps; at the eighth step it must report.
 
-\textbf{Constraints.} Table~\ref{tab:constraints} lists the limits used in the experiments.
+\section{The Agent}
 
-\begin{table}[t]
-\centering
-\caption{Constraints in the experiments.}
-\label{tab:constraints}
-\footnotesize
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{P{0.38\linewidth}P{0.54\linewidth}}
-\toprule
-Constraint & Value \\
-\midrule
-Time per image (single images) & 0.25, 0.75, 1.5 or 3\,s \\
-Mission segment & 40 images in a row from one tower \\
-Time for a segment & 0.1, 0.15, 0.2 or 0.3\,s per image, shared by all 40 images \\
-Images sent to the operator & at most 5\% or 2.5\% per segment (2 or 1 images) \\
-Classifier & runs on every image \\
-Cloud & only when the link is up \\
-\bottomrule
-\end{tabular}
-\end{table}
+\textbf{One episode.} An episode starts with no tool results. At each step the agent receives a prompt with the task, the time left, the link state, whether the image is already uploaded, the answers of the tools called so far as short text, and a list of candidates. A BM25 retriever~\cite{bm25} selects 15 candidates from the tools that still fit in the time, using the task and the results so far as the query; \emph{report} is always added. The agent writes one JSON object: either it selects a tool, whose cached answer is added to the next prompt, or it writes the report. The agent never sees the image, only the tools' text answers. Box~1 gives the formal problem.
 
-\section{How the Drone Selects Tools}
+\textbf{Training targets.} Following Zhou et al.~\cite{zhou2026}, we train each step separately. For a tool step, the target is the tool whose own answer adds the most correct fields that are still missing, with ties broken by speed. If no tool adds a correct field, the target is the report. For a report step, the target is the true labels, so the agent must learn whom to trust when tools disagree. We built 61,461 training steps from 22,496 episodes (validation images $\times$ 4 budgets, with 30\% random tool steps for variety).
 
-\textbf{Combining answers (fusion).} Each tool gives a probability that the image shows a defect. A logistic regression combines the probabilities of the tools called so far, with the question type and component type. We train it on the validation towers. Because the share of defects changes between towers, we correct the combined probability with the EM method~\cite{saerens2002}, which estimates the defect share of the new towers without labels. The drone then reports a defect if the corrected probability is at least 1/11, the threshold that minimises the risk.
+\textbf{SFT and GRPO.} SFT trains LoRA~\cite{lora} adapters (rank 16, all linear layers) on 12,000 steps for one epoch with TRL~\cite{trl}. GRPO then continues from the SFT adapter for 400 steps on 4,000 prompts. It samples 8 answers per prompt and rewards each answer as in Eq.~\eqref{eq:reward}. The \emph{base} model is the same Qwen3-0.6B with the same instructions and no training.
 
-\textbf{When to defer.} Sending an image to the operator costs 0.5 points. Reporting an uncertain image costs more on average. Deferring is therefore the best choice when the defect probability lies between 0.05 and 0.5.
-
-\textbf{The decision problem.} Box~1 gives the formal problem. In short: after the classifier, the drone can call laya, SmolVLM or Qwen, report, or defer. A tool can be called only if it fits in the remaining time. In a mission segment, the 40 images share one time budget and one limit on deferrals, and network outages last over several images.
+\textbf{Thinking variant.} After SFT, the 8 sampled answers are often identical, so GRPO receives no learning signal (Section~\ref{sec:grpo}). We therefore let a larger model, Claude Haiku~5.5, write a short reason (80--150 words) for 4,000 balanced steps. The reason explains the state, the missing fields, the time and the link, and why the target action fits, without referring to the label. 3,780 reasons passed automatic checks. SFT then trains the agent to write a reason before each action, and GRPO continues with up to 384 new tokens per step. The reasons of earlier steps are not kept in later prompts.
 
 \par\medskip\noindent
 \fcolorbox{black}{boxblue}{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{\small
-\textbf{Box 1: Problem formulation} (used in all tool-selection experiments)
+\textbf{Box 1: Problem formulation}
 
 \medskip
-Risk of answer $a$ for an image with label $y$ (1 = defect):
+Cost of tool $t$ for image $i$ at bandwidth $b$ (Mbit/s):
 \begin{equation}
-r(a,y)=\begin{cases}10 & a=\textsc{good},\ y=1\\ 1 & a=\textsc{defect},\ y=0\\ 0.5 & a=\textsc{defer}\\ 0 & \text{otherwise}\end{cases}
-\label{eq:risk}
-\end{equation}
-Best answer for a defect probability $q$:
-\begin{equation}
-a^{*}=\begin{cases}\textsc{defer} & \min(10q,\,1-q)>0.5\\ \textsc{defect} & q\ge 1/11\\ \textsc{good} & \text{otherwise}\end{cases}
-\label{eq:decision}
-\end{equation}
-Fused probability for the set $C$ of called tools:
-\begin{equation}
-q_C=\operatorname{EM}\big(\sigma(w_C^{\top}x_C)\big)
-\label{eq:fusion}
-\end{equation}
-Time of a cloud call at bandwidth $b$ (Mbit/s):
-\begin{equation}
-c_{\mathrm{Q}}=t_{\mathrm{Q}}+t_{\mathrm{rtt}}+\frac{8\,s}{10^{6}\,b}
+c(t)=\begin{cases}9\,g_t & t \text{ on the drone}\\ g_t+t_{\mathrm{rtt}}+\frac{8\,s_i}{10^{6}\,b}\,\mathbb{1}[i\notin U] & t \text{ in the cloud},\ b>0\\ \infty & t \text{ in the cloud},\ b=0\end{cases}
 \label{eq:cost}
 \end{equation}
-Actions and reward when an image is answered:
+Tools that can still be called after the calls $K$ (time used $\tau$):
 \begin{equation}
-\mathcal{A}=\{\textsc{report},\textsc{call}_{\mathrm{L}},\textsc{call}_{\mathrm{S}},\textsc{call}_{\mathrm{Q}},\textsc{defer}\},\quad R=-r(a,y)-\lambda\frac{\tau}{B}
+F=\{t\notin K:\ c(t)<\infty,\ \tau+c(t)\le B\}
+\label{eq:feasible}
+\end{equation}
+Correct fields of an answer $a$ for the true labels $y$:
+\begin{equation}
+\kappa(a,y)=\{f\in\{\mathrm{C},\mathrm{D},\mathrm{S}\}:\ a_f=y_f\}
+\label{eq:fields}
+\end{equation}
+Target tool step (report if the gain is zero):
+\begin{equation}
+t^{*}=\arg\max_{t\in F}\Big(\big|\textstyle\bigcup_{k\in K\cup\{t\}}\kappa(a_k,y)\big|-\big|\bigcup_{k\in K}\kappa(a_k,y)\big|,\ -c(t)\Big)
+\label{eq:gold}
+\end{equation}
+Reward of a sampled answer $o$:
+\begin{equation}
+R(o)=\begin{cases}\mathbb{1}[o=t^{*}] & o \text{ selects a tool}\\ \frac{1}{3}|\kappa(o,y)|\,\mathbb{1}[t^{*}=\textsc{report}] & o \text{ is a report}\\ 0 & o \text{ not valid}\end{cases}
 \label{eq:reward}
 \end{equation}
-Constraints of a mission segment of $N=40$ images:
+GRPO advantage for answer $j$ of a group of $G=8$:
 \begin{equation}
-\sum_{n=1}^{N}\tau_n\le N\beta,\qquad \sum_{n=1}^{N}\mathbb{1}[a_n=\textsc{defer}]\le\lfloor\delta N\rfloor
-\label{eq:constraints}
-\end{equation}
-PPO objective with an optional rule term:
-\begin{equation}
-\begin{aligned}
-L(\theta)=\mathbb{E}\big[&\min(\rho\hat{A},\operatorname{clip}(\rho,0.8,1.2)\hat{A})\\&+c_H\mathcal{H}(\pi_\theta)+\alpha\log\pi_\theta(a^{\mathrm{rule}})\big]
-\end{aligned}
-\label{eq:ppo}
+\hat{A}_j=\frac{R(o_j)-\operatorname{mean}_k R(o_k)}{\operatorname{std}_k R(o_k)}
+\label{eq:adv}
 \end{equation}
 
 \medskip
 \renewcommand{\arraystretch}{1.05}
 \begin{tabular}{@{}lP{0.78\linewidth}@{}}
-$q$, $q_C$ & defect probability; after fusing tools $C$ \\
-$x_C$, $w_C$ & tool scores, question and component; weights \\
-$t_{\mathrm{Q}}$, $t_{\mathrm{rtt}}$, $s$ & cloud compute time, round trip (50\,ms), image size in bytes \\
-$\tau$, $B$ & time used for the image; time budget \\
-$\lambda$ & weight of time in the reward (0.01 or 0.03; 0 in segments) \\
-$\beta$, $\delta$ & time per image; share of images that may be deferred \\
-$\rho$, $\hat{A}$ & probability ratio new/old policy; advantage \\
-$c_H$, $\alpha$ & entropy weight (0.01); weight of the rule term (0 or 0.5) \\
+$g_t$ & GPU time of tool $t$ on a desktop GPU \\
+$t_{\mathrm{rtt}}$, $s_i$ & round trip (50\,ms); image size in bytes \\
+$U$ & images already uploaded in this episode \\
+$B$ & time budget (4, 10, 30\,s) \\
+$a_k$ & answer of tool $k$ (only the fields it gives) \\
 \end{tabular}
 }}
 \par\medskip
 
-\textbf{What the policy sees.} The learned policy receives the current fused probability and how close it is to the threshold, the classifier score, the scores of the tools already called, the time left, the bandwidth, whether the link is up, the time each tool would need, simple image statistics (size, blur, contrast, brightness), and the component type. In mission segments it also sees the images and deferrals left, how long the link has been in its current state, and how uncertain the last five images were.
-
-\textbf{Methods.} Table~\ref{tab:methods} lists the methods we compare. All of them use the same fusion; they differ only in how they choose tools and deferrals.
-
-\begin{table}[t]
-\centering
-\caption{Methods compared. All use the same fused answer.}
-\label{tab:methods}
-\footnotesize
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{P{0.30\linewidth}P{0.62\linewidth}}
-\toprule
-Method & How it decides \\
-\midrule
-\multicolumn{2}{l}{\emph{Classical}}\\
-ResNet only & answers after the classifier \\
-All tools & calls laya, SmolVLM and Qwen while they fit in the time \\
-Uncertainty cascade & calls the next tool while the answer is close to the threshold \\
-Cascade with defer & calls the next tool while uncertain; defers if no tool fits \\
-Paced cascade & like the cascade, but gives each remaining image an equal share of the segment time; settings tuned on validation \\
-\midrule
-\multicolumn{2}{l}{\emph{Deep reinforcement learning (PPO)}}\\
-PPO from scratch & small neural network (about 7,000 weights) trained by trial and error \\
-Warm-started PPO & first copies the paced cascade, then improves with PPO \\
-Anchored PPO & warm-started PPO with an extra term that keeps it close to the rule \\
-FedAvg PPO & the same, trained on five drones that share only weights \\
-\bottomrule
-\end{tabular}
-\end{table}
-
 \section{Results}
 
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\linewidth]{figs/fig_route.pdf}
-\caption{\textbf{PPO learns to save time but not to lower the risk below a simple cascade.} Without deferral. (a) Risk per 1,000 test images for each time budget. (b) Risk against the time spent per image; filled and open markers are two weights of time in the reward. PPO: mean of 3 seeds, bars show one standard deviation.}
-\label{fig:route}
-\end{figure*}
+\subsection{The tools alone}
 
-\subsection{A VLM as the agent does not help}
-
-We first let laya-vision act as the agent. It looked at the image, chose to zoom, ask ResNet or ask Qwen, read the answers as text, and wrote the report. PPO trained its decision layer, centrally and with FedAvg over five drones in Flower. Table~\ref{tab:agent} shows the result: in every case the report with tools was worse than the report without tools. Separate decision layers for actions and answers did not help. A version of laya fine-tuned on our data also learned to call no tool, because every tool changed more correct answers into wrong ones than the reverse. Zoom also did not help the classifier: the defects it missed were in small, low-resolution images, so zooming added no detail.
+Table~\ref{tab:single} shows the accuracy of some tools when each one answers alone. Fine-tuned classifiers are strong on defect and condition; a ConvNeXt on the re-cut component is correct on 98.8\% of the images. laya-vision is the only tool that names the component, and it is correct on 92.4\% of the images. If the agent could always pick a correct tool, it would reach 97.0\% on the component and 100\% on defect and condition.
 
 \begin{table}[t]
 \centering
-\caption{\textbf{A VLM agent gets worse with tools.} Report cost per 1,000 test images (defect risk plus errors on component and condition), 400 test images, 1\,s budget, one seed.}
-\label{tab:agent}
+\caption{Accuracy of single tools on all 6,092 test images. ``--'': the tool gives no answer for this field.}
+\label{tab:single}
 \footnotesize
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{lcc}
+\begin{tabular}{llccc}
 \toprule
-What PPO trains & Without tools & With tools \\
+Tool & Runs on & Component & Defect & Condition \\
 \midrule
-Scorer, central & 1,505 & 1,715 \\
-Scorer, FedAvg & 1,505 & 1,628 \\
-Decision head, central & 1,438 & 1,570 \\
-Decision head, FedAvg & 1,438 & 1,725 \\
+laya-vision & cloud & 0.924 & 0.947 & 0.952 \\
+laya-vision, 4-bit & drone & 0.870 & 0.944 & 0.938 \\
+ResNet-18 & drone & -- & 0.981 & 0.979 \\
+DeiT-S & drone & -- & 0.982 & 0.980 \\
+ConvNeXt-T, re-cut & cloud & -- & 0.988 & 0.988 \\
+\midrule
+At least one tool correct & & 0.970 & 1.000 & 1.000 \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\subsection{SFT teaches the format and one strong tool}
+
+Table~\ref{tab:main} gives the report accuracy of the agent. Without training, Qwen3-0.6B never calls a tool and writes a report at the first step. Its component and condition answers almost never match the label set, and it always says ``no defect'', so its defect accuracy (0.895) equals the share of good images and its defect recall is zero. After SFT, 88.1\% of the reports are fully correct. The agent calls exactly one tool per image: laya-vision in the cloud on 95\% of the images and the 4-bit laya-vision on the drone on the others, mainly when the link is down. Then it reports.
 
 \begin{table*}[t]
 \centering
-\caption{\textbf{Mission segments.} Risk per 1,000 test images. Columns: share of images that may be deferred, and time per image shared by the 40 images of a segment. Learned methods: mean of 5 seeds (3 for PPO from scratch); the spread across seeds is 0.5--3.5 points. Bold: best in each column.}
-\label{tab:mission}
+\caption{\textbf{SFT gives the whole gain; GRPO changes nothing.} Report accuracy of the Qwen3-0.6B agent on 1,500 test images, single seed, greedy decoding. All three: share of reports with component, defect and condition correct. Time and upload: mean per image. The results without a time limit are left out because of a fault in the cost check (Section~\ref{sec:limits}).}
+\label{tab:main}
 \footnotesize
 \setlength{\tabcolsep}{4pt}
-\begin{tabular}{lcccccccc}
+\begin{tabular}{llccccccc}
 \toprule
- & \multicolumn{4}{c}{At most 5\% deferred} & \multicolumn{4}{c}{At most 2.5\% deferred} \\
-\cmidrule(lr){2-5}\cmidrule(lr){6-9}
-Method & 0.1\,s & 0.15\,s & 0.2\,s & 0.3\,s & 0.1\,s & 0.15\,s & 0.2\,s & 0.3\,s \\
+Method & Budget & Component & Defect & Condition & All three & Defect recall & Time & Upload \\
 \midrule
-\multicolumn{9}{l}{\emph{Classical}}\\
-ResNet only & 129.2 & 129.2 & 129.2 & 129.2 & 129.2 & 129.2 & 129.2 & 129.2 \\
-Cascade with defer (greedy) & 117.8 & 109.5 & 108.8 & \textbf{96.9} & 121.0 & 114.1 & 109.6 & 99.1 \\
-Paced cascade & \textbf{108.8} & 106.1 & 106.0 & 100.5 & \textbf{112.9} & \textbf{113.4} & 108.2 & \textbf{97.2} \\
-\midrule
-\multicolumn{9}{l}{\emph{Deep reinforcement learning (PPO)}}\\
-From scratch, central & 122.8 & 123.0 & 120.7 & 114.8 & 122.1 & 120.3 & 121.4 & 115.4 \\
-From scratch, FedAvg & 121.6 & 120.4 & 118.7 & 116.9 & 129.3 & 126.8 & 126.6 & 122.1 \\
-Copy of the paced cascade & 112.3 & 107.6 & 104.0 & 97.9 & 114.5 & 115.8 & 109.8 & 99.8 \\
-Warm-started, central & 112.5 & 109.5 & 107.0 & 99.7 & 117.1 & 114.7 & 112.1 & 102.9 \\
-Warm-started, FedAvg & 117.1 & 111.8 & 107.5 & 101.0 & 118.0 & 113.5 & 112.3 & 103.9 \\
-Anchored, central & 111.5 & \textbf{105.3} & \textbf{102.8} & 97.4 & 113.7 & 116.0 & \textbf{107.6} & 98.8 \\
-Anchored, FedAvg & 112.7 & 106.5 & 102.9 & 98.3 & 114.9 & 115.2 & 109.3 & 99.2 \\
+Base (no training) & 4\,s & 0.037 & 0.895 & 0.000 & 0.000 & 0.000 & 0.00\,s & 0.04\,kB \\
+SFT & 4\,s & 0.919 & 0.961 & 0.958 & 0.881 & 0.885 & 0.35\,s & 34.1\,kB \\
+SFT & 10\,s & 0.917 & 0.961 & 0.958 & 0.880 & 0.892 & 0.37\,s & 34.1\,kB \\
+SFT & 30\,s & 0.915 & 0.959 & 0.957 & 0.876 & 0.885 & 0.41\,s & 33.7\,kB \\
+SFT + GRPO & 4\,s & 0.919 & 0.961 & 0.958 & 0.881 & 0.885 & 0.35\,s & 34.1\,kB \\
+SFT + GRPO & 10\,s & 0.917 & 0.961 & 0.958 & 0.880 & 0.892 & 0.37\,s & 34.1\,kB \\
+SFT + GRPO & 30\,s & 0.915 & 0.959 & 0.957 & 0.876 & 0.885 & 0.41\,s & 33.7\,kB \\
 \bottomrule
 \end{tabular}
 \end{table*}
 
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\linewidth]{figs/fig_mission.pdf}
-\caption{\textbf{Warm-started PPO stays close to the rule it copied.} Risk per 1,000 test images during PPO training; round 0 is the copy of the paced cascade. Top row: at most 5\% deferred; bottom row: at most 2.5\%. Columns: time per image. Solid lines: anchored PPO; dashed lines: PPO without the anchor. Blue: central; orange: FedAvg over five drones. Mean of 5 seeds, bands show one standard deviation. Green lines: paced cascade (dash-dot) and greedy cascade (dotted).}
-\label{fig:mission}
-\end{figure*}
+\textbf{The agent is slightly better than the tool it copies.} Its component accuracy equals that of laya-vision (0.92), but its defect and condition answers are slightly better (0.961 against 0.947, and 0.958 against 0.952). It sees only laya-vision's answer, so it has learned to correct some of laya-vision's answers when it writes the report.
 
-\subsection{Combining the tools' answers gives the largest gain}
+\textbf{The agent ignores the best tools.} A ConvNeXt on the re-cut image is 2.7 points better on defect and 3.0 points better on condition than the agent, and DeiT-S on the drone is 2 points better. The agent never calls them. The reason is the training target in Eq.~\eqref{eq:gold}: laya-vision adds up to three correct fields at once, so it is the target in almost every first step (24,577 of the 30,950 tool steps). A second tool is the target only when laya-vision is wrong, which is rare, and the report step then sees only laya-vision's answer.
 
-Table~\ref{tab:fusion} shows that the tools are useful when their own answers are combined. Fusion lowers the risk from 177 (ResNet alone) to 114. The threshold needs care: the test towers have fewer defects than the validation towers, so a threshold tuned on validation gives too many false alarms. The EM correction estimates a defect share of 15.4\% for the test towers (true value 15.1\%) and lowers the risk to 107, almost as good as the best threshold chosen with test labels (105).
+\textbf{The budgets have no effect.} One laya-vision call costs about 0.35\,s, far below the smallest budget of 4\,s, so the agent behaves the same at every budget.
 
-\begin{table}[t]
-\centering
-\caption{Combining tool answers, risk per 1,000 test images (7,057 images). 95\% bootstrap intervals in brackets.}
-\label{tab:fusion}
-\footnotesize
-\begin{tabular}{lc}
-\toprule
-Method & Risk \\
-\midrule
-Best single tool (ResNet) & 177 (148--206) \\
-Fusion, threshold tuned on validation & 116 (100--133) \\
-Fusion, fixed threshold 1/11 & 114 (99--130) \\
-Fusion, threshold with EM correction & \textbf{107} (91--124) \\
-Fusion, best threshold (uses test labels) & 105 (89--124) \\
-\bottomrule
-\end{tabular}
-\end{table}
+\subsection{Why GRPO does not help}
+\label{sec:grpo}
 
-\subsection{Selecting tools for single images}
+GRPO learns only from groups whose sampled answers receive different rewards (Eq.~\eqref{eq:adv}). Table~\ref{tab:grpo} shows that after SFT, 91--95\% of the groups had no spread in reward. The model was almost certain (entropy about 0.002), so the eight samples were usually the same answer. The adapter weights moved by at most 0.001, and the KL distance to the SFT model stayed near 0.002. No most-likely answer changed, so the evaluation results are identical to SFT in every digit.
 
-Next, the drone chooses tools for each image within its own time budget. Table~\ref{tab:single} compares classical methods and PPO.
+With teacher reasoning, the eight answers differ: only 62--71\% of the groups had no spread, and the model moved about 30 times further from its SFT starting point. The training reward did not increase, however (0.845 in the first half, 0.811 in the second), so it is not yet clear that the extra signal points in a useful direction.
 
 \begin{table}[t]
 \centering
-\caption{\textbf{Selecting tools for single images.} Risk per 1,000 test images at two time budgets, and time and share of deferred images at 3\,s. PPO: mean of 3 seeds (spread 1.6--4.7).}
-\label{tab:single}
+\caption{GRPO training of the 0.6B agent, mean over the first and second half of training. No signal: share of groups in which all 8 answers got the same reward.}
+\label{tab:grpo}
 \footnotesize
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{lcccc}
+\begin{tabular}{lcc}
 \toprule
- & \multicolumn{2}{c}{Risk} & \multicolumn{2}{c}{At 3\,s} \\
-\cmidrule(lr){2-3}\cmidrule(lr){4-5}
-Method & 0.75\,s & 3\,s & Time & Deferred \\
+ & Without thinking & With thinking \\
 \midrule
-\multicolumn{5}{l}{\emph{Classical}}\\
-ResNet only & 129 & 129 & 0.07\,s & 0\% \\
-All tools & 114 & 108 & 1.81\,s & 0\% \\
-Uncertainty cascade & 112 & 105 & 1.22\,s & 0\% \\
-Cascade with defer & 99 & 94 & 0.25\,s & 7\% \\
-All tools, then defer & \textbf{96} & \textbf{92} & 1.81\,s & 11\% \\
-\midrule
-\multicolumn{5}{l}{\emph{Deep reinforcement learning}}\\
-PPO, small batches & 115 & 106 & 1.27\,s & 0\% \\
-PPO, large batches & 106 & 95 & 0.37\,s & 8\% \\
+Steps (prompts per step) & 400 (2) & 200 (1) \\
+Answer length & $\approx$22 tokens & $\approx$150 tokens \\
+No signal, 1st / 2nd half & 0.91 / 0.95 & 0.62 / 0.71 \\
+Reward, 1st / 2nd half & 0.861 / 0.903 & 0.845 / 0.811 \\
+KL to the SFT model & $\approx$0.002 & $\approx$0.06 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\textbf{Deferring is the second large gain.} Sending 7--11\% of uncertain images to the operator lowers the risk by 11--15 points. The cascade with defer reaches 94 in only 0.25\,s per image, because it defers instead of waiting for slow tools.
+\subsection{Thinking and larger models}
 
-\textbf{PPO matches the rules but does not beat them.} With small batches (2,048 episodes per round), PPO never learns to defer. Deferring costs 0.5 on easy images, where reporting costs almost nothing, so PPO stops trying it too early. With four times larger batches, PPO learns to defer 8\% of images and reaches 95, close to the rules. Without deferral, PPO reaches the risk of calling all tools in about 30\% less time (Fig.~\ref{fig:route}), and FedAvg gives the same result as central training.
+Table~\ref{tab:think} will compare the thinking variant at three model sizes. SFT on the teacher reasons converged to a training loss of about 0.89 (0.6B) and 0.81 (1.7B); the 4B model is trained in bf16 on an A10 GPU. The evaluations are running.
 
-
-
-\textbf{Why the oracle is not a fair target.} An oracle that knows the label can pick the best set of tools for each image and reaches 65. But it is better than full fusion on only 127 of 7,057 images, and for 83\% of these the fused probability is very close to the threshold. Only the label tells which side is right, so no method without labels can reach the oracle. Stronger fusion models (more features, gradient boosting) did not help either.
-
-\textbf{Drones that differ.} We also gave each of five drones a different component group and a different network. The result did not change. FedAvg followed by a short local training was the most stable learned method and matched the cascade (108 against 106 at 3\,s) with 15\% less time, but no method lowered the risk. Rules tuned for each drone separately were worse (117), because each drone's validation and test towers differ.
-
-\subsection{Mission segments: shared time and operator limit}
-
-In a real mission, time and operator attention are shared. A good policy should save time on easy images and spend it on hard ones. Table~\ref{tab:mission} and Fig.~\ref{fig:mission} show the results for 40-image segments.
-
-
-
-
-
-\textbf{Planning matters.} When time is short (0.1\,s per image), the paced cascade is 8--9 points better than the greedy one, because it does not spend all the time on the first images.
-
-\textbf{PPO from scratch fails.} It is 10--25 points worse than the best rule everywhere. It always uses all its time and all its deferrals, but on the wrong images. With the stricter operator limit, FedAvg learned never to defer.
-
-\textbf{Copying the rule works; PPO hardly improves it.} When PPO first copies the paced cascade (98\% of its actions), it starts close to the best rule. Further PPO training without the anchor makes the policy worse in 14 of 16 settings. With the anchor, PPO changes the result by 2 points or less. It beats the best rule clearly in only one setting (5\% deferred, 0.2\,s per image: 102.8 against 106.0), and FedAvg gives the same result as central training. We chose the anchored version after seeing the test results, so even this one gain is optimistic.
+\begin{table}[t]
+\centering
+\caption{Thinking variant, report accuracy at the 4\,s budget. Results in progress.}
+\label{tab:think}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{llcccc}
+\toprule
+Model & Method & Comp. & Defect & Cond. & All three \\
+\midrule
+Qwen3-0.6B & base, thinking & \pend & \pend & \pend & \pend \\
+ & SFT, thinking & \pend & \pend & \pend & \pend \\
+ & SFT + GRPO, thinking & \pend & \pend & \pend & \pend \\
+Qwen3-1.7B & base, thinking & \pend & \pend & \pend & \pend \\
+ & SFT, thinking & \pend & \pend & \pend & \pend \\
+ & SFT + GRPO, thinking & \pend & \pend & \pend & \pend \\
+Qwen3-4B & base, thinking & \pend & \pend & \pend & \pend \\
+ & SFT, thinking & \pend & \pend & \pend & \pend \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \subsection{Latency and upload}
 
-Table~\ref{tab:latency} compares the time and upload per image with published Jetson measurements. The units are not the same: an EVLM segment contains several frames and a text report, while our item is one image with one answer. Still, the best methods need 0.18--0.25\,s and 1.6--3.4\,kB per image, which is well within the 1.16\,s between frames that EVLM assumes.
+Table~\ref{tab:latency} compares the time and upload of the tools that the agent calls with published Jetson measurements. The units differ: an EVLM segment contains several frames and a text report, while our item is one image with three answers. The agent's own inference time is not included; Section~\ref{sec:limits} discusses this.
 
 \begin{table}[t]
 \centering
-\caption{Latency and upload. Prior work: measured on a Jetson Orin. This work: mean per test image, weak network.}
+\caption{Latency and upload. Prior work: measured on a Jetson Orin. This work: mean per test image at the 4\,s budget, tool time only.}
 \label{tab:latency}
 \footnotesize
 \setlength{\tabcolsep}{3pt}
@@ -377,60 +291,33 @@ YOLO detector, per image~\cite{p2s} & 0.14\,s & -- \\
 SmolVLM-256, per image~\cite{p2s} & 2.8\,s & -- \\
 EVLM (SmolVLM), per 4\,s segment~\cite{evlm} & 1.4--6.4\,s & 25\,kB \\
 SmolVLM on the drone, per request~\cite{splitvlm} & 2.7--2.8\,s & 0 \\
-SmolVLM in the cloud, per request~\cite{splitvlm} & 0.8--3.9\,s & image \\
 \midrule
 \multicolumn{3}{l}{\emph{This work}}\\
-ResNet only & 0.07\,s & 0 \\
-All tools & 1.81\,s & 34.5\,kB \\
-Cascade with defer & 0.25\,s & 3.4\,kB \\
-PPO with defer (large batches) & 0.37\,s & 9.4\,kB \\
-Paced cascade, segment (0.2\,s) & 0.18\,s & 1.6\,kB \\
-Anchored PPO, segment (0.2\,s) & 0.18\,s & 1.6\,kB \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-One number needs attention. Our onboard SmolVLM call takes 0.73\,s with the factor of 9, but the Jetson measurements are 2.7--2.8\,s, about 3.7 times longer. They include text generation and full frames, while our models only score answer options. If our onboard times are too low, only the largest budget would allow even one onboard VLM call per image, and selective calls and deferral would matter even more. A measurement on a Jetson is needed.
-
-\subsection{What a fleet should share}
-
-Table~\ref{tab:federate} compares what each federated option sends and what it gains. In earlier experiments on the same data, a small routing controller (29\,KB) trained with FedAvg across five operator regions reached a risk of 115, equal to central training (115) and much better than a fixed cascade (156) or regions training alone (158), with about 7\,MB of total upload. Under realistic feedback, where an accepted image reveals no label, only a 5\% audit of accepted images kept it better than the cascade (142). Training the 201M-parameter laya-vision model itself with FedAvg cost 0.4--41\,GB per run, and small updates doubled its calibration error.
-
-\begin{table}[t]
-\centering
-\caption{What a fleet can share, and the cost in upload.}
-\label{tab:federate}
-\footnotesize
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{P{0.34\linewidth}P{0.22\linewidth}P{0.34\linewidth}}
-\toprule
-What is shared & Upload & Result \\
-\midrule
-Defect share for the EM threshold & a few bytes & risk 114 $\rightarrow$ 107 \\
-Tool-selection policy (PPO) & 28--30\,KB per round & matches tuned rules \\
-Routing controller & about 7\,MB in total & 156 $\rightarrow$ 115 with full labels \\
-Perception model (laya-vision) & 0.4--41\,GB per run & better ranking, worse calibration \\
+SFT agent (one laya-vision call) & 0.35\,s & 34.1\,kB \\
+ResNet-18 on the drone, alone & 0.03\,s & 0 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \section{Lessons and Open Challenges}
 
-\textbf{Simple steps first.} The largest gains came from classical methods: combining the tools' answers, correcting the threshold without labels, and deferring uncertain images to the operator. None of them needs reinforcement learning, and the EM correction needs only a few numbers from each drone.
+\textbf{Imitation sets the ceiling.} SFT teaches the agent the target policy almost exactly, and that policy is ``call the tool that answers most fields, then report''. A target that counts fields favours generalist tools over accurate specialists. Better targets would reward the final report, not the single step.
 
-\textbf{Why rules are hard to beat.} For a single image, the best next step depends almost only on how close the fused answer is to the threshold, and a cascade uses exactly this signal. Shared constraints add a planning problem, but the paced cascade already solves most of it. Learned policies are still useful: they adapt to the budget and the network without new tuning, and FedAvg trains them as well as central training with very small updates.
+\textbf{GRPO needs disagreement.} After SFT on short answers, the model is too certain for group-based rewards to differ. Teacher reasoning restores the disagreement, but whether it also improves the reports is the open question of Table~\ref{tab:think}. Rewarding all tools that are equally good, and training on full episodes with the final report accuracy as reward, are the next steps.
 
-\textbf{Agents need better tools, not only better learning.} The VLM agent and the learned policies were limited by the same thing: on the hardest images, the tools disagree and nothing in the input shows which tool is right. Tools that add new information, for example higher-resolution views of small components, are more promising than a stronger learning method.
+\textbf{Budgets must bind.} With 4\,s or more and a 0.35\,s first call, the time budget never limits the agent. Tighter budgets, a cost for upload, or slower onboard tools are needed before the agent has to trade accuracy for time.
 
-\textbf{Limitations.} The tool answers are saved and replayed; the fleet, the network and the onboard times are simulated, and the factor of 9 is an estimate. The risk weights are our choice. The tool-selection experiments use 3--5 seeds, the agent experiments one seed. All data come from one benchmark of power-line components.
+\textbf{Limitations.}
+\label{sec:limits}
+The tool answers are cached and replayed; the network and the onboard times are simulated, and the factor of 9 is an estimate. The time of the agent itself is not counted. A fault in the cost check allowed cloud tools during outages when there was no time limit; it affects 1.1\% of the training steps and all results without a limit, which we leave out. All results come from one seed and one benchmark of power-line components.
 
 \section{Conclusion}
 
-This article asked what an inspection drone fleet should learn to use its AI tools well. A VLM that acts as an agent and reads the tools' answers became worse with tools. Simple methods gave the gains: combining the tools' answers with a label-free threshold lowered the risk from 177 to 107 per 1,000 images, and sending uncertain images to the operator lowered it to 92--94 in 0.25\,s per image. Deep reinforcement learning, central or federated with updates of about 30\,KB, learned to match well-tuned rules under time and operator limits, but beat them clearly in only one of eight settings. For tool selection, a fleet should first share the fusion and its threshold statistics and defer at the threshold; a learned policy is a cheap way to match a tuned rule, not yet a way to replace it.
+A small language model can learn to inspect power-line images by calling tools: after SFT, a Qwen3-0.6B agent writes a fully correct report for 88\% of the images in 0.35\,s, against none without training. But it learns to call one generalist model and stop, and simple classifiers that it never calls are more accurate on defect and condition. GRPO after SFT adds nothing, because the model's sampled answers do not differ. For drone inspection, the recipe of small tool-selecting models needs training targets that reward the final report and budgets that force real trade-offs. Teacher reasoning and larger models, now under evaluation, will show whether GRPO can then improve on imitation.
 
 \section*{Data and code availability}
 
-The code, the cached tool answers and the result files are in the project repository, branches \texttt{vision-fl} and \texttt{agentic-ppo-v2} (to be made public on acceptance). ElecVQA-Bench and InsPLAD are public~\cite{elecvqa,insplad}. The laya-vision weights are published under CC BY-NC-SA 4.0~\cite{layavision}.
+The code, the cached tool answers and the result files are in the project repository, branch \texttt{agentic-ppo-v2} (to be made public on acceptance). ElecVQA-Bench and InsPLAD are public~\cite{elecvqa,insplad}. The laya-vision weights are published under CC BY-NC-SA 4.0~\cite{layavision}.
 
 \section*{Declaration of competing interest}
 
@@ -442,7 +329,7 @@ The author declares no competing interests.
 
 \section*{Declaration of generative AI use}
 
-During the preparation of this work the author used an AI assistant to write code, analyse results and draft text. The author reviewed and edited the content and takes full responsibility for the publication.
+During the preparation of this work the author used an AI assistant to write code, analyse results and draft text, and a language model to write the teacher reasons used as training data. The author reviewed and edited the content and takes full responsibility for the publication.
 
 \section*{Acknowledgments}
 
@@ -456,47 +343,47 @@ Experiments in this work were run and tracked with OpenResearch~\cite{openresear
 
 \bibitem{splitvlm} Z.~Azimi, R.~Farahani, S.~Dustdar, C.~Timmerer, Cloud, edge, or split? Profiling onboard and split vision-language model deployment for drone AI, arXiv:2609.25415 (2026).
 
-\bibitem{smolvlm} A.~Marafioti, et al., SmolVLM: Redefining small and efficient multimodal models, arXiv:2504.05299 (2025).
-
-\bibitem{laya} Convai Innovations, Laya, software (2026). \url{https://github.com/NandhaKishorM/laya}.
-
-\bibitem{layavision} Laya Vision, software, commit 9e1e241 (2026). \url{https://github.com/r33drichards/laya-vision}; weights \url{https://huggingface.co/thaitea/laya-vision}.
-
 \bibitem{inarvl} Sabanovic, Maliakel, Brandic, INAR-VL: Input-aware routing for edge-cloud vision-language inference, arXiv:2605.18853 (2026).
 
-\bibitem{zhang2026hi} H.~Zhang, S.~Cha, H.~B. Beytur, K.~S. Chan, G.~de~Veciana, H.~Vikalo, Online learning for multi-layer hierarchical inference under partial and policy-dependent feedback, arXiv:2603.04247 (2026).
+\bibitem{zhou2026} Zhou et al., Training small language models for transferable tool selection, arXiv:2610.31483 (2026).
 
-\bibitem{barp} W.~Wei, T.~Yang, H.~Chen, Y.~Zhao, F.~Dernoncourt, R.~A. Rossi, H.~Eldardiry, Learning to route LLMs from bandit feedback: One policy, many trade-offs, arXiv:2510.07429 (2025).
+\bibitem{grpo} Z.~Shao, et al., DeepSeekMath: Pushing the limits of mathematical reasoning in open language models, arXiv:2402.03300 (2024).
 
-\bibitem{agarwal2023} A.~Agarwal, H.~B. McMahan, Z.~Xu, An empirical evaluation of federated contextual bandit algorithms, arXiv:2303.10218 (2023).
+\bibitem{qwen3} A.~Yang, et al., Qwen3 technical report, arXiv:2505.09388 (2025).
+
+\bibitem{toolformer} T.~Schick, et al., Toolformer: Language models can teach themselves to use tools, in: Advances in Neural Information Processing Systems (NeurIPS), 2023.
+
+\bibitem{react} S.~Yao, et al., ReAct: Synergizing reasoning and acting in language models, in: International Conference on Learning Representations (ICLR), 2023.
+
+\bibitem{toolllm} Y.~Qin, et al., ToolLLM: Facilitating large language models to master 16000+ real-world APIs, in: International Conference on Learning Representations (ICLR), 2024.
+
+\bibitem{gorilla} S.~G. Patil, T.~Zhang, X.~Wang, J.~E. Gonzalez, Gorilla: Large language model connected with massive APIs, arXiv:2305.15334 (2023).
+
+\bibitem{distill} C.-Y. Hsieh, et al., Distilling step-by-step! Outperforming larger language models with less training data and smaller model sizes, in: Findings of the Association for Computational Linguistics (ACL), 2023.
+
+\bibitem{bm25} S.~Robertson, H.~Zaragoza, The probabilistic relevance framework: BM25 and beyond, Foundations and Trends in Information Retrieval 3~(4) (2009) 333--389.
+
+\bibitem{trl} L.~von~Werra, et al., TRL: Transformer reinforcement learning, software (2020). \url{https://github.com/huggingface/trl}.
 
 \bibitem{ppo} J.~Schulman, F.~Wolski, P.~Dhariwal, A.~Radford, O.~Klimov, Proximal policy optimization algorithms, arXiv:1707.06347 (2017).
 
-\bibitem{gae} J.~Schulman, P.~Moritz, S.~Levine, M.~Jordan, P.~Abbeel, High-dimensional continuous control using generalized advantage estimation, in: International Conference on Learning Representations (ICLR), 2016.
+\bibitem{lora} E.~J. Hu, et al., LoRA: Low-rank adaptation of large language models, in: International Conference on Learning Representations (ICLR), 2022.
 
-\bibitem{saerens2002} M.~Saerens, P.~Latinne, C.~Decaestecker, Adjusting the outputs of a classifier to new a priori probabilities: A simple procedure, Neural Computation 14~(1) (2002) 21--41.
+\bibitem{smolvlm} A.~Marafioti, et al., SmolVLM: Redefining small and efficient multimodal models, arXiv:2504.05299 (2025).
 
-\bibitem{flower} D.~J. Beutel, et al., Flower: A friendly federated learning research framework, arXiv:2007.14390 (2020).
+\bibitem{layavision} Laya Vision, software, commit 9e1e241 (2026). \url{https://github.com/r33drichards/laya-vision}; weights \url{https://huggingface.co/thaitea/laya-vision}.
 
-\bibitem{fedavg} B.~McMahan, E.~Moore, D.~Ramage, S.~Hampson, B.~A. y~Arcas, Communication-efficient learning of deep networks from decentralized data, in: Proceedings of the 20th International Conference on Artificial Intelligence and Statistics (AISTATS), 2017.
+\bibitem{resnet} K.~He, X.~Zhang, S.~Ren, J.~Sun, Deep residual learning for image recognition, in: IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2016.
 
-\bibitem{zhao2018} Y.~Zhao, M.~Li, L.~Lai, N.~Suda, D.~Civin, V.~Chandra, Federated learning with non-IID data, arXiv:1806.00582 (2018).
+\bibitem{dinov2} M.~Oquab, et al., DINOv2: Learning robust visual features without supervision, Transactions on Machine Learning Research (2024).
 
-\bibitem{fedprox} T.~Li, A.~K. Sahu, M.~Zaheer, M.~Sanjabi, A.~Talwalkar, V.~Smith, Federated optimization in heterogeneous networks, in: Proceedings of Machine Learning and Systems (MLSys), 2020.
-
-\bibitem{fedrouter} Askin, et al., Federate the router: Learning language model routers with sparse and decentralized evaluations, arXiv:2601.22318 (2026).
-
-\bibitem{fedhlm} Solat, Lee, Seif, Niyato, Poor, FedHLM, IEEE Internet of Things Journal (2025). \url{https://doi.org/10.1109/jiot.2025.3618095}.
+\bibitem{clip} A.~Radford, et al., Learning transferable visual models from natural language supervision, in: International Conference on Machine Learning (ICML), 2021.
 
 \bibitem{elecvqa} ElecVQA-Bench, dataset and code repository (2026). \url{https://github.com/GhostDino/elecvqa-bench}.
 
 \bibitem{insplad} A.~L.~B. Vieira e Silva, et al., InsPLAD: A dataset and benchmark for power line asset inspection in UAV images, International Journal of Remote Sensing (2023). arXiv:2311.01619.
 
 \bibitem{lte} J.~van~der~Hooft, S.~Petrangeli, T.~Wauters, R.~Huysegems, P.~R. Alface, T.~Bostoen, F.~De~Turck, HTTP/2-based adaptive streaming of HEVC video over 4G/LTE networks, IEEE Communications Letters 20~(11) (2016) 2177--2180.
-
-\bibitem{resnet} K.~He, X.~Zhang, S.~Ren, J.~Sun, Deep residual learning for image recognition, in: IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2016.
-
-\bibitem{lora} E.~J. Hu, et al., LoRA: Low-rank adaptation of large language models, in: International Conference on Learning Representations (ICLR), 2022.
 
 \bibitem{openresearch} alphaXiv, OpenResearch: The local-first harness and workspace for research agents (2026). \url{https://github.com/alphaXiv/OpenResearch}.
 

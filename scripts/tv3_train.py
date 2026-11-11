@@ -1,5 +1,6 @@
 import argparse
 import math
+import shutil
 import statistics
 import time
 from collections import Counter
@@ -87,6 +88,7 @@ def train(name, args):
                       eval_dataset=Images(select or fit[:200], size, False), compute_metrics=macro_recall)
     trainer.train()
     trainer.save_model(str(out / "best"))
+    shutil.rmtree(out / "trainer", ignore_errors=True)
     return trainer.model.eval(), size
 
 

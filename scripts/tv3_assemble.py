@@ -10,7 +10,7 @@ from fedorch import vision
 from fedorch.cache import load_cache
 from fedorch.common import results_dir, write_json
 from fedorch.items import CLASSES, load_items
-from fedorch.select_env import Teacher, report_loss, truth_of
+from fedorch.select_env import FIELDS, correct_fields, own_answer, truth_of
 from fedorch.tools_v3 import TOOLS, class_probs, group_of, load_tool, recut_file, timing_path
 
 STEP2 = {"smolvlm": "smolvlm_local", "smolvlm_base": "smolvlm_base", "smolvlm_split": "smolvlm_split", "qwen": "cloud"}
@@ -124,41 +124,20 @@ def main():
     value_report(table, present)
 
 
-def metrics(rows, reports):
-    truths = [truth_of(r) for r in rows]
-    said = np.array([rep["defect"] == "yes" for rep in reports])
-    true = np.array([t["defect"] for t in truths])
-    conditions = sorted({t["condition"] for t in truths})
-    f1 = []
-    for c in conditions:
-        tp = sum(rep["condition"] == c and t["condition"] == c for rep, t in zip(reports, truths))
-        fp = sum(rep["condition"] == c and t["condition"] != c for rep, t in zip(reports, truths))
-        fn = sum(rep["condition"] != c and t["condition"] == c for rep, t in zip(reports, truths))
-        f1.append(2 * tp / max(1, 2 * tp + fp + fn))
-    return {"images": len(rows), "loss_per_1000": round(1000 * float(np.mean([report_loss(rep, t) for rep, t in zip(reports, truths)])), 1),
-            "component_accuracy": round(float(np.mean([rep["component"] == t["component"] for rep, t in zip(reports, truths)])), 4),
-            "condition_accuracy": round(float(np.mean([rep["condition"] == t["condition"] for rep, t in zip(reports, truths)])), 4),
-            "condition_macro_f1": round(float(np.mean(f1)), 4),
-            "defect_recall": round(float(said[true].mean()), 4) if true.any() else None,
-            "defect_false_alarm": round(float(said[~true].mean()), 4),
-            "defect_risk_per_1000": round(1000 * float(np.mean(10 * (true & ~said) + (~true & said))), 1),
-            "all_three_correct": round(float(np.mean([rep["component"] == t["component"] and rep["condition"] == t["condition"]
-                                                      and (rep["defect"] == "yes") == t["defect"] for rep, t in zip(reports, truths)])), 4)}
-
-
 def value_report(table, tools):
-    val = [r for r in table if r["split"] == "val"]
     test = [r for r in table if r["split"] == "test"]
-    teacher = Teacher(tools).fit(val)
-    report = {"tools": tools, "teacher": {}, "single_tool": {}}
-    sets = {"no tool": set(), "resnet only": {"resnet"}, "laya only": {"laya"}, "resnet + laya": {"resnet", "laya"}, "all tools": set(tools)}
-    for name, called in sets.items():
-        report["teacher"][name] = metrics(test, [teacher.report(r, called) for r in test])
-        print(f"teacher, {name}:", json.dumps(report["teacher"][name]), flush=True)
+    report = {"tools": tools, "images": len(test), "single_tool": {}, "any_tool_has_the_right_answer": {}}
     for t in tools:
         rows = [r for r in test if t in r["out"]]
-        if len(rows) >= 50:
-            report["single_tool"][t] = metrics(rows, [teacher.report(r, {t}) for r in rows])
+        answers = [own_answer(r["out"][t]) for r in rows]
+        report["single_tool"][t] = {"images": len(rows), **{f"{f}_accuracy": round(float(np.mean([a.get(f) == truth_of(r)[f] for a, r in zip(answers, rows)])), 4)
+                                                            for f in FIELDS if any(f in a for a in answers)}}
+    for f in FIELDS:
+        report["any_tool_has_the_right_answer"][f] = round(float(np.mean([any(f in correct_fields(own_answer(r["out"][t]), truth_of(r)) for t in r["out"])
+                                                                          for r in test])), 4)
+    print("any tool has the right answer (test):", json.dumps(report["any_tool_has_the_right_answer"]), flush=True)
+    for t, v in report["single_tool"].items():
+        print(f"  {t:22s}", json.dumps(v), flush=True)
     write_json(results_dir("tools_v3") / "value_report.json", report)
 
 

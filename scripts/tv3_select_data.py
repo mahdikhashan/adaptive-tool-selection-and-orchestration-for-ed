@@ -12,12 +12,11 @@ from fedorch.select_env import episode, render, report_json, select_json, setup,
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Gold steps from the tool cache: SFT data and GRPO prompts for the Qwen3-0.6B inspection agent (TRL). "
-                                                 "Tool steps: the tool that best improves the evidence-based report. Final step: the report with the true labels.")
+    parser = argparse.ArgumentParser(description="SFT data and GRPO prompts for the Qwen inspection agent. Tool step target: the tool whose own "
+                                                 "answer adds the most correct report fields (fastest on ties). Report step target: the true labels.")
     parser.add_argument("--budgets", type=lambda s: [float(x) for x in s.split(",")], default=[4.0, 10.0, 30.0, float("inf")])
     parser.add_argument("--explore", type=float, default=0.3)
     parser.add_argument("--grpo-share", type=float, default=0.3)
-    parser.add_argument("--report-keep", type=float, default=0.5, help="share of final report steps kept for SFT")
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--model", default=os.environ.get("TV3_SELECTOR", "Qwen/Qwen3-0.6B"), help="tokenizer for the chat template")
     args = parser.parse_args()
@@ -30,23 +29,18 @@ def main():
     sft, grpo, golds = [], [], Counter()
     for n, row in enumerate(env["val"]):
         truth = truth_of(row)
-        answer = dict(truth, defect="yes" if truth["defect"] else "no")
         for budget in args.budgets:
-            ep = episode(env, row, budget, trace[rng.integers(len(trace))], train=True)
+            ep = episode(env, row, budget, trace[rng.integers(len(trace))])
             while not ep.done:
                 actions = ep.candidates()
-                values = ep.values(actions)
-                gold = min(actions, key=values.get)
+                gold = ep.gold(actions)
                 text = render(tokenizer, ep, actions)
                 golds[gold] += 1
-                completion = report_json(answer) if gold == "report" else select_json(gold)
-                if gold != "report" or rng.random() < args.report_keep:
-                    sft.append({"prompt": text, "completion": completion})
+                sft.append({"prompt": text, "completion": report_json(truth) if gold == "report" else select_json(gold)})
                 if rng.random() < args.grpo_share:
-                    grpo.append({"prompt": text, "values": json.dumps(values), "truth": json.dumps(truth), "gold": gold,
-                                 "time_cost": env["lam"] * ep.elapsed})
+                    grpo.append({"prompt": text, "candidates": json.dumps(actions), "truth": json.dumps(truth), "gold": gold})
                 move = actions[rng.integers(len(actions))] if rng.random() < args.explore else gold
-                ep.step(answer if move == "report" else move)
+                ep.step(truth if move == "report" else move)
         if (n + 1) % 1000 == 0:
             print(f"[select data] {n + 1}/{len(env['val'])} val images, {len(sft)} SFT steps", flush=True)
     for name, rows in (("sft_qwen", sft), ("grpo_qwen", grpo)):

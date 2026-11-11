@@ -8,66 +8,35 @@ import torch
 
 from fedorch.common import results_dir, write_json
 from fedorch.route_env import Network
-from fedorch.select_env import COMPONENTS, CONDITION_OF, episode, parse, render, setup
+from fedorch.select_env import FIELDS, episode, parse, render, setup
 from fedorch.tools_v3 import default_dtype, models_dir, selector_tag
 
 
-def teacher_now(ep, actions):
-    return ep.teacher_report()
-
-
-def teacher_resnet(ep, actions):
-    return "resnet" if "resnet" in actions else ep.teacher_report()
-
-
-def laya_own(ep, actions):
-    if "laya" in actions:
-        return "laya"
-    out = ep.r["out"].get("laya")
-    if "laya" not in ep.called or out is None:
-        return ep.teacher_report()
-    condition = max(out["condition"], key=out["condition"].get)
-    return {"component": max(out["component"], key=out["component"].get), "defect": "yes" if out["defect"] >= 0.5 else "no",
-            "condition": CONDITION_OF[condition]}
-
-
-def all_tools(ep, actions):
-    return next((a for a in actions if a != "report"), ep.teacher_report())
-
-
-def oracle(ep, actions):
-    values = ep.values(actions)
-    best = min(actions, key=values.get)
-    return ep.teacher_report() if best == "report" else best
-
-
-def rule(fn):
-    return lambda eps, actions: [fn(e, a) for e, a in zip(eps, actions)]
+def macro_f1(res, field):
+    labels = sorted({r["truth"][field] for r in res})
+    said = [r["report"][field] if r["report"] else None for r in res]
+    scores = []
+    for c in labels:
+        tp = sum(s == c and r["truth"][field] == c for s, r in zip(said, res))
+        fp = sum(s == c and r["truth"][field] != c for s, r in zip(said, res))
+        fn = sum(s != c and r["truth"][field] == c for s, r in zip(said, res))
+        scores.append(2 * tp / max(1, 2 * tp + fp + fn))
+    return round(float(np.mean(scores)), 4)
 
 
 def summarize(res):
-    truths = [r["true_condition"] for r in res]
-    f1 = []
-    for c in sorted(set(truths)):
-        tp = sum(r["said_condition"] == c and r["true_condition"] == c for r in res)
-        fp = sum(r["said_condition"] == c and r["true_condition"] != c for r in res)
-        fn = sum(r["said_condition"] != c and r["true_condition"] == c for r in res)
-        f1.append(2 * tp / max(1, 2 * tp + fp + fn))
-    said = np.array([r["defect_said"] for r in res])
-    true = np.array([r["defect_true"] for r in res])
+    defect = [r for r in res if r["truth"]["defect"] == "yes"]
+    good = [r for r in res if r["truth"]["defect"] == "no"]
     tools = sorted({t for r in res for t in r["called"]})
-    return {"loss_per_1000": round(1000 * float(np.mean([r["loss"] for r in res])), 1),
-            "component_accuracy": round(float(np.mean([r["component_ok"] for r in res])), 4),
-            "condition_accuracy": round(float(np.mean([r["condition_ok"] for r in res])), 4),
-            "condition_macro_f1": round(float(np.mean(f1)), 4),
-            "defect_recall": round(float(said[true].mean()), 4) if true.any() else None,
-            "defect_false_alarm": round(float(said[~true].mean()), 4),
-            "defect_risk_per_1000": round(1000 * float(np.mean([r["defect_risk"] for r in res])), 1),
-            "all_three_correct": round(float(np.mean([r["component_ok"] and r["condition_ok"] and r["defect_said"] == r["defect_true"] for r in res])), 4),
-            "invalid_or_missing_report": round(float(np.mean([r["report"] is None for r in res])), 4),
+    return {**{f"{f}_accuracy": round(float(np.mean([f in r["right"] for r in res])), 4) for f in FIELDS},
+            "all_three_correct": round(float(np.mean([len(r["right"]) == len(FIELDS) for r in res])), 4),
+            "component_macro_f1": macro_f1(res, "component"), "condition_macro_f1": macro_f1(res, "condition"),
+            "defect_recall": round(float(np.mean(["defect" in r["right"] for r in defect])), 4) if defect else None,
+            "good_recall": round(float(np.mean(["defect" in r["right"] for r in good])), 4) if good else None,
+            "no_valid_report": round(float(np.mean([r["report"] is None for r in res])), 4),
             "mean_time_s": round(float(np.mean([r["time"] for r in res])), 3),
             "upload_kb": round(float(np.mean([r["bytes"] for r in res])) / 1000, 2),
-            "tool_steps": round(float(np.mean([len(r["called"]) - 1 for r in res])), 2),
+            "tool_steps": round(float(np.mean([len(r["called"]) for r in res])), 2),
             "calls": {t: round(float(np.mean([t in r["called"] for r in res])), 3) for t in tools}}
 
 
@@ -76,7 +45,7 @@ def run(env, rows, budgets, choose_batch, seed):
     rng = np.random.default_rng(seed)
     out = {}
     for budget in budgets:
-        eps = [episode(env, r, budget, trace[rng.integers(len(trace))], train=False) for r in rows]
+        eps = [episode(env, r, budget, trace[rng.integers(len(trace))]) for r in rows]
         while True:
             active = [e for e in eps if not e.done]
             if not active:
@@ -114,9 +83,9 @@ def qwen_chooser(model_name, adapter, batch_size, dtype):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Evaluate inspection agents on test images against the true labels: rules with the teacher report, "
-                                                 "laya alone, the oracle, and Qwen3-0.6B base/SFT/GRPO.")
-    parser.add_argument("methods", nargs="*", default=["teacher_no_tool", "teacher_resnet", "laya_own", "all_tools", "oracle", "base", "sft", "grpo"])
+    parser = argparse.ArgumentParser(description="Compare the Qwen inspection agent without training (base), after SFT, and after SFT + GRPO. "
+                                                 "Accuracy of its own reports against the true labels on test images.")
+    parser.add_argument("methods", nargs="*", default=["base", "sft", "grpo"])
     parser.add_argument("--budgets", type=lambda s: [float(x) for x in s.split(",")], default=[4.0, 10.0, 30.0, float("inf")])
     parser.add_argument("--images", type=int, default=1500)
     parser.add_argument("--model", default=os.environ.get("TV3_SELECTOR", "Qwen/Qwen3-0.6B"))
@@ -127,28 +96,23 @@ def main():
     env = setup()
     rng = np.random.default_rng(args.seed)
     rows = [env["test"][k] for k in rng.permutation(len(env["test"]))[: args.images]]
+    tag, dtype = selector_tag(args.model), args.dtype or default_dtype(args.model)
+    batch_size = args.batch_size or (32 if "0.6b" in args.model.lower() else 12)
     path = results_dir("tools_v3") / "select" / "eval.json"
     report = json.loads(path.read_text()) if path.exists() else {}
-    report.update({"images": len(rows), "budgets": args.budgets, "tools": list(env["tools"]), "components": COMPONENTS})
+    report.update({"images": len(rows), "budgets": args.budgets, "tools": list(env["tools"])})
     report.setdefault("methods", {})
-    tag, dtype = selector_tag(args.model), args.dtype or default_dtype(args.model)
-    args.batch_size = args.batch_size or (32 if "0.6b" in args.model.lower() else 12)
-    makers = {"teacher_no_tool": lambda: rule(teacher_now), "teacher_resnet": lambda: rule(teacher_resnet), "laya_own": lambda: rule(laya_own),
-              "all_tools": lambda: rule(all_tools), "oracle": lambda: rule(oracle),
-              "base": lambda: qwen_chooser(args.model, None, args.batch_size, dtype),
-              "sft": lambda: qwen_chooser(args.model, str(models_dir() / f"{tag}_sft"), args.batch_size, dtype),
-              "grpo": lambda: qwen_chooser(args.model, str(models_dir() / f"{tag}_grpo"), args.batch_size, dtype)}
+    adapters = {"base": None, "sft": str(models_dir() / f"{tag}_sft"), "grpo": str(models_dir() / f"{tag}_grpo")}
     for method in args.methods:
-        name = f"{tag} {method}" if method in ("base", "sft", "grpo") else method
-        start = time.time()
+        name, start = f"{tag} {method}", time.time()
         try:
-            report["methods"][name] = run(env, rows, args.budgets, makers[method](), args.seed)
-            line = {b: (v["loss_per_1000"], v["component_accuracy"], v["condition_accuracy"], v["defect_risk_per_1000"], v["mean_time_s"])
+            report["methods"][name] = run(env, rows, args.budgets, qwen_chooser(args.model, adapters[method], batch_size, dtype), args.seed)
+            line = {b: (v["component_accuracy"], v["defect_accuracy"], v["condition_accuracy"], v["all_three_correct"], v["mean_time_s"])
                     for b, v in report["methods"][name].items()}
         except Exception as error:
             report["methods"][name] = {"error": repr(error)}
             line = report["methods"][name]
-        print(f"[eval] {name} ({(time.time() - start) / 60:.1f} min): (loss, component acc, condition acc, defect risk, time)", json.dumps(line), flush=True)
+        print(f"[eval] {name} ({(time.time() - start) / 60:.1f} min): (component, defect, condition, all three, time s)", json.dumps(line), flush=True)
         write_json(path, report)
         torch.cuda.empty_cache()
 

@@ -9,39 +9,18 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from trl import GRPOConfig, GRPOTrainer
 
 from fedorch.common import results_dir
-from fedorch.select_env import parse, report_loss
+from fedorch.select_env import FIELDS, correct_fields, parse
 from fedorch.tools_v3 import default_dtype, models_dir, selector_tag
 
-INVALID = -11.0
 
-
-def fields_right(report, truth):
-    said_defect = report["defect"] == "yes"
-    return ((report["component"] == truth["component"]) + (said_defect == truth["defect"]) + (report["condition"] == truth["condition"])) / 3
-
-
-def exact_reward(prompts, completions, values, truth, gold, **kwargs):
+def reward(prompts, completions, candidates, truth, gold, **kwargs):
     out = []
-    for c, v, t, g in zip(completions, values, truth, gold):
-        choice = parse(c, list(json.loads(v)))
+    for c, a, t, g in zip(completions, candidates, truth, gold):
+        choice = parse(c, json.loads(a))
         if isinstance(choice, dict):
-            out.append(fields_right(choice, json.loads(t)) if g == "report" else 0.)
+            out.append(len(correct_fields(choice, json.loads(t))) / len(FIELDS) if g == "report" else 0.)
         else:
             out.append(float(choice is not None and choice == g))
-    return out
-
-
-def risk_reward(prompts, completions, values, truth, time_cost, **kwargs):
-    out = []
-    for c, v, t, tc in zip(completions, values, truth, time_cost):
-        table = json.loads(v)
-        choice = parse(c, list(table))
-        if isinstance(choice, dict):
-            out.append(-(report_loss(choice, json.loads(t)) + tc))
-        elif choice is not None:
-            out.append(-table[choice])
-        else:
-            out.append(INVALID)
     return out
 
 
@@ -56,7 +35,6 @@ def main():
     parser.add_argument("--batch-size", type=int, default=None, help="completions per step; default 16 for 0.6B, 8 above")
     parser.add_argument("--lr", type=float, default=2e-5)
     parser.add_argument("--beta", type=float, default=0.02)
-    parser.add_argument("--reward", choices=["exact", "risk"], default="exact", help="exact: 1 for the gold tool, share of correct report fields for a report (as in the paper); risk: minus the report loss against the true labels")
     parser.add_argument("--out", default=None)
     args = parser.parse_args()
     tag = selector_tag(args.model)
@@ -75,8 +53,8 @@ def main():
                         num_generations=args.generations, max_completion_length=96, learning_rate=args.lr, beta=args.beta,
                         temperature=1.0, fp16=cuda, logging_steps=5, save_strategy="no", report_to="none",
                         gradient_checkpointing=cuda)
-    trainer = GRPOTrainer(model=model, reward_funcs=exact_reward if args.reward == "exact" else risk_reward, args=config, train_dataset=data, processing_class=tokenizer)
-    print(f"[qwen grpo] {len(data)} prompts, {args.steps} steps, {args.generations} generations each, reward {args.reward}", flush=True)
+    trainer = GRPOTrainer(model=model, reward_funcs=reward, args=config, train_dataset=data, processing_class=tokenizer)
+    print(f"[qwen grpo] {len(data)} prompts, {args.steps} steps, {args.generations} generations each ", flush=True)
     trainer.train()
     trainer.save_model(args.out)
     (results_dir("tools_v3") / "select" / f"{tag}_grpo_train.json").write_text(json.dumps({"log": trainer.state.log_history}, indent=1))

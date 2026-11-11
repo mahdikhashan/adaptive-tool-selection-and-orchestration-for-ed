@@ -92,13 +92,14 @@ def main():
     parser.add_argument("--dtype", default=None)
     parser.add_argument("--batch-size", type=int, default=None, help="default 32 for 0.6B, 12 above")
     parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument("--out", default="eval.json", help="file name in results/tools_v3/select/")
     args = parser.parse_args()
     env = setup()
     rng = np.random.default_rng(args.seed)
     rows = [env["test"][k] for k in rng.permutation(len(env["test"]))[: args.images]]
     tag, dtype = selector_tag(args.model), args.dtype or default_dtype(args.model)
     batch_size = args.batch_size or (32 if "0.6b" in args.model.lower() else 12)
-    path = results_dir("tools_v3") / "select" / "eval.json"
+    path = results_dir("tools_v3") / "select" / args.out
     report = json.loads(path.read_text()) if path.exists() else {}
     report.update({"images": len(rows), "budgets": args.budgets, "tools": list(env["tools"])})
     report.setdefault("methods", {})

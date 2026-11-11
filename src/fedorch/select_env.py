@@ -112,7 +112,7 @@ class Episode:
         return c["gpu_ms"] / 1000 + RTT + transfer
 
     def feasible(self):
-        return [t for t in self.tools if t not in self.called and t in self.r["out"] and self.elapsed + self.cost(t) <= self.budget]
+        return [t for t in self.tools if t not in self.called and t in self.r["out"] and math.isfinite(self.cost(t)) and self.elapsed + self.cost(t) <= self.budget]
 
     def query(self):
         seen = " ".join(summary(t, self.r["out"][t]) for t in self.called)

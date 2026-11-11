@@ -1,0 +1,368 @@
+{
+  "resnet": {
+    "location": "drone",
+    "description": "ResNet-50 image classifier fine-tuned on all components; fast first check",
+    "coverage": 1.0,
+    "median_gpu_ms": 7.25
+  },
+  "resnet_crops_mean": {
+    "location": "cloud",
+    "description": "ResNet-50 on five overlapping crops and the full image, mean score",
+    "coverage": 1.0,
+    "median_gpu_ms": 43.5
+  },
+  "resnet_crops_max": {
+    "location": "cloud",
+    "description": "ResNet-50 on five overlapping crops and the full image, highest defect score",
+    "coverage": 1.0,
+    "median_gpu_ms": 43.5
+  },
+  "resnet_recut": {
+    "location": "cloud",
+    "description": "ResNet-50 on the component cut again from the full-resolution drone photo with context",
+    "coverage": 0.8053,
+    "median_gpu_ms": 4.64
+  },
+  "convnext": {
+    "location": "cloud",
+    "description": "ConvNeXt-Tiny image classifier fine-tuned on all components; different architecture from ResNet",
+    "coverage": 1.0,
+    "median_gpu_ms": 6.13
+  },
+  "efficientnet": {
+    "location": "drone",
+    "description": "EfficientNet-B0 image classifier fine-tuned on all components; small and fast",
+    "coverage": 1.0,
+    "median_gpu_ms": 8.97
+  },
+  "dinov2_probe": {
+    "location": "cloud",
+    "description": "DINOv2 self-supervised image features with a linear defect classifier",
+    "coverage": 1.0,
+    "median_gpu_ms": 4.77
+  },
+  "yolo_cls": {
+    "location": "cloud",
+    "description": "YOLO classification model fine-tuned on the six conditions",
+    "coverage": 1.0,
+    "median_gpu_ms": 0.12
+  },
+  "quality": {
+    "location": "drone",
+    "description": "Image quality check: blur and contrast; tells if the image is too poor to judge",
+    "coverage": 1.0,
+    "median_gpu_ms": 9.6
+  },
+  "laya": {
+    "location": "cloud",
+    "description": "laya-vision decision model, full precision; answers component, defect and condition",
+    "coverage": 1.0,
+    "median_gpu_ms": 73.06
+  },
+  "laya_q4": {
+    "location": "drone",
+    "description": "laya-vision decision model in 4-bit; cheaper memory, similar answers",
+    "coverage": 0.648,
+    "median_gpu_ms": 86.0
+  },
+  "laya_recut": {
+    "location": "cloud",
+    "description": "laya-vision on the component cut again from the full-resolution drone photo",
+    "coverage": 0.8053,
+    "median_gpu_ms": 68.09
+  },
+  "smolvlm": {
+    "location": "drone",
+    "description": "SmolVLM-256M vision-language model fine-tuned with LoRA for power-line defects",
+    "coverage": 1.0,
+    "median_gpu_ms": 80.81
+  },
+  "smolvlm_base": {
+    "location": "cloud",
+    "description": "SmolVLM-256M vision-language model without fine-tuning",
+    "coverage": 1.0,
+    "median_gpu_ms": 61.68
+  },
+  "smolvlm_split": {
+    "location": "cloud",
+    "description": "SmolVLM-256M split: vision part on the drone, language part in the cloud",
+    "coverage": 1.0,
+    "median_gpu_ms": 79.45
+  },
+  "qwen": {
+    "location": "cloud",
+    "description": "Qwen3-VL-8B large vision-language model in the cloud, general defect question",
+    "coverage": 1.0,
+    "median_gpu_ms": 129.47
+  },
+  "qwen_any": {
+    "location": "cloud",
+    "description": "Qwen3-VL-8B in the cloud asked: is there any visible defect?",
+    "coverage": 1.0,
+    "median_gpu_ms": 141.38
+  },
+  "qwen_rust": {
+    "location": "cloud",
+    "description": "Qwen3-VL-8B in the cloud asked only about rust",
+    "coverage": 1.0,
+    "median_gpu_ms": 141.38
+  },
+  "qwen_corrosion": {
+    "location": "cloud",
+    "description": "Qwen3-VL-8B in the cloud asked only about corrosion",
+    "coverage": 1.0,
+    "median_gpu_ms": 141.38
+  },
+  "qwen_missing-cap": {
+    "location": "cloud",
+    "description": "Qwen3-VL-8B in the cloud asked only about missing cap",
+    "coverage": 1.0,
+    "median_gpu_ms": 141.38
+  },
+  "qwen_nest": {
+    "location": "cloud",
+    "description": "Qwen3-VL-8B in the cloud asked only about bird nest",
+    "coverage": 1.0,
+    "median_gpu_ms": 141.38
+  },
+  "head_rust": {
+    "location": "drone",
+    "description": "Detector for rust only, on DINOv2 features",
+    "coverage": 1.0,
+    "median_gpu_ms": 4.77
+  },
+  "head_corrosion": {
+    "location": "drone",
+    "description": "Detector for corrosion only, on DINOv2 features",
+    "coverage": 1.0,
+    "median_gpu_ms": 4.77
+  },
+  "head_missing-cap": {
+    "location": "cloud",
+    "description": "Detector for missing cap only, on DINOv2 features",
+    "coverage": 1.0,
+    "median_gpu_ms": 4.77
+  },
+  "head_nest": {
+    "location": "cloud",
+    "description": "Detector for bird nest only, on DINOv2 features",
+    "coverage": 1.0,
+    "median_gpu_ms": 4.77
+  },
+  "spec_glass": {
+    "location": "cloud",
+    "description": "ResNet-50 specialist trained only on glass components; works only for those components",
+    "coverage": 0.178,
+    "median_gpu_ms": 6.95
+  },
+  "spec_polymer": {
+    "location": "cloud",
+    "description": "ResNet-50 specialist trained only on polymer components; works only for those components",
+    "coverage": 0.2051,
+    "median_gpu_ms": 6.56
+  },
+  "spec_hardware": {
+    "location": "cloud",
+    "description": "ResNet-50 specialist trained only on hardware components; works only for those components",
+    "coverage": 0.1852,
+    "median_gpu_ms": 7.87
+  },
+  "spec_yoke": {
+    "location": "cloud",
+    "description": "ResNet-50 specialist trained only on yoke components; works only for those components",
+    "coverage": 0.3402,
+    "median_gpu_ms": 6.58
+  },
+  "spec_rodgrip": {
+    "location": "cloud",
+    "description": "ResNet-50 specialist trained only on rodgrip components; works only for those components",
+    "coverage": 0.0915,
+    "median_gpu_ms": 6.45
+  },
+  "resnet18": {
+    "location": "drone",
+    "description": "ResNet-18 small image classifier fine-tuned on all components; very fast",
+    "coverage": 1.0,
+    "median_gpu_ms": 3.44
+  },
+  "resnet101": {
+    "location": "cloud",
+    "description": "ResNet-101 deep image classifier fine-tuned on all components",
+    "coverage": 1.0,
+    "median_gpu_ms": 12.1
+  },
+  "vit_base": {
+    "location": "cloud",
+    "description": "Vision Transformer ViT-Base fine-tuned on all components; attention over image patches",
+    "coverage": 1.0,
+    "median_gpu_ms": 7.58
+  },
+  "deit_small": {
+    "location": "drone",
+    "description": "DeiT-Small data-efficient vision transformer fine-tuned on all components",
+    "coverage": 1.0,
+    "median_gpu_ms": 7.46
+  },
+  "swin_tiny": {
+    "location": "cloud",
+    "description": "Swin-Tiny shifted-window transformer fine-tuned on all components",
+    "coverage": 1.0,
+    "median_gpu_ms": 12.84
+  },
+  "mobilenet_v2": {
+    "location": "drone",
+    "description": "MobileNet-V2 mobile classifier fine-tuned on all components; lowest compute",
+    "coverage": 1.0,
+    "median_gpu_ms": 7.61
+  },
+  "efficientnet_b3": {
+    "location": "cloud",
+    "description": "EfficientNet-B3 classifier fine-tuned on all components; higher input resolution",
+    "coverage": 1.0,
+    "median_gpu_ms": 14.67
+  },
+  "convnext_small": {
+    "location": "cloud",
+    "description": "ConvNeXt-Small classifier fine-tuned on all components; larger than ConvNeXt-Tiny",
+    "coverage": 1.0,
+    "median_gpu_ms": 11.58
+  },
+  "cspec_glass": {
+    "location": "cloud",
+    "description": "ConvNeXt-Tiny specialist trained only on glass components; works only for those components",
+    "coverage": 0.178,
+    "median_gpu_ms": 6.31
+  },
+  "cspec_polymer": {
+    "location": "cloud",
+    "description": "ConvNeXt-Tiny specialist trained only on polymer components; works only for those components",
+    "coverage": 0.2051,
+    "median_gpu_ms": 6.2
+  },
+  "cspec_hardware": {
+    "location": "cloud",
+    "description": "ConvNeXt-Tiny specialist trained only on hardware components; works only for those components",
+    "coverage": 0.1852,
+    "median_gpu_ms": 6.26
+  },
+  "cspec_yoke": {
+    "location": "cloud",
+    "description": "ConvNeXt-Tiny specialist trained only on yoke components; works only for those components",
+    "coverage": 0.3402,
+    "median_gpu_ms": 6.45
+  },
+  "cspec_rodgrip": {
+    "location": "cloud",
+    "description": "ConvNeXt-Tiny specialist trained only on rodgrip components; works only for those components",
+    "coverage": 0.0915,
+    "median_gpu_ms": 6.31
+  },
+  "convnext_tta": {
+    "location": "cloud",
+    "description": "ConvNeXt-Tiny on the image and its mirror image, mean score",
+    "coverage": 1.0,
+    "median_gpu_ms": 12.07
+  },
+  "efficientnet_tta": {
+    "location": "drone",
+    "description": "EfficientNet-B0 on the image and its mirror image, mean score",
+    "coverage": 1.0,
+    "median_gpu_ms": 17.85
+  },
+  "convnext_recut": {
+    "location": "cloud",
+    "description": "ConvNeXt-Tiny on the component cut again from the full-resolution drone photo",
+    "coverage": 0.8053,
+    "median_gpu_ms": 6.0
+  },
+  "clip_probe": {
+    "location": "cloud",
+    "description": "CLIP image features with a linear defect classifier",
+    "coverage": 1.0,
+    "median_gpu_ms": 5.43
+  },
+  "clip_head_rust": {
+    "location": "cloud",
+    "description": "Detector for rust only, on CLIP features",
+    "coverage": 1.0,
+    "median_gpu_ms": 5.43
+  },
+  "clip_head_corrosion": {
+    "location": "cloud",
+    "description": "Detector for corrosion only, on CLIP features",
+    "coverage": 1.0,
+    "median_gpu_ms": 5.43
+  },
+  "clip_head_missing-cap": {
+    "location": "cloud",
+    "description": "Detector for missing cap only, on CLIP features",
+    "coverage": 1.0,
+    "median_gpu_ms": 5.43
+  },
+  "clip_head_nest": {
+    "location": "cloud",
+    "description": "Detector for bird nest only, on CLIP features",
+    "coverage": 1.0,
+    "median_gpu_ms": 5.43
+  },
+  "dinov2b_probe": {
+    "location": "cloud",
+    "description": "DINOv2-Base larger self-supervised features with a linear defect classifier",
+    "coverage": 1.0,
+    "median_gpu_ms": 7.83
+  },
+  "dinov2b_head_rust": {
+    "location": "cloud",
+    "description": "Detector for rust only, on DINOv2-Base features",
+    "coverage": 1.0,
+    "median_gpu_ms": 7.83
+  },
+  "dinov2b_head_corrosion": {
+    "location": "cloud",
+    "description": "Detector for corrosion only, on DINOv2-Base features",
+    "coverage": 1.0,
+    "median_gpu_ms": 7.83
+  },
+  "dinov2b_head_missing-cap": {
+    "location": "cloud",
+    "description": "Detector for missing cap only, on DINOv2-Base features",
+    "coverage": 1.0,
+    "median_gpu_ms": 7.83
+  },
+  "dinov2b_head_nest": {
+    "location": "cloud",
+    "description": "Detector for bird nest only, on DINOv2-Base features",
+    "coverage": 1.0,
+    "median_gpu_ms": 7.83
+  },
+  "clip_large_zeroshot": {
+    "location": "cloud",
+    "description": "CLIP-Large zero-shot: compares the image with text prompts of each condition",
+    "coverage": 1.0,
+    "median_gpu_ms": 30.97
+  },
+  "qwen_other": {
+    "location": "cloud",
+    "description": "Qwen3-VL-8B in the cloud asked only about peeling paint or torn parts",
+    "coverage": 1.0,
+    "median_gpu_ms": 141.38
+  },
+  "qwen_any_recut": {
+    "location": "cloud",
+    "description": "Qwen3-VL-8B in the cloud asked about any defect on the full-resolution re-cut",
+    "coverage": 0.8053,
+    "median_gpu_ms": 210.29
+  },
+  "exposure": {
+    "location": "drone",
+    "description": "Exposure check: brightness and colour saturation of the image",
+    "coverage": 1.0,
+    "median_gpu_ms": 3.32
+  },
+  "size": {
+    "location": "drone",
+    "description": "Image size check: small crops of far components show less detail",
+    "coverage": 1.0,
+    "median_gpu_ms": 0.02
+  }
+}

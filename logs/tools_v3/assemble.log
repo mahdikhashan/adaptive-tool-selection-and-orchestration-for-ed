@@ -1,0 +1,125 @@
+images 11716, cached new tools: ['clip_head_corrosion', 'clip_head_missing-cap', 'clip_head_nest', 'clip_head_rust', 'clip_large_zeroshot', 'clip_probe', 'convnext', 'convnext_recut', 'convnext_small', 'convnext_tta', 'cspec_glass', 'cspec_hardware', 'cspec_polymer', 'cspec_rodgrip', 'cspec_yoke', 'deit_small', 'dinov2_probe', 'dinov2b_head_corrosion', 'dinov2b_head_missing-cap', 'dinov2b_head_nest', 'dinov2b_head_rust', 'dinov2b_probe', 'efficientnet', 'efficientnet_b3', 'efficientnet_tta', 'exposure', 'head_corrosion', 'head_missing-cap', 'head_nest', 'head_rust', 'laya_recut', 'mobilenet_v2', 'quality', 'qwen_any', 'qwen_any_recut', 'qwen_corrosion', 'qwen_missing-cap', 'qwen_nest', 'qwen_other', 'qwen_rust', 'resnet101', 'resnet18', 'resnet_recut', 'size', 'spec_glass', 'spec_hardware', 'spec_polymer', 'spec_rodgrip', 'spec_yoke', 'swin_tiny', 'vit_base', 'yolo_cls']
+images 11716 (val 5624, test 6092), tools 61
+  resnet                 drone  coverage 1.00 GPU 7.2 ms
+  resnet_crops_mean      cloud  coverage 1.00 GPU 43.5 ms
+  resnet_crops_max       cloud  coverage 1.00 GPU 43.5 ms
+  resnet_recut           cloud  coverage 0.81 GPU 4.6 ms
+  convnext               cloud  coverage 1.00 GPU 6.1 ms
+  efficientnet           drone  coverage 1.00 GPU 9.0 ms
+  dinov2_probe           cloud  coverage 1.00 GPU 4.8 ms
+  yolo_cls               cloud  coverage 1.00 GPU 0.1 ms
+  quality                drone  coverage 1.00 GPU 9.6 ms
+  laya                   cloud  coverage 1.00 GPU 73.1 ms
+  laya_q4                drone  coverage 0.65 GPU 86.0 ms
+  laya_recut             cloud  coverage 0.81 GPU 68.1 ms
+  smolvlm                drone  coverage 1.00 GPU 80.8 ms
+  smolvlm_base           cloud  coverage 1.00 GPU 61.7 ms
+  smolvlm_split          cloud  coverage 1.00 GPU 79.5 ms
+  qwen                   cloud  coverage 1.00 GPU 129.5 ms
+  qwen_any               cloud  coverage 1.00 GPU 141.4 ms
+  qwen_rust              cloud  coverage 1.00 GPU 141.4 ms
+  qwen_corrosion         cloud  coverage 1.00 GPU 141.4 ms
+  qwen_missing-cap       cloud  coverage 1.00 GPU 141.4 ms
+  qwen_nest              cloud  coverage 1.00 GPU 141.4 ms
+  head_rust              drone  coverage 1.00 GPU 4.8 ms
+  head_corrosion         drone  coverage 1.00 GPU 4.8 ms
+  head_missing-cap       cloud  coverage 1.00 GPU 4.8 ms
+  head_nest              cloud  coverage 1.00 GPU 4.8 ms
+  spec_glass             cloud  coverage 0.18 GPU 7.0 ms
+  spec_polymer           cloud  coverage 0.21 GPU 6.6 ms
+  spec_hardware          cloud  coverage 0.19 GPU 7.9 ms
+  spec_yoke              cloud  coverage 0.34 GPU 6.6 ms
+  spec_rodgrip           cloud  coverage 0.09 GPU 6.5 ms
+  resnet18               drone  coverage 1.00 GPU 3.4 ms
+  resnet101              cloud  coverage 1.00 GPU 12.1 ms
+  vit_base               cloud  coverage 1.00 GPU 7.6 ms
+  deit_small             drone  coverage 1.00 GPU 7.5 ms
+  swin_tiny              cloud  coverage 1.00 GPU 12.8 ms
+  mobilenet_v2           drone  coverage 1.00 GPU 7.6 ms
+  efficientnet_b3        cloud  coverage 1.00 GPU 14.7 ms
+  convnext_small         cloud  coverage 1.00 GPU 11.6 ms
+  cspec_glass            cloud  coverage 0.18 GPU 6.3 ms
+  cspec_polymer          cloud  coverage 0.21 GPU 6.2 ms
+  cspec_hardware         cloud  coverage 0.19 GPU 6.3 ms
+  cspec_yoke             cloud  coverage 0.34 GPU 6.5 ms
+  cspec_rodgrip          cloud  coverage 0.09 GPU 6.3 ms
+  convnext_tta           cloud  coverage 1.00 GPU 12.1 ms
+  efficientnet_tta       drone  coverage 1.00 GPU 17.9 ms
+  convnext_recut         cloud  coverage 0.81 GPU 6.0 ms
+  clip_probe             cloud  coverage 1.00 GPU 5.4 ms
+  clip_head_rust         cloud  coverage 1.00 GPU 5.4 ms
+  clip_head_corrosion    cloud  coverage 1.00 GPU 5.4 ms
+  clip_head_missing-cap  cloud  coverage 1.00 GPU 5.4 ms
+  clip_head_nest         cloud  coverage 1.00 GPU 5.4 ms
+  dinov2b_probe          cloud  coverage 1.00 GPU 7.8 ms
+  dinov2b_head_rust      cloud  coverage 1.00 GPU 7.8 ms
+  dinov2b_head_corrosion cloud  coverage 1.00 GPU 7.8 ms
+  dinov2b_head_missing-cap cloud  coverage 1.00 GPU 7.8 ms
+  dinov2b_head_nest      cloud  coverage 1.00 GPU 7.8 ms
+  clip_large_zeroshot    cloud  coverage 1.00 GPU 31.0 ms
+  qwen_other             cloud  coverage 1.00 GPU 141.4 ms
+  qwen_any_recut         cloud  coverage 0.81 GPU 210.3 ms
+  exposure               drone  coverage 1.00 GPU 3.3 ms
+  size                   drone  coverage 1.00 GPU 0.0 ms
+any tool has the right answer (test): {"component": 0.9695, "defect": 1.0, "condition": 0.9997}
+  resnet                 {"images": 6092, "defect_accuracy": 0.9718, "condition_accuracy": 0.9693}
+  resnet_crops_mean      {"images": 6092, "defect_accuracy": 0.9757, "condition_accuracy": 0.9732}
+  resnet_crops_max       {"images": 6092, "defect_accuracy": 0.9302}
+  resnet_recut           {"images": 4961, "defect_accuracy": 0.9722, "condition_accuracy": 0.9722}
+  convnext               {"images": 6092, "defect_accuracy": 0.9783, "condition_accuracy": 0.9764}
+  efficientnet           {"images": 6092, "defect_accuracy": 0.97, "condition_accuracy": 0.9677}
+  dinov2_probe           {"images": 6092, "defect_accuracy": 0.9705, "condition_accuracy": 0.968}
+  yolo_cls               {"images": 6092, "defect_accuracy": 0.9847, "condition_accuracy": 0.9826}
+  quality                {"images": 6092}
+  laya                   {"images": 6092, "component_accuracy": 0.9243, "defect_accuracy": 0.9471, "condition_accuracy": 0.9516}
+  laya_q4                {"images": 6092, "component_accuracy": 0.8703, "defect_accuracy": 0.9437, "condition_accuracy": 0.9378}
+  laya_recut             {"images": 4961, "component_accuracy": 0.8418, "defect_accuracy": 0.9546, "condition_accuracy": 0.9655}
+  smolvlm                {"images": 6092, "defect_accuracy": 0.9647}
+  smolvlm_base           {"images": 6092, "defect_accuracy": 0.8938}
+  smolvlm_split          {"images": 6092, "defect_accuracy": 0.9647}
+  qwen                   {"images": 6092, "defect_accuracy": 0.8421}
+  qwen_any               {"images": 6092, "defect_accuracy": 0.9453}
+  qwen_rust              {"images": 6092, "defect_accuracy": 0.0658, "condition_accuracy": 0.0468}
+  qwen_corrosion         {"images": 6092, "defect_accuracy": 0.0801, "condition_accuracy": 0.0179}
+  qwen_missing-cap       {"images": 6092, "defect_accuracy": 0.0946, "condition_accuracy": 0.0174}
+  qwen_nest              {"images": 6092, "defect_accuracy": 0.0076, "condition_accuracy": 0.0041}
+  head_rust              {"images": 6092, "defect_accuracy": 0.0512, "condition_accuracy": 0.0435}
+  head_corrosion         {"images": 6092, "defect_accuracy": 0.0205, "condition_accuracy": 0.0179}
+  head_missing-cap       {"images": 6092, "defect_accuracy": 0.0141, "condition_accuracy": 0.0141}
+  head_nest              {"images": 6092, "defect_accuracy": 0.008, "condition_accuracy": 0.008}
+  spec_glass             {"images": 963, "defect_accuracy": 0.9367, "condition_accuracy": 0.9367}
+  spec_polymer           {"images": 1284, "defect_accuracy": 0.9712, "condition_accuracy": 0.9626}
+  spec_hardware          {"images": 1133, "defect_accuracy": 0.9956, "condition_accuracy": 0.9956}
+  spec_yoke              {"images": 2150, "defect_accuracy": 0.9991, "condition_accuracy": 0.9991}
+  spec_rodgrip           {"images": 562, "defect_accuracy": 0.9858, "condition_accuracy": 0.9858}
+  resnet18               {"images": 6092, "defect_accuracy": 0.9813, "condition_accuracy": 0.9787}
+  resnet101              {"images": 6092, "defect_accuracy": 0.9716, "condition_accuracy": 0.9686}
+  vit_base               {"images": 6092, "defect_accuracy": 0.9818, "condition_accuracy": 0.9801}
+  deit_small             {"images": 6092, "defect_accuracy": 0.9823, "condition_accuracy": 0.9803}
+  swin_tiny              {"images": 6092, "defect_accuracy": 0.9805, "condition_accuracy": 0.9785}
+  mobilenet_v2           {"images": 6092, "defect_accuracy": 0.9772, "condition_accuracy": 0.9749}
+  efficientnet_b3        {"images": 6092, "defect_accuracy": 0.9798, "condition_accuracy": 0.9757}
+  convnext_small         {"images": 6092, "defect_accuracy": 0.9764, "condition_accuracy": 0.9744}
+  cspec_glass            {"images": 963, "defect_accuracy": 0.8972, "condition_accuracy": 0.8972}
+  cspec_polymer          {"images": 1284, "defect_accuracy": 0.9564, "condition_accuracy": 0.9478}
+  cspec_hardware         {"images": 1133, "defect_accuracy": 0.9956, "condition_accuracy": 0.9956}
+  cspec_yoke             {"images": 2150, "defect_accuracy": 0.9991, "condition_accuracy": 0.9991}
+  cspec_rodgrip          {"images": 562, "defect_accuracy": 0.9804, "condition_accuracy": 0.9804}
+  convnext_tta           {"images": 6092, "defect_accuracy": 0.9788, "condition_accuracy": 0.9765}
+  efficientnet_tta       {"images": 6092, "defect_accuracy": 0.969, "condition_accuracy": 0.9668}
+  convnext_recut         {"images": 4961, "defect_accuracy": 0.9879, "condition_accuracy": 0.9879}
+  clip_probe             {"images": 6092, "defect_accuracy": 0.9517, "condition_accuracy": 0.9486}
+  clip_head_rust         {"images": 6092, "defect_accuracy": 0.0512, "condition_accuracy": 0.0427}
+  clip_head_corrosion    {"images": 6092, "defect_accuracy": 0.0208, "condition_accuracy": 0.0169}
+  clip_head_missing-cap  {"images": 6092, "defect_accuracy": 0.0172, "condition_accuracy": 0.0171}
+  clip_head_nest         {"images": 6092, "defect_accuracy": 0.0085, "condition_accuracy": 0.0079}
+  dinov2b_probe          {"images": 6092, "defect_accuracy": 0.9764, "condition_accuracy": 0.9742}
+  dinov2b_head_rust      {"images": 6092, "defect_accuracy": 0.046, "condition_accuracy": 0.0422}
+  dinov2b_head_corrosion {"images": 6092, "defect_accuracy": 0.0195, "condition_accuracy": 0.0174}
+  dinov2b_head_missing-cap {"images": 6092, "defect_accuracy": 0.0169, "condition_accuracy": 0.0169}
+  dinov2b_head_nest      {"images": 6092, "defect_accuracy": 0.0077, "condition_accuracy": 0.0077}
+  clip_large_zeroshot    {"images": 6092, "defect_accuracy": 0.1683, "condition_accuracy": 0.1}
+  qwen_other             {"images": 6092, "defect_accuracy": 0.0171, "condition_accuracy": 0.0003}
+  qwen_any_recut         {"images": 4961, "defect_accuracy": 0.9794}
+  exposure               {"images": 6092}
+  size                   {"images": 6092}

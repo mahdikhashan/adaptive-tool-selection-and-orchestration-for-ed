@@ -1,0 +1,8 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[select data] 1000/5624 val images, 10963 SFT steps
+[select data] 2000/5624 val images, 21849 SFT steps
+[select data] 3000/5624 val images, 32736 SFT steps
+[select data] 4000/5624 val images, 43675 SFT steps
+[select data] 5000/5624 val images, 54537 SFT steps
+[select data] SFT steps 61461, GRPO prompts 18381
+[select data] gold step counts: {"report": 30511, "laya": 24577, "laya_recut": 2933, "resnet": 1642, "resnet18": 804, "laya_q4": 296, "dinov2_probe": 208, "clip_probe": 94, "efficientnet": 84, "resnet_recut": 78, "qwen_missing-cap": 47, "clip_large_zeroshot": 38, "dinov2b_probe": 38, "smolvlm": 14, "head_corrosion": 13, "convnext_recut": 10, "resnet_crops_max": 9, "head_missing-cap": 9, "head_rust": 7, "qwen": 7, "efficientnet_tta": 5, "qwen_corrosion": 5, "clip_head_rust": 5, "resnet_crops_mean": 4, "mobilenet_v2": 4, "yolo_cls": 4, "convnext": 3, "deit_small": 3, "dinov2b_head_missing-cap": 2, "dinov2b_head_nest": 2, "clip_head_missing-cap": 1, "spec_glass": 1, "dinov2b_head_corrosion": 1, "qwen_rust": 1, "head_nest": 1}

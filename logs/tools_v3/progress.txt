@@ -1,0 +1,83 @@
+[2026-11-11 01:00:44] tools_v3 run started on student07, commit ed924bb, GPU 0
+   Building fedorch @ file:///system/user/studentwork/khashan/fedorch
+Downloading polars-runtime-32 (51.4MiB)
+Downloading matplotlib (9.4MiB)
+Downloading opencv-python (70.4MiB)
+Downloading pyarrow (52.5MiB)
+Downloading kiwisolver (1.4MiB)
+Downloading fonttools (5.2MiB)
+Downloading ultralytics (1.4MiB)
+ Downloaded kiwisolver
+ Downloaded ultralytics
+ Downloaded fonttools
+      Built fedorch @ file:///system/user/studentwork/khashan/fedorch
+ Downloaded matplotlib
+ Downloaded polars-runtime-32
+ Downloaded opencv-python
+ Downloaded pyarrow
+Uninstalled 1 package in 19ms
+Installed 27 packages in 14.12s
+torch 2.14.1+cu126 cuda True NVIDIA GeForce RTX 2080 Ti trl 1.17.1
+[2026-11-11 01:01:35] stage 1/10 recut: started (log: logs/tools_v3/recut.log)
+[2026-11-11 01:28:01] stage 1/10 recut: done in 26 min
+[2026-11-11 01:28:01] stage 2/10 train: started (log: logs/tools_v3/train.log)
+[2026-11-11 03:44:22] stage 2/10 train: done in 136 min
+[2026-11-11 03:44:22] stage 3/10 features: started (log: logs/tools_v3/features.log)
+[2026-11-11 04:01:23] stage 3/10 features: FAILED after 17 min. Last lines:
+  File "/system/user/studentwork/khashan/fedorch/.venv/lib/python3.13/site-packages/huggingface_hub/file_download.py", line 2006, in _download_to_tmp_and_move
+    with tmp_path.open("wb") as f:
+         ~~~~~~~~~~~~~^^^^^^
+OSError: [Errno 28] No space left on device
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/system/user/studentwork/khashan/fedorch/scripts/tv3_features.py", line 206, in <module>
+    main()
+    ~~~~^^
+  File "/system/user/studentwork/khashan/fedorch/scripts/tv3_features.py", line 200, in main
+    print(f"[{part}] FAILED: {error!r}", flush=True)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+OSError: [Errno 28] No space left on device
+[2026-11-11 04:01:23] stage 4/10 yolo: started (log: logs/tools_v3/yolo.log)
+[2026-11-11 04:02:22] stage 4/10 yolo: FAILED after 0 min. Last lines:
+[yolo] start checkpoint /system/user/studentwork/khashan/models/ppo_v2/yolo26n-cls.pt
+Traceback (most recent call last):
+  File "/system/user/studentwork/khashan/fedorch/scripts/tv3_yolo.py", line 60, in <module>
+    main()
+    ~~~~^^
+  File "/system/user/studentwork/khashan/fedorch/scripts/tv3_yolo.py", line 41, in main
+    data = folder_dataset(WORK / "data" / "tools_v3_yolo")
+  File "/system/user/studentwork/khashan/fedorch/scripts/tv3_yolo.py", line 22, in folder_dataset
+    os.symlink(image_file(r), target)
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+OSError: [Errno 28] No space left on device: '/system/user/studentwork/khashan/data/insplad/supervised_fault_classification/defect_supervised/yoke-suspension/train/good/Fotos 11-12-2020_DJI_0115_amarra_balancim_2358.jpg' -> '/system/user/studentwork/khashan/data/tools_v3_yolo/train/good/supervised_fault_classification__defect_supervised__yoke-suspension__train__good__Fotos 11-12-2020_DJI_0115_amarra_balancim_2358.jpg'
+[2026-11-11 04:02:22] stage 5/10 vlm: started (log: logs/tools_v3/vlm.log)
+[2026-11-11 04:02:22] stage 5/10 vlm: FAILED after 0 min. Last lines:
+[2026-11-11 04:02:22] stage 6/10 assemble: started (log: logs/tools_v3/assemble.log)
+[2026-11-11 04:02:22] stage 6/10 assemble: FAILED after 0 min. Last lines:
+[2026-11-11 04:02:22] stage 7/10 select_data: started (log: logs/tools_v3/select_data.log)
+[2026-11-11 04:02:22] stage 7/10 select_data: FAILED after 0 min. Last lines:
+[2026-11-11 04:02:22] stage 8/10 sft_qwen: started (log: logs/tools_v3/sft_qwen.log)
+[2026-11-11 04:02:22] stage 8/10 sft_qwen: FAILED after 0 min. Last lines:
+[2026-11-11 04:02:22] stage 9/10 grpo_qwen: started (log: logs/tools_v3/grpo_qwen.log)
+[2026-11-11 04:02:22] stage 9/10 grpo_qwen: FAILED after 0 min. Last lines:
+[2026-11-11 04:02:22] stage 10/10 eval: started (log: logs/tools_v3/eval.log)
+[2026-11-11 04:02:22] stage 10/10 eval: FAILED after 0 min. Last lines:
+[2026-11-11 04:02:22] run finished. Failed stages: features yolo vlm assemble select_data sft_qwen grpo_qwen eval
+[2026-11-11 04:02:22] push the results: git add results/tools_v3 logs/tools_v3 && git commit -m 'tools_v3 results' && git push
+[2026-11-11 04:10:22] tools_v3 run started on student07, commit d7aa6b5, GPU not set, selector Qwen/Qwen3-0.6B
+torch 2.14.1+cu126 cuda True NVIDIA GeForce RTX 2080 Ti trl 1.17.1
+[2026-11-11 04:10:38] stage 3/10 features: started (log: logs/tools_v3/features.log)
+[2026-11-11 04:22:06] stage 3/10 features: done in 11 min
+[2026-11-11 04:22:06] stage 4/10 yolo: started (log: logs/tools_v3/yolo.log)
+[2026-11-11 04:28:25] stage 4/10 yolo: done in 6 min
+[2026-11-11 04:28:25] stage 5/10 vlm: started (log: logs/tools_v3/vlm.log)
+[2026-11-11 07:48:21] stage 5/10 vlm: done in 199 min
+[2026-11-11 07:48:21] stage 6/10 assemble: started (log: logs/tools_v3/assemble.log)
+[2026-11-11 07:48:52] stage 6/10 assemble: done in 0 min
+[2026-11-11 07:48:52] stage 7/10 select_data: started (log: logs/tools_v3/select_data.log)
+[2026-11-11 07:50:05] stage 7/10 select_data: done in 1 min
+[2026-11-11 07:50:05] run finished. Failed stages: none
+[2026-11-11 07:50:05] value report: results/tools_v3/value_report.json
+[2026-11-11 07:50:05] push the results: git add results/tools_v3 logs/tools_v3 && git commit -m 'tools_v3 results' && git push

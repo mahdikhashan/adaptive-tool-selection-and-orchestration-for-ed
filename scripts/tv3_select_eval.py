@@ -103,7 +103,8 @@ def main():
     report.update({"images": len(rows), "budgets": args.budgets, "tools": list(env["tools"])})
     report.setdefault("methods", {})
     adapters = {"base": None, "sft": str(models_dir() / f"{tag}_sft"), "grpo": str(models_dir() / f"{tag}_grpo"),
-                "base_think": None, "sft_think": str(models_dir() / f"{tag}_sft_think")}
+                "base_think": None, "sft_think": str(models_dir() / f"{tag}_sft_think"),
+                "grpo_think": str(models_dir() / f"{tag}_grpo_think")}
     for method in args.methods:
         name, start = f"{tag} {method}", time.time()
         try:

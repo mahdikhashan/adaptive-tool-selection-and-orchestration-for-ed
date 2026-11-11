@@ -21,7 +21,7 @@
 \setcounter{topnumber}{3}
 \setcounter{dbltopnumber}{2}
 \newcommand{\limitbox}[2]{\par\smallskip\noindent\colorbox{#1}{\parbox{\dimexpr\linewidth-2\fboxsep\relax}{\small #2}}\par\smallskip}
-\newcommand{\pend}{\textcolor{pending}{pending}}
+\newcommand{\pend}{\textcolor{pending}{--}}
 
 \begin{document}
 
@@ -252,7 +252,7 @@ Table~\ref{tab:think} will compare the thinking variant at three model sizes. SF
 
 \begin{table}[t]
 \centering
-\caption{Thinking variant, report accuracy at the 4\,s budget. Results in progress.}
+\caption{Thinking variant, report accuracy at the 4\,s budget. All methods write a reason before each action. Grey dashes: evaluation in progress.}
 \label{tab:think}
 \footnotesize
 \setlength{\tabcolsep}{3pt}
@@ -260,14 +260,14 @@ Table~\ref{tab:think} will compare the thinking variant at three model sizes. SF
 \toprule
 Model & Method & Comp. & Defect & Cond. & All three \\
 \midrule
-Qwen3-0.6B & base, thinking & \pend & \pend & \pend & \pend \\
- & SFT, thinking & \pend & \pend & \pend & \pend \\
- & SFT + GRPO, thinking & \pend & \pend & \pend & \pend \\
-Qwen3-1.7B & base, thinking & \pend & \pend & \pend & \pend \\
- & SFT, thinking & \pend & \pend & \pend & \pend \\
- & SFT + GRPO, thinking & \pend & \pend & \pend & \pend \\
-Qwen3-4B & base, thinking & \pend & \pend & \pend & \pend \\
- & SFT, thinking & \pend & \pend & \pend & \pend \\
+Qwen3-0.6B & base & \pend & \pend & \pend & \pend \\
+ & SFT & \pend & \pend & \pend & \pend \\
+ & SFT + GRPO & \pend & \pend & \pend & \pend \\
+Qwen3-1.7B & base & \pend & \pend & \pend & \pend \\
+ & SFT & \pend & \pend & \pend & \pend \\
+ & SFT + GRPO & \pend & \pend & \pend & \pend \\
+Qwen3-4B & base & \pend & \pend & \pend & \pend \\
+ & SFT & \pend & \pend & \pend & \pend \\
 \bottomrule
 \end{tabular}
 \end{table}

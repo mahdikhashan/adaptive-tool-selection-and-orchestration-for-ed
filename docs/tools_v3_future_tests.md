@@ -22,6 +22,7 @@ The current test is as follows:
 | 7 | A plan stage before the tool steps | Prompt and data | Medium | Fifth |
 | 8 | A selector that sees the image (VLM) | Model and prompt | High | Fifth |
 | 9 | Clean-up: processor warning in `tv3_vlm.py` | One argument | Low | Any time |
+| 10 | Remove laya from the tool list | Tool list and data | Low | Second |
 
 ## 1. Larger Qwen3 models
 
@@ -121,3 +122,19 @@ bash scripts/runs/tools_v3_selector.sh Qwen/Qwen3-4B
 ## 9. Clean-up: processor warning
 
 `scripts/tv3_vlm.py` writes many "processor_kwargs" warnings. The warnings are not a problem. To stop them, give `processor_kwargs={"padding": True}`. Do this change only when no run is active on the VM.
+
+## 10. Remove laya from the tool list
+
+**Purpose:** Now only the laya tools (`laya`, `laya_q4`, `laya_recut`) give the component. Thus a laya tool adds three correct fields, and each other tool adds two or less. The gold rule selects the tool that adds the most new correct fields. Thus the gold is laya in almost all first steps. The select data of 2026-11-11 shows this: of 61,461 gold steps, 24,577 are `laya` and 30,511 are `report`. Each other tool is the gold in less than 3,000 steps. The agent then learns "use laya, then write the report". Without laya, the other tools must compete.
+
+**What changes:**
+
+- Remove `laya`, `laya_q4` and `laya_recut` from the tool list. An option: a list of excluded tools in an environment variable, so that the cache stays the same.
+- Make the select data again (stage `select_data`, about 1 minute), then SFT, GRPO and the evaluation.
+
+**Problem:** Without laya, no tool gives the component. Thus the component field of the report is only a guess. Do one of these:
+
+- Give the component to the agent as an input. The detector that cuts the component from the photo also gives its class.
+- Add a component output to the classifiers. This needs a new training of the classifiers.
+
+**Compare:** The same agent with laya and without laya. Also compare the accuracy of the report and the time for each image.

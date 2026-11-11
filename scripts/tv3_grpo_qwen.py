@@ -50,14 +50,15 @@ def main():
     if args.think:
         data = data.map(lambda r: {"prompt": r["prompt"].replace("<|im_start|>assistant\n<think>\n\n</think>\n\n", "<|im_start|>assistant\n")})
     tokenizer = AutoTokenizer.from_pretrained(args.model)
-    base = AutoModelForCausalLM.from_pretrained(args.model, dtype=getattr(torch, args.dtype or default_dtype(args.model)))
+    dtype = getattr(torch, args.dtype or default_dtype(args.model))
+    base = AutoModelForCausalLM.from_pretrained(args.model, dtype=dtype)
     cuda = torch.cuda.is_available()
     if cuda:
         base.enable_input_require_grads()
     model = PeftModel.from_pretrained(base, args.adapter, is_trainable=True)
     config = GRPOConfig(output_dir=args.out, max_steps=args.steps, per_device_train_batch_size=args.batch_size,
                         num_generations=args.generations, max_completion_length=args.max_completion, learning_rate=args.lr, beta=args.beta,
-                        temperature=1.0, fp16=cuda, logging_steps=5, save_strategy="no", report_to="none",
+                        temperature=1.0, fp16=cuda and dtype != torch.bfloat16, bf16=cuda and dtype == torch.bfloat16, logging_steps=5, save_strategy="no", report_to="none",
                         gradient_checkpointing=cuda)
     trainer = GRPOTrainer(model=model, reward_funcs=reward, args=config, train_dataset=data, processing_class=tokenizer)
     print(f"[qwen grpo] {len(data)} prompts, {args.steps} steps, {args.generations} generations each ", flush=True)

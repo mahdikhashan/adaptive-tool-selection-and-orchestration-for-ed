@@ -8,7 +8,7 @@ import torch
 from fedorch.common import write_json, results_dir
 from fedorch.route_env import Network
 from fedorch.select_env import episode, parse, render, setup
-from fedorch.tools_v3 import models_dir
+from fedorch.tools_v3 import ANSWERS, models_dir
 
 
 def rho(ep):
@@ -17,17 +17,17 @@ def rho(ep):
 
 
 def resnet_only(ep, actions):
-    return "report"
+    return ep.fused_answer()
 
 
 def all_tools(ep, actions):
-    return next((a for a in actions if a not in ("report", "defer")), "report")
+    return next((a for a in actions if a not in ANSWERS), ep.fused_answer())
 
 
 def cascade_defer(ep, actions):
     if rho(ep) <= 0.5:
-        return "report"
-    return next((a for a in actions if a not in ("report", "defer")), "defer")
+        return ep.fused_answer()
+    return next((a for a in actions if a not in ANSWERS), "defer")
 
 
 def oracle(ep, actions):
@@ -47,10 +47,10 @@ def run(env, items, budgets, choose_batch, max_steps, seed):
                 break
             actions = [e.candidates() for e in active]
             for e, a, choice in zip(active, actions, choose_batch(active, actions)):
-                e.step(choice if choice in a else "report")
+                e.step(choice if choice in a else "defer")
         for e in eps:
             if not e.done:
-                e.done, e.final = True, "report"
+                e.done, e.final = True, "defer"
         res = [e.outcome() for e in eps]
         tools = sorted({t for r in res for t in r["called"]})
         out[str(budget)] = {"risk_per_1000": round(1000 * float(np.mean([r["risk"] for r in res])), 1),
@@ -58,6 +58,7 @@ def run(env, items, budgets, choose_batch, max_steps, seed):
                             "deferred": round(float(np.mean([r["deferred"] for r in res])), 4),
                             "upload_kb": round(float(np.mean([r["bytes"] for r in res])) / 1000, 2),
                             "steps": round(float(np.mean([len(r["called"]) - 1 for r in res])), 2),
+                            "answers": {a: round(float(np.mean([r["answer"] == a for r in res])), 3) for a in ANSWERS},
                             "calls": {t: round(float(np.mean([t in r["called"] for r in res])), 3) for t in tools}}
     return out
 
@@ -86,7 +87,7 @@ def qwen_chooser(model_name, adapter, batch_size):
             with torch.no_grad():
                 gen = model.generate(**batch, max_new_tokens=32, do_sample=False, pad_token_id=tokenizer.pad_token_id)
             decoded = tokenizer.batch_decode(gen[:, batch["input_ids"].shape[1]:], skip_special_tokens=True)
-            out += [parse(d, a) or "report" for d, a in zip(decoded, actions[k:k + batch_size])]
+            out += [parse(d, a) or "defer" for d, a in zip(decoded, actions[k:k + batch_size])]
         return out
     return choose
 

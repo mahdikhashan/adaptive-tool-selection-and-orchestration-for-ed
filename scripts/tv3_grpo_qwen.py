@@ -15,9 +15,9 @@ def exact_reward(prompts, completions, values, gold, **kwargs):
     return [float(parse(c, list(json.loads(v))) == g) for c, v, g in zip(completions, values, gold)]
 
 
-def risk_reward(prompts, completions, values, **kwargs):
+def risk_reward(prompts, completions, true_values, **kwargs):
     out = []
-    for c, v in zip(completions, values):
+    for c, v in zip(completions, true_values):
         table = json.loads(v)
         choice = parse(c, list(table))
         out.append(-table[choice] if choice is not None else -3.0)
@@ -34,7 +34,7 @@ def main():
     parser.add_argument("--batch-size", type=int, default=16)
     parser.add_argument("--lr", type=float, default=2e-5)
     parser.add_argument("--beta", type=float, default=0.02)
-    parser.add_argument("--reward", choices=["exact", "risk"], default="exact", help="exact match with the gold tool (as in the paper) or minus the risk")
+    parser.add_argument("--reward", choices=["exact", "risk"], default="exact", help="exact match with the gold action (as in the paper) or minus the risk against the true label")
     parser.add_argument("--out", default=str(models_dir() / "qwen_grpo"))
     args = parser.parse_args()
     data = load_dataset("json", data_files=str(results_dir("tools_v3") / "select" / "grpo_qwen.jsonl"), split="train").shuffle(seed=0)

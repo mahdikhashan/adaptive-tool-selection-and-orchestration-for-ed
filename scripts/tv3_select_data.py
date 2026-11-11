@@ -18,7 +18,7 @@ def main():
     parser.add_argument("--grpo-share", type=float, default=0.3)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--model", default="Qwen/Qwen3-0.6B", help="tokenizer for the chat template")
-    parser.add_argument("--report-keep", type=float, default=0.2, help="share of steps with gold 'report' kept for SFT")
+    parser.add_argument("--answer-keep", type=float, default=0.5, help="share of steps whose gold is a final answer kept for SFT")
     args = parser.parse_args()
     env = setup()
     tokenizer = AutoTokenizer.from_pretrained(args.model)
@@ -35,10 +35,10 @@ def main():
                 values = ep.values(actions)
                 gold = min(actions, key=values.get)
                 text = render(tokenizer, ep, actions)
-                if gold != "report" or rng.random() < args.report_keep:
+                if not gold.startswith("answer_") or rng.random() < args.answer_keep:
                     sft.append({"prompt": text, "completion": answer(gold)})
                 if rng.random() < args.grpo_share:
-                    grpo.append({"prompt": text, "values": json.dumps(values), "gold": gold})
+                    grpo.append({"prompt": text, "values": json.dumps(values), "true_values": json.dumps(ep.values(actions, true_answers=True)), "gold": gold})
                 move = actions[rng.integers(len(actions))] if rng.random() < args.explore else gold
                 ep.step(move)
                 if ep.done:

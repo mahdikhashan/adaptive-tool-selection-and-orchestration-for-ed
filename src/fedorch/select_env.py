@@ -9,7 +9,7 @@ from sklearn.linear_model import LogisticRegression
 
 from fedorch.common import results_dir
 from fedorch.decision import answer_risk
-from fedorch.tools_v3 import EDGE_MBPS, EDGE_RTT, JETSON, SPECIAL_ACTIONS, TOOLS
+from fedorch.tools_v3 import ANSWERS, SPECIAL_ACTIONS
 
 BAYES, RTT = 1 / 11, 0.05
 
@@ -99,9 +99,9 @@ class Retriever:
 
 
 class Episode:
-    def __init__(self, item, tools, fusion, prior, new_prior, budget, mbps, lam=0.01, k=15, retriever=None):
+    def __init__(self, item, tools, fusion, prior, new_prior, budget, mbps, lam=0.01, k=15, retriever=None, estimate=True):
         self.i, self.tools, self.fusion, self.prior, self.new_prior = item, tools, fusion, prior, new_prior
-        self.budget, self.mbps, self.lam, self.k, self.retriever = budget, mbps, lam, k, retriever
+        self.budget, self.mbps, self.lam, self.k, self.retriever, self.estimate = budget, mbps, lam, k, retriever, estimate
         self.called, self.elapsed, self.done, self.action_log = ["resnet"], self.cost("resnet"), False, []
 
     def cost(self, t):
@@ -125,12 +125,25 @@ class Episode:
         if self.retriever is not None:
             order = self.retriever.rank(f"{self.i['component']} {self.i['question']} defect")
             feasible = [t for t in order if t in feasible]
-        return feasible[: self.k] + ["report", "defer"]
+        return feasible[: self.k] + list(ANSWERS)
 
-    def values(self, actions):
-        q_now = self.q()
-        out = {"report": risk_of(self.i, q_now) + self.lam * self.elapsed / self.budget,
-               "defer": 0.5 + self.lam * self.elapsed / self.budget}
+    def fused_answer(self):
+        return "answer_defect" if self.q() >= BAYES else "answer_good"
+
+    def answer_risk(self, action):
+        if action == "defer":
+            return 0.5
+        return answer_risk(self.i["defect_option"] if action == "answer_defect" else "good", self.i["label"])
+
+    def values(self, actions, true_answers=False):
+        now = self.lam * self.elapsed / self.budget
+        evidence = self.fused_answer()
+        out = {"defer": 0.5 + now}
+        for a in ("answer_defect", "answer_good"):
+            if true_answers:
+                out[a] = self.answer_risk(a) + now
+            else:
+                out[a] = self.answer_risk(evidence) + now + (0. if a == evidence else 1.)
         tools = [a for a in actions if a in self.tools]
         if tools:
             p = self.fusion.prob([self.i] * len(tools), [set(self.called) | {t} for t in tools])
@@ -140,32 +153,28 @@ class Episode:
 
     def step(self, action):
         self.action_log.append(action)
-        if action in ("report", "defer") or action not in self.tools or action in self.called:
+        if action in ANSWERS or action not in self.tools or action in self.called:
             self.done = True
-            self.final = "defer" if action == "defer" else "report"
+            self.final = action if action in ANSWERS else "defer"
             return
         self.elapsed += self.cost(action)
         self.called.append(action)
-        if not self.feasible():
-            self.done, self.final = True, "report"
 
     def outcome(self):
-        if self.final == "defer":
-            risk = 0.5
-        else:
-            risk = risk_of(self.i, self.q())
-        return {"risk": risk, "time": self.elapsed, "deferred": self.final == "defer", "called": list(self.called),
+        return {"risk": self.answer_risk(self.final), "time": self.elapsed, "deferred": self.final == "defer",
+                "answer": self.final, "called": list(self.called),
                 "bytes": sum(self.i["cost"][t].get("bytes", 0) for t in self.called if self.tools[t]["location"] != "drone")}
 
     def task(self):
-        return f"Inspect this {self.i['component']} in a drone photo. {self.i['question']}"
+        return f"Inspect this {self.i['component']} in a drone photo and answer: {self.i['question']}"
 
     def substep(self):
         link = f"up, {self.mbps:.1f} Mbit/s" if self.mbps > 0 else "down"
         seen = "; ".join(f"{t} says defect {100 * self.i['p'][t]:.0f}%" for t in self.called)
         return (f"Choose the next step. Time left: {max(0., self.budget - self.elapsed):.2f} s of {self.budget:.2f} s. "
-                f"Cloud link: {link}. Tools already called: {seen}. Current defect estimate: {100 * self.q():.0f}%. "
-                f"A missed defect costs 10, a false alarm 1, sending to the operator 0.5.")
+                f"Cloud link: {link}. Tools already called: {seen}. "
+                + (f"Combined defect estimate of these tools: {100 * self.q():.0f}%. " if self.estimate else "")
+                + "Call another tool, or finish with an answer. A missed defect costs 10, a false alarm 1, sending to the operator 0.5.")
 
     def doc(self, a):
         if a in SPECIAL_ACTIONS:
@@ -220,7 +229,8 @@ def setup(lam=0.01):
                 retriever=Retriever(tools), lam=lam)
 
 
-def episode(env, item, budget, mbps, train):
+def episode(env, item, budget, mbps, train, estimate=True):
     fusion = env["oof"][item["item_id"]] if train else env["full"]
     new_prior = env["prior"] if train else env["test_prior"]
-    return Episode(item, env["tools"], fusion, env["prior"], new_prior, budget, mbps, env["lam"], retriever=env["retriever"])
+    return Episode(item, env["tools"], fusion, env["prior"], new_prior, budget, mbps, env["lam"], retriever=env["retriever"],
+                   estimate=estimate)

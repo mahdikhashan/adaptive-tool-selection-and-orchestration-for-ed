@@ -23,6 +23,8 @@ The current test is as follows:
 | 8 | A selector that sees the image (VLM) | Model and prompt | High | Fifth |
 | 9 | Clean-up: processor warning in `tv3_vlm.py` | One argument | Low | Any time |
 | 10 | Remove laya from the tool list | Tool list and data | Low | Second |
+| 11 | Transfer to new tools that the agent did not see in training | New tools, tool list, evaluation | Medium | Third |
+| 12 | Run on a Jetson Nano | Hardware, model format | High | Third |
 
 ## 1. Larger Qwen3 models
 
@@ -138,3 +140,46 @@ bash scripts/runs/tools_v3_selector.sh Qwen/Qwen3-4B
 - Add a component output to the classifiers. This needs a new training of the classifiers.
 
 **Compare:** The same agent with laya and without laya. Also compare the accuracy of the report and the time for each image.
+
+## 11. Transfer to new tools that the agent did not see in training
+
+**Purpose:** Zhou et al. (2026) show that a small selector can use tools that were not in its training data. Find out if this is also true for the inspection agent. The agent reads only the name and the description of each tool. Thus a new tool with a good description can be possible without new training.
+
+**Test A: tools held out from training.**
+
+- Remove a set of tools from the SFT and GRPO data, for example the DINOv2-Base probes, Swin-T and the ConvNeXt specialists.
+- Train the agent with the other tools.
+- At test time, add the held-out tools to the tool list again.
+- Measure how frequently the agent calls the held-out tools, and the accuracy of the report with them and without them.
+
+**Test B: new tools.** Make tools that do not exist now, cache their answers, and add them only at test time. Examples:
+
+- new classifiers (for example EfficientNetV2, RegNet or a ViT with a different training),
+- SigLIP zero-shot,
+- a detector for "other defect" (torn part or peeling paint),
+- a tool that gives the component only, so that laya is not the only tool for the component.
+
+**Test C: changed descriptions.** Give the same tools new names and new descriptions. If the accuracy decreases, the agent uses the tool names and not the descriptions.
+
+**Metrics:** the share of calls to new tools, the accuracy of the report, the time and the upload. Compare with the same agent trained with all tools, and with the best single tool.
+
+**Note:** The current agent calls only laya. A transfer test is useful only after the agent calls more than one type of tool. Thus do this test after test 4 ("any tool that is equally good") or test 10 (remove laya).
+
+## 12. Run on a Jetson Nano
+
+**Purpose:** Now all times on the drone are desktop GPU times multiplied by 9 (our estimate for a Jetson Orin NX). The time of the agent itself is not in the result. Measure the real times on a drone computer.
+
+**What to measure:**
+
+- the time of each drone tool (ResNet-18, DeiT-S, MobileNet-V2, EfficientNet-B0, laya_q4, SmolVLM and the image checks),
+- the time of the agent for each step: Qwen3-0.6B with and without thinking (tokens each second, time to the first token),
+- the memory and the power,
+- the full time for each image: agent steps plus tool calls plus upload.
+
+**What changes:**
+
+- The Jetson Nano has 4 GB of shared memory and an old software stack (JetPack 4, CUDA 10.2). New PyTorch and Transformers versions do not run on it. Use llama.cpp with a GGUF model (4-bit or 8-bit) for Qwen, and ONNX Runtime or TensorRT for the classifiers.
+- Replace the factor of 9 in the cost model with the measured times. Then make the select data and the evaluation again.
+- If a Jetson Orin is available, measure on it also. The Orin is the device of EVLM (Farahani et al.).
+
+**Risk:** Thinking adds approximately 150 tokens for each step. On a Jetson Nano, this can take several seconds for each step. Then the 4 s budget becomes a real limit, and the agent with thinking can be too slow for the drone.

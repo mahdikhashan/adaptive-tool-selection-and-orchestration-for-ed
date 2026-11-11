@@ -8,7 +8,7 @@
 \usepackage{lastpage}
 \usepackage[labelsep=period,font=footnotesize]{caption}
 \usepackage[hidelinks]{hyperref}
-\hypersetup{pdftitle={Good enough, too soon: what a small agent learns when it chooses the eyes of an inspection drone},pdfauthor={Mahdi Khashan}}
+\hypersetup{pdftitle={Who should look at this image? Small language agents choosing the tools of inspection drones},pdfauthor={Mahdi Khashan}}
 
 \journal{Future Generation Computer Systems}
 \setlength{\emergencystretch}{2em}
@@ -41,7 +41,7 @@
 
 \begin{frontmatter}
 
-\title{{\normalfont\large ISC High Performance 2027 --- Special Issue}\\[14pt]Good enough, too soon: what a small agent learns when it chooses the eyes of an inspection drone}
+\title{Who should look at this image? Small language agents choosing the tools of inspection drones}
 
 \author{Mahdi Khashan\corref{cor1}}
 \ead{mahdikhashan1@gmail.com}
@@ -218,7 +218,7 @@ At least one tool correct & & 0.970 & 1.000 & 1.000 \\
 
 \subsection{SFT teaches the format and one strong tool}
 
-Table~\ref{tab:main} gives the report accuracy of the agent. Without training, Qwen3-0.6B never calls a tool and writes a report at the first step. Its component and condition answers almost never match the label set, and it always says ``no defect'', so its defect accuracy (0.895) equals the share of good images and its defect recall is zero. After SFT, 88.1\% of the reports are fully correct. The agent calls exactly one tool per image: laya-vision in the cloud on 95\% of the images and the 4-bit laya-vision on the drone on the others, mainly when the link is down. Then it reports.
+Table~\ref{tab:main} and Figure~\ref{fig:accuracy} give the report accuracy of the agent. Without training, Qwen3-0.6B never calls a tool and writes a report at the first step. Its component and condition answers almost never match the label set, and it always says ``no defect'', so its defect accuracy (0.895) equals the share of good images and its defect recall is zero. After SFT, 88.1\% of the reports are fully correct. The agent calls exactly one tool per image: laya-vision in the cloud on 95\% of the images and the 4-bit laya-vision on the drone on the others, mainly when the link is down. Then it reports.
 
 \begin{table*}[t]
 \centering
@@ -240,6 +240,13 @@ SFT + GRPO & 30\,s & 0.915 & 0.959 & 0.957 & 0.876 & 0.885 & 0.41\,s & 33.7\,kB 
 \bottomrule
 \end{tabular}
 \end{table*}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figs/fig_tv3_accuracy.pdf}
+\caption{\textbf{The trained agent matches the tool it copies, not the best tool.} Accuracy per report field at the 4\,s budget. Agent: 1,500 test images; single tools: all 6,092 test images; single seed. SFT and SFT + GRPO give identical results. ConvNeXt re-cut gives no component (n/a).}
+\label{fig:accuracy}
+\end{figure}
 
 \textbf{The agent is slightly better than the tool it copies.} Its component accuracy equals that of laya-vision (0.92), but its defect and condition answers are slightly better (0.961 against 0.947, and 0.958 against 0.952). It sees only laya-vision's answer, so it has learned to correct some of laya-vision's answers when it writes the report.
 

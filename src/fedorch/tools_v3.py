@@ -68,9 +68,10 @@ TOOLS = {
     "qwen_any_recut": ("cloud", "Qwen3-VL-8B in the cloud asked about any defect on the full-resolution re-cut"),
     "exposure": ("drone", "Exposure check: brightness and colour saturation of the image"),
     "size": ("drone", "Image size check: small crops of far components show less detail"),
+    "component_resnet18": ("drone", "ResNet-18 component classifier: names the component type; gives no defect or condition"),
 }
 DRONE = {"resnet", "resnet18", "mobilenet_v2", "efficientnet", "efficientnet_tta", "deit_small", "laya_q4", "smolvlm",
-         "quality", "exposure", "size", "head_rust", "head_corrosion"}
+         "quality", "exposure", "size", "head_rust", "head_corrosion", "component_resnet18"}
 TOOLS = {name: ("drone" if name in DRONE else "cloud", description) for name, (_, description) in TOOLS.items()}
 
 

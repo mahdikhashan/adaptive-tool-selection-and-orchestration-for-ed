@@ -90,7 +90,9 @@ def main():
             row = cache.get(r["image"])
             if not row:
                 continue
-            if "probs" in row:
+            if "component" in row:
+                o = {"component": dict(row["component"])}
+            elif "probs" in row:
                 o = {"condition": class_probs(row["probs"])}
             elif "answers" in row:
                 o = from_laya(row["answers"])

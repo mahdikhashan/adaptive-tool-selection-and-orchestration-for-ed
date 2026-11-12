@@ -49,7 +49,7 @@
 \affiliation{organization={[Department, Institution]},city={[City]},country={[Country]}}
 
 \begin{abstract}
-Inspection drones can run small vision models on board and send images to larger models in the cloud. Choosing a model for each image is a tool-selection problem with a time budget and a weak radio link. Recent work trains small language models to select tools by supervised fine-tuning and then by reinforcement learning. We test this approach on power-line inspection. A small text-only language model with 0.6 billion parameters chooses, step by step, among 61 vision tools (13 on the drone and 48 in the cloud) and then writes a report with three parts: component type, whether there is a defect, and condition. We evaluate the reports against the true labels of 1,500 test images, with recorded mobile-network traces and time budgets of 4, 10 and 30 seconds. Without training, the agent calls no tool and no report is fully correct. After supervised fine-tuning, 88.1\% of the reports are fully correct, at 0.35 seconds and 34 kilobytes of upload per image. Reinforcement learning after fine-tuning changes nothing measurable, because the fine-tuned model is so certain that its sampled answers almost always receive the same reward. The agent learns to call one strong general model and then stops, although single classifiers that it never calls are more accurate on defect and condition (0.988 against 0.961). We show that step-wise training targets cause this behaviour, and we add reasoning written by a larger teacher model to restore a learning signal; results for this variant at three model sizes are in progress.
+Inspection drones can run small vision models on board and send images to larger models in the cloud. Choosing a model for each image is a tool-selection problem with a time budget and a weak radio link. Recent work trains small language models to select tools by supervised fine-tuning and then by reinforcement learning. We test this approach on power-line inspection. A text-only language model with 0.6 billion parameters chooses, step by step, among about 60 vision tools and then writes a report with three parts: component type, whether there is a defect, and condition. We evaluate the reports against the true labels of 1,500 test images, with recorded mobile-network traces and time budgets of 4 to 30 seconds. After supervised fine-tuning, the agent learns to call one large general model and stop: 88.1\% of its reports are fully correct, at 0.35 seconds and 34 kilobytes of upload per image. When this model is removed and a small component classifier is added, the same recipe produces an agent that combines two small onboard classifiers: 95.9\% of its reports are fully correct, at 0.09 seconds per image and with no upload. Reinforcement learning after fine-tuning changes nothing measurable in either case, because the fine-tuned model is so certain that its sampled answers almost always receive the same reward. The tool catalogue therefore matters more than the learning method. Step-wise training targets also favour cheap tools that are usually right over the most accurate ones.
 \end{abstract}
 
 \begin{keyword}
@@ -66,12 +66,13 @@ Drones are changing how power lines, bridges and towers are inspected. They take
 
 Language models that use tools are now common~\cite{toolformer,react,toolllm}. Zhou et al.~\cite{zhou2026} show that even small language models can learn to select tools from a large catalogue when they are trained with supervised fine-tuning (SFT) and then with group relative policy optimisation (GRPO)~\cite{grpo}. A small model of this kind could run next to the drone's other software and plan the inspection of each image.
 
-This article asks a simple question: \emph{can a small language model learn to choose the tools of an inspection drone, and does reinforcement learning improve on imitation?} We build a catalogue of 61 vision tools, cache their answers on every image, and let a text-only Qwen3-0.6B~\cite{qwen3} agent call tools step by step until it writes a report. We train it with the recipe of Zhou et al.\ and compare it with the same model without training and with each tool alone.
+This article asks a simple question: \emph{can a small language model learn to choose the tools of an inspection drone, and does reinforcement learning improve on imitation?} We build a catalogue of about 60 vision tools, cache their answers on every image, and let a text-only Qwen3-0.6B~\cite{qwen3} agent call tools step by step until it writes a report. We train it with the recipe of Zhou et al.\ and compare it with the same model without training and with each tool alone.
 
 Our main contributions are:
 \begin{itemize}
-\item a tool-selection benchmark for drone inspection with 61 real vision tools, measured latency, mobile-network traces and an upload cost that is paid once per image;
+\item a tool-selection benchmark for drone inspection with 62 real vision tools, measured latency, mobile-network traces and an upload cost that is paid once per image;
 \item a test of the SFT and GRPO recipe for small tool-selecting language models in this setting, evaluated by report accuracy against true labels;
+\item evidence that the tool catalogue matters more than the learning method: replacing one large generalist model by a small specialist raises the share of fully correct reports from 88.1\% to 95.9\% and removes the upload;
 \item an analysis of why GRPO adds nothing after SFT here, and why the agent ignores the most accurate tools;
 \item a thinking variant trained on reasons written by a larger teacher model (results in progress).
 \end{itemize}
@@ -96,11 +97,11 @@ We use component images of InsPLAD~\cite{insplad} with the \texttt{tower14} spli
 
 \subsection{Tools}
 
-Table~\ref{tab:tools} groups the 61 tools. We fine-tuned the classifiers on the training towers and ran every tool once on every validation and test image; episodes replay these cached answers. Only the three laya-vision tools~\cite{layavision} also name the component. Thirteen tools run on the drone (for example ResNet-18, DeiT-S, MobileNet, the 4-bit laya-vision and SmolVLM); the other 48 run in the cloud. We measured the GPU time of each tool on a desktop GPU. Because we have no Jetson, we multiply onboard times by 9, our estimate of the speed gap to a Jetson Orin NX.
+Table~\ref{tab:tools} groups the 62 tools. We fine-tuned the classifiers on the training towers and ran every tool once on every validation and test image; episodes replay these cached answers. The three laya-vision tools~\cite{layavision} name the component together with defect and condition. We added a ResNet-18 component classifier later (Section~\ref{sec:nolaya}); the main experiment uses the other 61 tools. Fourteen tools run on the drone (for example ResNet-18, DeiT-S, MobileNet, the component classifier, the 4-bit laya-vision and SmolVLM); the other 48 run in the cloud. We measured the GPU time of each tool on a desktop GPU. Because we have no Jetson, we multiply onboard times by 9, our estimate of the speed gap to a Jetson Orin NX.
 
 \begin{table}[t]
 \centering
-\caption{The 61 tools in groups. Answer: the fields that the tool can answer (C: component, D: defect, S: condition).}
+\caption{The 62 tools in groups. Answer: the fields that the tool can answer (C: component, D: defect, S: condition).}
 \label{tab:tools}
 \footnotesize
 \setlength{\tabcolsep}{3pt}
@@ -116,6 +117,7 @@ Zero-shot & CLIP-L with text prompts & 1 & D, S \\
 Small VLMs & SmolVLM-256M~\cite{smolvlm}, 3 variants & 3 & D \\
 laya-vision & full, 4-bit, re-cut & 3 & C, D, S \\
 Large VLM & Qwen3-VL-8B, 8 questions or crops & 8 & D \\
+Component classifier & ResNet-18 on 11 component types & 1 & C \\
 Image checks & quality, exposure, size & 3 & -- \\
 \bottomrule
 \end{tabular}
@@ -193,11 +195,11 @@ We test on 1,500 of the 6,092 test images, drawn with a fixed seed, at each budg
 
 \subsection{The tools alone}
 
-Table~\ref{tab:single} shows the accuracy of some tools when each one answers alone. Fine-tuned classifiers are strong on defect and condition; a ConvNeXt on the re-cut component is correct on 98.8\% of the images. laya-vision is the only tool that names the component, and it is correct on 92.4\% of the images. If the agent could always pick a correct tool, it would reach 97.0\% on the component and 100\% on defect and condition.
+Table~\ref{tab:single} shows the accuracy of some tools when each one answers alone. Fine-tuned classifiers are strong on defect and condition; a ConvNeXt on the re-cut component is correct on 98.8\% of the images. In the main experiment, laya-vision is the only tool that names the component, and it is correct on 92.4\% of the images; the component classifier added in Section~\ref{sec:nolaya} is correct on 99.6\%. If the agent could always pick a correct tool among the 61 tools of the main experiment, it would reach 97.0\% on the component and 100\% on defect and condition.
 
 \begin{table}[t]
 \centering
-\caption{Accuracy of single tools on all 6,092 test images. ``--'': the tool gives no answer for this field.}
+\caption{Accuracy of single tools on all 6,092 test images. ``--'': the tool gives no answer for this field. Last row: share of images where at least one of the 61 tools of the main experiment is correct.}
 \label{tab:single}
 \footnotesize
 \setlength{\tabcolsep}{3pt}
@@ -210,6 +212,7 @@ laya-vision, 4-bit & drone & 0.870 & 0.944 & 0.938 \\
 ResNet-18 & drone & -- & 0.981 & 0.979 \\
 DeiT-S & drone & -- & 0.982 & 0.980 \\
 ConvNeXt-T, re-cut & cloud & -- & \textbf{0.988} & \textbf{0.988} \\
+Component ResNet-18 & drone & \textbf{0.996} & -- & -- \\
 \midrule
 At least one tool correct & & 0.970 & 1.000 & 1.000 \\
 \bottomrule
@@ -244,7 +247,7 @@ SFT + GRPO & 30\,s & 0.915 & 0.959 & 0.957 & 0.876 & 0.885 & 0.41\,s & 33.7\,kB 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{figs/fig_tv3_accuracy.pdf}
-\caption{\textbf{The trained agent matches the tool it copies, not the best tool.} Accuracy per report field at the 4\,s budget. Agent: 1,500 test images; single tools: all 6,092 test images; single seed. SFT and SFT + GRPO give identical results. ConvNeXt re-cut gives no component (n/a).}
+\caption{\textbf{The tool catalogue decides what the agent can reach.} Accuracy per report field at the 4\,s budget. With laya-vision, the trained agent matches laya-vision; without it, the agent combines two drone classifiers and is better on every field. Agents: 1,500 test images; single tools: all 6,092 test images; single seed. SFT and SFT + GRPO give identical results. ConvNeXt re-cut gives no component (n/a).}
 \label{fig:accuracy}
 \end{figure}
 
@@ -253,6 +256,33 @@ SFT + GRPO & 30\,s & 0.915 & 0.959 & 0.957 & 0.876 & 0.885 & 0.41\,s & 33.7\,kB 
 \textbf{The agent ignores the best tools.} A ConvNeXt on the re-cut image is 2.7 points better on defect and 3.0 points better on condition than the agent, and DeiT-S on the drone is 2 points better. The agent never calls them. The reason is the training target in Eq.~\eqref{eq:gold}: laya-vision adds up to three correct fields at once, so it is the target in almost every first step (24,577 of the 30,950 tool steps). A second tool is the target only when laya-vision is wrong, which is rare, and the report step then sees only laya-vision's answer.
 
 \textbf{The budgets have no effect.} One laya-vision call costs about 0.35\,s, far below the smallest budget of 4\,s, so the agent behaves the same at every budget.
+
+\subsection{A small specialist instead of a large generalist}
+\label{sec:nolaya}
+
+Since laya-vision is the only tool that names the component, the agent cannot answer all three questions without it. We therefore trained a ResNet-18 on the 11 component types of the training towers and added it as a drone tool that answers only the component. It is correct on 99.6\% of the test images (Table~\ref{tab:single}) and costs 2.8\,ms of GPU time. We then removed the three laya-vision tools, rebuilt the training data with the same target rule, and trained the agent with the same recipe.
+
+Table~\ref{tab:nolaya} shows the result. The agent now calls two tools on every image: the component classifier, and ResNet-50 (95\%) or ResNet-18 (5\%) for defect and condition. All three run on the drone, so nothing is uploaded. The share of fully correct reports rises from 88.1\% to 95.9\%, and the time per image falls from 0.35\,s to 0.09\,s. Most of the gain comes from the component; defect and condition improve by less than one point, and the defect recall stays the same. GRPO again changes no answer: 95--99\% of its groups had no spread in reward.
+
+\begin{table*}[t]
+\centering
+\caption{The same recipe with a different tool catalogue. Qwen3-0.6B agent at the 4\,s budget, 1,500 test images, single seed. Without laya-vision, a ResNet-18 component classifier is available. Calls: tools called per image. Best results in bold.}
+\label{tab:nolaya}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llcccccccc}
+\toprule
+Tools & Method & Component & Defect & Condition & All three & Defect recall & Time & Upload & Calls \\
+\midrule
+With laya-vision & SFT & 0.919 & 0.961 & 0.958 & 0.881 & \textbf{0.885} & 0.35\,s & 34.1\,kB & 1.0 \\
+Without laya-vision & base & 0.019 & 0.346 & 0.003 & 0.001 & 0.452 & 0.14\,s & 19.2\,kB & 0.4 \\
+Without laya-vision & SFT & \textbf{0.994} & \textbf{0.967} & \textbf{0.965} & \textbf{0.959} & 0.879 & \textbf{0.09\,s} & \textbf{0\,kB} & 2.0 \\
+Without laya-vision & SFT + GRPO & \textbf{0.994} & \textbf{0.967} & \textbf{0.965} & \textbf{0.959} & 0.879 & \textbf{0.09\,s} & \textbf{0\,kB} & 2.0 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+The agent still does not reach the best tools: ConvNeXt on the re-cut image would be about two points better on defect and condition. The target rule picks the fastest tool that is correct on each training image, and ResNet-50 is correct on 97\% of them, so ConvNeXt is the target in only 12 of about 84,600 training steps.
 
 \subsection{Why GRPO does not help}
 \label{sec:grpo}
@@ -328,6 +358,7 @@ SmolVLM on the drone, per request~\cite{splitvlm} & 2.7--2.8\,s & 0 \\
 \midrule
 \multicolumn{3}{l}{\emph{This work}}\\
 SFT agent (one laya-vision call) & 0.35\,s & 34.1\,kB \\
+SFT agent without laya-vision (two drone classifiers) & 0.09\,s & 0 \\
 ResNet-18 on the drone, alone & 0.03\,s & 0 \\
 \bottomrule
 \end{tabular}
@@ -335,6 +366,8 @@ ResNet-18 on the drone, alone & 0.03\,s & 0 \\
 
 \subsection{Discussion}
 \label{sec:discussion}
+
+\textbf{The catalogue matters more than the learner.} The same recipe gave 7.8 more points of fully correct reports when one generalist model was replaced by a small specialist, while GRPO changed nothing with either catalogue. Designing and measuring the tools is at least as important as training the agent.
 
 \textbf{Imitation sets the ceiling.} SFT teaches the agent the target policy almost exactly, and that policy is ``call the tool that answers most fields, then report''. A target that counts fields favours generalist tools over accurate specialists. Better targets would reward the final report, not the single step.
 
@@ -347,7 +380,7 @@ ResNet-18 on the drone, alone & 0.03\,s & 0 \\
 \section{Conclusion}
 \label{sec:conclusion}
 
-A small language model can learn to inspect power-line images by calling tools: after SFT, a Qwen3-0.6B agent writes a fully correct report for 88\% of the images in 0.35\,s, against none without training. But it learns to call one generalist model and stop, and simple classifiers that it never calls are more accurate on defect and condition. GRPO after SFT adds nothing, because the model's sampled answers do not differ. For drone inspection, the recipe of small tool-selecting models needs training targets that reward the final report and budgets that force real trade-offs. Teacher reasoning and larger models, now under evaluation, will show whether reinforcement learning can then improve on imitation. Future work will measure the agent and the onboard tools on a Jetson, train on full episodes, and test tighter budgets.
+A small language model can learn to inspect power-line images by calling tools. After SFT, a Qwen3-0.6B agent writes a fully correct report for 88\% of the images when a large general model is available, and it learns to call that model and stop. When the general model is replaced by a small component classifier, the same recipe produces an agent that combines two onboard classifiers and writes a fully correct report for 96\% of the images in 0.09\,s, with no upload. GRPO after SFT adds nothing with either tool catalogue, because the model's sampled answers do not differ. For drone inspection, the choice of tools matters more than the learning method, and the recipe of small tool-selecting models needs training targets that reward the final report rather than the cheapest correct step. Teacher reasoning and larger models are under evaluation. Future work will measure the agent and the onboard tools on a Jetson, train on full episodes, and test tighter budgets.
 
 \section*{Acknowledgements}
 

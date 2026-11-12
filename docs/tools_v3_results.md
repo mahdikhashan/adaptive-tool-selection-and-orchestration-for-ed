@@ -170,8 +170,34 @@ Settings: `TV3_EXCLUDE=laya,laya_q4,laya_recut`, `TV3_RUN=nolaya`. The data uses
 
 - An episode has approximately 3.8 steps (with laya: 2.7). The agent learns two tools: one condition classifier and the component tool.
 - The gold rule selects the fastest tool that is correct on this image. ResNet-50 on the drone is correct on approximately 97% of the images, thus it is the gold tool on most images. Test 13 in `tools_v3_future_tests.md` describes this problem and the solutions.
-- Expected result (not measured yet): approximately 0.96 for all three fields, with approximately 0.1 s for each image and almost no upload. The SFT agent with laya gets 0.881.
-- Results: `results/tools_v3/select/eval_nolaya.json` (running).
+
+### 7.3 Results
+
+1,500 test images, one seed, greedy decoding. The same test images as section 3.
+
+| Agent | Budget | Component | Defect | Condition | All three | Defect recall | Time (s) | Upload (kB) | Tool steps |
+|---|---|---|---|---|---|---|---|---|---|
+| With laya, SFT (section 3) | 4 s | 0.919 | 0.961 | 0.958 | 0.881 | 0.885 | 0.354 | 34.1 | 1.0 |
+| Without laya, base | 4 s | 0.019 | 0.346 | 0.003 | 0.001 | 0.452 | 0.140 | 19.2 | 0.4 |
+| Without laya, SFT | 4 s | 0.994 | 0.967 | 0.965 | 0.959 | 0.879 | 0.089 | 0.0 | 2.0 |
+| Without laya, SFT | 10 s | 0.994 | 0.963 | 0.960 | 0.954 | 0.866 | 0.089 | 0.0 | 2.0 |
+| Without laya, SFT | 30 s | 0.994 | 0.964 | 0.961 | 0.955 | 0.873 | 0.089 | 0.0 | 2.0 |
+| Without laya, SFT | no limit | 0.994 | 0.965 | 0.963 | 0.957 | 0.866 | 0.089 | 0.0 | 2.0 |
+| Without laya, SFT + GRPO | all | equal to SFT | | | | | | | |
+
+Tools that the SFT agent calls (4 s): `component_resnet18` on 100% of the images, `resnet` on 94.7%, `resnet18` on 5.3%. All three tools are on the drone. Thus there is no upload.
+
+GRPO training without laya, first half and second half: the mean reward is 0.961 and 0.969. The groups with no learning signal are 0.95 and 0.99. The KL to the SFT model is 0.0011 and 0.0003. The entropy is 0.0019 and 0.0005.
+
+### 7.4 Interpretation
+
+1. **The agent without laya is better and faster.** 95.9% of the reports are fully correct (with laya: 88.1%). The time is 0.089 s for each image (with laya: 0.354 s) and the upload is zero.
+2. **Most of the gain is the component.** The component tool is correct on 0.994 of the images, laya on 0.919. Defect and condition increase by less than 1 point.
+3. **The tool list has a larger effect than the training method.** The same SFT recipe gives 7.8 more points with a different tool list. GRPO gives no change with both tool lists.
+4. **The agent is still not at the best possible result.** It calls ResNet-50 for defect and condition, not `convnext_recut` (0.988). The cause is the gold rule with hindsight (test 13).
+5. **Defect recall does not increase** (0.879 against 0.885). ResNet-50 misses a similar share of defects as laya.
+6. **The time without a limit is now correct.** The corrected cost check (commit a23f30f) gives 0.089 s.
+7. **The untrained agent with all 62 tools** is also in `eval_nolaya.json` (method name `qwen3-0.6b base`, without `_nolaya`). It is a different case and not part of this comparison.
 
 ## 8. Files
 

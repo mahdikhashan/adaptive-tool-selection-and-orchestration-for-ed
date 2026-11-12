@@ -199,7 +199,61 @@ GRPO training without laya, first half and second half: the mean reward is 0.961
 6. **The time without a limit is now correct.** The corrected cost check (commit a23f30f) gives 0.089 s.
 7. **The untrained agent with all 62 tools** is also in `eval_nolaya.json` (method name `qwen3-0.6b base`, without `_nolaya`). It is a different case and not part of this comparison.
 
-## 8. Files
+## 8. Thinking at three model sizes, and new tools without new training
+
+Date: 2026-11-12. We use 500 test images (the first 500 of the 1,500 images in section 3). The budgets are 4, 10, 30 s and no limit. We use one seed, greedy decoding and up to 384 new tokens for each step. The tool list has 62 tools: the 61 tools of section 3 and `component_resnet18`. We trained the thinking agents before `component_resnet18` existed. Thus this tool was never a gold action in their training data.
+
+### 8.1 All 62 tools
+
+All three fields correct:
+
+| Model | Method | 4 s | 10 s | 30 s | No limit | Tool steps (4 s) | Main tools (4 s) |
+|---|---|---|---|---|---|---|---|
+| 0.6B | SFT, thinking | 0.926 | 0.856 | 0.898 | 0.910 | 1.89 | component_resnet18 85%, laya_recut 75%, laya 22% |
+| 0.6B | SFT + GRPO, thinking | 0.876 | 0.874 | 0.878 | 0.880 | 1.00 | laya 95%, laya_q4 5% |
+| 0.6B | base, thinking | 0.002 | 0.002 | 0.000 | 0.000 | 0.73 | resnet 28% (53% reports not valid) |
+| 1.7B | SFT, thinking | 0.876 | 0.856 | 0.840 | 0.834 | 1.25 | laya 50%, laya_recut 48% |
+| 1.7B | SFT + GRPO, thinking | 0.876 | 0.874 | 0.876 | 0.874 | 1.00 | laya 95%, laya_q4 5% |
+| 1.7B | base, thinking | 0.000 | 0.000 | 0.000 | 0.000 | 0.00 | none (all reports not valid) |
+| 4B | SFT, thinking | 0.842 | 0.850 | 0.856 | 0.866 | 1.15 | laya_recut 72%, laya 21% |
+| 4B | SFT + GRPO, thinking | 0.874 | 0.880 | 0.880 | 0.872 | 1.01 | laya 95%, laya_q4 5% |
+| 4B | base, thinking | 0.000 | 0.000 | 0.000 | 0.000 | 0.00 | none (all reports not valid) |
+
+For comparison (section 3, 1,500 images): Qwen3-0.6B SFT without thinking gets 0.881 at 4 s.
+
+### 8.2 Laya removed at test time
+
+We trained the agents of section 3 and section 8.1 with laya. For this test, `TV3_EXCLUDE=laya,laya_q4,laya_recut` removes the laya tools only in the evaluation. 59 tools remain.
+
+All three fields correct:
+
+| Model | Method | 4 s | 10 s | 30 s | No limit | component_resnet18 called (4 s) | Component (4 s) | Condition (4 s) |
+|---|---|---|---|---|---|---|---|---|
+| 0.6B | SFT | 0.334 | 0.346 | 0.330 | 0.348 | 0% | 0.348 | 0.898 |
+| 0.6B | SFT + GRPO | 0.754 | 0.728 | 0.756 | 0.586 | 72% | 0.774 | 0.956 |
+| 0.6B | SFT, thinking | 0.340 | 0.244 | 0.408 | 0.602 | 73% | 0.718 | 0.482 |
+| 0.6B | SFT + GRPO, thinking | 0.492 | 0.424 | 0.158 | 0.068 | 64% | 0.634 | 0.714 |
+| 1.7B | SFT, thinking | 0.762 | 0.662 | 0.718 | 0.596 | 84% | 0.830 | 0.846 |
+| 1.7B | SFT + GRPO, thinking | 0.924 | 0.910 | running | running | 100% | 0.988 | 0.942 |
+| 4B | SFT, thinking | 0.394 | 0.498 | running | running | 60% | 0.600 | 0.736 |
+| 4B | SFT + GRPO, thinking | running | | | | | | |
+
+Reference: the agent trained without laya (section 7, 1,500 images) gets 0.959 at 4 s.
+
+### 8.3 Interpretation
+
+1. **With all tools, thinking adds little.** The best thinking agent is 0.6B SFT (0.926 at 4 s). It is 4.5 points better than SFT without thinking at 4 s. Its result changes from 0.856 to 0.926 between budgets that do not limit it. Thus the budget text in the prompt changes its plan.
+2. **A larger model does not help.** With thinking SFT, 0.6B is equal to or better than 1.7B and 4B.
+3. **GRPO with thinking gives the same policy at all sizes.** The 0.6B, 1.7B and 4B agents call laya on 95% of the images. They call one tool and get approximately 0.875. This is the policy of SFT without thinking.
+4. **The untrained thinking models do not give a report.** The 1.7B and 4B base models give no valid report on any image. The thinking is longer than 384 tokens.
+5. **GRPO makes the agent better when the tool list changes.** With laya removed, the GRPO agents are much better than their SFT agents. The 0.6B agent without thinking gets 0.754 against 0.334. The 1.7B agent with thinking gets 0.924 against 0.762. With the full tool list, GRPO did not change the result (section 4).
+6. **The 1.7B GRPO agent with thinking uses a new tool without new training.** It calls `component_resnet18` on 100% of the images, then ResNet-50 on 81%. It gets 0.924 at 4 s. The agent trained without laya gets 0.959.
+7. **The SFT agents trust the wrong tool for the condition.** They find the component tool. But the 0.6B SFT agent with thinking gets only 0.48 to 0.66 for the condition.
+8. **The 0.6B agents are not stable across budgets without laya.** For example, the 0.6B GRPO agent with thinking gets 0.07 to 0.49.
+
+Limits: one seed, 500 images (an uncertainty of approximately 3 points), results marked "running" are not available yet.
+
+## 9. Files
 
 | File | Content |
 |---|---|

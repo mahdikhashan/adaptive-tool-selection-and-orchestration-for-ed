@@ -164,6 +164,8 @@ bash scripts/runs/tools_v3_selector.sh Qwen/Qwen3-4B
 
 **Metrics:** the share of calls to new tools, the accuracy of the report, the time and the upload. Compare with the same agent trained with all tools, and with the best single tool.
 
+**First result (2026-11-12):** `tools_v3_results.md` section 8.2. With laya removed at test time, the 1.7B agent with thinking and GRPO calls `component_resnet18` on all images and gets 0.924 (retrained agent: 0.959). The agents without GRPO get 0.33 to 0.76.
+
 **Note:** The current agent calls only laya. A transfer test is useful only after the agent calls more than one type of tool. Thus do this test after test 4 ("any tool that is equally good") or test 10 (remove laya).
 
 ## 12. Run on a Jetson Nano

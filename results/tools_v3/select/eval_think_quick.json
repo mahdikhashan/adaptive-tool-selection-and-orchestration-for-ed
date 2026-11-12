@@ -1,0 +1,142 @@
+{
+  "images": 100,
+  "budgets": [
+    4.0
+  ],
+  "tools": [
+    "resnet",
+    "resnet_crops_mean",
+    "resnet_crops_max",
+    "resnet_recut",
+    "convnext",
+    "efficientnet",
+    "dinov2_probe",
+    "yolo_cls",
+    "quality",
+    "laya",
+    "laya_q4",
+    "laya_recut",
+    "smolvlm",
+    "smolvlm_base",
+    "smolvlm_split",
+    "qwen",
+    "qwen_any",
+    "qwen_rust",
+    "qwen_corrosion",
+    "qwen_missing-cap",
+    "qwen_nest",
+    "head_rust",
+    "head_corrosion",
+    "head_missing-cap",
+    "head_nest",
+    "spec_glass",
+    "spec_polymer",
+    "spec_hardware",
+    "spec_yoke",
+    "spec_rodgrip",
+    "resnet18",
+    "resnet101",
+    "vit_base",
+    "deit_small",
+    "swin_tiny",
+    "mobilenet_v2",
+    "efficientnet_b3",
+    "convnext_small",
+    "cspec_glass",
+    "cspec_polymer",
+    "cspec_hardware",
+    "cspec_yoke",
+    "cspec_rodgrip",
+    "convnext_tta",
+    "efficientnet_tta",
+    "convnext_recut",
+    "clip_probe",
+    "clip_head_rust",
+    "clip_head_corrosion",
+    "clip_head_missing-cap",
+    "clip_head_nest",
+    "dinov2b_probe",
+    "dinov2b_head_rust",
+    "dinov2b_head_corrosion",
+    "dinov2b_head_missing-cap",
+    "dinov2b_head_nest",
+    "clip_large_zeroshot",
+    "qwen_other",
+    "qwen_any_recut",
+    "exposure",
+    "size",
+    "component_resnet18"
+  ],
+  "methods": {
+    "qwen3-0.6b sft_think": {
+      "4.0": {
+        "component_accuracy": 0.95,
+        "defect_accuracy": 0.96,
+        "condition_accuracy": 0.95,
+        "all_three_correct": 0.91,
+        "component_macro_f1": 0.9352,
+        "condition_macro_f1": 0.7705,
+        "defect_recall": 1.0,
+        "good_recall": 0.9574,
+        "no_valid_report": 0.01,
+        "mean_time_s": 0.637,
+        "upload_kb": 93.8,
+        "tool_steps": 1.95,
+        "calls": {
+          "component_resnet18": 0.88,
+          "head_rust": 0.01,
+          "laya": 0.2,
+          "laya_q4": 0.05,
+          "laya_recut": 0.79,
+          "resnet18": 0.01,
+          "resnet_recut": 0.01
+        }
+      }
+    },
+    "qwen3-0.6b grpo_think": {
+      "4.0": {
+        "component_accuracy": 0.93,
+        "defect_accuracy": 0.97,
+        "condition_accuracy": 0.96,
+        "all_three_correct": 0.89,
+        "component_macro_f1": 0.915,
+        "condition_macro_f1": 0.7724,
+        "defect_recall": 1.0,
+        "good_recall": 0.9681,
+        "no_valid_report": 0.0,
+        "mean_time_s": 0.33,
+        "upload_kb": 33.32,
+        "tool_steps": 1.0,
+        "calls": {
+          "laya": 0.96,
+          "laya_q4": 0.04
+        }
+      }
+    },
+    "qwen3-0.6b base_think": {
+      "4.0": {
+        "component_accuracy": 0.12,
+        "defect_accuracy": 0.26,
+        "condition_accuracy": 0.0,
+        "all_three_correct": 0.0,
+        "component_macro_f1": 0.2657,
+        "condition_macro_f1": 0.0,
+        "defect_recall": 0.3333,
+        "good_recall": 0.2553,
+        "no_valid_report": 0.49,
+        "mean_time_s": 0.163,
+        "upload_kb": 16.44,
+        "tool_steps": 0.7,
+        "calls": {
+          "component_resnet18": 0.13,
+          "head_rust": 0.01,
+          "resnet": 0.25,
+          "resnet18": 0.08,
+          "resnet_crops_max": 0.13,
+          "resnet_crops_mean": 0.03,
+          "resnet_recut": 0.07
+        }
+      }
+    }
+  }
+}

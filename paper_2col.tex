@@ -133,11 +133,46 @@ The drone uploads each image only once, so later cloud tools for the same image 
 
 The agent has a time budget of 4, 10 or 30\,s for each image. A tool can be called only if its time fits in the time that is left. The agent has at most 8 steps; at step 8 it must write the report.
 
-\subsection{The agent}
+\subsection{The report}
+\label{sec:report}
 
-The agent is a text-only language model. It never sees the image. It only reads the answers of the tools as short text.
+For each image, the agent must answer the same three questions that laya-vision answers:
+\begin{enumerate}
+\item \emph{Which power line component is in this image?} One of 11 types, for example glass insulator, shackle or yoke suspension.
+\item \emph{Does this power line component have a defect?} Yes or no.
+\item \emph{Which condition does this power line component have?} One of six conditions: good, rust, corrosion, missing cap, bird nest or other defect.
+\end{enumerate}
+The agent gives the answers as one short JSON object, for example
+\begin{center}\small
+\texttt{\{"name": "REPORT", "component": "glass insulator",}\\
+\texttt{\ "defect": "yes", "condition": "missing cap"\}}
+\end{center}
+A field is correct only if it is exactly equal to the true label. Figure~\ref{fig:samples} shows four test images with their true labels and the answers of two tools. Tables~\ref{tab:main}--\ref{tab:transfer} give the share of correct answers for each question.
 
-For each image, the agent starts with no tool results. At each step it receives a prompt with the task, the time left, the state of the link, the answers of the tools called so far, and a list of tools to choose from. A BM25 text search~\cite{bm25} picks the 15 tools whose descriptions fit best; the option \emph{report} is always added. The agent writes one short JSON answer. Either it selects a tool, and the saved answer of this tool is added to the next prompt. Or it writes the report, and the work on this image ends.
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\linewidth]{figs/fig_tv3_samples.pdf}
+\caption{\textbf{Four test images, without and with tool answers.} (a) The image alone, as the drone takes it. The agent never sees it. (b) The same image with its true labels and the answers of two tools, which is all the agent reads. Orange: a wrong answer. In the third image, ResNet-50 says ``good'' with only 50\% while laya-vision finds the missing cap. In the fourth image, laya-vision names the wrong component but the right condition.}
+\label{fig:samples}
+\end{figure*}
+
+\subsection{The agent: plan, select and report}
+\label{sec:agent}
+
+The agent is a text-only language model. It never sees the image. It only reads the answers of the tools as short text. For each image it repeats three stages until it writes the report.
+
+\textbf{Plan.} The agent reads the state: the task, the time left, the state of the link, whether the image is already uploaded, and the tool answers so far. Zhou et al.~\cite{zhou2026} train a separate planning step. We do not. In the agents without thinking, the plan is implicit in the next choice. In the thinking agents, the written reason before each action plays the role of a short plan (Section~\ref{sec:thinking}).
+
+\textbf{Select.} A text search ranks the tools (see below), and the agent receives the 15 best tools that still fit in the time, plus the option \emph{report}. It answers \texttt{\{"name": "SELECT", "ids": ["resnet18"]\}}, for example. The saved answer of this tool is then added to the next prompt as one line of text, such as \emph{``resnet18: missing cap 99\%, good 1\%''}.
+
+\textbf{Report.} When the agent thinks it knows enough, it chooses \emph{report} and writes the three answers (Section~\ref{sec:report}). The work on this image then ends. At step 8 the agent must report.
+
+\textbf{Ranking of the tools.} With 62 tools, a long list would fill the prompt, so we show only 15. We rank the tools with BM25~\cite{bm25}, a standard text-search score. Each tool is a short document: its name, its location (drone or cloud) and a one-line description. The query is a fixed text about the task (``inspect power line component defect condition component type'') plus the answers of the tools called so far. A tool $t$ gets the score
+\begin{equation}
+\text{score}(t)=\sum_{w\in\text{query}}\text{idf}(w)\,\frac{n_{w,t}\,(k_1+1)}{n_{w,t}+k_1\big(1-b+b\,\frac{L_t}{\bar{L}}\big)}
+\label{eq:bm25}
+\end{equation}
+where $n_{w,t}$ is how often word $w$ appears in the document of tool $t$, $L_t$ is the length of this document, $\bar{L}$ is the mean length of all documents, and $\text{idf}(w)$ is high for words that appear in few documents. We use $k_1=1.8$ and $b=1.0$ and remove common English words. We drop the tools that were already called or do not fit in the time left, and show the 15 tools with the highest score. Because the query contains the tool answers, the list changes during the work on an image: after ``missing cap 82\%'', for example, the tools that check only for a missing cap move to the top.
 
 \subsection{Training targets and reward}
 \label{sec:targets}
@@ -148,12 +183,19 @@ Like Zhou et al.~\cite{zhou2026}, we train each step separately. For each step w
 
 \textbf{Target for a report step.} The target is the true labels. This means the agent must learn which tool to trust when two tools disagree.
 
-\textbf{Reward for GRPO.} GRPO lets the agent write 8 answers for the same step and gives each answer a reward:
+\textbf{Reward for GRPO.} For one training step, GRPO lets the agent write $G=8$ answers $o_1,\dots,o_8$. Let $t^{*}$ be the target of this step, $y$ the true labels, and $c(o)$ the number of report fields in answer $o$ that are equal to $y$ (0 to 3). The reward of answer $o$ is given below; ``otherwise'' covers a wrong tool, a report that comes too early, and an answer that is not valid:
 \begin{equation}
-\text{reward}=\begin{cases}1 & \text{target tool selected}\\[2pt] \dfrac{\text{correct fields}}{3} & \text{report, if this is the target}\\[6pt] 0 & \text{all other cases}\end{cases}
+R(o)=\begin{cases}1 & o \text{ selects } t^{*}\\[2pt]
+\dfrac{c(o)}{3} & o \text{ is a report, } t^{*}=\textsc{report}\\[6pt]
+0 & \text{otherwise}\end{cases}
 \label{eq:reward}
 \end{equation}
-Answers with a reward above the average of the 8 answers become more likely, and answers below the average become less likely. If all 8 answers get the same reward, the agent learns nothing from this step.
+GRPO compares each answer with the other answers of the same step:
+\begin{equation}
+A_j=\frac{R(o_j)-\text{mean}\big(R(o_1),\dots,R(o_G)\big)}{\text{std}\big(R(o_1),\dots,R(o_G)\big)}
+\label{eq:adv}
+\end{equation}
+Answers with $A_j>0$ become more likely, and answers with $A_j<0$ become less likely. A small penalty (weight 0.02) keeps the model close to the SFT model. If all 8 answers get the same reward, every $A_j$ is zero and the agent learns nothing from this step.
 
 \subsection{Training}
 
@@ -161,7 +203,28 @@ We built 61,461 training steps from 22,496 runs (each validation image with 4 bu
 
 \textbf{SFT.} We train LoRA adapters~\cite{lora} on 12,000 steps with the TRL library~\cite{trl}. \textbf{GRPO} then continues from the SFT model for 400 steps on 4,000 prompts. The \emph{base} model is the same language model with the same instructions but without training.
 
-\textbf{Thinking variant.} After SFT, the 8 answers in GRPO are often the same, so GRPO learns little (Section~\ref{sec:grpo}). We therefore asked a larger model, Claude Haiku~5.5, to write a short reason (80--150 words) for 4,000 training steps. The reason explains the situation, the missing fields, the time and the link, and why the target action is a good choice. It does not mention the true label. 3,780 reasons passed our automatic checks. With this data, SFT teaches the agent to write a reason before each action. GRPO then continues for 200 steps. We trained this variant with Qwen3-0.6B, Qwen3-1.7B and Qwen3-4B, with the same data and settings. The component classifier did not exist when we trained the thinking agents.
+\textbf{Thinking variant.}
+\label{sec:thinking}
+After SFT, the 8 answers in GRPO are often the same, so GRPO learns little (Section~\ref{sec:grpo}). We therefore asked a larger model, Claude Haiku~5.5, to write a short reason (80--150 words) for 4,000 training steps. The reason explains the situation, the missing fields, the time and the link, and why the target action is a good choice. It does not mention the true label. 3,780 reasons passed our automatic checks. Box~1 shows one of them. With this data, SFT teaches the agent to write a reason before each action. GRPO then continues for 200 steps. We trained this variant with Qwen3-0.6B, Qwen3-1.7B and Qwen3-4B, with the same data and settings. The component classifier did not exist when we trained the thinking agents.
+
+\par\medskip\noindent
+\fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{\footnotesize
+\textbf{Box 1: A teacher reason from the training data.}
+
+\smallskip
+\emph{State:} no time limit, 0.80\,s used; link up, 2.6\,Mbit/s; image already uploaded.\\
+\emph{Tool answers so far:}\\
+\texttt{efficientnet: missing cap 100\%, corrosion 0\%}\\
+\texttt{laya: component glass insulator 88\%; defect 97\%;}\\
+\texttt{\ \ missing cap 98\%, good 1\%}
+
+\smallskip
+\emph{Reason (Haiku 5.5):} ``I have used 0.80\,s with no time limit, and the image is uploaded at 2.6\,Mbit/s. Laya reports glass insulator at 88\%, with defect at 97\% and missing cap at 98\%, and good, no defect at only 1\%. Efficientnet reports missing cap at 100\% and corrosion at 0\%. Two different models agree on missing cap, and the defect reading is high. The condition is clear, so I stop and report glass insulator with a defect and condition missing cap.''
+
+\smallskip
+\emph{Action:} \texttt{\{"name": "REPORT", "component": "glass insulator", "defect": "yes", "condition": "missing cap"\}}
+}}
+\par\medskip
 
 \section{Experimental Evaluation}
 \label{sec:eval}

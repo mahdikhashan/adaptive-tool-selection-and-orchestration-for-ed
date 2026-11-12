@@ -338,6 +338,65 @@
           "spec_polymer": 0.014,
           "spec_yoke": 0.04
         }
+      },
+      "30.0": {
+        "component_accuracy": 0.99,
+        "defect_accuracy": 0.944,
+        "condition_accuracy": 0.934,
+        "all_three_correct": 0.914,
+        "component_macro_f1": 0.8984,
+        "condition_macro_f1": 0.738,
+        "defect_recall": 0.7627,
+        "good_recall": 0.9683,
+        "no_valid_report": 0.0,
+        "mean_time_s": 0.27,
+        "upload_kb": 32.87,
+        "tool_steps": 2.35,
+        "calls": {
+          "clip_head_corrosion": 0.002,
+          "clip_head_missing-cap": 0.002,
+          "clip_large_zeroshot": 0.008,
+          "component_resnet18": 0.998,
+          "cspec_glass": 0.002,
+          "head_missing-cap": 0.01,
+          "head_rust": 0.002,
+          "qwen_any": 0.016,
+          "qwen_corrosion": 0.002,
+          "resnet": 0.904,
+          "resnet101": 0.006,
+          "resnet18": 0.046,
+          "resnet_crops_max": 0.004,
+          "resnet_recut": 0.308,
+          "spec_glass": 0.018,
+          "spec_polymer": 0.004,
+          "spec_yoke": 0.014
+        }
+      },
+      "inf": {
+        "component_accuracy": 0.99,
+        "defect_accuracy": 0.95,
+        "condition_accuracy": 0.934,
+        "all_three_correct": 0.916,
+        "component_macro_f1": 0.8984,
+        "condition_macro_f1": 0.788,
+        "defect_recall": 0.7966,
+        "good_recall": 0.9705,
+        "no_valid_report": 0.0,
+        "mean_time_s": 0.109,
+        "upload_kb": 1.72,
+        "tool_steps": 2.04,
+        "calls": {
+          "component_resnet18": 0.998,
+          "head_missing-cap": 0.002,
+          "head_rust": 0.012,
+          "resnet": 0.962,
+          "resnet101": 0.006,
+          "resnet18": 0.026,
+          "resnet_crops_max": 0.002,
+          "resnet_recut": 0.008,
+          "smolvlm": 0.014,
+          "spec_yoke": 0.008
+        }
       }
     }
   }

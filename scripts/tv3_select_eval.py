@@ -1,4 +1,5 @@
 import argparse
+import gc
 import json
 import os
 import time
@@ -40,24 +41,34 @@ def summarize(res):
             "calls": {t: round(float(np.mean([t in r["called"] for r in res])), 3) for t in tools}}
 
 
-def run(env, rows, budgets, choose_batch, seed):
+def run(env, rows, budgets, choose_batch, seed, name="", on_budget=None):
     trace = Network("weak", 10_000 + seed).trace
     rng = np.random.default_rng(seed)
     out = {}
     for budget in budgets:
+        start = time.time()
         eps = [episode(env, r, budget, trace[rng.integers(len(trace))]) for r in rows]
+        step = 0
         while True:
             active = [e for e in eps if not e.done]
             if not active:
                 break
+            step += 1
+            print(f"[progress] {name} budget {budget:g}: step {step}, {len(active)} episodes active, "
+                  f"{len(eps) - len(active)}/{len(eps)} reports done, {(time.time() - start) / 60:.1f} min", flush=True)
             actions = [e.candidates() for e in active]
             for e, choice in zip(active, choose_batch(active, actions)):
                 e.step(choice)
         out[str(budget)] = summarize([e.outcome() for e in eps])
+        v = out[str(budget)]
+        print(f"[budget] {name} {budget:g} s ({(time.time() - start) / 60:.1f} min): component {v['component_accuracy']}, defect {v['defect_accuracy']}, "
+              f"condition {v['condition_accuracy']}, all three {v['all_three_correct']}, time {v['mean_time_s']} s, tool steps {v['tool_steps']}", flush=True)
+        if on_budget:
+            on_budget(out)
     return out
 
 
-def qwen_chooser(model_name, adapter, batch_size, dtype, think=False):
+def qwen_chooser(model_name, adapter, batch_size, dtype, think=False, max_new_tokens=None):
     from transformers import AutoModelForCausalLM, AutoTokenizer
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     tokenizer.padding_side = "left"
@@ -69,13 +80,19 @@ def qwen_chooser(model_name, adapter, batch_size, dtype, think=False):
         model = PeftModel.from_pretrained(model, adapter).merge_and_unload()
     model = model.to("cuda" if torch.cuda.is_available() else "cpu").eval()
 
+    limit = max_new_tokens or (384 if think else 96)
+
     def choose(eps, actions):
         out = []
         texts = [render(tokenizer, e, a, think) for e, a in zip(eps, actions)]
-        for k in range(0, len(texts), batch_size):
+        batches = range(0, len(texts), batch_size)
+        start = time.time()
+        for n, k in enumerate(batches, 1):
+            if n == 1 or n % max(1, len(batches) // 10) == 0:
+                print(f"[progress]   batch {n}/{len(batches)}, {(time.time() - start) / 60:.1f} min", flush=True)
             batch = tokenizer(texts[k:k + batch_size], return_tensors="pt", padding=True).to(model.device)
             with torch.no_grad():
-                gen = model.generate(**batch, max_new_tokens=384 if think else 96, do_sample=False, pad_token_id=tokenizer.pad_token_id)
+                gen = model.generate(**batch, max_new_tokens=limit, do_sample=False, pad_token_id=tokenizer.pad_token_id)
             decoded = tokenizer.batch_decode(gen[:, batch["input_ids"].shape[1]:], skip_special_tokens=True)
             out += [parse(d, a) for d, a in zip(decoded, actions[k:k + batch_size])]
         return out
@@ -93,6 +110,7 @@ def main():
     parser.add_argument("--batch-size", type=int, default=None, help="default 32 for 0.6B, 12 above")
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--out", default="eval.json", help="file name in results/tools_v3/select/")
+    parser.add_argument("--max-new-tokens", type=int, default=None, help="tokens per step; default 384 with thinking, 96 without")
     args = parser.parse_args()
     env = setup()
     rng = np.random.default_rng(args.seed)
@@ -109,7 +127,11 @@ def main():
     for method in args.methods:
         name, start = f"{tag} {method}", time.time()
         try:
-            report["methods"][name] = run(env, rows, args.budgets, qwen_chooser(args.model, adapters[method], batch_size, dtype, method.endswith("_think")), args.seed)
+            def save(partial, name=name):
+                report["methods"][name] = dict(partial)
+                write_json(path, report)
+            chooser = qwen_chooser(args.model, adapters[method], batch_size, dtype, method.endswith("_think"), args.max_new_tokens)
+            report["methods"][name] = run(env, rows, args.budgets, chooser, args.seed, name, save)
             line = {b: (v["component_accuracy"], v["defect_accuracy"], v["condition_accuracy"], v["all_three_correct"], v["mean_time_s"])
                     for b, v in report["methods"][name].items()}
         except Exception as error:
@@ -117,6 +139,8 @@ def main():
             line = report["methods"][name]
         print(f"[eval] {name} ({(time.time() - start) / 60:.1f} min): (component, defect, condition, all three, time s)", json.dumps(line), flush=True)
         write_json(path, report)
+        chooser = None
+        gc.collect()
         torch.cuda.empty_cache()
 
 

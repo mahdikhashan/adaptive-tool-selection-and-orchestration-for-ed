@@ -38,6 +38,7 @@ def main():
     parser.add_argument("--images", type=int, default=500)
     parser.add_argument("--batch-size", type=int, default=8)
     parser.add_argument("--max-turn-tokens", type=int, default=384)
+    parser.add_argument("--max-steps", type=int, default=8, help="tool steps plus report per episode; use the training value (5) for full-episode agents")
     parser.add_argument("--dtype", default=None)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--out", default=None)
@@ -56,7 +57,8 @@ def main():
                 "sft": f"{tag}_sft", "grpo": f"{tag}_grpo", "base_think": None}
     path = results_dir("tools_v3") / "select" / (args.out or f"eval_episode_{tag}_{args.name}.json")
     report = json.loads(path.read_text()) if path.exists() else {}
-    report.update({"images": len(rows), "budgets": args.budgets, "tools": list(env["tools"]), "excluded": sorted(excluded_tools()), "format": "multi-turn"})
+    report.update({"images": len(rows), "budgets": args.budgets, "tools": list(env["tools"]), "excluded": sorted(excluded_tools()), "format": "multi-turn",
+                   "max_steps": args.max_steps})
     report.setdefault("methods", {})
     for method in args.methods:
         name, start = f"{tag} {method}", time.time()
@@ -69,6 +71,8 @@ def main():
                 outcomes = []
                 for k in range(0, len(rows), args.batch_size):
                     eps = [episode(env, r, budget, trace[rng.integers(len(trace))]) for r in rows[k:k + args.batch_size]]
+                    for ep in eps:
+                        ep.max_steps = args.max_steps
                     outcomes += [r["ep"].outcome() for r in play(model, tokenizer, eps, think, False, args.max_turn_tokens)]
                     if (k // args.batch_size) % 10 == 0:
                         print(f"[progress] {name} budget {budget:g}: {len(outcomes)}/{len(rows)} images, {(time.time() - b_start) / 60:.1f} min", flush=True)

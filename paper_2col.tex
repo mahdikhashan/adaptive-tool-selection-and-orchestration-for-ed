@@ -47,7 +47,7 @@
 \affiliation{organization={[Department, Institution]},city={[City]},country={[Country]}}
 
 \begin{abstract}
-Inspection drones can run small vision models on board and send images to larger models in the cloud. For each image, the drone must choose which models to use, with limited time and a weak radio link. We test whether a small language model can make this choice for power-line inspection. Step by step, the model picks one of about 60 vision tools and reads its answer. At the end it writes a report with three parts: the component type, whether there is a defect, and the condition. We train this agent by supervised fine-tuning and then by reinforcement learning, and compare its reports with the true labels. First, the set of tools matters most. With one large general model in the tool set, a small agent learns to call it and stop, and 88.1\% of its reports are fully correct. When we replace that model with a small component classifier, the same training gives an agent that uses two small classifiers on the drone: 95.9\% of its reports are fully correct, in 0.09 seconds per image, with no upload. Second, reasoning text from a larger teacher model, larger agents and reinforcement learning do not improve the accuracy when the tool set stays the same. Third, reinforcement learning helps when the tool set changes. When we remove the general model at test time, an agent trained with reinforcement learning uses a tool that it never saw in training: 92.4\% of its reports are fully correct, against 76.2\% without reinforcement learning.
+Inspection drones can run small vision models on board and send images to larger models in the cloud. The drone must choose models for each image, with limited time and a weak radio link. We test whether a small language model can make this choice for power-line inspection. Step by step, the model picks one of about 60 vision tools and reads its answer. Then it reports the component type, whether there is a defect, and the condition. We train it by supervised fine-tuning and reinforcement learning and compare its reports with the true labels. First, the set of tools matters most. With one large general model in the tool set, a small agent learns to call it and stop, and 88.1\% of its reports are fully correct. With a small component classifier instead, the same training gives an agent that uses two classifiers on the drone: 95.9\% of its reports are fully correct, in 0.09 seconds per image, with no upload. Second, reasoning text from a larger teacher model and larger agents do not improve the accuracy. Reinforcement learning on the final report gives the best agent with the known tools (88.4\%, against 79.8\%). Third, accuracy and adaptation pull in opposite directions. When we remove the general model at test time, this best agent fails (0.6\%), because it learned to call exactly one tool. Agents trained with a step-wise reward adapt better, but the effect depends on the model: 92.4\% for one agent and 9.4\% for another.
 \end{abstract}
 
 \begin{keyword}
@@ -70,8 +70,9 @@ Our main contributions are:
 \begin{itemize}
 \item a tool-selection benchmark for drone inspection with 62 real vision tools, measured run times, recorded mobile-network data and an upload cost;
 \item evidence that the tool set decides the accuracy: when one large general model is replaced by a small specialist, fully correct reports rise from 88.1\% to 95.9\%, and no upload is needed;
-\item evidence that teacher reasoning, larger models and GRPO do not improve the accuracy when the tool set stays the same, and an explanation of why;
-\item evidence that GRPO helps agents adapt to a changed tool set: without new training, a 1.7B agent uses a tool it never saw in training and reaches 92.4\%, against 76.2\% without GRPO and 95.9\% after new training.
+\item evidence that teacher reasoning and larger models do not improve the accuracy, and that step-wise GRPO gives no learning signal after SFT;
+\item GRPO on full inspection episodes with a reward on the final report, which gives the most accurate agent with the known tools (88.4\%);
+\item evidence that accuracy with the known tools and adaptation to a changed tool set pull in opposite directions: the full-episode agent fails when its main tool is removed (0.6\%), while step-wise GRPO agents adapt in some cases (92.4\% at 1.7B) and fail in others (9.4\% at 4B).
 \end{itemize}
 
 Section~\ref{sec:related} reviews related work. Section~\ref{sec:method} describes the data, the tools, the agent and the training. Section~\ref{sec:eval} presents and discusses the results, and Section~\ref{sec:conclusion} concludes.
@@ -244,6 +245,16 @@ The \emph{base} model is the same language model with the same instructions but 
 
 After SFT, the $G$ answers in GRPO are often the same, so most steps give no learning signal. To make the answers more different, we let the agent write a short reason before each action. We asked a larger model, Claude Haiku~5.5, to write such a reason (80--150 words) for 4,000 pairs $(s,a^{*})$, with similar numbers for each target. The reason explains the state, the missing fields, the time and the link, and why $a^{*}$ is a good choice. It does not mention the true labels. 3,780 reasons passed our automatic checks; Box~1 shows one of them. SFT (Eq.~\eqref{eq:sft}) then uses the reason followed by $a^{*}$ as its target text, and GRPO continues for 200 steps with the same reward. The reward looks only at the action, not at the reason. We trained this variant with Qwen3-0.6B, Qwen3-1.7B and Qwen3-4B, with the same data and settings. The component classifier did not exist when we trained the thinking agents.
 
+\subsection{Reinforcement learning on full episodes}
+\label{sec:episode}
+
+The step-wise reward in Eq.~\eqref{eq:reward} rewards the agent for copying the target $a^{*}$, and the target is built with the true labels (Eq.~\eqref{eq:gold}). We therefore also train with a reward on the final report. Here the agent plays the whole inspection of an image as one conversation: it writes a reason, selects a tool, reads the result, and so on, until it writes the report. The conversation keeps the earlier reasons and tool results. For one image, GRPO samples $G=8$ such episodes $e_1,\dots,e_G$. An episode with report $r$ and total tool time $T(e)$ gets the reward
+\begin{equation}
+R_{\mathrm{ep}}(e)=\frac{1}{3}\sum_{f}\mathbb{1}[\,r_f=y_f\,]\;-\;\lambda\,T(e),
+\label{eq:episode}
+\end{equation}
+with $\lambda=0.01\,\text{s}^{-1}$, so that a slow plan earns a little less. There is no target tool: any plan that leads to a correct report earns the same reward. The advantage and the objective are the same as in Eqs.~\eqref{eq:adv} and \eqref{eq:grpo}, with $o_j$ replaced by $e_j$. The loss uses only the tokens that the agent wrote; the tool results and the new prompts between its turns are masked out. We start from the 1.7B thinking SFT agent and train for 150 steps, with 2 images and 8 episodes per step, at most 5 tool calls per episode, $\beta=0.02$, and bf16 on an A10 GPU. We train two versions: one with all 62 tools, and one without the component classifier (61 tools, the same tools as in SFT). In the second version, the component classifier is still unseen after training.
+
 \par\medskip\noindent
 \fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{\footnotesize
 \textbf{Box 1: A teacher reason from the training data.}
@@ -268,7 +279,7 @@ After SFT, the $G$ answers in GRPO are often the same, so most steps give no lea
 
 We test the agents without thinking on 1,500 of the 6,092 test images, chosen with a fixed random seed. We test the thinking agents, and the agents with removed tools, on the first 500 of these images. We count how often each report field is correct and how often all three fields are correct. All tests use one seed, and the agent always takes its most likely answer. With 500 images, a difference of about three points can be chance.
 
-The evaluation follows the two questions of the introduction. Sections~4.1--4.3 ask what the agent learns and how much the tool set matters. Sections~\ref{sec:grpo} and 4.5 ask what GRPO, teacher reasoning and larger models add when the tool set stays the same. Section~\ref{sec:transfer} asks what they add when the tool set changes.
+The evaluation follows the two questions of the introduction. Sections~4.1--4.3 ask what the agent learns and how much the tool set matters. Sections~\ref{sec:grpo} and 4.5 ask what GRPO, teacher reasoning and larger models add when the tool set stays the same. Section~\ref{sec:transfer} asks what they add when the tool set changes, and Section~\ref{sec:episode-results} tests a reward on the final report, with the known tools and after a change.
 
 \subsection{The tools alone}
 
@@ -425,12 +436,14 @@ So far the tool set at test time was the same as in training, and GRPO, reasonin
 
 Figure~\ref{fig:transfer} and Table~\ref{tab:transfer} show the result. The SFT agents adapt badly. The 0.6B agent without thinking falls to 0.334 and never calls the component classifier. GRPO changes this. The 0.6B agent with GRPO starts from the same SFT model, but it reaches 0.754 and calls the component classifier on 72\% of the images. The 1.7B agent with thinking and GRPO reaches 0.924. This is close to the agent that we trained again without laya-vision (0.959). It calls the component classifier on almost every image and then ResNet-50, like the newly trained agent.
 
-This is surprising, because with the full tool set the GRPO agents acted exactly like their SFT models (Table~\ref{tab:main}), and the KL divergence between them was small (Table~\ref{tab:grpo}). A small change of the policy is enough to change its behaviour in states that it did not see in training. The effect of GRPO appears only when the tool set changes. The SFT agents often find the component classifier, but then they trust the wrong tool for the condition. The 0.6B agents also change a lot between budgets. Two tests were not finished when we wrote this draft: the 4B agent with GRPO, and the 1.7B agent with GRPO for 30\,s and for no time limit (it reaches 0.910 at 10\,s).
+With the full tool set, these GRPO agents acted exactly like their SFT models (Table~\ref{tab:main}), and the KL divergence between them was small (Table~\ref{tab:grpo}). A small change of the policy is enough to change its behaviour in states that it did not see in training.
+
+But GRPO does not always help. The 4B agent with GRPO falls from 0.394 to 0.094. The tool calls explain the difference. A good report needs two kinds of tool: the component classifier and a classifier that gives the condition, such as ResNet-50. The 1.7B GRPO agent calls exactly these. The 4B agents mostly call a five-crop ResNet-50 that gives only a defect score and no condition, so their condition is a guess (0.38 after GRPO). In all cases, GRPO makes the agent call fewer tools and choose them more consistently. It makes the existing plan stronger: a good plan becomes better, and a bad plan becomes worse. With the full tool set, the 1.7B and 4B GRPO agents are equal (0.876 and 0.874, laya-vision on 95\% of the images); behaviour with the known tools does not predict behaviour after a change. The 0.6B agents also change a lot between budgets.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{figs/fig_tv3_transfer.pdf}
-\caption{\textbf{GRPO helps agents adapt when the general model is removed.} Fully correct reports at the 4\,s budget. The agents were trained with laya-vision; it is removed at test time, with no new training. Dashed line: agent trained again without laya-vision (1,500 images). Others: 500 test images, single seed. Agents without thinking exist only for 0.6B.}
+\caption{\textbf{After the general model is removed, GRPO helps some agents and hurts others.} Fully correct reports at the 4\,s budget. The agents were trained with laya-vision; it is removed at test time, with no new training. Dashed line: agent trained again without laya-vision (1,500 images). Others: 500 test images, single seed. Agents without thinking exist only for 0.6B.}
 \label{fig:transfer}
 \end{figure}
 
@@ -451,8 +464,42 @@ Qwen3-0.6B & SFT & 0.348 & 0.898 & 0.334 & 0.00 \\
 Qwen3-1.7B & SFT, thinking & 0.830 & 0.846 & 0.762 & 0.84 \\
  & SFT + GRPO, thinking & \textbf{0.988} & 0.942 & \textbf{0.924} & \textbf{1.00} \\
 Qwen3-4B & SFT, thinking & 0.600 & 0.736 & 0.394 & 0.60 \\
+ & SFT + GRPO, thinking & 0.526 & 0.382 & 0.094 & 0.53 \\
 \midrule
 \multicolumn{2}{l}{Trained again without laya-vision} & 0.994 & 0.965 & 0.959 & 1.00 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Reinforcement learning on full episodes}
+\label{sec:episode-results}
+
+Table~\ref{tab:episode} shows the agents of Section~\ref{sec:episode}, compared with the 1.7B SFT and step-wise GRPO agents. All of them are tested in the same multi-turn format on the same 500 images at 4\,s, so the numbers differ from Tables~\ref{tab:think} and \ref{tab:transfer}, where each step got a fresh prompt.
+
+\textbf{With the known tools, full-episode GRPO gives the best agent.} It reaches 0.884, against 0.798 for SFT and 0.842 for step-wise GRPO. Its plan is the same as that of step-wise GRPO: laya-vision on 95\% of the images, then the report. The gain is in the report: it never fails to write a valid report (the other agents fail on about 4\% of the images in this format), and it finds 83\% of the defects, against 68--69\%. During training, the mean episode reward rose from 0.854 to 0.908, and the tool calls per episode fell from 1.33 to 1.13.
+
+\textbf{After a change of the tool set, the same method fails.} Without laya-vision, the full-episode agent that never saw the component classifier reaches only 0.006. During training it learned to call exactly one tool (1.00 per episode in the second half), and with laya-vision this was the best plan. Without laya-vision, one tool cannot give both the component and the condition, so almost every report contains a guess. The reward caused this: laya-vision was fast and usually right, and the time cost in Eq.~\eqref{eq:episode} made each further call slightly worse. The agent that saw the component classifier during GRPO adapts better (0.416) but stays far from an agent trained again without laya-vision (0.959). In the same format, step-wise GRPO adapts best (0.538).
+
+\begin{table}[t]
+\centering
+\caption{GRPO on full episodes, 1.7B thinking agents, multi-turn format, 4\,s budget, 500 test images, single seed. Not valid: share of images without a valid report. Calls: tools per image. Best results in bold.}
+\label{tab:episode}
+\footnotesize
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{P{0.42\linewidth}cccc}
+\toprule
+Agent & All three & Defects found & Not valid & Calls \\
+\midrule
+\multicolumn{5}{l}{\emph{All 62 tools}}\\
+SFT & 0.798 & 0.678 & 3.8\% & 1.08 \\
+Step-wise GRPO & 0.842 & 0.695 & 4.0\% & 1.00 \\
+Full-episode GRPO & \textbf{0.884} & \textbf{0.831} & \textbf{0\%} & 1.00 \\
+\midrule
+\multicolumn{5}{l}{\emph{Laya-vision removed at test time}}\\
+SFT & 0.082 & 0.271 & 44.2\% & 1.75 \\
+Step-wise GRPO & \textbf{0.538} & \textbf{0.610} & 8.0\% & 1.80 \\
+Full-episode GRPO, component tool unseen & 0.006 & 0.593 & \textbf{0.2\%} & 1.01 \\
+Full-episode GRPO, component tool in training & 0.416 & 0.390 & 18.8\% & 1.90 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -492,18 +539,20 @@ ResNet-18 on the drone, alone & 0.03\,s & 0 \\
 
 \textbf{The agent can only be as good as its targets.} SFT teaches the agent the target behaviour almost perfectly. But the gain $g(t)$ in Eq.~\eqref{eq:gain} uses the true labels of each training image. The target is therefore a tool that answers many fields, or a fast tool that happens to be right on this image. It is not the tool that is most accurate on average, which is what the agent needs at test time. Better targets should use the expected accuracy of a tool, and the reward should depend on the final report, not on a single step.
 
-\textbf{GRPO needs different answers, and it helps under change.} After SFT with short answers, the policy is too sure, the 8 answers get the same reward, and the advantages in Eq.~\eqref{eq:adv} are zero. Teacher reasoning makes the answers more different, but it does not improve the accuracy (Table~\ref{tab:think}). Still, GRPO is what helps the agents when the tool set changes (Table~\ref{tab:transfer}). A possible reason is that GRPO tries other choices during training and rewards them, so the agent depends less on the exact tools it copied. Next steps are to reward every tool that is equally good, and to train on the whole inspection of an image with the final report accuracy as the reward.
+\textbf{Step-wise GRPO needs different answers.} After SFT with short answers, the policy is too sure, the 8 answers get the same reward, and the advantages in Eq.~\eqref{eq:adv} are zero. Teacher reasoning makes the answers more different, but it does not improve the accuracy (Table~\ref{tab:think}). A reward on the final report (Eq.~\eqref{eq:episode}) gives a real learning signal and the most accurate agent with the known tools.
 
-\textbf{Larger is not better here.} With the usual tool set, the 1.7B and 4B agents are not more accurate than the 0.6B agent. Only when the tool set changes is the 1.7B agent with GRPO clearly the best. A 0.6B model is already a heavy load for a drone. So the smallest model is the best choice, unless the tool set changes often.
+\textbf{Accuracy and adaptation pull in opposite directions.} The full-episode reward taught the agent to rely on the one tool that works best with the known tool set, and to stop searching. This made it the best agent with the known tools and the worst after a change (Table~\ref{tab:episode}). Step-wise GRPO also makes the existing plan stronger; whether this helps after a change depends on whether the plan covers all three report fields (Section~\ref{sec:transfer}). For a drone fleet whose tools change, accuracy on the known tools is therefore not enough to choose an agent. A possible remedy, which we have not tested, is to remove random tools during training, so that the agent must learn to cover every report field with whatever tools are available. A reward without a time cost would also not punish a second tool.
+
+\textbf{Larger is not better here.} With the usual tool set, the 1.7B and 4B agents are not more accurate than the 0.6B agent. When the tool set changes, the 1.7B agent with GRPO is the best and the 4B agent with GRPO is among the worst. A 0.6B model is already a heavy load for a drone, so model size is not a good way to buy accuracy or robustness here.
 
 \textbf{The budgets must be tighter.} With budgets of 4\,s or more and a first call of 0.35\,s, time never limits the agent. We need shorter budgets, a cost for the upload, or slower drone tools before the agent must choose between accuracy and time.
 
-\textbf{Limitations.} The agent works with saved tool answers. The network and the times on the drone are simulated, and the factor of 9 is an estimate. The time of the agent itself is not counted. A fault in the time check allowed cloud tools when the link was down and there was no time limit. It affects 1.1\% of the training steps and all results without a time limit, so we leave these results out. The thinking agents and the tests with removed tools use 500 images, and some of these tests were not finished. All results come from one seed and one data set of power-line components.
+\textbf{Limitations.} The agent works with saved tool answers. The network and the times on the drone are simulated, and the factor of 9 is an estimate. The time of the agent itself is not counted. A fault in the time check allowed cloud tools when the link was down and there was no time limit. It affects 1.1\% of the training steps and all results without a time limit, so we leave these results out. The thinking agents and the tests with removed tools use 500 images. The agents with 0.6B and 1.7B parameters were tested in fp32 and the 4B agents in bf16; the 4B agents behave normally with the full tool set, so we do not think that precision explains their failure after the change, but we did not test this. The full-episode results use a multi-turn format that differs from the other tests, and they come from 150 training steps on 300 images. All results come from one seed and one data set of power-line components.
 
 \section{Conclusion}
 \label{sec:conclusion}
 
-A small language model can learn to inspect power-line images by calling tools, and the tool set decides most of its accuracy. With a large general model in the tool set, a Qwen3-0.6B agent learns to call this model and stop, and 88\% of its reports are fully correct. With a small component classifier instead, the same training gives an agent that uses two classifiers on the drone. It reaches 96\% in 0.09\,s with no upload. Teacher reasoning, larger models and GRPO do not improve the accuracy when the tool set stays the same. The reason is that the model is too sure after SFT, and that the targets prefer cheap tools. But GRPO helps when the tool set changes. Without new training, a 1.7B agent with reasoning and GRPO uses a tool that was never a target in its training and reaches 92\%, close to a newly trained agent. The tools of a drone fleet will change over time. So it is useful to train small agents with reinforcement learning, even when this gives no gain at first. In future work we will reward the final report instead of single steps, build targets without knowledge of the true labels, test shorter budgets, and measure the agent and the drone tools on a Jetson.
+A small language model can learn to inspect power-line images by calling tools, and the tool set decides most of its accuracy. With a large general model in the tool set, a Qwen3-0.6B agent learns to call this model and stop, and 88\% of its reports are fully correct. With a small component classifier instead, the same training gives an agent that uses two classifiers on the drone and reaches 96\% in 0.09\,s, with no upload. Teacher reasoning and larger models do not improve the accuracy, and step-wise GRPO gets no learning signal after SFT. GRPO with a reward on the final report gives the best agent with the known tools (88\%), but this agent fails when its main tool is removed, because it learned to rely on one tool. Agents trained with the step-wise reward adapt in some cases (92\% at 1.7B) and fail in others (9\% at 4B). So accuracy on the known tools and adaptation to new tools are different goals, and an agent for a drone fleet must be tested for both. In future work we will train with randomly removed tools, reward the final report without a time cost, test more seeds and tighter budgets, and measure the agent and the drone tools on a Jetson.
 
 \section*{Acknowledgements}
 

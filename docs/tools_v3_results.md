@@ -1,6 +1,6 @@
 # tools_v3: results of the Qwen inspection agent
 
-Date: 2026-11-11. Branch: `agentic-ppo-v2`. Plan: `tool_corpus_plan.md`. Tests for later: `tools_v3_future_tests.md`.
+Date: 2026-11-11, updated 2026-11-13. Branch: `agentic-ppo-v2`. Plan: `tool_corpus_plan.md`. Tests for later: `tools_v3_future_tests.md`.
 
 ## 1. Summary
 
@@ -10,7 +10,9 @@ Date: 2026-11-11. Branch: `agentic-ppo-v2`. Plan: `tool_corpus_plan.md`. Tests f
 - GRPO after SFT gives the same result as SFT. The model is almost certain after SFT, thus GRPO gets almost no learning signal.
 - The best single tools are better than the agent on defect and condition. The agent does not call them.
 - The time budgets (4, 10 and 30 s) do not change the result. The agent uses approximately 0.35 s for each image.
-- The results with thinking (0.6B, 1.7B and 4B) are not complete.
+- Thinking, a larger model (1.7B, 4B) and step-wise GRPO do not increase the accuracy with the same tools (section 8).
+- When we remove laya at test time, step-wise GRPO helps the 0.6B and 1.7B agents, but it makes the 4B agent worse (section 8).
+- GRPO on full episodes gives the best agent with the same tools (0.884). But when we remove laya, this agent fails (0.006). It learned to call exactly one tool (section 9).
 
 ## 2. Set-up
 
@@ -137,8 +139,8 @@ The agent calls laya_q4 (on the drone) when the link is down.
 
 - Haiku 5.5 wrote one reason (80 to 150 words) for each of 4,000 balanced steps. 3,780 reasons passed the checks (median 102 words). The checks reject a reason with an incorrect length. They also reject a reason that does not name the selected tool. A reason that names a tool that is not a candidate, or refers to the true answer, is also rejected.
 - Each training example is one step. The reasons of different steps of one image are not connected. At each step, the agent writes a new reason. The reasons of earlier steps are not in the next prompt.
-- SFT with thinking: 0.6B (loss 1.74 to approximately 0.89), 1.7B (loss 1.90 to 0.81), 4B on the A10 (running).
-- Evaluations of `base_think`, `sft_think` and `grpo_think`: running. The results go to `results/tools_v3/select/eval_think*.json`.
+- SFT with thinking: 0.6B (loss 1.74 to approximately 0.89), 1.7B (loss 1.90 to 0.81), 4B (bf16 on the A10).
+- The results are in section 8.
 
 ## 7. Run without laya-vision and with a component tool
 
@@ -234,9 +236,9 @@ All three fields correct:
 | 0.6B | SFT, thinking | 0.340 | 0.244 | 0.408 | 0.602 | 73% | 0.718 | 0.482 |
 | 0.6B | SFT + GRPO, thinking | 0.492 | 0.424 | 0.158 | 0.068 | 64% | 0.634 | 0.714 |
 | 1.7B | SFT, thinking | 0.762 | 0.662 | 0.718 | 0.596 | 84% | 0.830 | 0.846 |
-| 1.7B | SFT + GRPO, thinking | 0.924 | 0.910 | running | running | 100% | 0.988 | 0.942 |
-| 4B | SFT, thinking | 0.394 | 0.498 | running | running | 60% | 0.600 | 0.736 |
-| 4B | SFT + GRPO, thinking | running | | | | | | |
+| 1.7B | SFT + GRPO, thinking | 0.924 | 0.910 | 0.914 | 0.916 | 100% | 0.988 | 0.942 |
+| 4B | SFT, thinking | 0.394 | 0.498 | 0.450 | 0.298 | 60% | 0.600 | 0.736 |
+| 4B | SFT + GRPO, thinking | 0.094 | 0.082 | 0.134 | 0.140 | 53% | 0.526 | 0.382 |
 
 Reference: the agent trained without laya (section 7, 1,500 images) gets 0.959 at 4 s.
 
@@ -246,14 +248,77 @@ Reference: the agent trained without laya (section 7, 1,500 images) gets 0.959 a
 2. **A larger model does not help.** With thinking SFT, 0.6B is equal to or better than 1.7B and 4B.
 3. **GRPO with thinking gives the same policy at all sizes.** The 0.6B, 1.7B and 4B agents call laya on 95% of the images. They call one tool and get approximately 0.875. This is the policy of SFT without thinking.
 4. **The untrained thinking models do not give a report.** The 1.7B and 4B base models give no valid report on any image. The thinking is longer than 384 tokens.
-5. **GRPO makes the agent better when the tool list changes.** With laya removed, the GRPO agents are much better than their SFT agents. The 0.6B agent without thinking gets 0.754 against 0.334. The 1.7B agent with thinking gets 0.924 against 0.762. With the full tool list, GRPO did not change the result (section 4).
-6. **The 1.7B GRPO agent with thinking uses a new tool without new training.** It calls `component_resnet18` on 100% of the images, then ResNet-50 on 81%. It gets 0.924 at 4 s. The agent trained without laya gets 0.959.
-7. **The SFT agents trust the wrong tool for the condition.** They find the component tool. But the 0.6B SFT agent with thinking gets only 0.48 to 0.66 for the condition.
-8. **The 0.6B agents are not stable across budgets without laya.** For example, the 0.6B GRPO agent with thinking gets 0.07 to 0.49.
+5. **GRPO changes the reaction to a new tool list.** The direction is not always good. With laya removed, the 0.6B agent without thinking gets 0.754 with GRPO against 0.334 without. The 1.7B agent with thinking gets 0.924 against 0.762. But the 4B agent with thinking gets only 0.094 with GRPO against 0.394 without. The 0.6B agent with thinking is better with GRPO at 4 s and worse at 30 s and without a limit. With the full tool list, GRPO did not change the result (section 4).
+6. **A good agent calls two types of tool.** It calls the component tool and a classifier that gives the condition (for example ResNet-50). The 4B agents call `resnet_crops_max` on approximately 60% of the images. This tool gives only a defect score and no condition. Thus the condition is a guess (4B GRPO: 0.38). With laya, the 4B agent mostly called `laya_recut`. A possible reason (not tested) is that it selects tools with similar names, such as `resnet_recut` and `resnet_crops_max`.
+7. **GRPO makes the existing plan stronger.** In all cases, GRPO decreases the number of tool calls and makes the choices more constant. If the plan is good (0.6B without thinking, 1.7B), the accuracy increases. If the plan is bad (4B), the accuracy decreases.
+8. **With laya, the 1.7B and 4B GRPO agents are equal** (0.876 and 0.874 at 4 s, laya on 95% of the images). Without laya, they are very different (0.924 and 0.094). The behaviour with the known tools does not predict the behaviour after a change.
+9. **The 1.7B GRPO agent with thinking uses a new tool without new training.** It calls `component_resnet18` on 100% of the images, then ResNet-50 on 81%. It gets 0.924 at 4 s. The agent trained without laya gets 0.959.
+10. **The 0.6B agents are not stable across budgets without laya.** For example, the 0.6B GRPO agent with thinking gets 0.07 to 0.49.
 
-Limits: one seed, 500 images (an uncertainty of approximately 3 points), results marked "running" are not available yet.
+Limits: one seed, 500 images (an uncertainty of approximately 3 points). We evaluated the 0.6B and 1.7B agents in fp32 and the 4B agents in bf16. The 4B agents are normal with laya, thus we do not think that the precision causes the 4B result. We did not test this.
 
-## 9. Files
+## 9. GRPO on full episodes (1.7B, thinking)
+
+Date: 2026-11-13. Scripts: `scripts/tv3_grpo_episode.py`, `scripts/tv3_episode_eval.py`, `src/fedorch/episode_play.py`.
+
+### 9.1 Method
+
+- The agent does the full inspection of one image as one conversation. It reasons, selects a tool and reads the result, until it writes the report. The conversation keeps the earlier reasons and results.
+- For each image, GRPO samples 8 full episodes. The reward of an episode is: (correct report fields) / 3 minus 0.01 for each second of tool time. There is no gold tool.
+- TRL `rollout_func` gives the full conversation to the trainer. The tool results and the new prompts have `env_mask` = 0, thus only the tokens of the agent get a gradient.
+- Start: the 1.7B SFT agent with thinking. Settings: 150 steps, 2 images and 8 episodes in each step, a maximum of 5 tool steps. Beta is 0.02 (KL to the SFT agent). Precision: bf16 on the A10.
+- Two runs:
+  - `alltools`: all 62 tools during training.
+  - `heldout`: 61 tools during training (no `component_resnet18`), the same tools as in SFT. Thus `component_resnet18` is a new tool in the test without laya.
+
+### 9.2 Training (mean of each quarter of the 150 steps)
+
+| Run | Quarter | Reward | Groups with no learning signal | KL | Tools for each episode |
+|---|---|---|---|---|---|
+| alltools | 1 | 0.854 | 0.01 | 0.010 | 1.33 |
+| alltools | 2 | 0.888 | 0.22 | 0.021 | 1.21 |
+| alltools | 3 | 0.886 | 0.35 | 0.022 | 1.12 |
+| alltools | 4 | 0.908 | 0.41 | 0.020 | 1.13 |
+| heldout | 1 | 0.861 | 0.14 | 0.010 | 1.22 |
+| heldout | 2 | 0.841 | 0.51 | 0.021 | 1.04 |
+| heldout | 3 | 0.880 | 0.74 | 0.023 | 1.00 |
+| heldout | 4 | 0.905 | 0.88 | 0.021 | 1.00 |
+
+### 9.3 Results
+
+500 test images, 4 s budget, one seed. All agents in this section use the multi-turn format. Thus the numbers are not directly comparable with sections 3 to 8 (one new prompt for each step).
+
+All 62 tools:
+
+| Agent | All three | Component | Defect | Condition | Defects found | No valid report | Tools | Main tools |
+|---|---|---|---|---|---|---|---|---|
+| SFT, thinking | 0.798 | 0.858 | 0.910 | 0.910 | 0.678 | 3.8% | 1.08 | laya_recut 51%, laya 38% |
+| Step-wise GRPO, thinking | 0.842 | 0.892 | 0.914 | 0.922 | 0.695 | 4.0% | 1.00 | laya 95% |
+| Full-episode GRPO (alltools) | 0.884 | 0.930 | 0.956 | 0.962 | 0.831 | 0% | 1.00 | laya 95% |
+
+Laya removed at test time (59 tools):
+
+| Agent | `component_resnet18` in training | All three | Component | Condition | No valid report | Tools | Main tools |
+|---|---|---|---|---|---|---|---|
+| SFT, thinking | no | 0.082 | 0.378 | 0.144 | 44.2% | 1.75 | component_resnet18 53%, resnet_recut 47% |
+| Step-wise GRPO, thinking | no | 0.538 | 0.680 | 0.746 | 8.0% | 1.80 | resnet 85%, component_resnet18 75% |
+| Full-episode GRPO (heldout) | no | 0.006 | 0.278 | 0.688 | 0.2% | 1.01 | resnet 48%, component_resnet18 28%, resnet_recut 23% |
+| Full-episode GRPO (alltools) | yes (in GRPO) | 0.416 | 0.514 | 0.690 | 18.8% | 1.90 | resnet 83%, component_resnet18 65% |
+
+### 9.4 Interpretation
+
+1. **With the same tools, full-episode GRPO is the best agent.** In the same format, it is 8.6 points better than SFT. It is 4.2 points better than step-wise GRPO. It calls the same tool (laya) as step-wise GRPO. The gain is in the report: no reports that are not valid (step-wise GRPO: 4%), and more defects found (0.83 against 0.69).
+2. **Without laya, the held-out agent fails (0.006).** During training it learned to call exactly one tool (1.00 tools for each episode in the last half). Without laya, one tool cannot give the component and the condition. Thus nearly every report has one field that is a guess.
+3. **The reward caused this specialisation.** With laya, "laya, then report" gets the highest reward: it is fast and correct on approximately 90% of the images. The time cost makes each additional tool a little worse. Thus the agent learned to depend on one known tool and to stop the search for other tools.
+4. **The agent that saw `component_resnet18` in GRPO adapts better** (0.416 against 0.006) but it is far from an agent trained without laya (0.959).
+5. **The multi-turn format is difficult for agents without training in it.** Without laya, the SFT agent gives no valid report on 44% of the images. The step-wise GRPO agent gets 0.538 here and 0.924 in the single-step format (section 8.2).
+6. **Main result.** Training on the final result gives the best accuracy with the known tools, and the worst result after a change of the tools. Accuracy with the known tools and adaptation to new tools go in opposite directions here.
+
+Limits: one seed, 500 images, 150 training steps on 300 images, 4 s budget only.
+
+Next tests (not done): random removal of tools during training (for example laya in 30% of the episodes), and a reward without a time cost.
+
+## 10. Files
 
 | File | Content |
 |---|---|
@@ -262,3 +327,5 @@ Limits: one seed, 500 images (an uncertainty of approximately 3 points), results
 | `results/tools_v3/select/*_train.json` | Training logs of SFT and GRPO |
 | `results/tools_v3/select/sft_qwen_think.jsonl` | SFT data with teacher reasons |
 | `scripts/runs/tools_v3_all.sh` | All stages |
+| `results/tools_v3/select/eval_episode_1.7b_*.json` | Evaluations of GRPO on full episodes |
+| `results/tools_v3/select/qwen3-1.7b_grpo_episode_*_train.json` | Training logs of GRPO on full episodes |

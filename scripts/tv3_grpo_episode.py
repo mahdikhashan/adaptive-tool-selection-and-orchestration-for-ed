@@ -13,7 +13,7 @@ from trl.models.utils import disable_gradient_checkpointing
 from fedorch.common import results_dir
 from fedorch.episode_play import play
 from fedorch.route_env import Network
-from fedorch.select_env import FIELDS, episode, setup
+from fedorch.select_env import FIELDS, episode, own_answer, setup
 from fedorch.tools_v3 import default_dtype, excluded_tools, models_dir
 
 
@@ -37,6 +37,8 @@ def main():
     parser.add_argument("--max-turn-tokens", type=int, default=384)
     parser.add_argument("--max-steps", type=int, default=5, help="tool steps plus report per episode")
     parser.add_argument("--time-cost", type=float, default=0.01, help="reward lost per second of tool time")
+    parser.add_argument("--tool-bonus", type=float, default=0.0, help="reward for each called tool that answers at least one report field")
+    parser.add_argument("--tool-cap", type=int, default=2, help="maximum number of tools that earn the bonus")
     parser.add_argument("--lr", type=float, default=1e-5)
     parser.add_argument("--beta", type=float, default=0.02)
     parser.add_argument("--seed", type=int, default=0)
@@ -79,7 +81,9 @@ def main():
         rewards, steps = [], []
         for r in runs:
             o = r["ep"].outcome()
-            rewards.append(len(o["right"]) / len(FIELDS) - args.time_cost * o["time"])
+            useful = sum(1 for t in o["called"] if own_answer(r["ep"].r["out"][t]))
+            bonus = args.tool_bonus * min(useful, args.tool_cap) if o["report"] else 0.0
+            rewards.append(len(o["right"]) / len(FIELDS) - args.time_cost * o["time"] + bonus)
             steps.append(len(o["called"]))
         stats["reward"].append(float(np.mean(rewards)))
         stats["steps"].append(float(np.mean(steps)))

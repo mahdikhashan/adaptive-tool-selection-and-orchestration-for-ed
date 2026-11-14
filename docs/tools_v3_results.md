@@ -318,6 +318,34 @@ Limits: one seed, 500 images, 150 training steps on 300 images, 4 s budget only.
 
 Next tests (not done): random removal of tools during training (for example laya in 30% of the episodes), and a reward without a time cost.
 
+### 9.5 Tool bonus instead of a time cost
+
+Date: 2026-11-14. Scripts: `scripts/tv3_grpo_episode.py` (`--tool-bonus`, `--tool-cap`), `scripts/tv3_episode_eval.py` (`--max-steps 5`).
+
+- The reward has no time cost. Each tool that answers a report field gives a small, capped bonus. The bonus is paid only when the report is valid.
+- The evaluation uses 5 steps, the same as in training. The earlier 8-step bonus evaluations are superseded: they used more steps than the agent was trained for, and many reports were invalid.
+- Two tool sets, 500 test images, 4 s budget, one seed, 1.7B with thinking:
+
+| Tool set | All three | Component | Defect | Condition | Defects found | No valid report | Tools per image | Distinct tools used | Main tools (share of images) |
+|---|---|---|---|---|---|---|---|---|---|
+| Laya removed (`component_resnet18` available) | 0.374 | 0.510 | 0.514 | 0.408 | 0.746 | 45.0% | 3.18 | 37 of 59 | component_resnet18 94%, resnet 91%, resnet18 37% |
+| Component removed (laya available) | 0.744 | 0.782 | 0.828 | 0.826 | 0.814 | 14.4% | 2.04 | 35 of 61 | laya_recut 75%, laya 26%, spec_yoke 18%, laya_q4 14% |
+| Component removed, 8 steps (superseded) | 0.706 | 0.740 | 0.782 | 0.782 | 0.746 | 19.0% | 2.42 | 37 of 61 | laya_recut 75%, laya 26% |
+
+For comparison, the time-cost agent (section 9.3) with laya removed has 0.006 all three correct, 1.01 tools per image and 7 distinct tools.
+
+### 9.6 Interpretation
+
+1. **The bonus makes the agent use more tools.** With laya removed, it uses 3.18 tools per image and 37 distinct tools, against 1.01 tools and 7 distinct tools for the time-cost agent. Its accuracy rises from 0.006 to 0.374.
+2. **Most of the new tool calls are repeats.** With laya removed, nearly every image calls `component_resnet18` and `resnet`, which answer the same question. The extra calls use up the 5-step budget: 45% of the images end without a valid report. This is the main failure. The agent knows which tools to use but does not stop after it has an answer.
+3. **Laya available, the bonus gives the best result of the 1.7B agents without laya**: 0.744, against 0.416 for the full-episode agent that saw `component_resnet18` in training. The calls are concentrated: `laya_recut` on 75% of images and `laya` on 26%. The agent does not spread its calls over the 35 tools.
+4. **More steps do not help.** The 8-step evaluation of the same agent gives 0.706, against 0.744 with 5 steps. The extra steps add calls but not valid reports.
+5. **Not yet a fair comparison.** The 0.744 result is not compared with a time-cost agent on the same tool set (component removed). The 0.884 result of section 9.3 used all 62 tools, so the two are not comparable. The fair baseline is still to run.
+
+Limits: one seed, 500 images, 5 steps only, 4 s budget only.
+
+Next tests (not done): the time-cost agent with the component classifier removed; 2 or 3 more seeds; a penalty on repeated tools that answer the same field, to reduce the 45% of invalid reports with laya removed.
+
 ## 10. Files
 
 | File | Content |
@@ -329,3 +357,6 @@ Next tests (not done): random removal of tools during training (for example laya
 | `scripts/runs/tools_v3_all.sh` | All stages |
 | `results/tools_v3/select/eval_episode_1.7b_*.json` | Evaluations of GRPO on full episodes |
 | `results/tools_v3/select/qwen3-1.7b_grpo_episode_*_train.json` | Training logs of GRPO on full episodes |
+| `results/tools_v3/select/eval_episode_1.7b_heldout_bonus_nolaya_s5.json` | Tool bonus, laya removed, 5 steps (section 9.5) |
+| `results/tools_v3/select/eval_episode_1.7b_heldout_bonus_s5.json` | Tool bonus, component classifier removed, 5 steps (section 9.5) |
+| `results/tools_v3/select/eval_episode_1.7b_heldout_bonus.json` | Tool bonus, component classifier removed, 8 steps (superseded) |

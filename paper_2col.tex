@@ -5,12 +5,10 @@
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage{xcolor}
-\usepackage{lastpage}
 \usepackage[labelsep=period,font=footnotesize]{caption}
 \usepackage[hidelinks]{hyperref}
 \hypersetup{pdftitle={Who should look at this image? Small language agents choosing the tools of inspection drones},pdfauthor={Mahdi Khashan}}
 
-\journal{Future Generation Computer Systems}
 \setlength{\emergencystretch}{2em}
 \setlength{\bibsep}{0pt}
 \newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
@@ -27,11 +25,10 @@
 \renewcommand\section{\@startsection{section}{1}{\z@}{-16pt plus -3pt minus -2pt}{8pt}{\normalfont\normalsize\bfseries}}
 \renewcommand\subsection{\@startsection{subsection}{2}{\z@}{-12pt plus -2pt minus -2pt}{6pt}{\normalfont\normalsize\itshape}}
 \makeatother
-\newcommand{\jline}{Future Generation Computer Systems 00 (2027) 1--\pageref{LastPage}}
 \makeatletter
-\def\ps@pprintTitle{\def\@oddhead{\hfil\footnotesize\jline\hfil}\let\@evenhead\@oddhead
+\def\ps@pprintTitle{\let\@oddhead\@empty\let\@evenhead\@empty
   \def\@oddfoot{\hfil\footnotesize\thepage\hfil}\let\@evenfoot\@oddfoot}
-\def\ps@fgcs{\def\@oddhead{\footnotesize Khashan / \jline\hfil\thepage}\let\@evenhead\@oddhead
+\def\ps@preprint{\def\@oddhead{\footnotesize M. Khashan: Small Language Agents Choosing the Tools of Inspection Drones\hfil\thepage}\let\@evenhead\@oddhead
   \let\@oddfoot\@empty\let\@evenfoot\@empty}
 \makeatother
 
@@ -56,7 +53,7 @@ adaptive AI inference \sep edge-cloud continuum \sep resource-efficient language
 
 \end{frontmatter}
 
-\pagestyle{fgcs}
+\pagestyle{preprint}
 
 \section{Introduction}
 

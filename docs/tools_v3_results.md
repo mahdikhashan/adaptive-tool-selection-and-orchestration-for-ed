@@ -338,7 +338,7 @@ For comparison, the time-cost agent (section 9.3) with laya removed has 0.006 al
 
 1. **The bonus makes the agent use more tools.** With laya removed, it uses 3.18 tools per image and 37 distinct tools, against 1.01 tools and 7 distinct tools for the time-cost agent. Its accuracy rises from 0.006 to 0.374.
 2. **Most of the new tool calls are repeats.** With laya removed, nearly every image calls `component_resnet18` and `resnet`, which answer the same question. The extra calls use up the 5-step budget: 45% of the images end without a valid report. This is the main failure. The agent knows which tools to use but does not stop after it has an answer.
-3. **Laya available, the bonus gives the best result of the 1.7B agents without laya**: 0.744, against 0.416 for the full-episode agent that saw `component_resnet18` in training. The calls are concentrated: `laya_recut` on 75% of images and `laya` on 26%. The agent does not spread its calls over the 35 tools.
+3. **Laya available, the bonus agent reaches 0.744.** The full-episode agent of section 9.3 reached 0.416 when laya was removed, but that is a different tool set, so the two numbers are not compared directly. The calls are concentrated: `laya_recut` on 75% of images and `laya` on 26%. The agent does not spread its calls over the 35 tools.
 4. **More steps do not help.** The 8-step evaluation of the same agent gives 0.706, against 0.744 with 5 steps. The extra steps add calls but not valid reports.
 5. **Not yet a fair comparison.** The 0.744 result is not compared with a time-cost agent on the same tool set (component removed). The 0.884 result of section 9.3 used all 62 tools, so the two are not comparable. The fair baseline is still to run.
 
